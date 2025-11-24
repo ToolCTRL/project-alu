@@ -1,5 +1,6 @@
 import { Link } from "react-router";
 import { marked } from "marked";
+import DOMPurify from "isomorphic-dompurify";
 import { useTranslation } from "react-i18next";
 import ThumbsDownIcon from "~/components/ui/icons/ThumbsDownIcon";
 import ThumbsDownIconFilled from "~/components/ui/icons/ThumbsDownIconFilled";
@@ -76,7 +77,7 @@ export default function KbArticleContent({
       <div className="grid gap-8 sm:grid-cols-12">
         <div className="overflow-auto sm:col-span-9">
           <div className="prose dark:prose-dark">
-            <div dangerouslySetInnerHTML={{ __html: marked(content) }} />
+            <div dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(marked(content)) }} />
           </div>
         </div>
         {item.relatedArticles.length > 0 && (
