@@ -1,0 +1,2229 @@
+{
+  "shared": {
+    "hi": "Bonjour",
+    "or": "Ou",
+    "and": "Et",
+    "plan": "Forfait",
+    "you": "Vous",
+    "next": "Suivant",
+    "previous": "Précédent",
+    "close": "Fermer",
+    "success": "Succès",
+    "error": "Erreur",
+    "serverError": "Erreur serveur",
+    "unknownError": "Erreur inconnue",
+    "unexpectedError": "Erreur inattendue",
+    "acceptAndContinue": "Accepter et continuer",
+    "invalidForm": "Formulaire mal rempli",
+    "invalidRequest": "Requête invalide",
+    "new": "Nouveau",
+    "name": "Nom",
+    "description": "Description",
+    "current": "Actuel",
+    "save": "Enregistrer",
+    "saving": "Enregistrement",
+    "saveAndAdd": "Enregistrer et ajouter",
+    "confirmSave": "Enregistrer ?",
+    "saved": "Enregistré avec succès",
+    "change": "Modifier",
+    "saveChanges": "Enregistrer les modifications",
+    "noChanges": "Aucun changement",
+    "request": "Demande",
+    "accept": "Accepter",
+    "accepted": "Accepté",
+    "reject": "Refuser",
+    "rejected": "Refusé",
+    "add": "Ajouter",
+    "added": "Ajouté",
+    "addAnother": "Ajouter un autre",
+    "tag": "Étiquette",
+    "send": "Envoyer",
+    "sendTo": "Envoyer un e-mail à : {{0}}.",
+    "sent": "Envoyé",
+    "delete": "Supprimer",
+    "deleteNow": "Supprimer maintenant",
+    "link": "Lier",
+    "unlink": "Délier",
+    "confirmDelete": "Supprimer ?",
+    "confirmRemove": "Retirer ?",
+    "deleted": "Supprimé",
+    "deleting": "Suppression",
+    "reload": "Actualiser",
+    "remove": "Retirer",
+    "edit": "Modifier",
+    "overview": "Aperçu",
+    "summary": "Résumé",
+    "upload": "Télécharger",
+    "avatar": "Avatar",
+    "icon": "Icône",
+    "back": "Retour",
+    "active": "Actif",
+    "inactive": "Inactif",
+    "activate": "Activer",
+    "deactivate": "Désactiver",
+    "deactivated": "Désactivé",
+    "confirmActivate": "Activer ?",
+    "confirmDeactivate": "Désactiver ?",
+    "status": "Statut",
+    "view": "Voir",
+    "viewAll": "Voir tout",
+    "preview": "Aperçu",
+    "noPreview": "Pas d'aperçu",
+    "create": "Créer",
+    "created": "Créé",
+    "creating": "Création",
+    "cancel": "Annuler",
+    "confirm": "Confirmer",
+    "confirmSubmit": "Soumettre ?",
+    "confirmCreate": "Créer {{0}} ?",
+    "confirmUpdate": "Mettre à jour {{0}} ?",
+    "yes": "Oui",
+    "no": "Non",
+    "true": "Vrai",
+    "false": "Faux",
+    "enabled": "Activé",
+    "disabled": "Désactivé",
+    "on": "Activé",
+    "off": "Désactivé",
+    "in": "dans",
+    "upgrade": "Mettre à niveau",
+    "downgrade": "Rétrograder",
+    "subscribed": "Abonné",
+    "updateSubscriptionTo": "Mettre à jour l'abonnement vers {{0}} ?",
+    "notFound": "Non trouvé",
+    "alreadyExists": "Existe déjà",
+    "invite": "Inviter",
+    "invalidInvitation": "Lien d'invitation invalide",
+    "download": "Télécharger",
+    "generate": "Générer",
+    "try": "Essayer",
+    "loading": "Chargement",
+    "processing": "Traitement",
+    "unauthorized": "Non autorisé",
+    "set": "Définir",
+    "reset": "Réinitialiser",
+    "notSet": "Non défini",
+    "setCustomProperties": "Définir des propriétés personnalisées",
+    "noCustomProperties": "Aucune propriété personnalisée",
+    "note": "Note",
+    "warning": "Avertissement",
+    "warningCannotUndo": "ATTENTION : Vous ne pouvez pas annuler cette action.",
+    "all": "Tous",
+    "unlimited": "Illimité",
+    "remaining": "Restant",
+    "featureRemaining": "{{0}} restant",
+    "file": "Fichier",
+    "enter": "Entrer",
+    "commandPalette": "Rechercher partout...",
+    "search": "Rechercher",
+    "searchDot": "Rechercher...",
+    "searchAll": "Rechercher tout",
+    "searching": "Recherche en cours",
+    "optional": "Optionnel",
+    "by": "par",
+    "actions": "Actions",
+    "updated": "Mis à jour",
+    "updatedAgo": "Mis à jour {{0}}",
+    "role": "Rôle",
+    "notApplicable": "N/A",
+    "dragAndDrop": "Glisser-déposer",
+    "home": "Accueil",
+    "createdBy": "Créé par",
+    "createdAt": "Créé le",
+    "updatedAt": "Mis à jour le",
+    "updatedBy": "Mis à jour par",
+    "lastAccessedAt": "Dernier accès le",
+    "assignedTo": "Assigné à",
+    "sandbox": "Environnement de test",
+    "path": "Chemin",
+    "language": "Langue",
+    "locales": {
+      "en": "Anglais",
+      "es": "Espagnol",
+      "fr": "Français"
+    },
+    "layouts": {
+      "sidebar": "Barre latérale",
+      "stacked": "Empilé"
+    },
+    "storage": {
+      "gb": "Go"
+    },
+    "fakeLoading": "Chargement simulé (environnement de test)",
+    "onlyFileTypes": "Uniquement des fichiers {{0}}",
+    "missingFields": "Champs manquants",
+    "goTo": "Aller à",
+    "slug": "Identifiant",
+    "slugTaken": "Identifiant déjà utilisé",
+    "slugInvalid": "Identifiant invalide",
+    "admin": "Administrateur",
+    "adminAccess": "Accès administrateur",
+    "member": "Membre",
+    "max": "Maximum",
+    "monthly": "Mensuel",
+    "sync": "Synchroniser",
+    "invalid": "Invalide",
+    "noRecords": "Aucun enregistrement",
+    "select": "Sélectionner",
+    "selectAll": "Sélectionner tout",
+    "selecting": "Sélection en cours",
+    "undefined": "Non défini",
+    "details": "Détails",
+    "rows": "Lignes",
+    "showing": "Affichage de",
+    "from": "De",
+    "to": "À",
+    "of": "Sur",
+    "results": "Résultats",
+    "tryDemo": "Essayer la démo",
+    "more": "Plus",
+    "learnMore": "En savoir plus",
+    "readDocs": "Lire la documentation",
+    "setUserRoles": "Définir les rôles utilisateur",
+    "share": "Partager",
+    "shareWith": "Partager avec",
+    "alreadyShared": "Déjà partagé",
+    "copy": "Copier",
+    "copyToClipboard": "Copier dans le presse-papiers",
+    "copied": "Copié !",
+    "anonymousUser": "Utilisateur anonyme",
+    "order": "Ordre",
+    "noTags": "Aucune étiquette",
+    "setTags": "Définir les étiquettes",
+    "noComments": "Aucun commentaire",
+    "noTasks": "Aucune tâche",
+    "setTasks": "Définir les tâches",
+    "value": "Valeur",
+    "isDeleted": "Est supprimé",
+    "reply": "Répondre",
+    "comment": "Commentaire",
+    "addComment": "Ajouter un commentaire",
+    "commentDeleted": "Ce commentaire a été supprimé",
+    "addTask": "Ajouter une tâche",
+    "newTask": "Nouvelle tâche",
+    "newTag": "Nouvelle étiquette",
+    "tagName": "Nom de l'étiquette",
+    "tagDelete": "Supprimer l'étiquette '{{0}}' pour toutes les lignes",
+    "apply": "Appliquer",
+    "clear": "Effacer",
+    "filters": "Filtres",
+    "column": "Colonne",
+    "columns": "Colonnes",
+    "hide": "Masquer",
+    "show": "Afficher",
+    "showMore": "Afficher plus",
+    "showLess": "Afficher moins",
+    "readMore": "Lire la suite",
+    "loadMore": "Charger plus",
+    "private": "Privé",
+    "public": "Public",
+    "mail": {
+      "inboundAddress": "Adresse entrante"
+    },
+    "files": {
+      "plural": "Fichiers",
+      "image": "Image",
+      "images": "Images",
+      "maxSizeReached": "Taille maximale: {{0}}, votre fichier: {{1}}",
+      "noFilesUploaded": "Aucun fichier téléversé"
+    },
+    "deny": "Refuser",
+    "allow": "Autoriser",
+    "allowSelected": "Autoriser la sélection",
+    "allowAll": "Tout autoriser",
+    "expiry": "Expiration",
+    "type": "Type",
+    "types": "Types",
+    "variant": "Variante",
+    "variants": "Variantes",
+    "primary": "Principal",
+    "secondary": "Secondaire",
+    "tertiary": "Tertiaire",
+    "title": "Titre",
+    "titlePlural": "Titre (pluriel)",
+    "importRecord": "Importer 1 enregistrement",
+    "importRecords": "Importer {{0}} enregistrements",
+    "exportResult": "Exporter 1 résultat",
+    "exportResults": "Exporter {{0}} résultats",
+    "createView": "Créer une vue",
+    "updateView": "Mettre à jour la vue",
+    "deleteView": "Supprimer la vue",
+    "viewAllViews": "Voir toutes les vues",
+    "viewReport": "Voir le rapport",
+    "viewReports": "Voir les rapports",
+    "continue": "Continuer",
+    "pageSize": "Taille de page",
+    "page": "Page",
+    "perPage": "Par page",
+    "totalPages": "Total des pages",
+    "default": "Par défaut",
+    "condition": "Condition",
+    "conditions": "Conditions",
+    "import": "Importer",
+    "never": "Jamais",
+    "always": "Toujours",
+    "lastActivity": "Dernière activité",
+    "lastLogin": "Dernière connexion",
+    "activity": "Activité",
+    "danger": "Danger",
+    "dangerZone": "Zone de danger",
+    "settings": "Paramètres",
+    "completed": "Terminé",
+    "complete": "Compléter",
+    "inProgress": "En cours",
+    "notStarted": "Non commencé",
+    "clickHereTo": "Cliquez ici pour {{0}}",
+    "dontShowThisAgain": "Ne plus afficher",
+    "clickHereToTryAgain": "Cliquez ici pour réessayer",
+    "clickHereToTryLearnMore": "Cliquez ici pour en savoir plus",
+    "maintenance": {
+      "title": "Le site est actuellement en maintenance",
+      "description": "Nous nous excusons pour la gêne occasionnée. Veuillez réessayer plus tard."
+    },
+    "typeAndPressTo": "Tapez et appuyez sur {{0}} pour {{1}}",
+    "goBack": "Retour",
+    "goBackToAdmin": "Retour à l'administration",
+    "goBackToApp": "Retour à l'application",
+    "permissions": {
+      "canView": "Peut voir",
+      "canComment": "Peut commenter",
+      "canEdit": "Peut éditer",
+      "canDelete": "Peut supprimer"
+    },
+    "relationships": {
+      "one-to-one": "Un à un",
+      "one-to-many": "Un à plusieurs",
+      "many-to-one": "Plusieurs à un",
+      "many-to-many": "Plusieurs à plusieurs"
+    },
+    "duplicate": "Dupliquer",
+    "duplicated": "Dupliqué",
+    "crud": {
+      "create": "Créer",
+      "read": "Lire",
+      "update": "Mettre à jour",
+      "delete": "Supprimer"
+    },
+    "required": "Requis",
+    "isRequired": "{{0}} est requis",
+    "session": "Session",
+    "getFromName": "Obtenir depuis le nom",
+    "encrypted": "Chiffré",
+    "decrypted": "Déchiffré",
+    "test": "Test",
+    "underConstruction": "En construction",
+    "noData": "Aucune donnée",
+    "publish": "Publier",
+    "unpublish": "Dépublier",
+    "published": "Publié",
+    "unpublished": "Non publié",
+    "empty": "Vide",
+    "n/a": "N/A",
+    "logo": "Logo",
+    "image": "Image",
+    "thumbnail": "Miniature",
+    "keywords": "Mots-clés",
+    "light": "Clair",
+    "dark": "Sombre",
+    "content": "Contenu",
+    "option": "Option",
+    "options": "Options",
+    "missingOptions": "Au moins une option est requise",
+    "login": "Connexion",
+    "logout": "Déconnexion",
+    "register": "S'inscrire",
+    "submit": "Soumettre",
+    "recommended": "Recommandé"
+  },
+  "components": {
+    "date": {
+      "pick": "Choisir une date"
+    }
+  },
+  "auth": {
+    "github": {
+      "button": "Continuer avec GitHub"
+    },
+    "google": {
+      "button": "Continuer avec Google"
+    }
+  },
+  "front": {
+    "navbar": {
+      "product": "Produit",
+      "pricing": "Tarifs",
+      "contact": "Contact",
+      "blog": "Blog",
+      "newsletter": "Infolettre",
+      "terms": "Conditions générales",
+      "privacy": "Politique de confidentialité",
+      "about": "À propos",
+      "affiliates": "Programme d'affiliation"
+    },
+    "hero": {
+      "headline1": "Le Boilerplate SaaS en Remix (React Router 7)",
+      "headline2": "Lancez des applications SaaS prêtes pour la production avec plus de 25 fonctionnalités intégrées, telles que : Tableau de bord d'administration, Portail d'application, Stripe, Blog, Constructeur de pages, Base de connaissances, Workflows, Analytique, Constructeur d'entités, Marketing par e-mail, Notifications, Onboarding, Gestion de fonctionnalités, Cache et Métriques.",
+      "headline3": "",
+      "subheadline1": "Construire → Commercialiser → Gérer votre SaaS",
+      "hint": "Ce site utilise {{0}} Édition Core",
+      "buy": "Commencer",
+      "features": "Fonctionnalités",
+      "docs": "Documentation",
+      "components": "Composants",
+      "blog": "Blog",
+      "contact": "Contactez-nous",
+      "startHint": "Cette démo est hébergée sur Vercel + Supabase.",
+      "cta": "Commencer",
+      "changelog": "Journal des modifications"
+    },
+    "pricing": {
+      "title": "Tarifs",
+      "headline": "Des forfaits conçus pour les organisations de toutes tailles."
+    },
+    "newsletter": {
+      "title": "Restez informé",
+      "headline": "Abonnez-vous à l'infolettre pour recevoir les mises à jour du produit",
+      "email": "Adresse e-mail",
+      "firstName": "Prénom",
+      "lastName": "Nom",
+      "subscribe": "S'abonner",
+      "subscribing": "Abonnement en cours",
+      "subscribed": "Vous êtes abonné !",
+      "checkEmail": "Abonné ! Vérifiez votre e-mail pour confirmer votre abonnement.",
+      "weCare": "Nous prenons soin de la protection de vos données."
+    },
+    "contact": {
+      "title": "Contactez-nous",
+      "headline": "Nous aimerions savoir comment nous pouvons apporter de la valeur à votre entreprise",
+      "firstName": "Prénom",
+      "lastName": "Nom",
+      "organization": "Organisation",
+      "jobTitle": "Titre du poste",
+      "email": "E-mail",
+      "send": "Envoyer",
+      "users": "Nombre d'utilisateurs",
+      "comments": "Questions ou commentaires",
+      "setup": "Mettez à jour la variable d'environnement INTEGRATIONS_CONTACT_FORMSPREE",
+      "success": "Merci pour votre message {{0}} ! Nous vous répondrons dans les plus brefs délais.",
+      "error": "Oups ! Une erreur s'est produite. Veuillez réessayer."
+    },
+    "brand": {
+      "title": "Marque",
+      "description": "Ressources de marque et directives d'utilisation."
+    },
+    "changelog": {
+      "title": "Journal des modifications",
+      "headline": "Restez informé des dernières fonctionnalités et corrections de bugs."
+    },
+    "roadmap": {
+      "title": "Feuille de route",
+      "headline": "En savoir plus sur l'état actuel de SaasRock."
+    },
+    "faq": {
+      "title": "Questions fréquemment posées",
+      "headline": "Ajoutez vos propres questions et réponses pour aider vos utilisateurs à comprendre votre SaaS.",
+      "subheadline": "Questions et réponses courantes à propos de SaasRock.",
+      "questions": {
+        "q1": "Comment puis-je obtenir le code après l'achat ?",
+        "a1": "Vous serez invité au dépôt saasrock sur GitHub. Si vous avez acheté SaasRock Pro, vous serez également invité au dépôt saasrock-pro.",
+        "q2": "Puis-je obtenir un remboursement ?",
+        "a2": "En raison de la nature du développement logiciel qui est un service personnalisé, nous n'offrons pas de remboursements."
+      }
+    },
+    "footer": {
+      "headline": "Commencez à construire votre SaaS.",
+      "copyright": "2024, Tous droits réservés.",
+      "builtWith": "Construit avec",
+      "application": "Application",
+      "product": "Produit",
+      "pricing": "Tarifs",
+      "signIn": "Se connecter",
+      "signUp": "S'inscrire",
+      "blog": "Blog",
+      "docs": "Documentation",
+      "contact": "Contact",
+      "newsletter": "Infolettre",
+      "changelog": "Journal des modifications",
+      "termsAndConditions": "Conditions générales",
+      "privacyPolicy": "Politique de confidentialité",
+      "features": "Fonctionnalités"
+    },
+    "terms": {
+      "title": "Conditions générales"
+    },
+    "privacy": {
+      "title": "Politique de confidentialité"
+    },
+    "joinNow": {
+      "title": "Télécharger ce modèle",
+      "headline": "Commencez à construire votre propre application SaaS. Ou apprenez comment c'est fait en React, React, React et Svelte.",
+      "cta": "Obtenir le code source !"
+    },
+    "logoClouds": {
+      "title": "Exploitez la puissance des fondamentaux du web, du CSS orienté utilitaire et d'un ORM de premier ordre."
+    },
+    "components": {
+      "title": "Composants",
+      "description": "Tous les composants dont vous avez besoin pour construire une application SaaS complète."
+    }
+  },
+  "pricing": {
+    "startTrial": "Commencer l'essai de {{0}} jours",
+    "subscribe": "S'abonner",
+    "alreadyOwned": "Vous possédez déjà ceci",
+    "pay": "Payer",
+    "payOnce": "Payer une fois",
+    "seat": "Siège",
+    "seats": "Sièges",
+    "signUpFree": "S'inscrire gratuitement",
+    "monthlyPrice": "Prix mensuel",
+    "yearlyPrice": "Prix annuel",
+    "MONTHLY": "Mensuel",
+    "YEARLY": "Annuel",
+    "ONCE": "Une fois",
+    "QUARTERLY": "Trimestriel",
+    "SEMI_ANNUAL": "Semestriel",
+    "MONTHLYShort": "mois",
+    "YEARLYShort": "an",
+    "QUARTERLYShort": "trimestre",
+    "SEMIANNUALShort": "semestre",
+    "once": "Une fois",
+    "contactUs": "Contactez-nous",
+    "contact": "Contact",
+    "customPlanDescription": "Nous établirons un plan basé sur vos besoins",
+    "whatsIncluded": "Ce qui est inclus",
+    "included": "Inclus",
+    "notIncluded": "Non inclus",
+    "recommended": "Recommandé",
+    "FLAT_RATE": "Tarif fixe",
+    "PER_SEAT": "Par siège",
+    "USAGE_BASED": "Basé sur l'utilisation",
+    "FLAT_RATE_USAGE_BASED": "Tarif fixe + basé sur l'utilisation",
+    "demo": "PAGE DE DÉMO - Vous personnaliserez cette page",
+    "thisMonth": "Ce mois-ci",
+    "buy": "Acheter",
+    "buyAgain": "Acheter à nouveau",
+    "getItForFree": "Obtenir gratuitement",
+    "notCreated": "Plan non créé",
+    "required": "Un abonnement est requis pour utiliser la plateforme.",
+    "coupons": {
+      "object": "Coupon",
+      "plural": "Coupons",
+      "applied": "Coupon appliqué",
+      "invalid": "Code coupon invalide",
+      "expired": "Code coupon expiré",
+      "success": "Appliqué avec succès",
+      "error": "Impossible de trouver le coupon : {{0}}",
+      "iHaveACoupon": "Appliquer un code coupon",
+      "typeCode": "Saisir le code coupon"
+    },
+    "usageBased": {
+      "unit": "Unit",
+      "units": "Units",
+      "perUnit": "Per unit",
+      "flatFee": "Flat fee",
+      "first": "First",
+      "next": "Next",
+      "forTheFirst": "For the first",
+      "forTheNext": "For the next",
+      "usageType": "Usage type",
+      "aggregateUsage": "Aggregate usage",
+      "tiersMode": "Tiers mode",
+      "billingScheme": "Billing scheme",
+      "tiers": "Tiers",
+      "usageBasedUnit": "Usage-based unit",
+      "perUnitPrices": "Per unit prices",
+      "flatFeePrices": "Flat fee prices",
+      "addTier": "Add tier"
+    },
+    "periods": {
+      "ONCE": "une fois",
+      "MONTHLY": "mois",
+      "WEEKLY": "semaine",
+      "DAILY": "jour",
+      "YEARLY": "an"
+    },
+    "custom": {
+      "title": "Plan personnalisé",
+      "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod..."
+    },
+    "products": {
+      "plan1": {
+        "title": "Start",
+        "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod..."
+      },
+      "plan2": {
+        "title": "Starter",
+        "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod..."
+      },
+      "plan3": {
+        "title": "Pro",
+        "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod..."
+      }
+    },
+    "features": {
+      "prioritySupport": {
+        "none": "Aucun support",
+        "basic": "Support de base",
+        "priority": "Support prioritaire",
+        "dedicated": "Gestionnaire de compte"
+      },
+      "users": {
+        "one": "1 utilisateur",
+        "max": "{{0}} utilisateurs",
+        "monthly": "{{0}} utilisateurs/mois",
+        "unlimited": "Utilisateurs illimités",
+        "moreThan": "+{{0}} utilisateurs",
+        "enterprise": "+10 utilisateurs"
+      },
+      "apiCalls": {
+        "units": "Appels API",
+        "max": "{{0}} appels API",
+        "monthly": "{{0}} appels API/mois",
+        "unlimited": "Appels API illimités",
+        "moreThan": "+{{0}} appels API",
+        "enterprise": "+10000 appels API"
+      },
+      "credits": {
+        "units": "Crédits",
+        "max": "{{0}} crédits",
+        "monthly": "{{0}} crédits/mois",
+        "unlimited": "Crédits illimités",
+        "moreThan": "+{{0}} crédits",
+        "enterprise": "+10000 crédits"
+      }
+    }
+  },
+  "app": {
+    "shared": {
+      "buttons": {
+        "openOptions": "Open options",
+        "uploadDocument": "Upload"
+      },
+      "tabs": {
+        "select": "Select a tab"
+      },
+      "colors": {
+        "SLATE": "Blue gray",
+        "GRAY": "Gray",
+        "NEUTRAL": "Neutral",
+        "STONE": "Stone",
+        "RED": "Red",
+        "ORANGE": "Orange",
+        "AMBER": "Amber",
+        "YELLOW": "Yellow",
+        "LIME": "Lime",
+        "GREEN": "Green",
+        "EMERALD": "Émeraude",
+        "TEAL": "Bleu-vert",
+        "CYAN": "Cyan",
+        "SKY": "Bleu clair",
+        "BLUE": "Bleu",
+        "INDIGO": "Indigo",
+        "VIOLET": "Violet",
+        "PURPLE": "Violet foncé",
+        "FUCHSIA": "Fuchsia",
+        "PINK": "Rose",
+        "ROSE": "Rose vif"
+      },
+      "activity": {
+        "title": "Activité"
+      },
+      "periods": {
+        "ALL": "Tout",
+        "YEAR": "Année",
+        "MONTH": "Mois",
+        "WEEK": "Semaine",
+        "DAY": "Aujourd'hui",
+        "ALL_TIME": "Tout le temps",
+        "LAST_YEAR": "Année dernière",
+        "LAST_MONTH": "Mois dernier",
+        "LAST_3_MONTHS": "3 derniers mois",
+        "LAST_N_MONTHS": "{{0}} derniers mois",
+        "LAST_WEEK": "Semaine dernière",
+        "LAST_DAY": "Hier",
+        "LAST_30_DAYS": "30 derniers jours",
+        "LAST_7_DAYS": "7 derniers jours",
+        "LAST_24_HOURS": "24 dernières heures",
+        "ALL_Description": "Tout",
+        "YEAR_Description": "Cette année",
+        "MONTH_Description": "Ce mois",
+        "WEEK_Description": "Cette semaine",
+        "DAY_Description": "Aujourd'hui",
+        "LAST_YEAR_Description": "Année dernière",
+        "LAST_MONTH_Description": "Mois dernier",
+        "LAST_WEEK_Description": "Semaine dernière",
+        "LAST_DAY_Description": "Hier",
+        "LAST_30_DAYS_Description": "Dans les 30 derniers jours",
+        "LAST_7_DAYS_Description": "Dans les 7 derniers jours"
+      },
+      "months": {
+        "1": "Janvier",
+        "2": "Février",
+        "3": "Mars",
+        "4": "Avril",
+        "5": "Mai",
+        "6": "Juin",
+        "7": "Juillet",
+        "8": "Août",
+        "9": "Septembre",
+        "10": "Octobre",
+        "11": "Novembre",
+        "12": "Décembre"
+      },
+      "bimonthly": {
+        "1": "Janvier-Février",
+        "2": "Mars-Avril",
+        "3": "Mai-Juin",
+        "4": "Juillet-Août",
+        "5": "Septembre-Octobre",
+        "6": "Novembre-Décembre"
+      },
+      "quarterly": {
+        "1": "Janvier-Avril",
+        "2": "Mai-Août",
+        "3": "Septembre-Décembre"
+      },
+      "yearly": {
+        "1": "Janvier-Décembre"
+      },
+      "periodicity": {
+        "0": "Une fois",
+        "1": "Mensuel",
+        "2": "Bimestriel",
+        "3": "Trimestriel",
+        "4": "Annuel",
+        "ONCE": "Une fois",
+        "MONTHLY": "Mensuel",
+        "BIMONTHLY": "Bimestriel",
+        "QUARTERLY": "Trimestriel",
+        "YEARLY": "Annuel"
+      }
+    },
+    "commands": {
+      "type": "Tapez pour rechercher...",
+      "empty": {
+        "title": "Aucune commande trouvée",
+        "description": "Aucune commande trouvée pour ce terme de recherche. Veuillez réessayer."
+      },
+      "tenants": {
+        "title": "Comptes",
+        "description": "Changez de compte ou créez-en un",
+        "switchTo": "Aller vers",
+        "create": "Créer un compte",
+        "viewAll": "Voir tous mes comptes",
+        "edit": "Modifier le nom, le slug et l'icône du compte",
+        "switch": "Changer de compte"
+      },
+      "profile": {
+        "title": "Profil",
+        "description": "Mettre à jour votre profil ou vous déconnecter",
+        "update": "Mettre à jour le profil",
+        "updateDescription": "Mettez à jour votre nom, avatar, mot de passe et/ou préférences",
+        "logout": "Se déconnecter",
+        "logoutDescription": "Se déconnecter et retourner à /login"
+      },
+      "blog": {
+        "title": "Écrire un article de blog",
+        "description": "Bloguer"
+      }
+    },
+    "navbar": {
+      "tenant": "Compte",
+      "subscription": "Abonnement",
+      "billing": "Facturation",
+      "profile": "Profil",
+      "settings": "Paramètres",
+      "signOut": "Se déconnecter",
+      "members": "Membres"
+    },
+    "sidebar": {
+      "app": "Application",
+      "admin": "Administration",
+      "dashboard": "Tableau de bord",
+      "settings": "Paramètres",
+      "logs": "Journaux",
+      "setup": "Configuration",
+      "rolesAndPermissions": "Rôles et Permissions",
+      "accountsAndUsers": "Comptes et Utilisateurs"
+    },
+    "subscription": {
+      "limits": {
+        "title": "Limits",
+        "description": "Sélectionnez un plan d'abonnement selon vos besoins."
+      },
+      "features": {
+        "title": "Features and limits",
+        "description": "Fonctionnalités incluses dans votre abonnement."
+      },
+      "invoices": {
+        "title": "Factures",
+        "description": "Téléchargez vos factures.",
+        "upcoming": "Prochaine facture",
+        "amount": "Montant",
+        "currency": "Devise",
+        "items": "Articles",
+        "paidAt": "Payé le",
+        "receipt": "Reçu",
+        "status": {
+          "deleted": "Supprimé",
+          "draft": "Brouillon",
+          "open": "Ouvert",
+          "paid": "Payé",
+          "uncollectible": "Irrécouvrable",
+          "void": "Annulé"
+        }
+      },
+      "payments": {
+        "title": "Paiements",
+        "status": {
+          "canceled": "Annulé",
+          "processing": "En cours",
+          "requires_action": "Nécessite une action",
+          "requires_capture": "Nécessite une capture",
+          "requires_confirmation": "Nécessite une confirmation",
+          "requires_payment_method": "Nécessite un moyen de paiement",
+          "succeeded": "Réussi"
+        }
+      },
+      "paymentMethods": {
+        "title": "Moyens de paiement",
+        "description": "Ajoutez un moyen de paiement à votre compte.",
+        "card": "Carte",
+        "cards": "Cartes",
+        "brand": "Marque",
+        "country": "Pays",
+        "expiration": "Expiration",
+        "expMonth": "Mois d'expiration",
+        "expYear": "Année d'expiration",
+        "last4": "4 derniers chiffres",
+        "delete": "Supprimer le moyen de paiement"
+      },
+      "billing": {
+        "title": "Facturation",
+        "description": "Mettez à jour vos informations de facturation."
+      },
+      "errors": {
+        "limitReached": "Limite atteinte",
+        "limitReachedUsers": "Vous avez atteint la limite de membres, mettez à niveau votre abonnement.",
+        "limitReachedContracts": "Vous avez atteint la limite de contrats ({{0}}), mettez à niveau votre abonnement."
+      }
+    },
+    "users": {
+      "selectAtLeastOne": "Sélectionnez au moins un utilisateur",
+      "select": "Sélectionner des utilisateurs",
+      "empty": "Il n'y a pas d'utilisateurs",
+      "accountsAndRoles": "Comptes et Rôles",
+      "undefinedRoles": "Rôles non définis",
+      "logs": {
+        "empty": "Il n'y a pas d'événements utilisateur"
+      }
+    },
+    "dashboard": {
+      "summary": "Résumé"
+    },
+    "tenants": {
+      "empty": "Il n'y a pas de comptes",
+      "select": "Sélectionner un compte",
+      "youBelongToOne": "Vous appartenez à un compte",
+      "youBelongToMany": "Vous appartenez à {{0}} comptes",
+      "create": {
+        "title": "Créer un compte",
+        "headline": "Vous serez le propriétaire"
+      },
+      "members": {
+        "noMembers": "Aucun membre trouvé",
+        "noMembersFoundIn": "Aucun membre trouvé",
+        "invitationSent": "Invitation envoyée",
+        "invitationDescription": "Une invitation a été envoyée à {{0}} en tant que {{1}}."
+      },
+      "subscription": {
+        "plan": "Forfait",
+        "price": "Prix",
+        "starts": "Début",
+        "ends": "Se termine",
+        "isTrial": "Est un essai",
+        "status": "Statut",
+        "members": "Membres",
+        "storage": "Stockage"
+      },
+      "actions": {
+        "deleted": "Organisation supprimée."
+      }
+    }
+  },
+  "admin": {
+    "title": "Administration",
+    "switchToApp": "Aller vers l'application",
+    "switchToAdmin": "Aller vers l'administration",
+    "pricing": {
+      "title": "Plans tarifaires",
+      "new": "Nouveau plan tarifaire",
+      "edit": "Modifier le plan tarifaire",
+      "i18n": "Traduction i18n",
+      "thesePricesAreFromFiles": "Ce sont des prix de démonstration, personnalisez-les dans le fichier plans.server.ts.",
+      "noPricesInDatabase": "Il n'y a pas de prix. Connectez-vous en tant qu'administrateur et configurez les plans et les prix.",
+      "noPricesConfigured": "Aucun prix n'est configuré.",
+      "generateFromFiles": "Cliquez ici pour générer les plans."
+    },
+    "tenants": {
+      "title": "Comptes",
+      "overview": "Vue d'ensemble",
+      "profile": {
+        "title": "Profil"
+      },
+      "subscription": {
+        "title": "Abonnement"
+      }
+    },
+    "users": {
+      "deleteWarning": "AVERTISSEMENT : Si l'utilisateur est propriétaire de l'organisation, l'abonnement sera annulé et l'organisation sera supprimée. Vous ne pouvez pas annuler cette action.",
+      "setRoles": "Définir les rôles",
+      "setAdminRoles": "Définir les rôles d'administration"
+    },
+    "navigation": {
+      "title": "Navigation",
+      "menu": "Menu",
+      "url": "URL",
+      "icon": "Icône",
+      "sysadmin": "Administrateur système"
+    },
+    "components": {
+      "title": "Composants",
+      "headline": "Quelques composants utilisés dans l'application"
+    },
+    "setup": {
+      "title": "Configuration",
+      "headline": "Configurez votre application",
+      "description": "Générez vos plans tarifaires et créez vos modèles d'e-mails"
+    },
+    "emails": {
+      "title": "Modèles d'e-mails",
+      "name": "Nom",
+      "alias": "Alias",
+      "subject": "Objet",
+      "created": "Créé",
+      "createAll": "Tout créer",
+      "noEmails": "Aucun modèle d'e-mail",
+      "noEmailsDescription": "Configurez-les dans le dossier public/emails et définissez la valeur POSTMARK_SERVER_TOKEN.",
+      "sendTest": "Envoyer un test",
+      "notSaved": "Ces modèles d'e-mails ne sont pas sauvegardés, ils sont chargés depuis : public/emails.",
+      "generateFromFiles": "Cliquez ici pour les créer"
+    }
+  },
+  "account": {
+    "shared": {
+      "email": "E-mail",
+      "password": "Mot de passe",
+      "passwordMismatch": "Les mots de passe ne correspondent pas",
+      "signIn": "Connexion",
+      "signUp": "S'inscrire",
+      "name": "Nom",
+      "fullName": "Nom complet",
+      "companyPlaceholder": "Entreprise",
+      "firstNamePlaceholder": "Prénom",
+      "lastNamePlaceholder": "Nom de famille",
+      "tenantSlugPlaceholder": "mon-entreprise",
+      "usernameSlugPlaceholder": "Nom d'utilisateur"
+    },
+    "session": {
+      "impersonating": "Vous usurpez l'identité de {{0}} depuis votre compte {{1}}",
+      "logout": "Se déconnecter"
+    },
+    "login": {
+      "title": "Connexion",
+      "headline": "Bon retour",
+      "button": "Connexion",
+      "orRegister": "Cliquez ici pour vous inscrire",
+      "forgot": "Mot de passe oublié ?",
+      "createTestAccount": "Créer un compte de test.",
+      "useTestAccount": "Ou utilisez les identifiants suivants :",
+      "errors": {
+        "passwordMissmatch": "Les mots de passe ne correspondent pas"
+      }
+    },
+    "register": {
+      "title": "Créez votre compte",
+      "setup": "Configurez votre compte",
+      "successTitle": "Inscription réussie",
+      "successText": "Vous vous êtes inscrit avec succès, veuillez vérifier votre e-mail pour confirmer votre compte (vérifiez les dossiers spam ou promotions).",
+      "startTrial": "Commencez l'essai de {{0}} jours",
+      "confirmPassword": "Confirmez le mot de passe",
+      "clickHereToLogin": "Ou cliquez ici pour vous connecter",
+      "viewPricing": "Voir les plans tarifaires",
+      "personalInfo": "Compte",
+      "firstName": "Prénom",
+      "lastName": "Nom de famille",
+      "organization": "Organisation",
+      "invalidCoupon": "Coupon invalide",
+      "termsAndConditions": "conditions générales",
+      "privacyPolicy": "politique de confidentialité",
+      "alreadyRegistered": "Déjà inscrit ?",
+      "bySigningUp": "En vous inscrivant, vous acceptez nos",
+      "andOur": "et notre",
+      "acceptTerms": "J'accepte les conditions générales",
+      "prompts": {
+        "register": {
+          "title": "Créer un compte",
+          "description": "Vous vous inscrirez avec le forfait {{0}}."
+        }
+      },
+      "resendEmail": "Renvoyer l'e-mail",
+      "errors": {
+        "priceNotInDatabase": "Forfait sélectionné mais absent de la base de données",
+        "priceNotSelected": "Veuillez sélectionner un forfait",
+        "acceptTermsAndConditions": "Pour créer un compte, vous devez accepter les conditions générales.",
+        "invalidEmail": "E-mail invalide",
+        "passwordRequired": "Le mot de passe est requis",
+        "organizationRequired": "L'organisation est requise",
+        "nameRequired": "Le nom est requis",
+        "firstNameRequired": "Le prénom est requis",
+        "lastNameRequired": "Le nom de famille est requis",
+        "blacklist": {
+          "email": "Cet e-mail est sur liste noire",
+          "domain": "Ce domaine est sur liste noire",
+          "ip": "Cette adresse IP est sur liste noire"
+        }
+      },
+      "password": "Mot de passe"
+    },
+    "reset": {
+      "title": "Réinitialiser le mot de passe",
+      "headline": "Entrez votre e-mail et nous vous enverrons un lien pour réinitialiser votre mot de passe",
+      "button": "Réinitialiser le mot de passe",
+      "resetSuccess": "Mot de passe réinitialisé",
+      "emailSent": "Si l'e-mail existe dans notre système, vous recevrez un e-mail avec les instructions pour réinitialiser votre mot de passe (vérifiez les dossiers SPAM ou promotions)."
+    },
+    "newPassword": {
+      "title": "Définir un nouveau mot de passe",
+      "button": "Mettre à jour le mot de passe"
+    },
+    "forgot": {
+      "title": "Mot de passe oublié",
+      "rememberedPassword": "Vous souvenez-vous de votre mot de passe ?",
+      "backToLogin": "Retour à la connexion",
+      "enterPassword": "Entrez votre mot de passe pour vous connecter"
+    },
+    "join": {
+      "title": "Demande de participation"
+    },
+    "invitation": {
+      "title": "Invitation",
+      "youWereInvited": "vous avez été invité à rejoindre",
+      "requestAccess": "Demander l'accès pour rejoindre",
+      "button": "Accepter l'invitation",
+      "anotherEmail": "Cliquez ici pour vous déconnecter et rejoindre avec un autre utilisateur",
+      "successTitle": "Demande d'accès envoyée !",
+      "successText": "Votre demande d'accès a été envoyée à l'administrateur, si elle est acceptée, vous recevrez un e-mail de bienvenue (veillez à vérifier les dossiers spam ou promotions)",
+      "acceptedUser": "👋 Bienvenue sur {{0}}"
+    },
+    "verify": {
+      "title": "Vérifiez votre compte",
+      "button": "Vérifier et continuer",
+      "emailSent": "Veuillez vérifier votre e-mail pour confirmer votre compte (y compris les dossiers SPAM et promotions).",
+      "invalidLink": "Lien de vérification invalide"
+    },
+    "tenant": {
+      "onlyAdmin": "Seuls les administrateurs ou propriétaires peuvent effectuer cette opération"
+    }
+  },
+  "models": {
+    "entity": {
+      "object": "Entité",
+      "plural": "Entités",
+      "name": "Nom",
+      "slug": "Slug",
+      "order": "Ordre",
+      "prefix": "Préfixe",
+      "title": "Titre",
+      "titlePlural": "Pluriel",
+      "properties": "Propriétés",
+      "isAutogenerated": "CRUD sans code",
+      "hasApi": "Dispose d'une API",
+      "icon": "Icône",
+      "active": "Actif",
+      "showInSidebar": "Afficher dans la barre latérale",
+      "hasTags": "Dispose de tags",
+      "hasComments": "Dispose de commentaires",
+      "hasTasks": "Dispose de tâches",
+      "hasActivity": "Dispose d'activité",
+      "hasBulkDelete": "Dispose de suppression groupée",
+      "hasViews": "Dispose de vues",
+      "rows": "Lignes",
+      "limits": "Limites",
+      "permissions": "Permissions",
+      "features": "Fonctionnalités",
+      "type": "Type",
+      "templates": "Modèles"
+    },
+    "property": {
+      "object": "Propriété",
+      "plural": "Propriétés",
+      "order": "Ordre",
+      "name": "Nom",
+      "title": "Titre",
+      "type": "Type",
+      "subtype": "Sous-type",
+      "formula": "Formule",
+      "parent": "Propriété parent",
+      "isDefault": "Est une propriété par défaut",
+      "isRequired": "Requis",
+      "isHidden": "Masqué",
+      "isDisplay": "Afficher",
+      "isReadOnly": "Lecture seule",
+      "showInCreate": "Afficher dans le formulaire de création",
+      "canUpdate": "Peut être mis à jour",
+      "options": "Options",
+      "children": "Enfants",
+      "values": "Valeurs",
+      "defaultProperties": {
+        "title": "Propriétés par défaut",
+        "show": "Afficher les propriétés par défaut",
+        "hide": "Masquer les propriétés par défaut"
+      },
+      "actions": {
+        "add": "Ajouter une propriété personnalisée"
+      }
+    },
+    "relationship": {
+      "object": "Relation",
+      "plural": "Relations",
+      "from": "Parent",
+      "to": "Enfant",
+      "multiple": "Multiple",
+      "required": "Requis",
+      "parents": "Parents",
+      "children": "Enfants"
+    },
+    "propertyAttribute": {
+      "object": "Attribut",
+      "plural": "Attributs",
+      "pattern": "Modèle",
+      "min": "Minimum",
+      "max": "Maximum",
+      "step": "Étape",
+      "rows": "Lignes",
+      "defaultValue": "Valeur par défaut",
+      "maxSize": "Taille maximale (en Mo)",
+      "acceptFileTypes": "Types de fichiers acceptés",
+      "uppercase": "Majuscules",
+      "lowercase": "Minuscules",
+      "hintText": "Texte d'indication",
+      "helpText": "Texte d'aide",
+      "placeholder": "Espace réservé",
+      "icon": "Icône",
+      "editor": "Éditeur",
+      "editorLanguage": "Langage de l'éditeur",
+      "editorSize": "Taille de l'éditeur",
+      "columns": "Colonnes",
+      "group": "Groupe",
+      "format": "Format",
+      "separator": "Séparateur",
+      "selectOptions": "Sélectionner des options",
+      "password": "Mot de passe"
+    },
+    "workflow": {
+      "object": "Flux de travail",
+      "plural": "Flux de travail"
+    },
+    "row": {
+      "object": "Ligne",
+      "plural": "Lignes",
+      "order": "Ordre",
+      "folio": "Folio",
+      "visibility": "Visibilité",
+      "entity": "Entité",
+      "tenant": "Compte",
+      "createdAt": "Créé le",
+      "createdBy": "Créé par",
+      "comments": "Commentaires",
+      "permissions": "Permissions",
+      "tags": "Tags",
+      "tasks": "Tâches"
+    },
+    "rowComment": {
+      "object": "Commentaire",
+      "plural": "Commentaires",
+      "parentCommentId": "Commentaire parent",
+      "reply": "Répondre",
+      "replies": "Réponses"
+    },
+    "rowTask": {
+      "object": "Tâche",
+      "plural": "Tâches",
+      "completed": "Terminé",
+      "completedAt": "Terminé le"
+    },
+    "tag": {
+      "object": "Tag",
+      "plural": "Tags"
+    },
+    "post": {
+      "object": "Article de blog",
+      "plural": "Articles de blog",
+      "slug": "Slug",
+      "title": "Titre",
+      "description": "Description",
+      "date": "Date",
+      "image": "Image de couverture",
+      "content": "Contenu",
+      "markdown": "Syntaxe Markdown",
+      "readingTime": "Temps de lecture",
+      "published": "Publié",
+      "author": "Auteur",
+      "category": "Catégorie",
+      "tags": "Tags"
+    },
+    "tenant": {
+      "object": "Compte",
+      "plural": "Comptes",
+      "subscription": "Abonnement",
+      "name": "Nom",
+      "slug": "Slug",
+      "users": "Utilisateurs du compte"
+    },
+    "apiKey": {
+      "object": "Clé API",
+      "plural": "Clés API",
+      "key": "Clé",
+      "alias": "Alias",
+      "usage": "Utilisation",
+      "max": "Maximum",
+      "create": "Créer",
+      "read": "Lire",
+      "update": "Mettre à jour",
+      "delete": "Supprimer",
+      "active": "Actif",
+      "expires": "Date d'expiration",
+      "logs": "Journaux"
+    },
+    "apiCall": {
+      "object": "Appel API",
+      "plural": "Appels API"
+    },
+    "credit": {
+      "object": "Crédit",
+      "plural": "Crédits",
+      "type": "Type",
+      "amount": "Montant",
+      "resource": "Ressource",
+      "whatIs": "Qu'est-ce qu'un crédit ?",
+      "info": "En envoyant un message via votre ChatGPT personnalisé, vous utiliseriez 3 crédits.",
+      "remaining": "{{0}} crédits restants",
+      "unlimited": "Crédits illimités",
+      "empty": "Aucun crédit restant"
+    },
+    "apiKeyLog": {
+      "object": "Journal API",
+      "plural": "Journaux API",
+      "method": "Méthode",
+      "params": "Paramètres",
+      "body": "Corps",
+      "ip": "IP",
+      "endpoint": "Point de terminaison",
+      "status": "Statut",
+      "error": "Erreur"
+    },
+    "user": {
+      "object": "Utilisateur",
+      "plural": "Utilisateurs",
+      "email": "E-mail",
+      "firstName": "Prénom",
+      "lastName": "Nom de famille",
+      "role": "Rôle",
+      "tenants": "Comptes",
+      "impersonate": "Usurper l'identité",
+      "signUpMethod": "Méthode d'inscription",
+      "username": "Nom d'utilisateur"
+    },
+    "blacklist": {
+      "object": "Liste noire",
+      "plural": "Listes noires",
+      "type": "Type",
+      "value": "Valeur",
+      "registerAttempts": "Tentatives d'inscription",
+      "types": {
+        "email": "E-mail",
+        "domain": "Domaine",
+        "ip": "Adresse IP"
+      }
+    },
+    "ipAddress": {
+      "object": "Adresse IP",
+      "plural": "Adresses IP"
+    },
+    "tenantIpAddress": {
+      "object": "Adresse IP",
+      "plural": "Adresses IP",
+      "fromUrl": "Depuis l'URL"
+    },
+    "role": {
+      "object": "Rôle",
+      "plural": "Rôles",
+      "order": "Ordre",
+      "name": "Nom",
+      "description": "Description",
+      "isDefault": "Est par défaut",
+      "type": "Type",
+      "assignToNewUsers": "Attribuer aux nouveaux utilisateurs",
+      "permissions": "Permissions",
+      "adminRoles": "Utilisateurs admin",
+      "userRoles": "Utilisateurs de l'application"
+    },
+    "permission": {
+      "object": "Permission",
+      "plural": "Permissions",
+      "order": "Ordre",
+      "name": "Nom",
+      "description": "Description",
+      "isDefault": "Est par défaut",
+      "type": "Type",
+      "userRoles": "Rôles utilisateur",
+      "userPermissions": "Permissions utilisateur",
+      "inRoles": "Dans les rôles"
+    },
+    "group": {
+      "object": "Groupe",
+      "plural": "Groupes",
+      "name": "Nom",
+      "description": "Description",
+      "color": "Couleur"
+    },
+    "log": {
+      "object": "Journal",
+      "plural": "Journaux",
+      "action": "Action",
+      "details": "Détails",
+      "url": "URL",
+      "method": "Méthode"
+    },
+    "event": {
+      "object": "Événement",
+      "plural": "Événements",
+      "eventsAndWebhooks": "Événements et Webhooks",
+      "name": "Nom",
+      "data": "Données",
+      "resource": "Ressource",
+      "attempts": "Tentatives de Webhook",
+      "description": "Description"
+    },
+    "webhook": {
+      "object": "Webhook",
+      "plural": "Webhooks"
+    },
+    "webhookAttempt": {
+      "object": "Tentative de Webhook",
+      "plural": "Tentatives de Webhook",
+      "endpoint": "Point de terminaison",
+      "success": "Succès",
+      "status": "Statut",
+      "message": "Message",
+      "body": "Corps",
+      "startedAt": "Démarré le",
+      "finishedAt": "Terminé le"
+    },
+    "subscriptionProduct": {
+      "object": "Abonnement",
+      "plural": "Abonnements",
+      "serviceId": "ID Stripe",
+      "order": "Ordre",
+      "level": "Niveau",
+      "title": "Titre",
+      "description": "Description",
+      "model": "Modèle de tarification",
+      "public": "Public",
+      "badge": "Badge",
+      "groupTitle": "Titre du groupe",
+      "groupDescription": "Description du groupe",
+      "status": "Statut",
+      "custom": "Plan personnalisé",
+      "billingAddressCollection": "Collection d'adresse de facturation"
+    },
+    "subscriptionFeature": {
+      "object": "Fonctionnalité",
+      "plural": "Fonctionnalités",
+      "order": "Ordre",
+      "title": "Titre",
+      "name": "Nom",
+      "type": "Type",
+      "value": "Valeur"
+    },
+    "email": {
+      "object": "E-mail",
+      "plural": "E-mails",
+      "messageId": "ID",
+      "type": "Type",
+      "date": "Date",
+      "subject": "Objet",
+      "from": "De",
+      "fromEmail": "E-mail de l'expéditeur",
+      "fromName": "Nom de l'expéditeur",
+      "to": "À",
+      "toEmail": "E-mail du destinataire",
+      "toName": "Nom du destinataire",
+      "textBody": "Corps du texte",
+      "htmlBody": "Corps HTML",
+      "cc": "CC",
+      "attachments": "Pièces jointes",
+      "inboundEmails": "E-mails entrants",
+      "outboundEmail": "E-mail sortant",
+      "outboundEmails": "E-mails sortants"
+    },
+    "contact": {
+      "object": "Contact",
+      "plural": "Contacts",
+      "status": "Statut",
+      "email": "E-mail",
+      "firstName": "Prénom",
+      "lastName": "Nom de famille",
+      "phone": "Téléphone",
+      "company": "Entreprise",
+      "title": "Titre"
+    },
+    "opportunity": {
+      "object": "Opportunité",
+      "plural": "Opportunités",
+      "contact": "Contact",
+      "name": "Nom",
+      "status": "Statut",
+      "value": "Valeur",
+      "subscriptionPrice": "Prix de l'abonnement"
+    },
+    "contract": {
+      "object": "Contrat",
+      "plural": "Contrats",
+      "name": "Nom",
+      "description": "Description",
+      "file": "Fichier PDF",
+      "status": "Statut",
+      "members": "Membres",
+      "activity": "Activité"
+    },
+    "employee": {
+      "object": "Employé",
+      "plural": "Employés",
+      "firstName": "Prénom",
+      "lastName": "Nom de famille",
+      "email": "E-mail",
+      "fullName": "Nom complet"
+    },
+    "subscription": {
+      "object": "Abonnement",
+      "plural": "Abonnements",
+      "tenant": "Compte",
+      "product": "Produit",
+      "status": "Statut",
+      "startDate": "Date de début",
+      "endDate": "Date de fin",
+      "cancelledAt": "Annulé le",
+      "endsAt": "Se termine le",
+      "period": "Période",
+      "quantity": "Quantité",
+      "prices": "Prix",
+      "price": "Prix"
+    },
+    "tenantType": {
+      "object": "Type de compte",
+      "plural": "Types de compte",
+      "inAccounts": "Dans les comptes"
+    },
+    "view": {
+      "object": "Vue",
+      "plural": "Vues",
+      "type": "Type",
+      "appliesTo": "S'applique à",
+      "tenant": "Compte",
+      "user": "Utilisateur",
+      "layout": "Mise en page",
+      "order": "Ordre",
+      "name": "Nom",
+      "title": "Titre",
+      "pageSize": "Taille de page",
+      "isDefault": "Est par défaut",
+      "isSystem": "Est système",
+      "properties": "Propriétés",
+      "filters": "Filtres",
+      "sort": "Trier",
+      "columns": "Colonnes",
+      "groupByProperty": "Grouper par propriété",
+      "types": {
+        "default": "Défaut",
+        "tenant": "Compte",
+        "user": "Utilisateur",
+        "system": "Système"
+      },
+      "actions": {
+        "create": "Ajouter une vue",
+        "update": "Mettre à jour la vue",
+        "delete": "Supprimer la vue"
+      }
+    },
+    "portal": {
+      "object": "Portail",
+      "plural": "Portails",
+      "subdomain": "Sous-domaine",
+      "domain": "Domaine",
+      "title": "Titre",
+      "description": "Description",
+      "logo": "Logo",
+      "logoDark": "Logo (mode sombre)",
+      "icon": "Icône",
+      "iconDark": "Icône (mode sombre)",
+      "favicon": "Favicon",
+      "image": "Image",
+      "published": "Publié",
+      "pricing": "Tarification",
+      "users": "Utilisateurs",
+      "analytics": "Analytiques",
+      "themeColor": "Couleur du thème",
+      "themeScheme": "Schéma du thème",
+      "seoTitle": "Titre SEO",
+      "seoDescription": "Description SEO",
+      "seoImage": "Image SEO",
+      "seoTwitterSite": "Site Twitter",
+      "seoTwitterCreator": "Créateur Twitter",
+      "template": "Modèle",
+      "templates": "Modèles",
+      "actions": {
+        "new": {
+          "title": "Nouveau portail",
+          "description": "Créer un nouveau portail"
+        }
+      },
+      "pages": {
+        "object": "Page",
+        "plural": "Pages",
+        "pricing": "Tarification",
+        "privacyPolicy": "Politique de confidentialité",
+        "termsAndConditions": "Conditions générales",
+        "blog": "Blog",
+        "about": "À propos",
+        "home": "Accueil",
+        "newsletter": "Lettre d'information",
+        "contact": "Contact"
+      }
+    },
+    "domain": {
+      "object": "Domaine",
+      "plural": "Domaines",
+      "custom": "Domaine personnalisé",
+      "recordName": "Nom de l'enregistrement",
+      "recordType": "Type d'enregistrement",
+      "recordValue": "Valeur de l'enregistrement",
+      "verification": {
+        "title": "Vérification du domaine",
+        "description": "Pour vérifier la propriété du domaine, ajoutez ces enregistrements DNS à votre fournisseur de domaine."
+      },
+      "notVerified": {
+        "title": "Domaine non vérifié",
+        "description": "Après avoir ajouté les enregistrements, cliquez sur le bouton ci-dessous pour vérifier.",
+        "cta": "Vérifier à nouveau"
+      },
+      "verified": {
+        "title": "Domaine vérifié",
+        "description": "Les modifications peuvent prendre jusqu'à 24 heures pour prendre effet.",
+        "cta": "Cliquez ici pour visiter votre site."
+      }
+    },
+    "jsonProperty": {
+      "object": "Propriété personnalisée",
+      "plural": "Propriétés personnalisées",
+      "name": "Nom",
+      "title": "Titre",
+      "type": "Type",
+      "required": "Requis",
+      "defaultValue": "Valeur par défaut",
+      "types": {
+        "string": "Chaîne",
+        "number": "Nombre",
+        "boolean": "Booléen",
+        "image": "Image",
+        "date": "Date",
+        "select": "Sélectionner",
+        "multiselect": "Multi-sélection",
+        "wysiwyg": "Éditeur de texte",
+        "monaco": "Éditeur de code",
+        "markdown": "Markdown",
+        "content": "Contenu"
+      },
+      "actions": {
+        "add": "Ajouter une propriété personnalisée"
+      }
+    },
+    "attribute": {
+      "object": "Attribut",
+      "plural": "Attributs"
+    }
+  },
+  "settings": {
+    "title": "Paramètres",
+    "reset": "Réinitialiser tous les paramètres",
+    "admin": {
+      "profile": {
+        "title": "Profil",
+        "description": "Mettre à jour vos informations personnelles"
+      },
+      "general": {
+        "title": "Paramètres généraux",
+        "description": "Configurer l'application"
+      },
+      "tenants": {
+        "title": "Comptes",
+        "description": "Configurer les types de comptes, relations, permissions...",
+        "types": {
+          "title": "Types de comptes",
+          "description": "Configurer les types de comptes"
+        }
+      },
+      "seo": {
+        "title": "SEO",
+        "description": "Titre, description... balises meta"
+      },
+      "authentication": {
+        "title": "Authentification",
+        "description": "Flux et règles d'inscription"
+      },
+      "analytics": {
+        "title": "Analytiques",
+        "description": "Journaliser les vues de page et les événements"
+      },
+      "pricing": {
+        "title": "Plans tarifaires",
+        "description": "Configurer les plans tarifaires de l'application"
+      },
+      "transactionalEmails": {
+        "title": "E-mails",
+        "description": "Configurer les modèles d'e-mails"
+      },
+      "internationalization": {
+        "title": "Internationalisation",
+        "description": "Configurer les langues de l'application"
+      },
+      "cookies": {
+        "title": "Cookies",
+        "description": "Configurer le consentement des cookies"
+      },
+      "cache": {
+        "title": "Cache",
+        "description": "Gérer les clés de cache"
+      },
+      "danger": {
+        "title": "Danger",
+        "description": "Réinitialiser tous les paramètres"
+      }
+    },
+    "profile": {
+      "profileTitle": "Profil",
+      "profileText": "Modifier votre profil utilisateur",
+      "securityTitle": "Sécurité",
+      "name": "Nom",
+      "firstName": "Prénom",
+      "lastName": "Nom de famille",
+      "type": "Rôle de compte",
+      "types": {
+        "OWNER": "Propriétaire",
+        "ADMIN": "Administrateur",
+        "MEMBER": "Membre"
+      },
+      "permissions": {
+        "OWNER": "Contrôle le compte, son abonnement et ses utilisateurs",
+        "ADMIN": "Gère l'abonnement et les utilisateurs",
+        "MEMBER": "Utilisateur normal"
+      },
+      "status": {
+        "PENDING_INVITATION": "Invitation en attente",
+        "PENDING_ACCEPTANCE": "En attente d'acceptation",
+        "ACTIVE": "Actif",
+        "INACTIVE": "Inactif"
+      },
+      "password": "Mot de passe",
+      "passwordConfirm": "Confirmer le mot de passe",
+      "passwordCurrent": "Mot de passe actuel",
+      "profileUpdated": "Profil enregistré",
+      "changePassword": "Changer de mot de passe",
+      "cannotChangePassword": "Vous vous êtes inscrit sans mot de passe, vous n'en avez donc pas",
+      "errors": {
+        "cannotDeleteAdmin": "Vous ne pouvez pas supprimer un administrateur système"
+      }
+    },
+    "preferences": {
+      "title": "Préférences",
+      "description": "Modifier vos préférences",
+      "language": "Langue",
+      "layouts": "Mises en page"
+    },
+    "danger": {
+      "title": "Zone de danger",
+      "description": "Soyez prudent",
+      "deleteAccount": "Supprimer le compte",
+      "confirmDelete": "Nous allons supprimer votre compte",
+      "confirmDeleteTenant": "Le compte sera supprimé avec toutes ses données",
+      "deleteYourAccount": "Supprimer votre compte",
+      "onceYouDelete": "Une fois votre compte supprimé, vous perdrez toutes les données associées"
+    },
+    "tenant": {
+      "title": "Compte",
+      "general": "Paramètres généraux",
+      "generalDescription": "Mettre à jour les paramètres de votre compte",
+      "updated": "Compte mis à jour",
+      "create": "Créer un nouveau compte",
+      "createDescription": "Créer un nouveau compte pour séparer les données",
+      "createConfirm": "Créer un nouveau compte ?",
+      "payment": {
+        "title": "Détails de paiement",
+        "ending": "se terminant par",
+        "updated": "Détails de paiement mis à jour",
+        "notSet": "Aucun moyen de paiement défini, veuillez ajouter une carte de crédit ou de débit"
+      }
+    },
+    "subscription": {
+      "title": "Abonnement",
+      "description": "Mettre à jour ou annuler votre forfait.",
+      "noSubscription": "Aucun abonnement actif",
+      "notSubscribed": "Vous n'avez pas d'abonnement actif",
+      "notSubscribedDescription": "Veuillez sélectionner un forfait selon vos besoins",
+      "updated": "Abonnement mis à jour",
+      "alreadySubscribed": "Vous êtes déjà abonné",
+      "active": "Actif",
+      "cancelled": "Annulé",
+      "cancel": "Annuler",
+      "reactivate": "Réactiver",
+      "clickCancel": "Cliquez ici pour annuler",
+      "confirmCancel": "Êtes-vous sûr de vouloir annuler votre abonnement ?",
+      "canceled": "Abonnement annulé",
+      "current": "Abonnement actuel :",
+      "noActivePlan": "Vous n'avez pas de forfait actif",
+      "clickHereToSubscribe": "Cliquez ici pour vous abonner",
+      "viewAllProducts": "Voir tous les forfaits et prix",
+      "ends": "Se termine",
+      "endsAt": "Se termine le",
+      "ended": "Terminé",
+      "endedAt": "Terminé le",
+      "period": {
+        "current": "Période actuelle"
+      },
+      "update": {
+        "title": "Mettre à jour l'abonnement",
+        "description": "Changez votre abonnement pour obtenir plus de fonctionnalités."
+      },
+      "trial": {
+        "ends": "Fin de l'essai"
+      },
+      "plans": {
+        "select": "Sélectionner un forfait"
+      },
+      "errors": {
+        "selectPlan": "Sélectionner un forfait"
+      },
+      "goToSubscription": "Aller à mon abonnement",
+      "checkout": {
+        "invalid": "Session de paiement invalide",
+        "alreadyProcessed": "Session de paiement déjà traitée",
+        "invalidCustomer": "ID client invalide",
+        "success": {
+          "title": "Merci !",
+          "description": "Vous avez souscrit avec succès à {{0}}",
+          "goToSubscription": "Aller à mon abonnement"
+        }
+      }
+    },
+    "members": {
+      "title": "Membres",
+      "actions": {
+        "new": "Ajouter un membre",
+        "edit": "Modifier le membre",
+        "removeConfirm": "Êtes-vous sûr de vouloir supprimer {{0}} de ce compte ?"
+      }
+    }
+  },
+  "blog": {
+    "title": "Blog",
+    "headline": "Lisez les derniers articles.",
+    "published": "Publié",
+    "draft": "Brouillon",
+    "thisIsADraft": "Ceci est un brouillon",
+    "write": "Écrire",
+    "publish": "Publier",
+    "saveAndPreview": "Enregistrer et prévisualiser",
+    "new": "Nouvel article de blog",
+    "edit": "Modifier l'article de blog",
+    "previewMarkdown": "Prévisualiser Markdown",
+    "backToBlog": "Retour au blog",
+    "backToPosts": "Retour aux articles",
+    "errors": {
+      "authorRequired": "Auteur requis",
+      "categoryRequired": "Catégorie requise"
+    }
+  },
+  "entities": {
+    "fields": {
+      "NUMBER": "Nombre",
+      "TEXT": "Texte",
+      "DATE": "Date",
+      "USER": "Utilisateur",
+      "ROLE": "Rôle",
+      "ENTITY": "Entité",
+      "ID": "ID",
+      "SELECT": "Sélection unique",
+      "FORMULA": "Formule",
+      "MEDIA": "Média",
+      "BOOLEAN": "Booléen",
+      "MULTI_SELECT": "Sélection multiple",
+      "MULTI_TEXT": "Texte multiple",
+      "RANGE_NUMBER": "Plage de nombres",
+      "RANGE_DATE": "Plage de dates"
+    },
+    "subtypes": {
+      "singleLine": "Ligne unique",
+      "multiLine": "Ligne multiple",
+      "email": "E-mail",
+      "phone": "Téléphone",
+      "url": "URL",
+      "dropdown": "Liste déroulante",
+      "combobox": "Boîte combinée",
+      "radioGroupCards": "Cartes de groupe radio",
+      "checkboxCards": "Cartes de cases à cocher"
+    },
+    "defaultFields": {
+      "USER": "Créé par l'utilisateur",
+      "ROLE": "Créé par le rôle",
+      "ID": "ID"
+    },
+    "conditions": {
+      "equals": "Égal à",
+      "contains": "Contient",
+      "lt": "Inférieur à",
+      "lte": "Inférieur ou égal à",
+      "gt": "Supérieur à",
+      "gte": "Supérieur ou égal à",
+      "startsWith": "Commence par",
+      "endsWith": "Se termine par",
+      "in": "Dans",
+      "notIn": "Pas dans"
+    },
+    "errors": {
+      "selectNeedsAtLeastOneOption": "Ajouter au moins une option pour les champs de sélection",
+      "selectOptionCannotBeEmpty": "Les options de sélection ne peuvent pas être vides"
+    }
+  },
+  "api": {
+    "errors": {
+      "youDontBelong": "Vous n'appartenez pas à cette organisation",
+      "alreadyAdded": "Déjà ajouté",
+      "invalidCoupon": "Coupon invalide",
+      "couponInactive": "Coupon inactif",
+      "couponMaxRedeems": "La limite de codes de coupon a été atteinte",
+      "invalidStripeCustomerId": "ID client Stripe invalide",
+      "maxFileReached": "Taille maximale du fichier : 20 Mo",
+      "notLinked": "Vous n'avez pas accès à cette organisation",
+      "canBeModifiedByCreator": "Peut être modifié/supprimé uniquement par le créateur",
+      "cannotUpdateNotPending": "Ne peut pas être modifié si non en attente",
+      "cannotDeleteIfNotPending": "Ne peut pas être supprimé si non en attente",
+      "nameCannotBeEmpty": "Nom non spécifié",
+      "descriptionCannotBeEmpty": "Description non spécifiée",
+      "fileCannotBeEmpty": "Le fichier ne peut pas être vide",
+      "alreadyLinkedProvider": "Cette entreprise est déjà votre fournisseur",
+      "alreadyLinkedClient": "Cette entreprise est déjà votre client",
+      "invalidSubscription": "Abonnement invalide",
+      "noActiveSubscriptions": "Aucun abonnement récurrent actif",
+      "invalidCard": "Carte invalide",
+      "existingUser": "Utilisateur déjà dans l'organisation",
+      "maxNumberOfUsers": "Limite maximale d'utilisateurs atteinte",
+      "invalidPassword": "Identifiants invalides",
+      "invitationNotAvailable": "Invitation non disponible",
+      "notAvailable": "Non disponible",
+      "cannotBeWithoutOwner": "L'organisation ne peut pas être sans propriétaire",
+      "cannotBeWithoutMembers": "L'organisation ne peut pas être sans membres",
+      "userNotRegistered": "Utilisateur non enregistré",
+      "userAlreadyRegistered": "Utilisateur déjà enregistré",
+      "userAlreadyRegisteredEmailSent": "Utilisateur déjà enregistré, vérification par e-mail envoyée",
+      "userAlreadyVerified": "Utilisateur déjà vérifié",
+      "passwordMismatch": "Les mots de passe ne correspondent pas",
+      "invalidEmail": "E-mail invalide",
+      "invalidLinkInvitation": "Invitation invalide",
+      "notPendingLinkInvitation": "Invitation invalide",
+      "emailInvalidLinkInvitation": "E-mail d'invitation de liaison de compte invalide",
+      "tenantInvalidLinkInvitation": "Compte invalide dans l'invitation de liaison",
+      "cannotDeleteAdmin": "Vous ne pouvez pas supprimer un administrateur système",
+      "alreadyAMember": "Déjà membre",
+      "noChanges": "Aucun changement",
+      "noSubscription": "Aucun abonnement actif",
+      "noOrganizations": "Vous n'appartenez à aucune organisation"
+    }
+  },
+  "demo": {
+    "cannotDelete": "Impossible de supprimer dans l'environnement de démonstration",
+    "cannotUpdate": "Impossible de mettre à jour dans l'environnement de démonstration"
+  },
+  "docs": {
+    "title": "Docs"
+  },
+  "featureLimits": {
+    "reachedMaxLimit": "Vous avez atteint la limite ({{0}})",
+    "reachedMonthLimit": "Vous avez atteint la limite ce mois-ci ({{0}})",
+    "noSubscription": "Vous n'avez pas d'abonnement actif",
+    "notIncluded": "Non inclus dans votre forfait",
+    "upgradeSubscription": "Mettez à niveau votre abonnement pour obtenir cette fonctionnalité"
+  },
+  "cookies": {
+    "titleSmall": "Nous respectons votre vie privée.",
+    "title": "Nous respectons votre vie privée.",
+    "descriptionSmall": "En bref : Nous utilisons des cookies pour la sélection de la langue, le thème et les analyses.",
+    "description": "En bref : Nous utilisons des cookies pour la sélection de la langue, le thème et les analyses.",
+    "settings": "Paramètres des cookies",
+    "update": "Mettre à jour mes paramètres de cookies",
+    "accept": "Accepter les cookies",
+    "categories": {
+      "REQUIRED": {
+        "name": "Requis",
+        "description": "Ces cookies sont nécessaires pour le bon fonctionnement du site web."
+      },
+      "FUNCTIONAL": {
+        "name": "Fonctionnel",
+        "description": "Ces cookies permettent au site web d'offrir des fonctionnalités et une personnalisation améliorées."
+      },
+      "ANALYTICS": {
+        "name": "Analytiques",
+        "description": "Ces cookies sont utilisés pour nous aider à comprendre comment vous utilisez le site web."
+      },
+      "ADVERTISEMENT": {
+        "name": "Publicité",
+        "description": "Ces cookies peuvent être définis via notre site par nos partenaires publicitaires."
+      }
+    }
+  },
+  "analytics": {
+    "title": "Analytiques",
+    "description": "Vues de page et événements suivis pour {{0}}",
+    "overview": "Vue d'ensemble",
+    "pageViews": "Vues de page",
+    "uniqueVisitors": "Visiteurs uniques",
+    "liveVisitors": "Visiteurs en direct",
+    "events": "Événements",
+    "settings": "Paramètres",
+    "delete": "Supprimer toutes les données analytiques",
+    "deleted": "Supprimé",
+    "viewed": "Consulté",
+    "viewedAt": "Consulté à",
+    "route": "Route",
+    "url": "URL",
+    "action": "Action",
+    "category": "Catégorie",
+    "label": "Étiquette",
+    "value": "Valeur",
+    "visitor": "Visiteur",
+    "visitors": "Visiteurs",
+    "danger": {
+      "title": "Zone de danger",
+      "description": "Cela supprimera toutes les données analytiques. Cette action est irréversible.",
+      "reset": {
+        "title": "Réinitialiser les données",
+        "description": "Réinitialisez votre site web pour supprimer toutes les données historiques, y compris les visiteurs uniques, les vues de page et les événements."
+      }
+    }
+  },
+  "segments": {
+    "build": "Construire",
+    "manage": "Gérer",
+    "market": "Commercialiser"
+  },
+  "crm": {
+    "title": "CRM",
+    "settings": {
+      "title": "Paramètres",
+      "description": "Paramètres CRM"
+    }
+  },
+  "emailMarketing": {
+    "title": "Mail Marketing",
+    "campaign": "Campagne",
+    "campaigns": "Campagnes",
+    "newCampaign": "Nouvelle campagne",
+    "campaignDetails": "Détails de la campagne",
+    "template": "Modèle",
+    "templates": "Modèles",
+    "activity": "Activité",
+    "sendPreview": "Envoyer un aperçu",
+    "saveDraft": "Enregistrer le brouillon",
+    "sendCampaignPreviewToContact": "Envoyer un aperçu à 1 contact",
+    "sendCampaignPreviewToContacts": "Envoyer un aperçu à {{0}} contacts",
+    "sendCampaignToContact": "Envoyer à 1 contact",
+    "sendCampaignToContacts": "Envoyer à {{0}} contacts",
+    "confirmSend": "Envoyer la campagne",
+    "sendingToContacts": "Vous êtes sur le point d'envoyer cette campagne à {{0}} contacts. Êtes-vous sûr de vouloir continuer ?",
+    "overview": {
+      "avgOpenRate": "Taux d'ouverture moyen",
+      "avgClickRate": "Taux de clic moyen",
+      "totalSent": "Total d'e-mails envoyés"
+    },
+    "settings": {
+      "title": "Paramètres",
+      "description": "Paramètres de marketing par e-mail"
+    },
+    "senders": {
+      "object": "Expéditeur d'e-mail",
+      "plural": "Expéditeurs d'e-mails",
+      "provider": "Fournisseur",
+      "stream": "Flux",
+      "apiKey": "Clé API",
+      "fromEmail": "E-mail de l'expéditeur",
+      "fromName": "Nom de l'expéditeur",
+      "replyToEmail": "Répondre à l'e-mail"
+    }
+  },
+  "emails": {
+    "object": "E-mail",
+    "plural": "E-mails",
+    "subject": "Objet",
+    "from": "De",
+    "to": "À",
+    "sender": "Expéditeur",
+    "sent": "Envoyé",
+    "sentAt": "Envoyé à",
+    "delivered": "Livré",
+    "deliveredAt": "Livré à",
+    "bouncedAt": "Rejeté à",
+    "spamComplainedAt": "Signalé comme spam à",
+    "unsubscribedAt": "Désabonné à",
+    "openedAt": "Ouvert à",
+    "opens": "Ouvertures",
+    "clicks": "Clics",
+    "inboundEmail": "E-mail entrant",
+    "inboundEmails": "E-mails entrants",
+    "outboundEmail": "E-mail sortant",
+    "outboundEmails": "E-mails sortants",
+    "emailActivity": "Activité e-mail",
+    "recipient": "Destinataire",
+    "recipients": "Destinataires",
+    "recipientList": "Liste des destinataires"
+  },
+  "affiliates": {
+    "title": "Affiliés et recommandations",
+    "program": "Programme d'affiliation",
+    "description": "Devenez un affilié et gagnez de l'argent pour chaque paiement de vos recommandations.",
+    "signUp": "Devenir un affilié",
+    "how": {
+      "title": "Comment ça marche",
+      "description": "Nous offrons une commission de {{0}}% sur tous les paiements que vous nous recommandez. Cela signifie que si vous nous recommandez un client, vous recevrez {{0}}% du paiement ou de l'abonnement (aussi longtemps que le client est abonné chez nous durant la première année)."
+    }
+  },
+  "helpDesk": {
+    "title": "Support"
+  },
+  "notifications": {
+    "title": "Notifications"
+  },
+  "onboarding": {
+    "title": "Intégration",
+    "object": {
+      "plural": "Onboardings",
+      "title": "Titre",
+      "type": "Type",
+      "active": "Actif",
+      "filters": "Filtres",
+      "steps": "Étapes",
+      "candidates": "Candidats",
+      "sessions": {
+        "active": "Actif",
+        "started": "Démarré",
+        "completed": "Terminé",
+        "dismissed": "Rejeté"
+      },
+      "empty": {
+        "title": "Aucune intégration",
+        "description": "Créez des intégrations pour guider vos utilisateurs à travers l'application."
+      }
+    },
+    "session": {
+      "object": "Session",
+      "plural": "Sessions",
+      "user": "Utilisateur",
+      "tenant": "Compte",
+      "status": "Statut",
+      "startedAt": "Démarré le",
+      "completedAt": "Terminé le",
+      "dismissedAt": "Rejeté le",
+      "matches": "Correspondances de filtre",
+      "steps": "Étapes",
+      "actions": "Actions",
+      "activity": "Activité de session",
+      "empty": {
+        "title": "Aucune session",
+        "description": "Les sessions d'intégration apparaîtront ici."
+      }
+    },
+    "filter": {
+      "object": "Filtre",
+      "plural": "Filtres",
+      "type": "Type",
+      "operator": "Opérateur",
+      "value": "Valeur",
+      "matching": "Filtres correspondants",
+      "set": "Définir des filtres",
+      "empty": {
+        "title": "Aucun filtre",
+        "description": "Les filtres sont utilisés pour déterminer quels utilisateurs verront cette intégration."
+      }
+    },
+    "step": {
+      "object": "Étape",
+      "plural": "Étapes",
+      "title": "Titre",
+      "description": "Description",
+      "type": "Type",
+      "order": "Ordre",
+      "content": "Contenu",
+      "actions": "Actions",
+      "block": "Bloquer",
+      "set": "Définir des étapes",
+      "empty": {
+        "title": "Aucune étape",
+        "description": "Ajoutez des étapes à votre intégration."
+      }
+    },
+    "prompts": {
+      "activate": {
+        "title": "Activate onboarding",
+        "description": "Êtes-vous sûr de vouloir activer cette intégration ?"
+      },
+      "deactivate": {
+        "title": "Deactivate onboarding",
+        "description": "Êtes-vous sûr de vouloir désactiver cette intégration ?"
+      },
+      "deleteOnboarding": {
+        "title": "Delete onboarding",
+        "description": "Êtes-vous sûr de vouloir supprimer cette intégration ?"
+      },
+      "deleteSession": {
+        "title": "Delete session",
+        "description": "Êtes-vous sûr de vouloir supprimer cette session ?"
+      },
+      "updateSteps": {
+        "title": "Les sessions existantes ({{0}}) seront supprimées",
+        "description": "Toutes les sessions existantes seront supprimées, pensez à créer une nouvelle intégration. Êtes-vous sûr de vouloir continuer ?"
+      }
+    },
+    "errors": {
+      "missingInput": "Veuillez remplir tous les champs requis : {{0}}",
+      "cannotBeActivated": {
+        "title": "L'intégration ne peut pas être activée",
+        "description": "L'intégration doit avoir au moins 1 filtre et 1 étape pour être activée."
+      }
+    },
+    "gettingStarted": {
+      "title": "Commencer"
+    }
+  },
+  "featureFlags": {
+    "title": "Drapeaux de fonctionnalités",
+    "object": "Drapeau",
+    "plural": "Drapeaux",
+    "enabled": "Activé",
+    "filter": "Filtre",
+    "filters": "Filtres",
+    "noFilters": "Aucun filtre",
+    "triggers": "Déclencheurs",
+    "empty": {
+      "title": "Aucun drapeau de fonctionnalités",
+      "description": "Les drapeaux de fonctionnalités sont utilisés pour activer ou désactiver des fonctionnalités dans l'application.",
+      "demo": "Créez un drapeau de 'maintenance', activez-le et visitez la page de destination pour le voir en action."
+    },
+    "danger": {
+      "title": "Zone de danger",
+      "description": "Soyez prudent lors de la modification des drapeaux de fonctionnalités, vous pouvez casser l'application.",
+      "reset": {
+        "title": "Réinitialiser tous les drapeaux et événements",
+        "description": "Êtes-vous sûr de vouloir réinitialiser tous les drapeaux et événements ?"
+      }
+    }
+  },
+  "knowledgeBase": {
+    "title": "Base de connaissances",
+    "featuredArticles": "Articles à la une",
+    "layouts": {
+      "list": "Liste",
+      "articles": "Articles",
+      "grid": "Grille",
+      "docs": "Documents"
+    },
+    "category": {
+      "object": "Catégorie",
+      "plural": "Catégories"
+    },
+    "article": {
+      "object": "Article",
+      "plural": "Articles",
+      "featured": "À la une",
+      "new": "Nouvel article"
+    }
+  },
+  "pages": {
+    "title": "Pages",
+    "blocks": "Blocs",
+    "seo": "SEO",
+    "settings": "Paramètres",
+    "marketing": {
+      "title": "Marketing Pages"
+    },
+    "app": {
+      "title": "Application Pages"
+    },
+    "actions": {
+      "createDefault": "Créer par défaut"
+    },
+    "prompts": {
+      "delete": {
+        "title": "Delete page",
+        "confirm": "Êtes-vous sûr de vouloir supprimer cette page ?"
+      },
+      "resetBlocks": {
+        "title": "Reset blocks",
+        "confirm": "Êtes-vous sûr de vouloir réinitialiser tous les blocs par défaut ?"
+      }
+    }
+  },
+  "prompts": {
+    "object": "Invite",
+    "plural": "Invites",
+    "template": "Modèle",
+    "templates": "Modèles",
+    "builder": {
+      "title": "Générateur de flux d'invite",
+      "empty": {
+        "title": "Aucune invite",
+        "description": "Créez des modèles d'invite IA qui interagissent avec vos données."
+      }
+    }
+  },
+  "workflows": {
+    "title": "Workflows"
+  },
+  "feedback": {
+    "title": "Envoyer un retour",
+    "object": "Retour",
+    "plural": "Retours",
+    "description": "Nous aimerions avoir votre avis. Avez-vous des suggestions ou des demandes de fonctionnalités ?",
+    "placeholder": "J'aimerais voir...",
+    "message": "Message",
+    "send": "Envoyer un retour",
+    "sent": "Merci pour votre retour !",
+    "limitReached": "Vous avez atteint la limite de messages de retour aujourd'hui. Réessayez demain !",
+    "notLoggedIn": "Vous devez être connecté pour envoyer un retour."
+  },
+  "surveys": {
+    "title": "Sondages",
+    "object": "Sondage",
+    "description": "Votez sur de nouvelles fonctionnalités et aidez-nous à améliorer l'application.",
+    "submission": {
+      "object": "Soumission",
+      "plural": "Soumissions"
+    }
+  },
+  "widgets": {
+    "object": "Widget",
+    "plural": "Widgets",
+    "create": "Ajouter un widget",
+    "appearance": "Apparence",
+    "metadata": "Métadonnées"
+  }
+}
