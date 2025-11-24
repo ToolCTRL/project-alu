@@ -8,6 +8,14 @@ engines:
     exclude_paths:
       - 'prisma/migrations/**'
 
+  eslint:
+    enabled: true
+    exclude_patterns:
+      # Disable react-refresh rules for Remix routes (false positives)
+      - identifier: 'ESLint8_react-refresh_only-export-components'
+        paths:
+          - 'app/routes/**'
+
 exclude_paths:
   - '.bmad/**'
   - '.claude/**'
