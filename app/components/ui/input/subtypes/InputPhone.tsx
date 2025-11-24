@@ -36,33 +36,34 @@ interface Props {
   borderless?: boolean;
   autoFocus?: boolean;
 }
-export default function InputPhone({
-  name,
-  title,
-  withLabel = true,
-  defaultValue,
-  value,
-  setValue,
-  className,
-  classNameBg,
-  help,
-  disabled = false,
-  readOnly = false,
-  required = false,
-  minLength,
-  maxLength,
-  placeholder,
-  pattern,
-  hint,
-  button,
-  lowercase,
-  uppercase,
-  type = "text",
-  darkMode,
-  onBlur,
-  borderless,
-  autoFocus,
-}: Props) {
+export default function InputPhone(props: Props) {
+  const {
+    name,
+    title,
+    withLabel = true,
+    defaultValue,
+    value,
+    setValue,
+    className,
+    classNameBg,
+    help,
+    disabled = false,
+    readOnly = false,
+    required = false,
+    minLength,
+    maxLength,
+    placeholder,
+    pattern,
+    hint,
+    button,
+    lowercase,
+    uppercase,
+    type = "text",
+    darkMode,
+    onBlur,
+    borderless,
+    autoFocus,
+  } = props;
   // useImperativeHandle(ref, () => ({ input }));
   const input = useRef<HTMLInputElement>(null);
 

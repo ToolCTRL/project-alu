@@ -54,7 +54,7 @@ export default function PreviewTableSimple() {
             actions={[
               {
                 title: "View",
-                onClick: (_, item) => alert("Clicked: " + item.firstName),
+                onClick: (_, item) => { alert("Clicked: " + item.firstName); },
               },
             ]}
           ></TableSimple>

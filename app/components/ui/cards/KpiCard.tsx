@@ -11,7 +11,7 @@ export type KpiCardAction = {
   onClick?: () => void;
 };
 
-export type KpiCardProps = {
+export interface KpiCardProps {
   title: string;
   value: string;
   subtitle?: string;
@@ -27,7 +27,7 @@ export type KpiCardProps = {
   sparkline?: number[];
   className?: string;
   footnote?: string;
-};
+}
 
 export function KpiCard({ title, value, subtitle, delta, badge, icon, tone = "accent", actions, sparkline, className, footnote }: KpiCardProps) {
   const { handleMouseMove, handleMouseLeave } = use3DTilt({ maxAngle: 10 });

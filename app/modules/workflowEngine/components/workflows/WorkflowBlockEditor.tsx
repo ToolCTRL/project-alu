@@ -14,19 +14,8 @@ import WorkflowBlockErrors from "./misc/WorkflowBlockErrors";
 import InputCheckbox from "~/components/ui/input/InputCheckbox";
 import { Link, useParams } from "react-router";
 
-export default function WorkflowBlockEditor({
-  workflow,
-  block,
-  onBack,
-  onSaveBlock,
-  onAddingNextBlock,
-  onDeleteBlock,
-  onDeleteConnection,
-  onSelectedBlock,
-  onUpdateConditionsGroups,
-}: {
+interface WorkflowBlockEditorProps {
   workflow: WorkflowDto;
-
   block: WorkflowBlockDto;
   onBack: () => void;
   onSaveBlock: (block: WorkflowBlockDto) => void;
@@ -35,7 +24,10 @@ export default function WorkflowBlockEditor({
   onDeleteConnection: (connection: { fromBlockId: string; toBlockId: string }) => void;
   onSelectedBlock: (workflowBlock: WorkflowBlockDto | null) => void;
   onUpdateConditionsGroups: (blockId: string, conditionGroups: WorkflowConditionsGroupDto[]) => void;
-}) {
+}
+
+export default function WorkflowBlockEditor(props: WorkflowBlockEditorProps) {
+  const { workflow, block, onBack, onSaveBlock, onAddingNextBlock, onDeleteBlock, onDeleteConnection, onSelectedBlock, onUpdateConditionsGroups } = props;
   const workflowBlock = WorkflowBlockTypes.find((x) => x.value === block.type);
   const [errors, setErrors] = useState<string[]>([]);
   useEffect(() => {

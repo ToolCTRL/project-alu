@@ -55,28 +55,29 @@ function SetupStep({ item, index, total }: { item: SetupItem; index: number; tot
   );
 }
 
+const GRID_COLUMNS: Record<number, string> = {
+  1: "lg:grid-cols-3",
+  2: "lg:grid-cols-2",
+  3: "lg:grid-cols-3",
+  4: "lg:grid-cols-2",
+  5: "lg:grid-cols-3",
+  6: "lg:grid-cols-3",
+  7: "lg:grid-cols-4",
+  8: "lg:grid-cols-4",
+  9: "lg:grid-cols-3",
+  10: "lg:grid-cols-5",
+  11: "lg:grid-cols-4",
+  12: "lg:grid-cols-4",
+};
+
 export default function SetupSteps({ items }: Props) {
   const { t } = useTranslation();
+  const gridClass = GRID_COLUMNS[items.length] || "lg:grid-cols-3";
+
   return (
     <div>
       <h3 className="text-foreground font-medium leading-4">{t("onboarding.gettingStarted.title")}</h3>
-      <ul
-        className={clsx(
-          "mt-3 grid grid-cols-1 gap-4",
-          items.length === 1 && "lg:grid-cols-3",
-          items.length === 2 && "lg:grid-cols-2",
-          items.length === 3 && "lg:grid-cols-3",
-          items.length === 4 && "lg:grid-cols-2",
-          items.length === 5 && "lg:grid-cols-3",
-          items.length === 6 && "lg:grid-cols-3",
-          items.length === 7 && "lg:grid-cols-4",
-          items.length === 8 && "lg:grid-cols-4",
-          items.length === 9 && "lg:grid-cols-3",
-          items.length === 10 && "lg:grid-cols-5",
-          items.length === 11 && "lg:grid-cols-4",
-          items.length === 12 && "lg:grid-cols-4"
-        )}
-      >
+      <ul className={clsx("mt-3 grid grid-cols-1 gap-4", gridClass)}>
         {items.map((item, index) => (
           <SetupStep key={index} item={item} index={index} total={items.length} />
         ))}

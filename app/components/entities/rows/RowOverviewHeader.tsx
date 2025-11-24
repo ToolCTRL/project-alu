@@ -16,18 +16,7 @@ import RunPromptFlowButtons from "~/modules/promptBuilder/components/run/RunProm
 import clsx from "clsx";
 import { useTranslation } from "react-i18next";
 
-export default function RowOverviewHeader({
-  rowData,
-  item,
-  canUpdate,
-  isEditing,
-  routes,
-  title,
-  options,
-  buttons,
-  customActions,
-  truncate = true,
-}: {
+interface RowOverviewHeaderProps {
   rowData: RowsApi.GetRowData;
   item: RowWithDetails;
   canUpdate: boolean;
@@ -47,7 +36,10 @@ export default function RowOverviewHeader({
   buttons?: ReactNode;
   customActions?: { entity: string; label: string; action: string }[];
   truncate?: boolean;
-}) {
+}
+
+export default function RowOverviewHeader(props: RowOverviewHeaderProps) {
+  const { rowData, item, canUpdate, isEditing, routes, title, options, buttons, customActions, truncate = true } = props;
   const { t } = useTranslation();
   const appOrAdminData = useAppOrAdminData();
   const navigation = useNavigation();

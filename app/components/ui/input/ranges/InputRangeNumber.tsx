@@ -29,30 +29,31 @@ interface Props {
   borderless?: boolean;
   autoFocus?: boolean;
 }
-export default function InputRangeNumber({
-  name,
-  title,
-  withLabel = true,
-  valueMin,
-  defaultValueMin,
-  onChangeMin,
-  valueMax,
-  defaultValueMax,
-  onChangeMax,
-  className,
-  hint,
-  help,
-  disabled = false,
-  readOnly = false,
-  required = false,
-  min = 0,
-  max,
-  step,
-  placeholder,
-  icon,
-  borderless,
-  autoFocus,
-}: Props) {
+export default function InputRangeNumber(props: Props) {
+  const {
+    name,
+    title,
+    withLabel = true,
+    valueMin,
+    defaultValueMin,
+    onChangeMin,
+    valueMax,
+    defaultValueMax,
+    onChangeMax,
+    className,
+    hint,
+    help,
+    disabled = false,
+    readOnly = false,
+    required = false,
+    min = 0,
+    max,
+    step,
+    placeholder,
+    icon,
+    borderless,
+    autoFocus,
+  } = props;
   const { t } = useTranslation();
 
   // useImperativeHandle(ref, () => ({ inputMin, inputMax }));

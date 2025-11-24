@@ -22,7 +22,7 @@ export async function getAllRoles(type?: "admin" | "app"): Promise<RoleWithPermi
     };
   }
 
-  return await db.role.findMany({
+  return db.role.findMany({
     where,
     include: {
       permissions: {
@@ -44,7 +44,7 @@ export async function getAllRoles(type?: "admin" | "app"): Promise<RoleWithPermi
 }
 
 export async function getAllRolesNames(): Promise<{ id: string; name: string }[]> {
-  return await db.role.findMany({
+  return db.role.findMany({
     select: { id: true, name: true },
     orderBy: [{ type: "asc" }, { order: "asc" }],
   });

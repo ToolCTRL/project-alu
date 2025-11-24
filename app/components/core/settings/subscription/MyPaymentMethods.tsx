@@ -22,6 +22,7 @@ export default function MyPaymentMethods({ items, onAdd, onDelete }: Props) {
     if (onDelete) {
       onDelete(id);
     }
+    return;
   }
   return (
     <div className="space-y-2">

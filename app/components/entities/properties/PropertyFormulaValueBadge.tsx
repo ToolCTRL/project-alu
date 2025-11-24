@@ -13,28 +13,18 @@ interface Props {
   value: FormulaValueType;
 }
 export default function PropertyFormulaValueBadge({ property, value }: Props) {
-  const getNumberFormat = () => {
-    return property.attributes.find((f) => f.name === PropertyAttributeName.FormatNumber)?.value as NumberFormatType;
-  };
-  const getBooleanFormat = () => {
-    return property.attributes.find((f) => f.name === PropertyAttributeName.FormatBoolean)?.value as BooleanFormatType;
-  };
-  const getDateFormat = () => {
-    return property.attributes.find((f) => f.name === PropertyAttributeName.FormatDate)?.value as DateFormatType;
-  };
+  const numberFormat = property.attributes.find((f) => f.name === PropertyAttributeName.FormatNumber)?.value as NumberFormatType;
+  const booleanFormat = property.attributes.find((f) => f.name === PropertyAttributeName.FormatBoolean)?.value as BooleanFormatType;
+  const dateFormat = property.attributes.find((f) => f.name === PropertyAttributeName.FormatDate)?.value as DateFormatType;
+
   return (
     <div className="flex space-x-1">
-      {/* <div>
-        <div>[resultAs:{property.formula?.resultAs}]</div>
-        <div>[calculationTrigger:{property.formula?.calculationTrigger}]</div>
-        <div>value: {JSON.stringify(value)}</div>
-      </div> */}
       {property.formula?.resultAs === "number" ? (
-        <RowNumberCell value={Number(value) ?? undefined} format={getNumberFormat()} />
+        <RowNumberCell value={Number(value) ?? undefined} format={numberFormat} />
       ) : property.formula?.resultAs === "boolean" ? (
-        <RowBooleanCell value={Boolean(value) ?? undefined} format={getBooleanFormat()} />
+        <RowBooleanCell value={Boolean(value) ?? undefined} format={booleanFormat} />
       ) : property.formula?.resultAs === "date" ? (
-        <RowDateCell value={value ? (value as Date) : undefined} format={getDateFormat()} />
+        <RowDateCell value={value ? (value as Date) : undefined} format={dateFormat} />
       ) : (
         <div>{value?.toString()}</div>
       )}
