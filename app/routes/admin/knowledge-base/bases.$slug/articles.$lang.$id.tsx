@@ -75,7 +75,7 @@ export const action = async ({ request, params }: ActionFunctionArgs) => {
       contentPublished = item.contentDraft;
     }
 
-    var text = KnowledgeBaseService.contentAsText(contentPublished);
+    const text = KnowledgeBaseService.contentAsText(contentPublished);
     await updateKnowledgeBaseArticle(item.id, {
       publishedAt,
       contentPublished,

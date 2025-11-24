@@ -39,6 +39,154 @@ type ActionData = {
   error?: string;
 };
 
+async function handleProfileUpdate(
+  firstName: string | undefined,
+  lastName: string,
+  avatar: string,
+  userInfo: any,
+  user: any,
+  request: Request,
+  t: any
+) {
+  const fieldErrors = {
+    firstName: (firstName ?? "").length < 2 ? "First name required" : "",
+  };
+  if (Object.values(fieldErrors).some(Boolean)) {
+    return Response.json({ error: `Form not submitted correctly.`, fields: fieldErrors }, { status: 400 });
+  }
+
+  if (typeof firstName !== "string" || typeof lastName !== "string") {
+    return Response.json({ error: `Form not submitted correctly.` }, { status: 400 });
+  }
+
+  const avatarStored = avatar ? await storeSupabaseFile({ bucket: "users-icons", content: avatar, id: userInfo?.userId }) : avatar;
+  const profile = await updateUserProfile({ firstName, lastName, avatar: avatarStored }, userInfo?.userId);
+  if (!profile) {
+    return Response.json({ error: `Something went wrong.` }, { status: 400 });
+  }
+  await EventsService.create({
+    request,
+    event: "user.profile.updated",
+    tenantId: null,
+    userId: user.id,
+    data: {
+      email: user.email,
+      new: { firstName, lastName },
+      old: { firstName: user.firstName, lastName: user.lastName },
+      userId: userInfo?.userId,
+    } satisfies UserProfileUpdatedDto,
+  });
+  return Response.json({
+    success: t("shared.updated"),
+  });
+}
+
+async function handlePasswordUpdate(
+  passwordCurrent: string | undefined,
+  passwordNew: string | undefined,
+  passwordNewConfirm: string | undefined,
+  user: any,
+  userInfo: any,
+  request: Request,
+  t: any
+) {
+  if (typeof passwordCurrent !== "string" || typeof passwordNew !== "string" || typeof passwordNewConfirm !== "string") {
+    return Response.json({ error: `Form not submitted correctly.` }, { status: 400 });
+  }
+
+  if (passwordNew !== passwordNewConfirm) {
+    return Response.json({ error: t("account.shared.passwordMismatch") }, { status: 400 });
+  }
+
+  if (passwordNew.length < 6) {
+    return Response.json(
+      {
+        error: `Passwords must have least 6 characters.`,
+      },
+      { status: 400 }
+    );
+  }
+
+  if (!user) return null;
+
+  const isCorrectPassword = await bcrypt.compare(passwordCurrent, user.passwordHash);
+  if (!isCorrectPassword) {
+    return Response.json({ error: `Invalid password.` }, { status: 400 });
+  }
+
+  const passwordHash = await bcrypt.hash(passwordNew, 10);
+  await updateUserPassword({ passwordHash }, userInfo?.userId);
+  await EventsService.create({
+    request,
+    event: "user.password.updated",
+    tenantId: null,
+    userId: user.id,
+    data: {
+      user: { id: user.id, email: user.email },
+    } satisfies UserPasswordUpdatedDto,
+  });
+
+  return Response.json({
+    success: "Password updated",
+  });
+}
+
+async function handleDeleteAccount(user: any, request: Request) {
+  if (!user) {
+    return null;
+  }
+  if (user.admin !== null) {
+    return Response.json(
+      {
+        error: "Cannot delete an admin",
+      },
+      { status: 400 }
+    );
+  }
+
+  try {
+    const { deletedTenants } = await deleteUserWithItsTenants(user.id);
+    const deletedAccounts = await Promise.all(
+      deletedTenants.map(async (tenant) => {
+        const data = {
+          tenant: { id: tenant.id, name: tenant.name },
+          user: { id: user.id, email: user.email },
+        } satisfies AccountDeletedDto;
+        await EventsService.create({
+          request,
+          event: "account.deleted",
+          tenantId: null,
+          userId: null,
+          data,
+        });
+        return data;
+      })
+    );
+    await EventsService.create({
+      request,
+      event: "user.profile.deleted",
+      tenantId: null,
+      userId: null,
+      data: {
+        id: user.id,
+        email: user.email,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        deletedAccounts,
+      } satisfies UserProfileDeletedDto,
+    });
+  } catch (e: any) {
+    return Response.json(
+      {
+        error: e,
+      },
+      { status: 400 }
+    );
+  }
+
+  return redirect("/login");
+}
+
 export const action: ActionFunction = async ({ request, params }) => {
   await requireAuth({ request, params });
   const { t } = await getTranslations(request);
@@ -73,137 +221,12 @@ export const action: ActionFunction = async ({ request, params }) => {
     return Response.json({ error: `Account not found.` }, { status: 400 });
   }
   switch (action) {
-    case "profile": {
-      const fields = { action, firstName, lastName, avatar, passwordCurrent, passwordNew, passwordNewConfirm };
-      const fieldErrors = {
-        firstName: action === "profile" && (fields.firstName ?? "").length < 2 ? "First name required" : "",
-        // lastName: action === "profile" && (fields.lastName ?? "").length < 2 ? "Last name required" : "",
-      };
-      if (Object.values(fieldErrors).some(Boolean)) {
-        return Response.json({ error: `Form not submitted correctly.`, fields: fieldErrors }, { status: 400 });
-      }
-
-      if (typeof firstName !== "string" || typeof lastName !== "string") {
-        return Response.json({ error: `Form not submitted correctly.` }, { status: 400 });
-      }
-
-      let avatarStored = avatar ? await storeSupabaseFile({ bucket: "users-icons", content: avatar, id: userInfo?.userId }) : avatar;
-      const profile = await updateUserProfile({ firstName, lastName, avatar: avatarStored }, userInfo?.userId);
-      if (!profile) {
-        return Response.json({ error: `Something went wrong.` }, { status: 400 });
-      }
-      await EventsService.create({
-        request,
-        event: "user.profile.updated",
-        tenantId: null,
-        userId: user.id,
-        data: {
-          email: user.email,
-          new: { firstName, lastName },
-          old: { firstName: user.firstName, lastName: user.lastName },
-          userId: userInfo?.userId,
-        } satisfies UserProfileUpdatedDto,
-      });
-      return Response.json({
-        success: t("shared.updated"),
-      });
-    }
-    case "password": {
-      if (typeof passwordCurrent !== "string" || typeof passwordNew !== "string" || typeof passwordNewConfirm !== "string") {
-        return Response.json({ error: `Form not submitted correctly.` }, { status: 400 });
-      }
-
-      if (passwordNew !== passwordNewConfirm) {
-        return Response.json({ error: t("account.shared.passwordMismatch") }, { status: 400 });
-      }
-
-      if (passwordNew.length < 6) {
-        return Response.json(
-          {
-            error: `Passwords must have least 6 characters.`,
-          },
-          { status: 400 }
-        );
-      }
-
-      if (!user) return null;
-
-      const isCorrectPassword = await bcrypt.compare(passwordCurrent, user.passwordHash);
-      if (!isCorrectPassword) {
-        return Response.json({ error: `Invalid password.` }, { status: 400 });
-      }
-
-      const passwordHash = await bcrypt.hash(passwordNew, 10);
-      await updateUserPassword({ passwordHash }, userInfo?.userId);
-      await EventsService.create({
-        request,
-        event: "user.password.updated",
-        tenantId: null,
-        userId: user.id,
-        data: {
-          user: { id: user.id, email: user.email },
-        } satisfies UserPasswordUpdatedDto,
-      });
-
-      return Response.json({
-        success: "Password updated",
-      });
-    }
-    case "deleteAccount": {
-      if (!user) {
-        return null;
-      }
-      if (user.admin !== null) {
-        return Response.json(
-          {
-            error: "Cannot delete an admin",
-          },
-          { status: 400 }
-        );
-      }
-
-      try {
-        const { deletedTenants } = await deleteUserWithItsTenants(user.id);
-        const deletedAccounts = await Promise.all(
-          deletedTenants.map(async (tenant) => {
-            const data = {
-              tenant: { id: tenant.id, name: tenant.name },
-              user: { id: user.id, email: user.email },
-            } satisfies AccountDeletedDto;
-            await EventsService.create({
-              request,
-              event: "account.deleted",
-              tenantId: null,
-              userId: null,
-              data,
-            });
-            return data;
-          })
-        );
-        await EventsService.create({
-          request,
-          event: "user.profile.deleted",
-          tenantId: null,
-          userId: null,
-          data: {
-            id: user.id,
-            email: user.email,
-            firstName: user.firstName,
-            lastName: user.lastName,
-            deletedAccounts,
-          } satisfies UserProfileDeletedDto,
-        });
-      } catch (e: any) {
-        return Response.json(
-          {
-            error: e,
-          },
-          { status: 400 }
-        );
-      }
-
-      return redirect("/login");
-    }
+    case "profile":
+      return handleProfileUpdate(firstName, lastName, avatar, userInfo, user, request, t);
+    case "password":
+      return handlePasswordUpdate(passwordCurrent, passwordNew, passwordNewConfirm, user, userInfo, request, t);
+    case "deleteAccount":
+      return handleDeleteAccount(user, request);
   }
 };
 

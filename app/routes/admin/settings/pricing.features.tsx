@@ -345,6 +345,44 @@ export default function () {
             },
       */
 
+      const handleTitleChange = (existing: any, e: string | number | undefined) => {
+        existing.title = e?.toString() ?? "";
+        setItems([...items]);
+      };
+
+      const handleTypeChange = (existing: any, item: any, planId: string, e: string | number | undefined) => {
+        const type = Number(e) as SubscriptionFeatureLimitType;
+        if (existing) {
+          existing.type = type;
+          if (![SubscriptionFeatureLimitType.MAX, SubscriptionFeatureLimitType.MONTHLY].includes(type)) {
+            existing.value = 0;
+          }
+        } else {
+          item.plans.push({
+            id: planId,
+            title: "?",
+            type,
+            value: 0,
+          });
+        }
+        setItems([...items]);
+      };
+
+      const handleValueChange = (existing: any, item: any, planId: string, e: string | number | undefined) => {
+        const value = e as number;
+        if (existing) {
+          existing.value = value;
+        } else {
+          item.plans.push({
+            id: planId,
+            title: "?",
+            type: SubscriptionFeatureLimitType.MAX,
+            value,
+          });
+        }
+        setItems([...items]);
+      };
+
       headers.push({
         title: t(plan.title),
         name: "feature-in-" + plan.id,
@@ -383,10 +421,7 @@ export default function () {
                           placeholder="Title..."
                           value={existing?.title}
                           required
-                          setValue={(e) => {
-                            existing.title = e?.toString() ?? "";
-                            setItems([...items]);
-                          }}
+                          setValue={(e) => handleTitleChange(existing, e)}
                         />
                       </div>
                       <div>
@@ -394,23 +429,7 @@ export default function () {
                           name="type"
                           title="Type"
                           value={existing?.type}
-                          setValue={(e) => {
-                            let type = Number(e) as SubscriptionFeatureLimitType;
-                            if (existing) {
-                              existing.type = type;
-                              if (![SubscriptionFeatureLimitType.MAX, SubscriptionFeatureLimitType.MONTHLY].includes(type)) {
-                                existing.value = 0;
-                              }
-                            } else {
-                              item.plans.push({
-                                id: plan.id!,
-                                title: "?",
-                                type,
-                                value: 0,
-                              });
-                            }
-                            setItems([...items]);
-                          }}
+                          setValue={(e) => handleTypeChange(existing, item, plan.id, e)}
                           options={[
                             {
                               name: "Not included",
@@ -440,20 +459,7 @@ export default function () {
                           name="value"
                           title="Limit"
                           value={existing?.value}
-                          setValue={(e) => {
-                            let value = e as number;
-                            if (existing) {
-                              existing.value = value;
-                            } else {
-                              item.plans.push({
-                                id: plan.id!,
-                                title: "?",
-                                type: SubscriptionFeatureLimitType.MAX,
-                                value,
-                              });
-                            }
-                            setItems([...items]);
-                          }}
+                          setValue={(e) => handleValueChange(existing, item, plan.id, e)}
                           disabled={![SubscriptionFeatureLimitType.MONTHLY, SubscriptionFeatureLimitType.MAX].includes(existing?.type ?? 0)}
                         />
                       </div>
@@ -512,6 +518,12 @@ export default function () {
     setItems([...items, item]);
   }
 
+  const validateFeatureTitle = (title: string, planTitle: string, errors: string[]) => {
+    if (!title.trim() || title === "?") {
+      errors.push(`Invalid feature title "${title}" in plan "${t(planTitle)}"`);
+    }
+  };
+
   function getErrors() {
     let errors: string[] = [];
     const duplicatedNames = items.filter((item, index) => items.findIndex((i) => i.name === item.name) !== index);
@@ -521,11 +533,8 @@ export default function () {
     items.forEach((item) => {
       item.plans.forEach(({ id, title }) => {
         const plan = selectedPlans.find((p) => p.id === id);
-        if (!plan) {
-          return;
-        }
-        if (!title.trim() || title === "?") {
-          errors.push(`Invalid feature title "${title}" in plan "${t(plan.title)}"`);
+        if (plan) {
+          validateFeatureTitle(title, plan.title, errors);
         }
       });
     });

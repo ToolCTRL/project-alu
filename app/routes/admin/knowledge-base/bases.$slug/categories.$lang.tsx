@@ -62,6 +62,51 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
 type ActionData = {
   error?: string;
 };
+async function handleSetOrders(form: FormData) {
+  const items: { id: string; order: number }[] = form.getAll("orders[]").map((f: FormDataEntryValue) => {
+    return JSON.parse(f.toString());
+  });
+
+  await Promise.all(
+    items.map(async ({ id, order }) => {
+      await updateKnowledgeBaseCategory(id, {
+        order: Number(order),
+      });
+    })
+  );
+  return Response.json({ updated: true });
+}
+
+async function handleSetSectionOrders(form: FormData) {
+  const items: { id: string; order: number }[] = form.getAll("orders[]").map((f: FormDataEntryValue) => {
+    return JSON.parse(f.toString());
+  });
+
+  await Promise.all(
+    items.map(async ({ id, order }) => {
+      await updateKnowledgeBaseCategorySection(id, {
+        order: Number(order),
+      });
+    })
+  );
+  return Response.json({ updated: true });
+}
+
+async function handleSetArticleOrders(form: FormData) {
+  const items: { id: string; order: number }[] = form.getAll("orders[]").map((f: FormDataEntryValue) => {
+    return JSON.parse(f.toString());
+  });
+
+  await Promise.all(
+    items.map(async ({ id, order }) => {
+      await updateKnowledgeBaseArticle(id, {
+        order: Number(order),
+      });
+    })
+  );
+  return Response.json({ updated: true });
+}
+
 export const action = async ({ request, params }: ActionFunctionArgs) => {
   await verifyUserHasPermission(request, "admin.kb.update");
   const userInfo = await getUserInfo(request);
@@ -71,44 +116,11 @@ export const action = async ({ request, params }: ActionFunctionArgs) => {
   const kb = await KnowledgeBaseService.get({ slug: params.slug!, request });
 
   if (action === "set-orders") {
-    const items: { id: string; order: number }[] = form.getAll("orders[]").map((f: FormDataEntryValue) => {
-      return JSON.parse(f.toString());
-    });
-
-    await Promise.all(
-      items.map(async ({ id, order }) => {
-        await updateKnowledgeBaseCategory(id, {
-          order: Number(order),
-        });
-      })
-    );
-    return Response.json({ updated: true });
+    return handleSetOrders(form);
   } else if (action === "set-section-orders") {
-    const items: { id: string; order: number }[] = form.getAll("orders[]").map((f: FormDataEntryValue) => {
-      return JSON.parse(f.toString());
-    });
-
-    await Promise.all(
-      items.map(async ({ id, order }) => {
-        await updateKnowledgeBaseCategorySection(id, {
-          order: Number(order),
-        });
-      })
-    );
-    return Response.json({ updated: true });
+    return handleSetSectionOrders(form);
   } else if (action === "set-article-orders") {
-    const items: { id: string; order: number }[] = form.getAll("orders[]").map((f: FormDataEntryValue) => {
-      return JSON.parse(f.toString());
-    });
-
-    await Promise.all(
-      items.map(async ({ id, order }) => {
-        await updateKnowledgeBaseArticle(id, {
-          order: Number(order),
-        });
-      })
-    );
-    return Response.json({ updated: true });
+    return handleSetArticleOrders(form);
   } else if (action === "delete-category") {
     await verifyUserHasPermission(request, "admin.kb.delete");
     const id = form.get("id")?.toString() ?? "";

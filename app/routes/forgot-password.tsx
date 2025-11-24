@@ -58,7 +58,7 @@ export const action: ActionFunction = async ({ request }) => {
     return Response.json({ success: "Email sent" });
   }
 
-  var verifyToken = crypto.randomBytes(20).toString("hex");
+  const verifyToken = crypto.randomBytes(20).toString("hex");
   await updateUserVerifyToken({ verifyToken }, user.id);
   await sendEmail({
     request,

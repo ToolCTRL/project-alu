@@ -86,6 +86,116 @@ type ActionData = {
   error?: string;
 };
 const badRequest = (data: ActionData) => Response.json(data, { status: 400 });
+
+async function handleDeleteInvitation(form: FormData) {
+  const invitationId = form.get("invitation-id")?.toString() ?? "";
+  const invitation = await getUserInvitation(invitationId);
+  if (!invitation) {
+    return badRequest({ error: "Invitation not found" });
+  }
+  await deleteUserInvitation(invitation.id);
+  return Response.json({ success: "Invitation deleted" });
+}
+
+async function addRole(
+  userId: string,
+  roleId: string,
+  tenantId: string,
+  request: Request,
+  fromUser: User,
+  user: User | null,
+  role: Role | null,
+  tenant: { name: string } | null
+) {
+  await createUserRole(userId, roleId, tenantId);
+  if (fromUser && user && role) {
+    await EventsService.create({
+      request,
+      event: "role.assigned",
+      tenantId,
+      userId: fromUser.id,
+      data: {
+        fromUser: { id: fromUser.id, email: fromUser.email },
+        toUser: { id: user.id, email: user.email },
+        role: { id: role.id, name: role.name, description: role.description },
+      } satisfies RoleAssignedDto,
+    });
+  }
+  createAdminLog(request, "Created", `[${tenant?.name}] ${user?.email} - ${role?.name}}`);
+}
+
+async function removeRole(userId: string, roleId: string, tenantId: string, request: Request, user: User | null, role: Role | null, tenant: { name: string } | null) {
+  await deleteUserRole(userId, roleId, tenantId);
+  createAdminLog(request, "Deleted", `[${tenant?.name}] ${user?.email} - ${role?.name}}`);
+}
+
+async function handleEditRole(form: FormData, request: Request, tenantId: string, userInfo: UserSimple, fromUser: User) {
+  const userId = form.get("user-id")?.toString() ?? "";
+  const roleId = form.get("role-id")?.toString() ?? "";
+  const add = form.get("add") === "true";
+
+  const tenant = await getTenant(tenantId);
+  const user = await getUser(userId);
+  const role = await getRole(roleId);
+
+  if (role?.name === DefaultAppRoles.SuperUser) {
+    const validationError = await validateSuperAdminRole(tenantId, userInfo.userId, userId, add);
+    if (validationError) {
+      return validationError;
+    }
+  }
+
+  if (add) {
+    await addRole(userId, roleId, tenantId, request, fromUser, user, role, tenant);
+  } else {
+    await removeRole(userId, roleId, tenantId, request, user, role, tenant);
+  }
+  return Response.json({});
+}
+
+async function validateSuperAdminRole(tenantId: string, currentUserId: string, targetUserId: string, isAdding: boolean) {
+  const allMembers = await getTenantUsers(tenantId);
+  const superAdmins = allMembers.filter((m) => m.user.roles.some((r) => r.tenantId === tenantId && r.role.name === DefaultAppRoles.SuperUser));
+
+  if (superAdmins.length === 1 && !isAdding) {
+    return badRequest({ error: "There must be at least one super admin" });
+  }
+
+  if (targetUserId === currentUserId && !isAdding) {
+    return badRequest({ error: "You cannot remove yourself from the super admin role" });
+  }
+
+  return null;
+}
+
+async function handleImpersonate(form: FormData, request: Request, params: Params<string>, t: TFunction, userInfo: UserSimple, tenantId: string) {
+  await verifyUserHasPermission(request, "app.settings.members.impersonate", tenantId);
+  const userId = form.get("user-id")?.toString();
+  const user = await getUser(userId);
+
+  if (!user) {
+    return badRequest({ error: t("shared.notFound") });
+  }
+  if (user.admin) {
+    return badRequest({ error: "You cannot impersonate a super admin user" });
+  }
+
+  const userSession = await setLoggedUser(user);
+  if (!userSession) {
+    return badRequest({ error: t("shared.notFound") });
+  }
+
+  const tenant = await getTenant(userSession.defaultTenantId);
+  return createUserSession(
+    {
+      ...userInfo,
+      ...userSession,
+      impersonatingFromUserId: userInfo.userId,
+    },
+    tenant ? `/app/${tenant.slug ?? tenant.id}/dashboard` : "/app"
+  );
+}
+
 export const action: ActionFunction = async ({ request, params }) => {
   const { t } = await getTranslations(request);
   const tenantId = await getTenantIdFromUrl(params);
@@ -94,91 +204,24 @@ export const action: ActionFunction = async ({ request, params }) => {
   const form = await request.formData();
   const action = form.get("action")?.toString();
   const fromUser = await getUser(userInfo.userId);
+
   if (!fromUser) {
     return badRequest({ error: "Invalid user" });
   }
 
   if (action === "delete-invitation") {
-    const invitationId = form.get("invitation-id")?.toString() ?? "";
-    const invitation = await getUserInvitation(invitationId);
-    if (!invitation) {
-      return badRequest({
-        error: "Invitation not found",
-      });
-    }
-    await deleteUserInvitation(invitation.id);
-    return Response.json({ success: "Invitation deleted" });
+    return handleDeleteInvitation(form);
   }
+
   if (action === "edit") {
-    const userId = form.get("user-id")?.toString() ?? "";
-    const roleId = form.get("role-id")?.toString() ?? "";
-    const add = form.get("add") === "true";
-
-    const tenant = await getTenant(tenantId);
-    const user = await getUser(userId);
-    const role = await getRole(roleId);
-
-    if (role?.name === DefaultAppRoles.SuperUser) {
-      const allMembers = await getTenantUsers(tenantId);
-      const superAdmins = allMembers.filter((m) => m.user.roles.some((r) => r.tenantId === tenantId && r.role.name === DefaultAppRoles.SuperUser));
-      if (superAdmins.length === 1 && !add) {
-        return badRequest({
-          error: "There must be at least one super admin",
-        });
-      }
-      if (userId === userInfo.userId) {
-        return badRequest({
-          error: "You cannot remove yourself from the super admin role",
-        });
-      }
-    }
-    if (add) {
-      await createUserRole(userId, roleId, tenantId);
-      if (fromUser && user && role) {
-        await EventsService.create({
-          request,
-          event: "role.assigned",
-          tenantId,
-          userId: fromUser.id,
-          data: {
-            fromUser: { id: fromUser.id, email: fromUser.email },
-            toUser: { id: user.id, email: user.email },
-            role: { id: role.id, name: role.name, description: role.description },
-          } satisfies RoleAssignedDto,
-        });
-      }
-      createAdminLog(request, "Created", `[${tenant?.name}] ${user?.email} - ${role?.name}}`);
-    } else {
-      await deleteUserRole(userId, roleId, tenantId);
-      createAdminLog(request, "Deleted", `[${tenant?.name}] ${user?.email} - ${role?.name}}`);
-    }
-    return Response.json({});
-  } else if (action === "impersonate") {
-    await verifyUserHasPermission(request, "app.settings.members.impersonate", tenantId);
-    const userId = form.get("user-id")?.toString();
-    const user = await getUser(userId);
-    if (!user) {
-      return badRequest({ error: t("shared.notFound") });
-    }
-    if (user.admin) {
-      return badRequest({ error: "You cannot impersonate a super admin user" });
-    }
-    const userSession = await setLoggedUser(user);
-    if (!userSession) {
-      return badRequest({ error: t("shared.notFound") });
-    }
-    const tenant = await getTenant(userSession.defaultTenantId);
-    return createUserSession(
-      {
-        ...userInfo,
-        ...userSession,
-        impersonatingFromUserId: userInfo.userId,
-      },
-      tenant ? `/app/${tenant.slug ?? tenant.id}/dashboard` : "/app"
-    );
-  } else {
-    return badRequest({ error: t("shared.invalidForm") });
+    return handleEditRole(form, request, tenantId, userInfo, fromUser);
   }
+
+  if (action === "impersonate") {
+    return handleImpersonate(form, request, params, t, userInfo, tenantId);
+  }
+
+  return badRequest({ error: t("shared.invalidForm") });
 };
 
 export const meta: MetaFunction<typeof loader> = ({ data }) => [{ title: data?.title }];

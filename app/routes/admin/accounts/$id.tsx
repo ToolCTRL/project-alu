@@ -80,6 +80,89 @@ type ActionData = {
 };
 
 const badRequest = (data: ActionData) => Response.json(data, { status: 400 });
+
+async function validateTenantEdit(name: string, slug: string, typeIds: string[]) {
+  if ((name?.length ?? 0) < 1) {
+    return badRequest({
+      updateDetailsError: "Account name must have at least 1 character",
+    });
+  }
+  if (!slug || slug.length < 1) {
+    return badRequest({ updateDetailsError: "Account slug must have at least 1 character" });
+  }
+
+  const tenantTypes = await getAllTenantTypes();
+  for (const type of typeIds) {
+    if (!tenantTypes.find((t) => t.id === type)) {
+      return badRequest({
+        updateDetailsError: "Invalid tenant type",
+      });
+    }
+  }
+
+  if (["settings"].includes(slug.toLowerCase())) {
+    return badRequest({
+      updateDetailsError: "Slug cannot be " + slug,
+    });
+  }
+  if (slug.includes(" ")) {
+    return badRequest({
+      updateDetailsError: "Slug cannot contain white spaces",
+    });
+  }
+  return null;
+}
+
+async function handleEditAction(form: FormData, params: any) {
+  const { t } = await getTranslations({ request: {} as Request });
+  const name = form.get("name")?.toString() ?? "";
+  const slug = form.get("slug")?.toString().toLowerCase() ?? "";
+  const icon = form.get("icon")?.toString() ?? "";
+  const typeIds = form.getAll("typeIds[]").map((t) => t.toString());
+
+  const validationError = await validateTenantEdit(name, slug, typeIds);
+  if (validationError) {
+    return validationError;
+  }
+
+  const existing = await getTenant(params.id!);
+  if (!existing) {
+    return badRequest({ updateDetailsError: "Invalid tenant" });
+  }
+
+  if (existing.slug !== slug) {
+    const existingSlug = await getTenantBySlug(slug);
+    if (existingSlug) {
+      return badRequest({
+        updateDetailsError: "Slug already taken",
+      });
+    }
+  }
+
+  await createAdminLog({} as Request, "Update tenant details", JSON.stringify({ name, slug }));
+
+  const tenantSettingsEntity = await findEntityByName({ tenantId: null, name: "tenantSettings" });
+  if (tenantSettingsEntity) {
+    try {
+      await RowsApi.createCustom({
+        entity: tenantSettingsEntity,
+        tenantId: existing.id,
+        t,
+        form,
+        row: existing?.tenantSettingsRow?.row,
+        rowCreateInput: { tenantSettingsRow: { create: { tenantId: existing.id } } },
+      });
+    } catch (e: any) {
+      return badRequest({ updateDetailsError: e.message });
+    }
+  }
+
+  await updateTenant(existing, { name, icon, slug, typeIds });
+  return Response.json({
+    success: t("settings.tenant.updated"),
+  });
+}
+
 export const action: ActionFunction = async ({ request, params }) => {
   await verifyUserHasPermission(request, "admin.account.settings.update");
   const { t } = await getTranslations(request);
@@ -89,75 +172,7 @@ export const action: ActionFunction = async ({ request, params }) => {
   const action = form.get("action")?.toString() ?? "";
 
   if (action === "edit") {
-    const name = form.get("name")?.toString() ?? "";
-    const slug = form.get("slug")?.toString().toLowerCase() ?? "";
-    const icon = form.get("icon")?.toString() ?? "";
-    const typeIds = form.getAll("typeIds[]").map((t) => t.toString());
-
-    if ((name?.length ?? 0) < 1) {
-      return badRequest({
-        updateDetailsError: "Account name must have at least 1 character",
-      });
-    }
-    if (!slug || slug.length < 1) {
-      return badRequest({ updateDetailsError: "Account slug must have at least 1 character" });
-    }
-
-    let tenantTypes = await getAllTenantTypes();
-    typeIds.forEach((type) => {
-      if (!tenantTypes.find((t) => t.id === type)) {
-        return badRequest({
-          updateDetailsError: "Invalid tenant type",
-        });
-      }
-    });
-
-    if (["settings"].includes(slug.toLowerCase())) {
-      return badRequest({
-        updateDetailsError: "Slug cannot be " + slug,
-      });
-    }
-    if (slug.includes(" ")) {
-      return badRequest({
-        updateDetailsError: "Slug cannot contain white spaces",
-      });
-    }
-
-    const existing = await getTenant(params.id!);
-    if (!existing) {
-      return badRequest({ updateDetailsError: "Invalid tenant" });
-    }
-
-    if (existing.slug !== slug) {
-      const existingSlug = await getTenantBySlug(slug);
-      if (existingSlug) {
-        return badRequest({
-          updateDetailsError: "Slug already taken",
-        });
-      }
-    }
-    await createAdminLog(request, "Update tenant details", JSON.stringify({ name, slug }));
-
-    const tenantSettingsEntity = await findEntityByName({ tenantId: null, name: "tenantSettings" });
-    if (tenantSettingsEntity) {
-      try {
-        await RowsApi.createCustom({
-          entity: tenantSettingsEntity,
-          tenantId: existing.id,
-          t,
-          form,
-          row: existing?.tenantSettingsRow?.row,
-          rowCreateInput: { tenantSettingsRow: { create: { tenantId: existing.id } } },
-        });
-      } catch (e: any) {
-        return badRequest({ updateDetailsError: e.message });
-      }
-    }
-
-    await updateTenant(existing, { name, icon, slug, typeIds });
-    return Response.json({
-      success: t("settings.tenant.updated"),
-    });
+    return handleEditAction(form, params);
   } else if (action === "create-stripe-customer") {
     const tenant = await getTenant(params.id ?? "");
     if (!tenant) {

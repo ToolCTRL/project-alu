@@ -188,7 +188,7 @@ export default function AdminPricingRoute() {
     }
   }
 
-  useEffect(() => {
+  const extractUniqueFeatures = (items: SubscriptionProductDto[]): SubscriptionFeatureDto[] => {
     const allFeatures: SubscriptionFeatureDto[] = [];
     items.forEach((item) => {
       item.features.forEach((feature) => {
@@ -205,7 +205,11 @@ export default function AdminPricingRoute() {
         }
       });
     });
-    setAllFeatures(allFeatures.sort((a, b) => a.order - b.order));
+    return allFeatures.sort((a, b) => a.order - b.order);
+  };
+
+  useEffect(() => {
+    setAllFeatures(extractUniqueFeatures(items));
   }, [items]);
 
   const sortedItems = () => {

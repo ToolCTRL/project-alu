@@ -412,12 +412,12 @@ function BlockInput({
               if (refMonaco.current) {
                 try {
                   // @ts-ignore
-                  var selection = refMonaco.current.getSelection();
-                  var id = { major: 1, minor: 1 };
-                  var op = { identifier: id, range: selection, text: variable.name, forceMoveMarkers: true };
+                  const selection = refMonaco.current.getSelection();
+                  const id = { major: 1, minor: 1 };
+                  const op = { identifier: id, range: selection, text: variable.name, forceMoveMarkers: true };
                   // @ts-ignore
                   refMonaco.current.executeEdits("my-source", [op]);
-                } catch (e) {
+                } catch {
                   setInputValue((prev) => {
                     return prev + variable.name;
                   });
