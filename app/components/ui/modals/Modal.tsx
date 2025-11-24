@@ -13,42 +13,34 @@ interface Props {
   title?: string;
 }
 
+// Extracted helper functions to reduce complexity
+const POSITION_CLASSES: Record<number, string> = {
+  0: "z-0", 1: "z-10", 2: "z-20", 3: "z-30", 4: "z-40", 5: "z-50"
+};
+
+const PADDING_CLASSES: Record<string, string> = {
+  none: "px-0 pb-0 pt-0 sm:my-0 sm:p-0",
+  sm: "px-4 pb-4 pt-5 sm:my-8 sm:p-6"
+};
+
+const SIZE_CLASSES: Record<string, string> = {
+  sm: "sm:max-w-sm", md: "sm:max-w-md", lg: "sm:max-w-lg", xl: "sm:max-w-xl",
+  "2xl": "sm:max-w-2xl", "3xl": "sm:max-w-3xl", "4xl": "sm:max-w-4xl",
+  "5xl": "sm:max-w-5xl", "6xl": "sm:max-w-6xl", "7xl": "sm:max-w-7xl", full: "sm:max-w-full"
+};
+
 function getPositionClass(position: number): string {
-  switch (position) {
-    case 0: return "z-0";
-    case 1: return "z-10";
-    case 2: return "z-20";
-    case 3: return "z-30";
-    case 4: return "z-40";
-    case 5: return "z-50";
-    default: return "z-50";
-  }
+  return POSITION_CLASSES[position] ?? "z-50";
 }
 
 function getPaddingClass(padding: string): string {
-  switch (padding) {
-    case "none": return "px-0 pb-0 pt-0 sm:my-0 sm:p-0";
-    case "sm": return "px-4 pb-4 pt-5 sm:my-8 sm:p-6";
-    default: return "px-4 pb-4 pt-5 sm:my-8 sm:p-6";
-  }
+  return PADDING_CLASSES[padding] ?? "px-4 pb-4 pt-5 sm:my-8 sm:p-6";
 }
 
 function getSizeClass(size: string): string {
-  switch (size) {
-    case "sm": return "sm:max-w-sm";
-    case "md": return "sm:max-w-md";
-    case "lg": return "sm:max-w-lg";
-    case "xl": return "sm:max-w-xl";
-    case "2xl": return "sm:max-w-2xl";
-    case "3xl": return "sm:max-w-3xl";
-    case "4xl": return "sm:max-w-4xl";
-    case "5xl": return "sm:max-w-5xl";
-    case "6xl": return "sm:max-w-6xl";
-    case "7xl": return "sm:max-w-7xl";
-    case "full": return "sm:max-w-full";
-    default: return "sm:max-w-3xl";
-  }
+  return SIZE_CLASSES[size] ?? "sm:max-w-3xl";
 }
+
 export default function Modal({ className, children, open, setOpen, size = "3xl", padding = "sm", position = 5, title }: Props) {
   const positionClass = getPositionClass(position);
   function onClose() {

@@ -48,6 +48,58 @@ export namespace BlogRoutesEditApi {
     error?: string;
     createdPost?: BlogPostWithDetails | null;
   };
+  // Helper function to handle blog post editing
+  async function handleEdit(form: FormData, params: any, tenantId: string | null, userInfo: any) {
+    if (tenantId === null) {
+      await verifyUserHasPermission({ request: null } as any, "admin.blog.update");
+    }
+
+    const blogPost = await getBlogPost({ tenantId, idOrSlug: params.id ?? "" });
+    if (!blogPost) {
+      return redirect(UrlUtils.getModulePath(params, "blog"));
+    }
+
+    const addingCategoryName = form.get("new-category")?.toString() ?? "";
+    let category: BlogCategory | null = null;
+    if (addingCategoryName) {
+      category = await BlogApi.getCategory({ tenantId, idOrName: { name: addingCategoryName } });
+      if (!category) {
+        category = await BlogApi.createCategory({ tenantId, name: addingCategoryName });
+      }
+    }
+
+    const authorId = blogPost.authorId ?? userInfo.userId;
+    const categoryId = form.get("category")?.toString() ?? "";
+    const slug = form.get("slug")?.toString() ?? "";
+    const tags = form.get("tags")?.toString() ?? "";
+
+    const updated = await updateBlogPost(blogPost.id, {
+      slug,
+      title: form.get("title")?.toString() ?? "",
+      description: form.get("description")?.toString() ?? "",
+      date: new Date(form.get("date")?.toString() ?? ""),
+      image: await storeSupabaseFile({ bucket: "blog", content: form.get("image")?.toString() ?? "", id: slug }),
+      content: form.get("content")?.toString() ?? "",
+      readingTime: form.get("reading-time")?.toString() ?? "",
+      published: FormHelper.getBoolean(form, "published"),
+      categoryId: categoryId.length ? categoryId : category?.id ?? null,
+      tagNames: tags.split(",").filter((f) => f.trim() != ""),
+      contentType: form.get("contentType")?.toString() ?? "",
+      authorId,
+    });
+
+    return redirect(UrlUtils.getBlogPath(params, updated.slug));
+  }
+
+  // Helper function to handle blog post deletion
+  async function handleDelete(params: any, tenantId: string | null, request: Request) {
+    if (tenantId === null) {
+      await verifyUserHasPermission(request, "admin.blog.delete");
+    }
+    await deleteBlogPost(params.id ?? "");
+    return redirect(UrlUtils.getModulePath(params, "blog"));
+  }
+
   export const action: ActionFunction = async ({ request, params }) => {
     await requireAuth({ request, params });
     const { t } = await getTranslations(request);
@@ -58,70 +110,17 @@ export namespace BlogRoutesEditApi {
     const userInfo = await getUserInfo(request);
     const form = await request.formData();
     const action = form.get("action")?.toString() ?? "";
-    const content = form.get("content")?.toString() ?? "";
-    if (action === "edit") {
-      if (tenantId === null) {
-        await verifyUserHasPermission(request, "admin.blog.update");
-      }
-      const title = form.get("title")?.toString() ?? "";
-      const slug = form.get("slug")?.toString() ?? "";
-      const description = form.get("description")?.toString() ?? "";
-      const date = form.get("date")?.toString() ?? "";
-      const image = form.get("image")?.toString() ?? "";
-      const published = FormHelper.getBoolean(form, "published");
-      const readingTime = form.get("reading-time")?.toString() ?? "";
-      const categoryId = form.get("category")?.toString() ?? "";
-      const tags = form.get("tags")?.toString() ?? "";
-      const contentType = form.get("contentType")?.toString() ?? "";
-      const addingCategoryName = form.get("new-category")?.toString() ?? "";
 
-      try {
-        const blogPost = await getBlogPost({ tenantId, idOrSlug: params.id ?? "" });
-        if (!blogPost) {
-          return redirect(UrlUtils.getModulePath(params, "blog"));
-        }
-        let category: BlogCategory | null = null;
-        if (addingCategoryName) {
-          category = await BlogApi.getCategory({ tenantId, idOrName: { name: addingCategoryName } });
-          if (!category) {
-            category = await BlogApi.createCategory({ tenantId, name: addingCategoryName });
-          }
-        }
-        let authorId = blogPost.authorId;
-        if (authorId === null) {
-          authorId = userInfo.userId;
-        }
-        const updated = await updateBlogPost(blogPost.id, {
-          slug,
-          title,
-          description,
-          date: new Date(date),
-          image: await storeSupabaseFile({ bucket: "blog", content: image, id: slug }),
-          content,
-          readingTime,
-          published,
-          categoryId: categoryId.length ? categoryId : category?.id ?? null,
-          tagNames: tags.split(",").filter((f) => f.trim() != ""),
-          contentType,
-          authorId,
-        });
-
-        return redirect(UrlUtils.getBlogPath(params, updated.slug));
-      } catch (error: any) {
-        return Response.json({ error: error.message }, { status: 400 });
+    try {
+      if (action === "edit") {
+        return await handleEdit(form, params, tenantId, userInfo);
+      } else if (action === "delete") {
+        return await handleDelete(params, tenantId, request);
+      } else {
+        return Response.json({ error: t("shared.invalidForm") }, { status: 400 });
       }
-    } else if (action === "delete") {
-      if (tenantId === null) {
-        await verifyUserHasPermission(request, "admin.blog.delete");
-      }
-      try {
-        await deleteBlogPost(params.id ?? "");
-        return redirect(UrlUtils.getModulePath(params, "blog"));
-      } catch (error: any) {
-        return Response.json({ error: error.message }, { status: 400 });
-      }
-    } else {
-      return Response.json({ error: t("shared.invalidForm") }, { status: 400 });
+    } catch (error: any) {
+      return Response.json({ error: error.message }, { status: 400 });
     }
   };
 }

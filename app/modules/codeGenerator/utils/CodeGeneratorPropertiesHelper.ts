@@ -5,134 +5,124 @@ import { PropertyWithDetails } from "~/utils/db/entities/entities.db.server";
 import PropertyAttributeHelper from "~/utils/helpers/PropertyAttributeHelper";
 import { SelectOptionsDisplay } from "~/utils/shared/SelectOptionsUtils";
 
-function type({ code, imports, property }: { code: string[]; imports: string[]; property: PropertyWithDetails }) {
-  let type = "";
-  if (property.type === PropertyType.TEXT) {
-    type = property.isRequired ? "string" : "string | undefined";
-  } else if (property.type === PropertyType.NUMBER) {
-    type = property.isRequired ? "number" : "number | undefined";
-  } else if (property.type === PropertyType.DATE) {
-    type = property.isRequired ? "Date" : "Date | undefined";
-  } else if (property.type === PropertyType.SELECT) {
-    type = property.isRequired ? "string" : "string | undefined";
-  } else if (property.type === PropertyType.BOOLEAN) {
-    type = property.isRequired ? "boolean" : "boolean | undefined";
-  } else if (property.type === PropertyType.MEDIA) {
-    imports.push(`import { MediaDto } from "~/application/dtos/entities/MediaDto";`);
-    if (PropertyAttributeHelper.getPropertyAttributeValue_Number(property, PropertyAttributeName.Max) === 1) {
-      type = property.isRequired ? "MediaDto" : "MediaDto | undefined";
-    } else {
-      type = property.isRequired ? "MediaDto[]" : "MediaDto[] | undefined";
-    }
-  } else if (property.type === PropertyType.MULTI_SELECT) {
-    imports.push(`import { RowValueMultipleDto } from "~/application/dtos/entities/RowValueMultipleDto";`);
-    type = "RowValueMultipleDto[]";
-  } else if (property.type === PropertyType.RANGE_NUMBER) {
-    imports.push(`import { RowValueRangeDto } from "~/application/dtos/entities/RowValueRangeDto";`);
-    type = property.isRequired ? "RowValueRangeDto" : "RowValueRangeDto | undefined";
-  } else if (property.type === PropertyType.RANGE_DATE) {
-    imports.push(`import { RowValueRangeDto } from "~/application/dtos/entities/RowValueRangeDto";`);
-    type = property.isRequired ? "RowValueRangeDto" : "RowValueRangeDto | undefined";
-  } else if (property.type === PropertyType.MULTI_TEXT) {
-    imports.push(`import { RowValueMultipleDto } from "~/application/dtos/entities/RowValueMultipleDto";`);
-    type = "RowValueMultipleDto[]";
-  } else {
-    // eslint-disable-next-line no-console
-    console.log(`Unknown property type: ${PropertyType[property.type]}`);
-    type = "unknown";
-  }
+// Helper: Get TypeScript type for property
+function getPropertyType(property: PropertyWithDetails, imports: string[]): string {
+  const makeOptional = (t: string) => property.isRequired ? t : `${t} | undefined`;
 
-  let comments: string[] = [];
-  comments.push(property.isRequired ? "required" : "optional");
+  switch (property.type) {
+    case PropertyType.TEXT:
+    case PropertyType.SELECT:
+      return makeOptional("string");
+    case PropertyType.NUMBER:
+      return makeOptional("number");
+    case PropertyType.DATE:
+      return makeOptional("Date");
+    case PropertyType.BOOLEAN:
+      return makeOptional("boolean");
+    case PropertyType.MEDIA:
+      imports.push(`import { MediaDto } from "~/application/dtos/entities/MediaDto";`);
+      const isSingleMedia = PropertyAttributeHelper.getPropertyAttributeValue_Number(property, PropertyAttributeName.Max) === 1;
+      return isSingleMedia ? makeOptional("MediaDto") : makeOptional("MediaDto[]");
+    case PropertyType.MULTI_SELECT:
+    case PropertyType.MULTI_TEXT:
+      imports.push(`import { RowValueMultipleDto } from "~/application/dtos/entities/RowValueMultipleDto";`);
+      return "RowValueMultipleDto[]";
+    case PropertyType.RANGE_NUMBER:
+    case PropertyType.RANGE_DATE:
+      imports.push(`import { RowValueRangeDto } from "~/application/dtos/entities/RowValueRangeDto";`);
+      return makeOptional("RowValueRangeDto");
+    default:
+      console.log(`Unknown property type: ${PropertyType[property.type]}`);
+      return "unknown";
+  }
+}
+
+function type({ code, imports, property }: { code: string[]; imports: string[]; property: PropertyWithDetails }) {
+  const typeStr = getPropertyType(property, imports);
+  const comments: string[] = [property.isRequired ? "required" : "optional"];
   property.attributes
     .filter((f) => f.value)
     .forEach((attribute) => {
       comments.push(`${attribute.name}: ${attribute.value}`);
     });
+  code.push(`  ${property.name}: ${typeStr}; // ${comments.join(", ")}`);
+}
 
-  code.push(`  ${property.name}: ${type}; // ${comments.join(", ")}`);
+// Helper: Generate row-to-DTO conversion code
+function generateRowToDtoCode(property: PropertyWithDetails): string {
+  const name = property.name;
+  const fallback = (val: string) => property.isRequired ? ` ?? ${val}` : ``;
+
+  switch (property.type) {
+    case PropertyType.TEXT:
+    case PropertyType.SELECT:
+      return `${name}: RowValueHelper.getText({ entity, row, name: "${name}" })${fallback('""')},`;
+    case PropertyType.NUMBER:
+      return `${name}: RowValueHelper.getNumber({ entity, row, name: "${name}" })${fallback('0')},`;
+    case PropertyType.DATE:
+      return `${name}: RowValueHelper.getDate({ entity, row, name: "${name}" })${fallback('new Date()')},`;
+    case PropertyType.BOOLEAN:
+      return `${name}: RowValueHelper.getBoolean({ entity, row, name: "${name}" }) ?? false,`;
+    case PropertyType.MEDIA:
+      const isSingle = PropertyAttributeHelper.getPropertyAttributeValue_Number(property, PropertyAttributeName.Max) === 1;
+      if (isSingle) {
+        return property.isRequired
+          ? `${name}: RowValueHelper.getFirstMedia({ entity, row, name: "${name}" }) as MediaDto,`
+          : `${name}: RowValueHelper.getFirstMedia({ entity, row, name: "${name}" }),`;
+      }
+      return `${name}: RowValueHelper.getMedia({ entity, row, name: "${name}" }),`;
+    case PropertyType.MULTI_SELECT:
+    case PropertyType.MULTI_TEXT:
+      return `${name}: RowValueHelper.getMultiple({ entity, row, name: "${name}" }),`;
+    case PropertyType.RANGE_NUMBER:
+      return `${name}: RowValueHelper.getNumberRange({ entity, row, name: "${name}" }),`;
+    case PropertyType.RANGE_DATE:
+      return `${name}: RowValueHelper.getDateRange({ entity, row, name: "${name}" }),`;
+    default:
+      return "";
+  }
 }
 
 function rowToDto({ code, property }: { code: string[]; property: PropertyWithDetails }) {
-  let propertyCode = "";
-  let comments: string[] = [];
-  comments.push(property.isRequired ? "required" : "optional");
-  if (property.type === PropertyType.TEXT) {
-    let fallbackValue = property.isRequired ? ` ?? ""` : ``;
-    propertyCode = `${property.name}: RowValueHelper.getText({ entity, row, name: "${property.name}" })${fallbackValue},`;
-  } else if (property.type === PropertyType.NUMBER) {
-    let fallbackValue = property.isRequired ? ` ?? 0` : ``;
-    propertyCode = `${property.name}: RowValueHelper.getNumber({ entity, row, name: "${property.name}" })${fallbackValue},`;
-  } else if (property.type === PropertyType.DATE) {
-    let fallbackValue = property.isRequired ? ` ?? new Date()` : ``;
-    propertyCode = `${property.name}: RowValueHelper.getDate({ entity, row, name: "${property.name}" })${fallbackValue},`;
-  } else if (property.type === PropertyType.SELECT) {
-    let fallbackValue = property.isRequired ? ` ?? ""` : ``;
-    propertyCode = `${property.name}: RowValueHelper.getText({ entity, row, name: "${property.name}" })${fallbackValue},`;
-  } else if (property.type === PropertyType.BOOLEAN) {
-    propertyCode = `${property.name}: RowValueHelper.getBoolean({ entity, row, name: "${property.name}" }) ?? false,`;
-  } else if (property.type === PropertyType.MEDIA) {
-    if (PropertyAttributeHelper.getPropertyAttributeValue_Number(property, PropertyAttributeName.Max) === 1) {
-      if (property.isRequired) {
-        propertyCode = `${property.name}: RowValueHelper.getFirstMedia({ entity, row, name: "${property.name}" }) as MediaDto,`;
-      } else {
-        propertyCode = `${property.name}: RowValueHelper.getFirstMedia({ entity, row, name: "${property.name}" }),`;
-      }
-    } else {
-      propertyCode = `${property.name}: RowValueHelper.getMedia({ entity, row, name: "${property.name}" }),`;
-    }
-  } else if (property.type === PropertyType.MULTI_SELECT) {
-    propertyCode = `${property.name}: RowValueHelper.getMultiple({ entity, row, name: "${property.name}" }),`;
-  } else if (property.type === PropertyType.MULTI_TEXT) {
-    propertyCode = `${property.name}: RowValueHelper.getMultiple({ entity, row, name: "${property.name}" }),`;
-  } else if (property.type === PropertyType.RANGE_NUMBER) {
-    propertyCode = `${property.name}: RowValueHelper.getNumberRange({ entity, row, name: "${property.name}" }),`;
-  } else if (property.type === PropertyType.RANGE_DATE) {
-    propertyCode = `${property.name}: RowValueHelper.getDateRange({ entity, row, name: "${property.name}" }),`;
-  }
+  const propertyCode = generateRowToDtoCode(property);
+  const comment = property.isRequired ? "required" : "optional";
+  code.push(propertyCode ? `${propertyCode} // ${comment}` : "");
+}
 
-  if (comments.length > 0) {
-    propertyCode = propertyCode + ` // ${comments.join(", ")}`;
+// Helper: Generate form-to-DTO conversion code
+function generateFormToDtoCode(property: PropertyWithDetails): string {
+  const name = property.name;
+  switch (property.type) {
+    case PropertyType.TEXT:
+    case PropertyType.SELECT:
+      return `${name}: FormHelper.getText(form, "${name}"),`;
+    case PropertyType.NUMBER:
+      return `${name}: FormHelper.getNumber(form, "${name}"),`;
+    case PropertyType.DATE:
+      return `${name}: FormHelper.getDate(form, "${name}"),`;
+    case PropertyType.BOOLEAN:
+      return `${name}: FormHelper.getBoolean(form, "${name}"),`;
+    case PropertyType.MEDIA:
+      const isSingle = PropertyAttributeHelper.getPropertyAttributeValue_Number(property, PropertyAttributeName.Max) === 1;
+      return isSingle
+        ? `${name}: FormHelper.getFormFirstMedia(form, "${name}"),`
+        : `${name}: FormHelper.getFormMedia(form, "${name}"),`;
+    case PropertyType.MULTI_SELECT:
+    case PropertyType.MULTI_TEXT:
+      return `${name}: FormHelper.getMultiple(form, "${name}"),`;
+    case PropertyType.RANGE_NUMBER:
+      return `${name}: FormHelper.getNumberRange(form, "${name}"),`;
+    case PropertyType.RANGE_DATE:
+      return `${name}: FormHelper.getDateRange(form, "${name}"),`;
+    default:
+      return `${name}: undefined, // TODO: ${PropertyType[property.type]} not implemented`;
   }
-  code.push(propertyCode);
 }
 
 function formToDto({ code, property }: { code: string[]; property: PropertyWithDetails }) {
-  let propertyCode = "";
-  let comments: string[] = [];
-  comments.push(property.isRequired ? "required" : "optional");
-  if (property.type === PropertyType.TEXT) {
-    propertyCode = `${property.name}: FormHelper.getText(form, "${property.name}"),`;
-  } else if (property.type === PropertyType.NUMBER) {
-    propertyCode = `${property.name}: FormHelper.getNumber(form, "${property.name}"),`;
-  } else if (property.type === PropertyType.DATE) {
-    propertyCode = `${property.name}: FormHelper.getDate(form, "${property.name}"),`;
-  } else if (property.type === PropertyType.SELECT) {
-    propertyCode = `${property.name}: FormHelper.getText(form, "${property.name}"),`;
-  } else if (property.type === PropertyType.BOOLEAN) {
-    propertyCode = `${property.name}: FormHelper.getBoolean(form, "${property.name}"),`;
-  } else if (property.type === PropertyType.MEDIA) {
-    if (PropertyAttributeHelper.getPropertyAttributeValue_Number(property, PropertyAttributeName.Max) === 1) {
-      propertyCode = `${property.name}: FormHelper.getFormFirstMedia(form, "${property.name}"),`;
-    } else {
-      propertyCode = `${property.name}: FormHelper.getFormMedia(form, "${property.name}"),`;
-    }
-  } else if (property.type === PropertyType.MULTI_SELECT) {
-    propertyCode = `${property.name}: FormHelper.getMultiple(form, "${property.name}"),`;
-  } else if (property.type === PropertyType.RANGE_NUMBER) {
-    propertyCode = `${property.name}: FormHelper.getNumberRange(form, "${property.name}"),`;
-  } else if (property.type === PropertyType.RANGE_DATE) {
-    propertyCode = `${property.name}: FormHelper.getDateRange(form, "${property.name}"),`;
-  } else if (property.type === PropertyType.MULTI_TEXT) {
-    propertyCode = `${property.name}: FormHelper.getMultiple(form, "${property.name}"),`;
-  } else {
-    propertyCode = `${property.name}: undefined, // TODO: ${PropertyType[property.type]} not implemented`;
-  }
-
-  if (comments.length > 0) {
-    propertyCode = propertyCode + ` // ${comments.join(", ")}`;
-  }
-  code.push(propertyCode);
+  const propertyCode = generateFormToDtoCode(property);
+  const comment = property.isRequired ? "required" : "optional";
+  code.push(`${propertyCode} // ${comment}`);
 }
 
 function createDtoToRow({ code, property }: { code: string[]; property: PropertyWithDetails }) {
@@ -204,25 +194,169 @@ function getColor(color: number) {
   return "Colors." + Colors[color];
 }
 
+// Helper: Build base props for form inputs
+function buildBaseProps(property: PropertyWithDetails, index: number): string[] {
+  const props: string[] = [];
+  if (property.isRequired) props.push(`required`);
+  if (index === 0) props.push(`autoFocus`);
+  props.push("disabled={isDisabled()}");
+  return props;
+}
+
+// Helper: Generate UI form code for TEXT property
+function uiFormText(code: string[], imports: string[], property: PropertyWithDetails, props: string[]) {
+  const min = PropertyAttributeHelper.getPropertyAttributeValue_Number(property, PropertyAttributeName.Min) ?? 0;
+  const max = PropertyAttributeHelper.getPropertyAttributeValue_Number(property, PropertyAttributeName.Max) ?? 0;
+  const defaultValue = PropertyAttributeHelper.getPropertyAttributeValue_String(property, PropertyAttributeName.DefaultValue);
+  const value = defaultValue ? `item?.${property.name} ?? (!item ? "${defaultValue}" : undefined)` : `item?.${property.name}`;
+  props.push(`defaultValue={${value}}`);
+
+  const placeholder = PropertyAttributeHelper.getPropertyAttributeValue_String(property, PropertyAttributeName.Placeholder);
+  if (placeholder) props.push(`placeholder="${placeholder}"`);
+  if (min > 0) props.push(`minLength={${min}}`);
+  if (max > 0) props.push(`maxLength={${max}}`);
+
+  const rows = property.attributes.find((f) => f.name === PropertyAttributeName.Rows);
+  if (rows) props.push(`rows={${PropertyAttributeHelper.getPropertyAttributeValue_Number(property, PropertyAttributeName.Rows)}}`);
+
+  const pattern = PropertyAttributeHelper.getPropertyAttributeValue_String(property, PropertyAttributeName.Pattern);
+  if (pattern) props.push(`pattern="${pattern}"`);
+
+  const editor = PropertyAttributeHelper.getPropertyAttributeValue_String(property, PropertyAttributeName.Editor);
+  if (editor === "monaco") {
+    props.push(`editor="monaco" editorLanguage="markdown"`);
+  } else if (editor === "wysiwyg") {
+    props.push(`editor="wysiwyg" autoFocus={false}`);
+  }
+
+  if (!property.subtype || property.subtype === "singleLine") {
+    imports.push(`import InputText from "~/components/ui/input/InputText";`);
+    code.push(`<InputText name="${property.name}" title={t("${property.title}")} ${props.join(" ")} />`);
+  } else {
+    imports.push(`import InputTextSubtype from "~/components/ui/input/subtypes/InputTextSubtype";`);
+    code.push(`<InputTextSubtype subtype="${property.subtype}" name="${property.name}" title={t("${property.title}")} ${props.join(" ")} />`);
+  }
+}
+
+// Helper: Generate UI form code for other property types (extracted to reduce complexity)
+function uiFormOtherTypes(code: string[], imports: string[], property: PropertyWithDetails, props: string[], index: number) {
+  const min = PropertyAttributeHelper.getPropertyAttributeValue_Number(property, PropertyAttributeName.Min) ?? 0;
+  const max = PropertyAttributeHelper.getPropertyAttributeValue_Number(property, PropertyAttributeName.Max) ?? 0;
+
+  if (property.type === PropertyType.NUMBER) {
+    imports.push(`import InputNumber from "~/components/ui/input/InputNumber";`);
+    const defaultValue = PropertyAttributeHelper.getPropertyAttributeValue_Number(property, PropertyAttributeName.DefaultValue);
+    const value = defaultValue ? `item?.${property.name} ?? (!item ? ${defaultValue} : undefined)` : `item?.${property.name}`;
+    props.push(`defaultValue={${value}}`);
+    if (min > 0) props.push(`min={${min}}`);
+    if (max > 0) props.push(`max={${max}}`);
+    const step = PropertyAttributeHelper.getPropertyAttributeValue_Number(property, PropertyAttributeName.Step);
+    if (step) props.push(`step="${step}"`);
+    code.push(`<InputNumber name="${property.name}" title={t("${property.title}")} ${props.join(" ")} />`);
+  } else if (property.type === PropertyType.DATE) {
+    imports.push(`import InputDate from "~/components/ui/input/InputDate";`);
+    code.push(`<InputDate name="${property.name}" title={t("${property.title}")} defaultValue={item?.${property.name}} ${props.join(" ")} />`);
+  } else if (property.type === PropertyType.SELECT) {
+    uiFormSelect(code, imports, property, props);
+  } else if (property.type === PropertyType.BOOLEAN) {
+    uiFormBoolean(code, imports, property, props);
+  } else if (property.type === PropertyType.MEDIA) {
+    uiFormMedia(code, imports, property, props, min, max);
+  } else if (property.type === PropertyType.MULTI_SELECT || property.type === PropertyType.MULTI_TEXT) {
+    uiFormMultiType(code, imports, property, props);
+  } else if (property.type === PropertyType.RANGE_NUMBER || property.type === PropertyType.RANGE_DATE) {
+    uiFormRange(code, imports, property, props);
+  } else {
+    code.push(`/* TODO: ${property.name} (${PropertyType[property.type]}) */`);
+  }
+}
+
+// Separate handlers for complex types
+function uiFormSelect(code: string[], imports: string[], property: PropertyWithDetails, props: string[]) {
+  const defaultValue = PropertyAttributeHelper.getPropertyAttributeValue_String(property, PropertyAttributeName.DefaultValue);
+  const value = defaultValue ? `item?.${property.name} ?? (!item ? "${defaultValue}" : undefined)` : `item?.${property.name}`;
+  props.push(`defaultValue={${value}}`);
+  const withColors = property.options.filter((f) => f.color).length > 0;
+  imports.push(`import { Colors } from "~/application/enums/shared/Colors";`);
+  props.push(`options={[${property.options.map((option) =>
+    `{ name: ${option.name === null ? `"${option.value}"` : `"${option.name}"`}, value: "${option.value}", color: ${getColor(option.color)} }`
+  )}]}`);
+
+  if (!property.subtype || property.subtype === "dropdown") {
+    props.push(`withColors={${withColors ? "true" : "false"}}`);
+    imports.push(`import InputSelect from "~/components/ui/input/InputSelect";`);
+    code.push(`<InputSelect name="${property.name}" title={t("${property.title}")} ${props.join(" ")} />`);
+  } else if (property.subtype === "radioGroupCards") {
+    imports.push(`import InputRadioGroupCards from "~/components/ui/input/InputRadioGroupCards";`);
+    code.push(`<InputRadioGroupCards name="${property.name}" title={t("${property.title}")} ${props.join(" ")} />`);
+  }
+}
+
+function uiFormBoolean(code: string[], imports: string[], property: PropertyWithDetails, props: string[]) {
+  imports.push(`import InputCheckbox from "~/components/ui/input/InputCheckbox";`);
+  const defaultValue = PropertyAttributeHelper.getPropertyAttributeValue_Boolean(property, PropertyAttributeName.DefaultValue);
+  const value = defaultValue ? `item?.${property.name} ?? (!item ? ${defaultValue} : undefined)` : `item?.${property.name}`;
+  props.push(`value={${value}}`);
+  code.push(`<InputCheckbox name="${property.name}" title={t("${property.title}")} asToggle ${props.join(" ")} />`);
+}
+
+function uiFormMedia(code: string[], imports: string[], property: PropertyWithDetails, props: string[], min: number, max: number) {
+  imports.push(`import InputMedia from "~/components/ui/input/InputMedia";`);
+  if (PropertyAttributeHelper.getPropertyAttributeValue_Number(property, PropertyAttributeName.Max) === 1) {
+    props.push(`initialMedia={item?.${property.name} ? [item?.${property.name}] : []}`);
+  } else {
+    props.push(`initialMedia={item?.${property.name}}`);
+  }
+  const acceptFileTypes = PropertyAttributeHelper.getPropertyAttributeValue_String(property, PropertyAttributeName.AcceptFileTypes);
+  if (min > 0) props.push(`min={${min}}`);
+  if (max > 0) props.push(`max={${max}}`);
+  if (acceptFileTypes) props.push(`accept="${acceptFileTypes}"`);
+  const maxSize = PropertyAttributeHelper.getPropertyAttributeValue_Number(property, PropertyAttributeName.MaxSize) ?? 0;
+  if (maxSize > 0) props.push(`maxSize={${maxSize}}`);
+  code.push(`<InputMedia name="${property.name}" title={t("${property.title}")} ${props.join(" ")} />`);
+}
+
+function uiFormMultiType(code: string[], imports: string[], property: PropertyWithDetails, props: string[]) {
+  if (property.type === PropertyType.MULTI_SELECT) {
+    props.push(`value={item?.${property.name}}`);
+    imports.push(`import { Colors } from "~/application/enums/shared/Colors";`);
+    props.push(`options={[${property.options.map((option) =>
+      `{ name: ${option.name === null ? `"${option.value}"` : `"${option.name}"`}, value: "${option.value}", color: ${getColor(option.color)} }`
+    )}]}`);
+    imports.push(`import PropertyMultiSelector from "~/components/entities/properties/PropertyMultiSelector";`);
+    if (!property.subtype || property.subtype === "combobox") {
+      code.push(`<PropertyMultiSelector name="${property.name}" title={t("${property.title}")} ${props.join(" ")} />`);
+    } else if (property.subtype === "checkboxCards") {
+      code.push(`<PropertyMultiSelector subtype="checkboxCards" name="${property.name}" title={t("${property.title}")} ${props.join(" ")} />`);
+    }
+  } else if (property.type === PropertyType.MULTI_TEXT) {
+    imports.push(`import InputMultiText from "~/components/ui/input/InputMultiText";`);
+    const separator = PropertyAttributeHelper.getPropertyAttributeValue_String(property, PropertyAttributeName.Separator);
+    if (separator) props.push(`separator="${separator}"`);
+    props.push(`value={item?.${property.name}}`);
+    code.push(`<InputMultiText name="${property.name}" title={t("${property.title}")} ${props.join(" ")} />`);
+  }
+}
+
+function uiFormRange(code: string[], imports: string[], property: PropertyWithDetails, props: string[]) {
+  if (property.type === PropertyType.RANGE_NUMBER) {
+    imports.push(`import InputRangeNumber from "~/components/ui/input/ranges/InputRangeNumber";`);
+    code.push(`<InputRangeNumber name="${property.name}" title={t("${property.title}")} ${props.join(" ")} defaultValueMin={item?.${property.name}?.numberMin ? Number(item.${property.name}.numberMin) : undefined} defaultValueMax={item?.${property.name}?.numberMax ? Number(item.${property.name}.numberMax) : undefined} />`);
+  } else if (property.type === PropertyType.RANGE_DATE) {
+    imports.push(`import InputRangeDate from "~/components/ui/input/ranges/InputRangeDate";`);
+    code.push(`<InputRangeDate name="${property.name}" title={t("${property.title}")} ${props.join(" ")} defaultValueMin={item?.${property.name}?.dateMin} defaultValueMax={item?.${property.name}?.dateMax} />`);
+  }
+}
+
 function uiForm({ code, imports, property, index }: { code: string[]; imports: string[]; property: PropertyWithDetails; index: number }) {
   if (!property.showInCreate) {
-    // render if row exists only
     code.push(`{item && (`);
   }
 
-  const props: string[] = [];
-  if (property.isRequired) {
-    props.push(`required`);
-  }
-  if (index === 0) {
-    props.push(`autoFocus`);
-  }
-  props.push("disabled={isDisabled()}");
-
-  let min = PropertyAttributeHelper.getPropertyAttributeValue_Number(property, PropertyAttributeName.Min) ?? 0;
-  let max = PropertyAttributeHelper.getPropertyAttributeValue_Number(property, PropertyAttributeName.Max) ?? 0;
+  const props = buildBaseProps(property, index);
 
   if (property.type === PropertyType.TEXT) {
+    uiFormText(code, imports, property, props);
     let defaultValue = PropertyAttributeHelper.getPropertyAttributeValue_String(property, PropertyAttributeName.DefaultValue);
     let value = `item?.${property.name}`;
     if (defaultValue) {

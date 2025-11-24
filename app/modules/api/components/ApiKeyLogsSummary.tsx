@@ -35,7 +35,7 @@ export default function ApiKeyLogsSummary({ data }: Props) {
 
   useEffect(() => {
     const sortedGroupBy = ApiKeyLogUtils.getGroupByValues(searchParams).sort((a, b) => a.localeCompare(b));
-    const sortedCurrentGroupBy = groupBy.sort((a, b) => a.localeCompare(b));
+    const sortedCurrentGroupBy = [...groupBy].sort((a, b) => a.localeCompare(b));
     if (sortedGroupBy.join(",") !== sortedCurrentGroupBy.join(",")) {
       searchParams.delete("groupBy");
       groupBy.forEach((by) => {

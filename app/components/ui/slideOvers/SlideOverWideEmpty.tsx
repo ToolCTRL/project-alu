@@ -5,33 +5,24 @@ import clsx from "clsx";
 import { cn } from "~/lib/utils";
 import { Sheet, SheetClose, SheetContent, SheetDescription, SheetFooter, SheetHeader, SheetTitle, SheetTrigger } from "~/components/ui/sheet";
 
+// Extracted class mappings to reduce complexity
+const SIZE_CLASSES: Record<string, string> = {
+  sm: "max-w-sm sm:max-w-sm", md: "max-w-md sm:max-w-md", lg: "max-w-lg sm:max-w-lg",
+  xl: "max-w-xl sm:max-w-xl", "2xl": "max-w-2xl sm:max-w-2xl", "3xl": "max-w-3xl sm:max-w-3xl",
+  "4xl": "max-w-4xl sm:max-w-4xl", "5xl": "max-w-5xl sm:max-w-5xl", "6xl": "max-w-6xl sm:max-w-6xl",
+  "7xl": "max-w-7xl sm:max-w-7xl", full: "max-w-full sm:max-w-full"
+};
+
+const POSITION_CLASSES: Record<number, string> = {
+  0: "z-0", 1: "z-10", 2: "z-20", 3: "z-30", 4: "z-40", 5: "z-50"
+};
+
 function getSizeClasses(size: string): string {
-  switch (size) {
-    case "sm": return "max-w-sm sm:max-w-sm";
-    case "md": return "max-w-md sm:max-w-md";
-    case "lg": return "max-w-lg sm:max-w-lg";
-    case "xl": return "max-w-xl sm:max-w-xl";
-    case "2xl": return "max-w-2xl sm:max-w-2xl";
-    case "3xl": return "max-w-3xl sm:max-w-3xl";
-    case "4xl": return "max-w-4xl sm:max-w-4xl";
-    case "5xl": return "max-w-5xl sm:max-w-5xl";
-    case "6xl": return "max-w-6xl sm:max-w-6xl";
-    case "7xl": return "max-w-7xl sm:max-w-7xl";
-    case "full": return "max-w-full sm:max-w-full";
-    default: return "max-w-2xl sm:max-w-2xl";
-  }
+  return SIZE_CLASSES[size] ?? "max-w-2xl sm:max-w-2xl";
 }
 
 function getPositionClasses(position: number | undefined): string {
-  switch (position) {
-    case 0: return "z-0";
-    case 1: return "z-10";
-    case 2: return "z-20";
-    case 3: return "z-30";
-    case 4: return "z-40";
-    case 5: return "z-50";
-    default: return "z-50";
-  }
+  return POSITION_CLASSES[position ?? 5] ?? "z-50";
 }
 
 export default function SlideOverWideEmpty({

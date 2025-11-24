@@ -240,8 +240,8 @@ const InputSelectorDarkMode = (
                   </div>
                 )}
 
-                {itemsByGroup().map((group, idx) => (
-                  <Fragment key={idx}>
+                {itemsByGroup().map((group) => (
+                  <Fragment key={group.name || 'no-name'}>
                     {group.name && (
                       <Listbox.Option
                         disabled
@@ -258,8 +258,8 @@ const InputSelectorDarkMode = (
                       </Listbox.Option>
                     )}
 
-                    {group.items.map((item, idx) => (
-                      <OptionItem key={idx} item={item} withColors={withColors} />
+                    {group.items.map((item) => (
+                      <OptionItem key={`${group.name}-${item.value}`} item={item} withColors={withColors} />
                     ))}
                   </Fragment>
                 ))}
