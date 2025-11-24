@@ -1,0 +1,16 @@
+---
+# Codacy Configuration File
+# Exclude auto-generated Prisma migrations from SQL linting
+
+engines:
+  tsqllint:
+    enabled: true
+    exclude_paths:
+      - 'prisma/migrations/**'
+
+exclude_paths:
+  - '.bmad/**'
+  - '.claude/**'
+  - 'node_modules/**'
+  - 'dist/**'
+  - 'build/**'
