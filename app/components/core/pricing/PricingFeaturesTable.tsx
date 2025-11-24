@@ -226,6 +226,17 @@ export default function PricingFeaturesTable({ plans, items, setItems }: Props) 
   );
 }
 
+function handleCopyFromProduct(
+  product: SubscriptionProductDto,
+  items: SubscriptionFeatureDto[],
+  setItems: React.Dispatch<React.SetStateAction<SubscriptionFeatureDto[]>>
+) {
+  return () => {
+    const uniqueFeatures = product.features.filter((feature) => !items.find((item) => item.name === feature.name));
+    setItems([...items, ...uniqueFeatures]);
+  };
+}
+
 function Buttons({
   plans,
   items,
@@ -238,11 +249,6 @@ function Buttons({
   onAddFeature: () => void;
 }) {
   const { t } = useTranslation();
-
-  const handleCopyFromProduct = (product: SubscriptionProductDto) => () => {
-    const uniqueFeatures = product.features.filter((feature) => !items.find((item) => item.name === feature.name));
-    setItems([...items, ...uniqueFeatures]);
-  };
 
   return (
     <div className="flex items-center space-x-2">
@@ -275,7 +281,7 @@ function Buttons({
                   {({ active }) => (
                     <button
                       type="button"
-        onClick={handleCopyFromProduct(product)}
+                      onClick={handleCopyFromProduct(product, items, setItems)}
                       className={clsx("w-full text-left", active ? "text-foreground bg-secondary/90" : "text-foreground/80", "block px-4 py-2 text-sm")}
                     >
                       {t(product.title)} ({product.features.length})

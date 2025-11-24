@@ -77,7 +77,7 @@ export default function LogsTable({ withTenant, items, pagination }: Props) {
       headers.push({
         name: "tenant",
         title: t("models.tenant.object"),
-        value: (item) => <TenantCell item={item} />,
+        value: TenantCell,
         breakpoint: "sm",
       });
     }
@@ -86,28 +86,28 @@ export default function LogsTable({ withTenant, items, pagination }: Props) {
       {
         name: "action",
         title: t("models.log.action"),
-        value: (item) => <ActionCell item={item} />,
+        value: ActionCell,
       },
       {
         name: "url",
         title: t("models.log.url"),
-        value: (item) => <UrlCell item={item} />,
+        value: UrlCell,
       },
       {
         name: "details",
         title: t("models.log.details"),
-        value: (item) => <DetailsCell item={item} />,
+        value: DetailsCell,
       },
       {
         name: "createdBy",
         title: t("shared.createdBy"),
-        value: (item) => <CreatedByCell item={item} />,
+        value: CreatedByCell,
       },
       {
         name: "createdAt",
         title: t("shared.createdAt"),
         value: (item) => DateUtils.dateAgo(item.createdAt),
-        formattedValue: (item) => <CreatedAtCell item={item} />,
+        formattedValue: CreatedAtCell,
         className: "text-muted-foreground text-xs",
         breakpoint: "sm",
         sortable: true,

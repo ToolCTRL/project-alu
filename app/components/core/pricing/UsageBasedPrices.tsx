@@ -35,7 +35,7 @@ function buildUsageBasedPrices(units: SubscriptionUsageBasedUnitDto[]): Subscrip
   const usageBasedPrices: SubscriptionUsageBasedPriceDto[] = [];
 
   units.forEach((unit) => {
-    const sortedPrices = unit.prices.sort((a, b) => a.from - b.from);
+    const sortedPrices = unit.prices.toSorted((a, b) => a.from - b.from);
 
     sortedPrices.forEach((price) => {
       const unitTier = {
@@ -162,11 +162,10 @@ export default function UsageBasedPrices({ initial, onUpdate, disabled }: Props)
     <div className="space-y-2">
       {units.map((item, idx) => {
         return (
-          <div key={idx} className="space-y-3">
+          <div key={`unit-${item.unit}-${idx}`} className="space-y-3">
             <CollapsibleRow
               initial={!disabled}
               className="bg-secondary"
-              key={idx}
               value={
                 <div className="flex flex-col truncate">
                   <h3 className="text-foreground text-sm font-bold">
@@ -181,7 +180,7 @@ export default function UsageBasedPrices({ initial, onUpdate, disabled }: Props)
               onRemove={() => removeUnit(item)}
               disabled={disabled}
             >
-              <UsageBasedPricesUnit key={idx} item={item} onUpdate={(item) => updateUnit(idx, item)} disabled={disabled} />
+              <UsageBasedPricesUnit item={item} onUpdate={(item) => updateUnit(idx, item)} disabled={disabled} />
             </CollapsibleRow>
           </div>
         );
@@ -202,16 +201,13 @@ export default function UsageBasedPrices({ initial, onUpdate, disabled }: Props)
         <span className="font-medium uppercase">{t("shared.add")}</span>
       </button>
 
-      {/* {JSON.stringify(usageBasedPrices)} */}
       {usageBasedPrices.map((item, idx) => {
         return (
-          <div key={idx}>
+          <div key={`price-${item.id}-${idx}`}>
             <input readOnly hidden type="text" id="usage-based-prices[]" name="usage-based-prices[]" value={JSON.stringify(item)} />
           </div>
         );
       })}
-
-      {/* <UsageBasedPricesUnitForm ref={usageBasedPriceUnitForm} onAdded={set} /> */}
     </div>
   );
 }

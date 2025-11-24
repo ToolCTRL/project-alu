@@ -107,12 +107,12 @@ export default function PostsTable({ blogPath, items }: Props) {
           {
             name: "createdAt",
             title: t("shared.createdAt"),
-            value: (item) => <CreatedAtCellPost item={item} />,
+            value: CreatedAtCellPost,
           },
           {
             name: "author",
             title: t("models.post.author"),
-            value: (item) => <AuthorCell item={item} />,
+            value: AuthorCell,
           },
           {
             name: "actions",

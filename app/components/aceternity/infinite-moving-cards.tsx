@@ -101,7 +101,6 @@ export const InfiniteMovingCards = ({
         )}
       >
         {items.map((testimonial, idx) => {
-          const selectedColor = idx < colors.length ? colors[idx] : colors[Math.floor(Math.random() * colors.length)];
           return (
             <li
               className={clsx(
@@ -131,7 +130,7 @@ export const InfiniteMovingCards = ({
                   <span className="flex flex-col gap-3">
                     {/* <span className=" text-muted-foreground text-sm font-normal leading-[1.6]">{testimonial.name}</span> */}
                     <div className=" -mx-1">
-                      <Stars color={randomColor} />
+                      <Stars color={colors[idx % colors.length]} />
                     </div>
                     <span className=" text-foreground text-sm font-black leading-[1.6]">{testimonial.title}</span>
                   </span>

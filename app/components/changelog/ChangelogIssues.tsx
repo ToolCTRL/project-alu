@@ -61,8 +61,6 @@ export default function ChangelogIssues({ title, icon, items }: Props) {
                                 type="button"
                                 onClick={() => setSelectedImage(image)}
                                 key={`${image.title}-${idx}`}
-                                role="button"
-                                tabIndex={0}
                                 className="border-border hover:border-border w-28 cursor-pointer overflow-hidden rounded-lg border-2 border-dashed shadow-lg hover:opacity-90 hover:shadow-2xl"
                               >
                                 <img

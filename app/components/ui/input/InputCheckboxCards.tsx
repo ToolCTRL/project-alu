@@ -56,14 +56,14 @@ export default function InputCheckboxCards({
   }, [display, options]);
 
   useEffect(() => {
-    if (value && !isEqual([...selected].sort(), [...value].sort())) {
+    if (value && !isEqual([...selected].toSorted((a, b) => String(a).localeCompare(String(b))), [...value].toSorted((a, b) => String(a).localeCompare(String(b))))) {
       setSelected(value);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [value]);
 
   useEffect(() => {
-    if (onChange && !isEqual([...selected].sort(), value ? [...value].sort() : [])) {
+    if (onChange && !isEqual([...selected].toSorted((a, b) => String(a).localeCompare(String(b))), value ? [...value].toSorted((a, b) => String(a).localeCompare(String(b))) : [])) {
       onChange(selected);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps

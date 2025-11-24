@@ -519,7 +519,7 @@ function getButtonText(
     return t("shared.downgrade");
   }
 
-  if (price && price.price === 0) {
+  if (price?.price === 0) {
     return t("pricing.getItForFree");
   }
 

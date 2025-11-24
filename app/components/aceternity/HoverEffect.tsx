@@ -90,9 +90,7 @@ export const HoverEffect = ({ items }: { items: FeatureDto[] }) => {
               />
             )}
           </AnimatePresence>
-          <div
-            role="article"
-            tabIndex={0}
+          <article
             className={clsx(
               "relative  h-full w-full overflow-hidden rounded-2xl border border-transparent bg-linear-to-br p-3",
               item.className || "text-muted-foreground bg-slate-900/5 dark:bg-white/5"
@@ -150,7 +148,7 @@ export const HoverEffect = ({ items }: { items: FeatureDto[] }) => {
                 )}
               </div>
             </div>
-          </div>
+          </article>
         </LinkOrAhref>
       ))}
 
