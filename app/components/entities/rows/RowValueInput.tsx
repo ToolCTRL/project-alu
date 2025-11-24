@@ -12,6 +12,7 @@ import InputMedia from "~/components/ui/input/InputMedia";
 import PropertyAttributeHelper from "~/utils/helpers/PropertyAttributeHelper";
 import { PropertyAttributeName } from "~/application/enums/entities/PropertyAttributeName";
 import { marked } from "marked";
+import DOMPurify from "isomorphic-dompurify";
 import { RowValueMultipleDto } from "~/application/dtos/entities/RowValueMultipleDto";
 import InputMultiText, { RefInputMultiText } from "~/components/ui/input/InputMultiText";
 import PropertyMultiSelector from "../properties/PropertyMultiSelector";
@@ -157,7 +158,7 @@ const RowValueInput = (
                 <div className="prose border-border bg-secondary h-auto rounded-md border p-3">
                   <div
                     dangerouslySetInnerHTML={{
-                      __html: marked(textValue ?? "") ?? "",
+                      __html: DOMPurify.sanitize(marked(textValue ?? "") ?? ""),
                     }}
                   />
                 </div>
