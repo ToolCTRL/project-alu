@@ -83,8 +83,23 @@ const InputUrl = (
   const [isValid, setIsValid] = useState<boolean>(false);
 
   useEffect(() => {
-    const isValid = value?.match(/^(https?:\/\/)?([\da-z.-]+)\.([a-z.]{2,6})([/\w .-]*)*\/?$/);
-    setIsValid(isValid ? true : false);
+    // Use URL constructor for safer validation, fallback to regex for relative URLs
+    let valid = false;
+    if (value) {
+      try {
+        new URL(value);
+        valid = true;
+      } catch {
+        // Try with https:// prefix for domain-only URLs
+        try {
+          new URL(`https://${value}`);
+          valid = /^[\da-z.-]+\.[a-z.]{2,63}(\/[\w .-]*)?$/i.test(value);
+        } catch {
+          valid = false;
+        }
+      }
+    }
+    setIsValid(valid);
   }, [value]);
 
   function getTranslation(value: string) {

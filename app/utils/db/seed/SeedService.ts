@@ -7,17 +7,19 @@ import { getAvailableTenantInboundAddress } from "~/utils/services/emailService"
 import { seedRolesAndPermissions } from "~/utils/services/rolesAndPermissionsService";
 import { db } from "~/utils/db.server";
 
+const DEFAULT_SEED_PASSWORD = process.env.SEED_PASSWORD || "Dev123!Password";
+
 const adminUser = {
-  email: "admin@email.com",
-  password: "password",
+  email: process.env.SEED_ADMIN_EMAIL || "admin@email.com",
+  password: DEFAULT_SEED_PASSWORD,
   firstName: "Admin",
   lastName: "User",
 };
 
 async function seed() {
   if (process.env.NODE_ENV === "production") {
-    if (adminUser.email === "admin@email.com" || adminUser.password === "password") {
-      throw Error("You cannot seed the database with the default admin email or password in production.");
+    if (!process.env.SEED_PASSWORD || !process.env.SEED_ADMIN_EMAIL) {
+      throw Error("You must set SEED_PASSWORD and SEED_ADMIN_EMAIL environment variables in production.");
     }
   }
 
@@ -29,14 +31,14 @@ async function seed() {
     firstName: "John",
     lastName: "Doe",
     email: "john.doe@company.com",
-    password: "password",
+    password: DEFAULT_SEED_PASSWORD,
   });
   const user2 = await createUser({
     userType: "app",
     firstName: "Luna",
     lastName: "Davis",
     email: "luna.davis@company.com",
-    password: "password",
+    password: DEFAULT_SEED_PASSWORD,
   });
 
   await createTenant("acme-corp-1", "Acme Corp 1", [

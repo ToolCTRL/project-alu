@@ -355,8 +355,8 @@ async function generatePostmanCollection({ request, entities, t }: { request: Re
     examples: [
       {
         body: {
-          email: "<email>",
-          password: "<password>",
+          email: "{{email}}",
+          password: "{{password}}",
         },
       },
     ],
@@ -379,8 +379,8 @@ async function generatePostmanCollection({ request, entities, t }: { request: Re
     mode: "raw",
     raw: JSON.stringify(
       {
-        email: "<email>",
-        password: "<password>",
+        email: "{{email}}",
+        password: "{{password}}",
       },
       null,
       2

@@ -7,15 +7,15 @@ FROM --platform=linux/amd64 node:20-bookworm-slim as base
 ENV NODE_ENV production
 
 # Install openssl for Prisma
-RUN apt-get update && apt-get install -y openssl
+RUN apt-get update && apt-get install -y --no-install-recommends openssl && rm -rf /var/lib/apt/lists/*
 
 # Install all node_modules, including dev dependencies
 FROM base as deps
 
 WORKDIR /myapp
 
-ADD package.json ./
-RUN npm install --production=false --legacy-peer-deps
+COPY package.json ./
+RUN npm install --production=false --legacy-peer-deps --ignore-scripts
 
 # Setup production node_modules
 FROM base as production-deps
@@ -33,10 +33,10 @@ WORKDIR /myapp
 
 COPY --from=deps /myapp/node_modules /myapp/node_modules
 
-ADD prisma prisma
+COPY prisma prisma
 RUN npx prisma generate
 
-ADD . .
+COPY . .
 RUN npm run build
 
 # Finally, build the production image with minimal footprint
@@ -56,6 +56,11 @@ COPY --from=build /myapp/package.json /myapp/package.json
 COPY --from=build /myapp/start.sh /myapp/start.sh
 COPY --from=build /myapp/prisma /myapp/prisma
 
-RUN chmod +x /myapp/start.sh
+# Create non-root user
+RUN groupadd -r appuser && useradd -r -g appuser appuser && \
+    chown -R appuser:appuser /myapp && \
+    chmod +x /myapp/start.sh
+
+USER appuser
 
 ENTRYPOINT [ "./start.sh" ]

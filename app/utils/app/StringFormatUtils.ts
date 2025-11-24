@@ -2,7 +2,8 @@ const validateEmail = (value: string | undefined) => {
   if (!value) {
     return false;
   }
-  return /^\w+([\\.-]?\w+)*@\w+([\\.-]?\w+)*(\.\w{2,3})+$/.test(value);
+  // Use a safer regex without nested quantifiers to prevent ReDoS
+  return /^[\w.-]+@[\w.-]+\.\w{2,}$/.test(value);
 };
 
 const validateUrl = (value: string | undefined) => {

@@ -146,7 +146,7 @@ export const action: ActionFunction = async ({ request, params }) => {
       });
 
       return Response.json({
-        passwordSuccess: "Password updated",
+        success: "Password updated",
       });
     }
     case "deleteAccount": {
