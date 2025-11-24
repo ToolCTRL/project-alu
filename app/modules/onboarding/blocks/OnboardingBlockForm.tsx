@@ -106,6 +106,8 @@ export default function OnboardingBlockForm({ item, onUpdate }: { item?: Onboard
                   steps: [
                     ...(state.steps ?? []),
                     {
+                      // Using Math.random() for non-cryptographic UI form ID generation is safe here
+                      // This is only used to generate unique identifiers for form elements in the UI, not for security purposes
                       id: Math.floor(Math.random() * 10000).toString(),
                       // ...defaultOnboardingStepBlock,
                       title: "",

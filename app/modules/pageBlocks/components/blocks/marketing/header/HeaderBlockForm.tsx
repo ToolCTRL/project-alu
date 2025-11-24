@@ -17,9 +17,13 @@ export default function HeaderBlockForm({ item, onUpdate }: { item?: HeaderBlock
     const header = item || PageBlockUtils.defaultBlocks.header!;
     header.links.forEach((link) => {
       if (!link.id) {
+        // Using Math.random() for non-cryptographic UI form ID generation is safe here
+        // This is only used to generate unique identifiers for form elements in the UI, not for security purposes
         link.id = Math.floor(Math.random() * 10000).toString();
       }
       link.items?.forEach((subLink) => {
+        // Using Math.random() for non-cryptographic UI form ID generation is safe here
+        // This is only used to generate unique identifiers for form elements in the UI, not for security purposes
         subLink.id = Math.floor(Math.random() * 10000).toString();
       });
     });
@@ -57,6 +61,8 @@ export default function HeaderBlockForm({ item, onUpdate }: { item?: HeaderBlock
                 links: [
                   ...state.links,
                   {
+                    // Using Math.random() for non-cryptographic UI form ID generation is safe here
+                    // This is only used to generate unique identifiers for form elements in the UI, not for security purposes
                     id: Math.floor(Math.random() * 10000).toString(),
                     title: "Link " + (state.links.length + 1),
                     path: "",
@@ -156,6 +162,7 @@ function LinkForm({
                   items: [
                     ...(state.items || []),
                     {
+                      // Not cryptographic use case - temporary ID for form state only
                       id: Math.floor(Math.random() * 10000).toString(),
                       title: "Sublink " + ((item.items?.length ?? 0) + 1),
                       path: "",

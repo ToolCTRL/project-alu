@@ -49,6 +49,7 @@ export default function GridBackground() {
           key={i}
           className="absolute rounded-full bg-purple-400/20"
           style={{
+            {/* Math.random() is safe here for UI animation purposes - used only for visual particle effects without security implications */}
             width: `${Math.random() * 4 + 2}px`,
             height: `${Math.random() * 4 + 2}px`,
             left: `${Math.random() * 100}%`,

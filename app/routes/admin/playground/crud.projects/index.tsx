@@ -61,7 +61,7 @@ export const action: ActionFunction = async ({ request }) => {
     try {
       const projectId = form.get("project-id")?.toString() ?? "";
       const taskId = form.get("task-id")?.toString() ?? "";
-      // randomize success or error
+      // randomize success or error - Testing/demo purposes only, not for security
       if (Math.random() > 0.5) {
         throw Error("Could not complete task: Example error (try again)");
       }

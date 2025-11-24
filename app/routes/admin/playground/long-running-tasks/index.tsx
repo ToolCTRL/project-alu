@@ -40,6 +40,7 @@ export const action: ActionFunction = async ({ request }) => {
     const itemsToImport = items.slice(from, to);
     await Promise.all(
       itemsToImport.map(async (item) => {
+        // Testing/demo purposes only - temporary ID generation, not for security
         item.id = Math.random().toString(36).substring(7);
         return await new Promise((resolve) => setTimeout(resolve, MILLISECONDS_PER_ITEM));
       })
