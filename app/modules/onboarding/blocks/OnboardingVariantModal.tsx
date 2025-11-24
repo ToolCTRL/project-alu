@@ -12,27 +12,23 @@ import Tabs from "~/components/ui/tabs/Tabs";
 import GridBlockUtils from "~/modules/pageBlocks/components/blocks/shared/grid/GridBlockUtils";
 import { OnboardingBlockDto, OnboardingStepBlockDto } from "./OnboardingBlockUtils";
 
-export default function OnboardingVariantModal({
-  block,
-  currentStepIdx,
-  setStep,
-  open,
-  onClose,
-  onDismiss,
-  onComplete,
-  onLinkClick,
-  onUpdateCurrentStepState,
-}: {
+interface OnboardingVariantModalProps {
   block: OnboardingBlockDto;
   currentStepIdx: number;
   open: boolean;
   setStep: (idx: number) => void;
-  onClose: () => void;
-  onDismiss: () => void;
-  onComplete: () => void;
-  onLinkClick: (item: { text: string; href: string }) => void;
-  onUpdateCurrentStepState: (state: { [key: string]: string }) => void;
-}) {
+  handlers: {
+    onClose: () => void;
+    onDismiss: () => void;
+    onComplete: () => void;
+    onLinkClick: (item: { text: string; href: string }) => void;
+    onUpdateCurrentStepState: (state: { [key: string]: string }) => void;
+  };
+}
+
+export default function OnboardingVariantModal(props: OnboardingVariantModalProps) {
+  const { block, currentStepIdx, setStep, open, handlers } = props;
+  const { onClose, onDismiss, onComplete, onLinkClick, onUpdateCurrentStepState } = handlers;
   const { t } = useTranslation();
   function dismiss() {
     onDismiss();

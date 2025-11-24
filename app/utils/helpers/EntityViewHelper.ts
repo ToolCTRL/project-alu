@@ -2,31 +2,21 @@ import { EntityView } from "@prisma/client";
 import { ViewFilterCondition } from "~/application/enums/entities/ViewFilterCondition";
 import { GridLayoutDto } from "~/application/dtos/layout/GridLayoutDto";
 
+const CONDITION_MAP: Record<string, ViewFilterCondition> = {
+  equals: ViewFilterCondition.equals,
+  contains: ViewFilterCondition.contains,
+  lt: ViewFilterCondition.lt,
+  lte: ViewFilterCondition.lte,
+  gt: ViewFilterCondition.gt,
+  gte: ViewFilterCondition.gte,
+  startsWith: ViewFilterCondition.startsWith,
+  endsWith: ViewFilterCondition.endsWith,
+  in: ViewFilterCondition.in,
+  notIn: ViewFilterCondition.notIn,
+};
+
 function getCondition(condition: string) {
-  switch (condition) {
-    case "equals":
-      return ViewFilterCondition.equals;
-    case "contains":
-      return ViewFilterCondition.contains;
-    case "lt":
-      return ViewFilterCondition.lt;
-    case "lte":
-      return ViewFilterCondition.lte;
-    case "gt":
-      return ViewFilterCondition.gt;
-    case "gte":
-      return ViewFilterCondition.gte;
-    case "startsWith":
-      return ViewFilterCondition.startsWith;
-    case "endsWith":
-      return ViewFilterCondition.endsWith;
-    case "in":
-      return ViewFilterCondition.in;
-    case "notIn":
-      return ViewFilterCondition.notIn;
-    default:
-      return ViewFilterCondition.equals;
-  }
+  return CONDITION_MAP[condition] ?? ViewFilterCondition.equals;
 }
 
 function getGridLayout(view: EntityView | null): GridLayoutDto {

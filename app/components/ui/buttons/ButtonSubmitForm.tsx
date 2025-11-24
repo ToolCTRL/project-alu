@@ -49,25 +49,32 @@ export default function ButtonSubmitForm({ submits, type, to, target, children, 
     }
   }, []);
 
-  function onClicked() {
-    if (!submits) {
-      return;
-    }
+  function buildFormData(): FormData {
     const formData = new FormData();
+    if (!submits) return formData;
+
     formData.append("action", submits.action ?? "");
+
     const values: { [key: string]: string } = submits?.values;
     for (const key in values) {
       formData.append(key, values[key]);
     }
+
     if (submits.action === "subscribe") {
       formData.set("coupon", searchParams.get("coupon")?.toString() ?? "");
       if (referral) {
         formData.set("referral", referral);
       }
     }
-    submit(formData, {
-      method: "post",
-    });
+
+    return formData;
+  }
+
+  function onClicked() {
+    if (!submits) return;
+
+    const formData = buildFormData();
+    submit(formData, { method: "post" });
   }
   return (
     <Fragment>

@@ -27,23 +27,58 @@ function getTitle({ fromEntityId, relationship }: { fromEntityId: string; relati
   }
 }
 
+type RelationshipTitleConfig = {
+  parentTitle: string;
+  childTitle: string;
+  parentCardinality: string;
+  childCardinality: string;
+};
+
+function getRelationshipTitleConfig(
+  relationship: EntityRelationshipWithDetails,
+  type: string
+): RelationshipTitleConfig {
+  const configs: Record<string, RelationshipTitleConfig> = {
+    "one-to-one": {
+      parentTitle: `${relationship.child.title} (1)`,
+      childTitle: `${relationship.parent.title} (1)`,
+      parentCardinality: "(1)",
+      childCardinality: "(1)",
+    },
+    "one-to-many": {
+      parentTitle: `${relationship.child.titlePlural} (N)`,
+      childTitle: `${relationship.parent.title} (1)`,
+      parentCardinality: "(N)",
+      childCardinality: "(1)",
+    },
+    "many-to-one": {
+      parentTitle: `${relationship.child.title} (1)`,
+      childTitle: `${relationship.parent.titlePlural} (N)`,
+      parentCardinality: "(1)",
+      childCardinality: "(N)",
+    },
+    "many-to-many": {
+      parentTitle: `${relationship.child.titlePlural} (N)`,
+      childTitle: `${relationship.parent.titlePlural} (N)`,
+      parentCardinality: "(N)",
+      childCardinality: "(N)",
+    },
+  };
+
+  return configs[type] || configs["one-to-many"];
+}
+
 function getTitleWithName({ fromEntityId, relationship }: { fromEntityId: string; relationship: EntityRelationshipWithDetails }) {
   if (relationship.title) {
     return relationship.title;
   }
+
   const isParent = relationship.parentId === fromEntityId;
-  switch (relationship.type) {
-    case "one-to-one":
-      return isParent ? `${relationship.child.title} (1)` : `${relationship.parent.title} (1)${relationship.required ? "*" : ""}`;
-    case "one-to-many":
-      return isParent ? `${relationship.child.titlePlural} (N)` : `${relationship.parent.title} (1)${relationship.required ? "*" : ""}`;
-    case "many-to-one":
-      return isParent ? `${relationship.child.title} (1)${relationship.required ? "*" : ""}` : `${relationship.parent.titlePlural} (N)`;
-    case "many-to-many":
-      return isParent ? `${relationship.child.titlePlural} (N)` : `${relationship.parent.titlePlural} (N)${relationship.required ? "*" : ""}`;
-    default:
-      return isParent ? `${relationship.child.titlePlural} (N)` : `${relationship.parent.title} (1)${relationship.required ? "*" : ""}`;
-  }
+  const config = getRelationshipTitleConfig(relationship, relationship.type);
+  const title = isParent ? config.parentTitle : config.childTitle;
+  const requiresMarker = !isParent && relationship.required ? "*" : "";
+
+  return `${title}${requiresMarker}`;
 }
 
 function getInputType({ fromEntityId, relationship }: { fromEntityId: string; relationship: EntityRelationshipWithDetails }): "single-select" | "multi-select" {

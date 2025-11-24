@@ -3,18 +3,17 @@ import { Colors } from "~/application/enums/shared/Colors";
 import SimpleBadge from "~/components/ui/badges/SimpleBadge";
 import { ApiKeyLogDto } from "../dtos/ApiKeyLogDto";
 
+function getStatusColor(status: number | null): Colors {
+  if (status === null) return Colors.YELLOW;
+  if (status >= 200 && status < 300) return Colors.GREEN;
+  if (status >= 300 && status < 400) return Colors.ORANGE;
+  if (status >= 400) return Colors.RED;
+  return Colors.UNDEFINED;
+}
+
 export default function ApiCallStatusBadge({ item, underline }: { item: ApiKeyLogDto; underline?: boolean }) {
   const title = item.status?.toString() ?? "?";
-  const color =
-    item.status === null
-      ? Colors.YELLOW
-      : item.status >= 200 && item.status < 300
-      ? Colors.GREEN
-      : item.status >= 300 && item.status < 400
-      ? Colors.ORANGE
-      : item.status >= 400
-      ? Colors.RED
-      : Colors.UNDEFINED;
+  const color = getStatusColor(item.status);
   return (
     <Fragment>
       <SimpleBadge title={title} color={color} underline={underline} />

@@ -15,6 +15,19 @@ interface Props<OrderType> {
   };
   onChange?: (items: OrderType[]) => void;
 }
+function calculateNewOrder(item: OrderType, idx: number, currentItem: OrderType, prevItem: OrderType | undefined, nextItem: OrderType | undefined, forward: boolean): number {
+  if (currentItem.id === item.id) {
+    return idx + (forward ? 1 : -1) + 1;
+  }
+  if (prevItem?.id === item.id) {
+    return idx + (forward ? 0 : 1) + 1;
+  }
+  if (nextItem?.id === item.id) {
+    return idx + (forward ? -1 : 0) + 1;
+  }
+  return idx + 1;
+}
+
 export default function OrderListButtons({ index, items, editable = true, actionName = "set-orders", formData, onChange }: Props<OrderType>) {
   const submit = useSubmit();
   const navigation = useNavigation();
@@ -39,19 +52,7 @@ export default function OrderListButtons({ index, items, editable = true, action
     }
 
     const newOrders = items.map((item, idx) => {
-      let order = 0;
-      if (currentItem.id === item.id) {
-        order = idx + (forward ? 1 : -1) + 1;
-      } else if (prevItem?.id === item.id) {
-        order = idx + (forward ? 0 : 1) + 1;
-        // form.append("orders[]", JSON.stringify({ id: item.id, order: order.toString() }));
-      } else if (nextItem?.id === item.id) {
-        order = idx + (forward ? -1 : 0) + 1;
-        // form.append("orders[]", JSON.stringify({ id: item.id, order: order.toString() }));
-      } else {
-        order = idx + 1;
-        // form.append("orders[]", JSON.stringify({ id: item.id, order: order.toString() }));
-      }
+      const order = calculateNewOrder(item, idx, currentItem, prevItem, nextItem, forward);
       form.append("orders[]", JSON.stringify({ id: item.id, order: order.toString() }));
       return { ...item, id: item.id, order };
     });
@@ -81,7 +82,7 @@ export default function OrderListButtons({ index, items, editable = true, action
           <button
             title="Move up"
             type="button"
-            onClick={() => changeOrder(false)}
+            onClick={() => { changeOrder(false); }}
             className={clsx(
               index <= 0 || !editable || loading ? " bg-secondary/90 cursor-not-allowed text-gray-300" : "hover:text-foreground hover:bg-secondary/90",
               "text-muted-foreground bg-secondary h-4 w-4 px-0.5 py-0.5 focus:outline-hidden"

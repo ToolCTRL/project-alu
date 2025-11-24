@@ -3,21 +3,25 @@ import { TFunction } from "i18next";
 import { TenantUserType } from "~/application/enums/tenants/TenantUserType";
 
 const avatarText = (user: { firstName: string | null; lastName: string | null; email: string }): string => {
-  if (user) {
-    if (user.firstName && user.lastName) {
-      if (user.firstName.length > 0 && user.lastName.length > 0) {
-        return (user.firstName[0] + user.lastName[0]).toUpperCase();
-      } else if (user.firstName.length > 1) {
-        return user.firstName.substring(0, 2).toUpperCase();
-      } else if (user.email.length > 1) {
-        return user.email.substring(0, 2).toUpperCase();
-      }
-    } else if (user.firstName) {
-      return user.firstName.substring(0, 2).toUpperCase();
-    } else if (user.email) {
-      return user.email.substring(0, 2).toUpperCase();
-    }
+  if (!user) return "--";
+
+  const { firstName, lastName, email } = user;
+
+  // Try first + last name initials
+  if (firstName && lastName && firstName.length > 0 && lastName.length > 0) {
+    return (firstName[0] + lastName[0]).toUpperCase();
   }
+
+  // Try first name (2 chars)
+  if (firstName && firstName.length > 1) {
+    return firstName.substring(0, 2).toUpperCase();
+  }
+
+  // Fall back to email (2 chars)
+  if (email && email.length > 1) {
+    return email.substring(0, 2).toUpperCase();
+  }
+
   return "--";
 };
 

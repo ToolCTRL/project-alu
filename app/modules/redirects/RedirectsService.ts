@@ -6,7 +6,9 @@ function findAndRedirect({ request }: { request: Request }) {
   const pathname = new URL(request.url).pathname;
   const searchParams = new URL(request.url).searchParams;
   const redirectPath = Object.keys(redirects).find((path) => {
-    const regex = new RegExp(`^${path.replace(/\*/g, ".*")}$`);
+    // Escape special regex characters to prevent ReDoS, then replace wildcards
+    const escapedPath = path.replace(/[.*+?^${}()|[\]\\]/g, "\\$&").replace(/\\\*/g, ".*");
+    const regex = new RegExp(`^${escapedPath}$`);
     return regex.test(pathname);
   });
 

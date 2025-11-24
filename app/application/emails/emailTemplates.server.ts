@@ -8,6 +8,10 @@ export default async function emailTemplates(): Promise<EmailTemplate[]> {
   const dir = path.join("./", "./public/emails");
   const fileNames = fs.readdirSync(dir);
   fileNames.forEach((file) => {
+    // Validate file name to prevent path traversal
+    if (file.includes("..") || file.includes("/") || file.includes("\\")) {
+      return;
+    }
     if (path.parse(file).ext === ".md") {
       const fileName = path.parse(file).name;
       const content = fs.readFileSync(path.join(dir, file), "utf8").split("`");

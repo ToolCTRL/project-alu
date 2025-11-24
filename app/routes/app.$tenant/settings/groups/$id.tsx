@@ -69,10 +69,10 @@ export const action: ActionFunction = async ({ request, params }) => {
         return await createUserGroup(user.id, existing.id);
       })
     );
-    createLog(request, tenantId, "Updated", `${existing.name}: ${JSON.stringify({ ...data, users: users.map((f) => f.email) })}`);
+    await createLog(request, tenantId, "Updated", `${existing.name}: ${JSON.stringify({ ...data, users: users.map((f) => f.email) })}`);
   } else if (action === "delete") {
     await deleteGroup(existing.id);
-    createLog(request, tenantId, "Deleted", `${existing.name}`);
+    await createLog(request, tenantId, "Deleted", `${existing.name}`);
   } else {
     return badRequest({ error: t("shared.invalidForm") });
   }

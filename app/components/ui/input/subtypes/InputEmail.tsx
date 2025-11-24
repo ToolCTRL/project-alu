@@ -72,7 +72,8 @@ const InputEmail = (
   const [isValid, setIsValid] = useState<boolean>(false);
 
   useEffect(() => {
-    const isValid = value?.match(/^([\w.%+-]+)@([\w-]+\.)+([\w]{2,})$/i);
+    // Simplified regex to avoid ReDoS - matches basic email pattern without nested quantifiers
+    const isValid = value?.match(/^[\w.%+-]+@[\w-]+\.[\w]{2,}$/i);
     setIsValid(isValid ? true : false);
   }, [value]);
 

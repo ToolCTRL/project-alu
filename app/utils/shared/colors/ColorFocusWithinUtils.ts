@@ -1,52 +1,32 @@
 import { Colors } from "~/application/enums/shared/Colors";
 
+const TEXT_600_MAP: Record<Colors, string> = {
+  [Colors.UNDEFINED]: "focus-within:text-gray-600",
+  [Colors.SLATE]: "focus-within:text-slate-600",
+  [Colors.GRAY]: "focus-within:text-gray-600",
+  [Colors.NEUTRAL]: "focus-within:text-neutral-600",
+  [Colors.STONE]: "focus-within:text-stone-600",
+  [Colors.RED]: "focus-within:text-red-600",
+  [Colors.ORANGE]: "focus-within:text-orange-600",
+  [Colors.AMBER]: "focus-within:text-amber-600",
+  [Colors.YELLOW]: "focus-within:text-yellow-600",
+  [Colors.LIME]: "focus-within:text-lime-600",
+  [Colors.GREEN]: "focus-within:text-green-600",
+  [Colors.EMERALD]: "focus-within:text-emerald-600",
+  [Colors.TEAL]: "focus-within:text-teal-600",
+  [Colors.CYAN]: "focus-within:text-cyan-600",
+  [Colors.SKY]: "focus-within:text-sky-600",
+  [Colors.BLUE]: "focus-within:text-blue-600",
+  [Colors.INDIGO]: "focus-within:text-indigo-600",
+  [Colors.VIOLET]: "focus-within:text-violet-600",
+  [Colors.PURPLE]: "focus-within:text-purple-600",
+  [Colors.FUCHSIA]: "focus-within:text-fuchsia-600",
+  [Colors.PINK]: "focus-within:text-pink-600",
+  [Colors.ROSE]: "focus-within:text-rose-600",
+};
+
 function getText600(itemColor: Colors): string {
-  switch (itemColor) {
-    case Colors.UNDEFINED:
-      return "focus-within:text-gray-600";
-    case Colors.SLATE:
-      return "focus-within:text-slate-600";
-    case Colors.GRAY:
-      return "focus-within:text-gray-600";
-    case Colors.NEUTRAL:
-      return "focus-within:text-neutral-600";
-    case Colors.STONE:
-      return "focus-within:text-stone-600";
-    case Colors.RED:
-      return "focus-within:text-red-600";
-    case Colors.ORANGE:
-      return "focus-within:text-orange-600";
-    case Colors.AMBER:
-      return "focus-within:text-amber-600";
-    case Colors.YELLOW:
-      return "focus-within:text-yellow-600";
-    case Colors.LIME:
-      return "focus-within:text-lime-600";
-    case Colors.GREEN:
-      return "focus-within:text-green-600";
-    case Colors.EMERALD:
-      return "focus-within:text-emerald-600";
-    case Colors.TEAL:
-      return "focus-within:text-teal-600";
-    case Colors.CYAN:
-      return "focus-within:text-cyan-600";
-    case Colors.SKY:
-      return "focus-within:text-sky-600";
-    case Colors.BLUE:
-      return "focus-within:text-blue-600";
-    case Colors.INDIGO:
-      return "focus-within:text-indigo-600";
-    case Colors.VIOLET:
-      return "focus-within:text-violet-600";
-    case Colors.PURPLE:
-      return "focus-within:text-purple-600";
-    case Colors.FUCHSIA:
-      return "focus-within:text-fuchsia-600";
-    case Colors.PINK:
-      return "focus-within:text-pink-600";
-    case Colors.ROSE:
-      return "focus-within:text-rose-600";
-  }
+  return TEXT_600_MAP[itemColor];
 }
 
 export default {
