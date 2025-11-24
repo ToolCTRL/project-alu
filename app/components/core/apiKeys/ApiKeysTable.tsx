@@ -10,6 +10,31 @@ import { EntitySimple } from "~/utils/db/entities/entities.db.server";
 import DateUtils from "~/utils/shared/DateUtils";
 import NumberUtils from "~/utils/shared/NumberUtils";
 
+function getEntityPermissions(item: ApiKeyWithDetails, entity: EntitySimple, permission: string): boolean {
+  const apiKeyEntity = item.entities.find((f) => f.entityId === entity.id);
+  if (!apiKeyEntity) {
+    return false;
+  }
+  if (permission === "C") {
+    return apiKeyEntity.create;
+  }
+  if (permission === "R") {
+    return apiKeyEntity.read;
+  }
+  if (permission === "U") {
+    return apiKeyEntity.update;
+  }
+  if (permission === "D") {
+    return apiKeyEntity.delete;
+  }
+  return false;
+}
+
+function hasExpired(item: ApiKeyWithDetails): boolean {
+  const now = new Date();
+  return Boolean(item.expires && item.expires < now);
+}
+
 interface Props {
   entities: EntitySimple[];
   items: ApiKeyWithDetails[];
@@ -61,69 +86,29 @@ export default function ApiKeysTable({ entities, items, withTenant, canCreate }:
     });
   };
 
-  // function deleteApiKey(item: ApiKey) {
-  //   if (confirmDelete.current) {
-  //     confirmDelete.current.setValue(item);
-  //     confirmDelete.current.show(t("shared.delete"), t("shared.delete"), t("shared.cancel"), t("shared.warningCannotUndo"));
-  //   }
-  // }
-  // function confirmDeleteApiKey(item: ApiKey) {
-  //   const form = new FormData();
-  //   form.set("action", "delete");
-  //   form.set("id", item.id);
-  //   submit(form, {
-  //     method: "post",
-  //   });
-  // }
 
-  function getEntityPermissions(item: ApiKeyWithDetails, entity: EntitySimple, permission: string) {
-    const apiKeyEntity = item.entities.find((f) => f.entityId === entity.id);
-    if (apiKeyEntity) {
-      if (permission === "C") {
-        return apiKeyEntity.create;
-      }
-      if (permission === "R") {
-        return apiKeyEntity.read;
-      }
-      if (permission === "U") {
-        return apiKeyEntity.update;
-      }
-      if (permission === "D") {
-        return apiKeyEntity.delete;
-      }
+  function renderContent() {
+    if (filteredItems().length === 0) {
+      return (
+        <div>
+          <EmptyState
+            className="bg-background"
+            captions={{
+              thereAreNo: t("shared.noRecords"),
+            }}
+          />
+        </div>
+      );
     }
-    return false;
-  }
 
-  function hasExpired(item: ApiKeyWithDetails) {
-    const now = new Date();
-    return item.expires && item.expires < now;
-  }
-
-  return (
-    <div className="space-y-2">
-      <InputSearch value={searchInput} setValue={setSearchInput} onNewRoute={canCreate ? "new" : ""} />
-      {(() => {
-        if (filteredItems().length === 0) {
-          return (
-            <div>
-              <EmptyState
-                className="bg-background"
-                captions={{
-                  thereAreNo: t("shared.noRecords"),
-                }}
-              />
-            </div>
-          );
-        } else {
-          return (
-            <div>
-              <div>
-                <div className="flex flex-col">
-                  <div className="overflow-x-auto">
-                    <div className="inline-block min-w-full py-2 align-middle">
-                      <div className="border-border overflow-hidden border shadow-xs sm:rounded-lg">
-                        <table className="divide-border min-w-full divide-y">
+    return (
+      <div>
+        <div>
+          <div className="flex flex-col">
+            <div className="overflow-x-auto">
+              <div className="inline-block min-w-full py-2 align-middle">
+                <div className="border-border overflow-hidden border shadow-xs sm:rounded-lg">
+                  <table className="divide-border min-w-full divide-y">
                           <thead className="bg-secondary">
                             <tr>
                               {headers.map((header, idx) => {
@@ -194,11 +179,7 @@ export default function ApiKeysTable({ entities, items, withTenant, canCreate }:
                                     })}
                                   <td className="text-muted-foreground whitespace-nowrap px-3 py-2 text-sm">
                                     <time dateTime={DateUtils.dateYMDHMS(item.expires)} title={DateUtils.dateYMDHMS(item.expires)}>
-                                      {item.expires === null ? (
-                                        <span>-</span>
-                                      ) : (
-                                        <span className={clsx(hasExpired(item) ? "" : "")}>{DateUtils.dateAgo(item.expires)}</span>
-                                      )}
+                                      {item.expires === null ? <span>-</span> : <span>{DateUtils.dateAgo(item.expires)}</span>}
                                     </time>
                                   </td>
                                   <td className="text-muted-foreground whitespace-nowrap px-3 py-2 text-sm">
@@ -218,16 +199,20 @@ export default function ApiKeysTable({ entities, items, withTenant, canCreate }:
                               );
                             })}
                           </tbody>
-                        </table>
-                      </div>
-                    </div>
-                  </div>
+                  </table>
                 </div>
               </div>
             </div>
-          );
-        }
-      })()}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-2">
+      <InputSearch value={searchInput} setValue={setSearchInput} onNewRoute={canCreate ? "new" : ""} />
+      {renderContent()}
     </div>
   );
 }

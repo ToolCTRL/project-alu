@@ -12,6 +12,67 @@ interface Props {
   onUpdate: (items: SubscriptionUsageBasedPriceDto[]) => void;
   disabled: boolean;
 }
+function processPriceTiers(unit: SubscriptionUsageBasedUnitDto, price: SubscriptionUsageBasedPriceDto) {
+  price.tiers.forEach((tier) => {
+    const existingTier = unit.tiers.find((f) => f.from === tier.from && (f.to === tier.to || (!f.to && !tier.to)));
+    if (!existingTier) {
+      unit.tiers.push({
+        from: tier.from,
+        to: tier.to ? Number(tier.to) : undefined,
+      });
+    }
+    unit.prices.push({
+      currency: price.currency,
+      from: tier.from ?? undefined,
+      to: tier.to ?? undefined,
+      perUnitPrice: tier.perUnitPrice ? Number(tier.perUnitPrice) : undefined,
+      flatFeePrice: tier.flatFeePrice ? Number(tier.flatFeePrice) : undefined,
+    });
+  });
+}
+
+function buildUsageBasedPrices(units: SubscriptionUsageBasedUnitDto[]): SubscriptionUsageBasedPriceDto[] {
+  const usageBasedPrices: SubscriptionUsageBasedPriceDto[] = [];
+
+  units.forEach((unit) => {
+    const sortedPrices = unit.prices.sort((a, b) => a.from - b.from);
+
+    sortedPrices.forEach((price) => {
+      const unitTier = {
+        id: "",
+        subscriptionUsageBasedPriceId: "",
+        from: price.from,
+        to: price.to,
+        perUnitPrice: price.perUnitPrice,
+        flatFeePrice: price.flatFeePrice,
+      };
+
+      const existing = usageBasedPrices.find((f) => f.unit === unit.unit && f.currency === price.currency);
+      if (existing) {
+        existing.tiers.push(unitTier);
+      } else {
+        usageBasedPrices.push({
+          id: "",
+          subscriptionProductId: "",
+          stripeId: "",
+          billingPeriod: SubscriptionBillingPeriod.MONTHLY,
+          currency: price.currency,
+          unit: unit.unit,
+          unitTitle: unit.unitTitle,
+          unitTitlePlural: unit.unitTitlePlural,
+          usageType: unit.usageType,
+          aggregateUsage: unit.aggregateUsage,
+          tiersMode: unit.tiersMode,
+          billingScheme: unit.billingScheme,
+          tiers: [unitTier],
+        });
+      }
+    });
+  });
+
+  return usageBasedPrices;
+}
+
 export default function UsageBasedPrices({ initial, onUpdate, disabled }: Props) {
   const { t } = useTranslation();
 
@@ -52,22 +113,7 @@ export default function UsageBasedPrices({ initial, onUpdate, disabled }: Props)
     units.forEach((unit) => {
       const prices = usageBasedPrices.filter((f) => f.unit === unit.unit);
       prices.forEach((price) => {
-        price.tiers.forEach((tier) => {
-          const existingTier = unit.tiers.find((f) => f.from === tier.from && (f.to === tier.to || (!f.to && !tier.to)));
-          if (!existingTier) {
-            unit.tiers.push({
-              from: tier.from,
-              to: tier.to ? Number(tier.to) : undefined,
-            });
-          }
-          unit.prices.push({
-            currency: price.currency,
-            from: tier.from ?? undefined,
-            to: tier.to ?? undefined,
-            perUnitPrice: tier.perUnitPrice ? Number(tier.perUnitPrice) : undefined,
-            flatFeePrice: tier.flatFeePrice ? Number(tier.flatFeePrice) : undefined,
-          });
-        });
+        processPriceTiers(unit, price);
       });
     });
 
@@ -76,42 +122,8 @@ export default function UsageBasedPrices({ initial, onUpdate, disabled }: Props)
   }, []);
 
   useEffect(() => {
-    const usageBasedPrices: SubscriptionUsageBasedPriceDto[] = [];
-    units.forEach((unit) => {
-      unit.prices
-        .sort((a, b) => a.from - b.from)
-        .forEach((price) => {
-          const unitTier = {
-            id: "",
-            subscriptionUsageBasedPriceId: "",
-            from: price.from,
-            to: price.to,
-            perUnitPrice: price.perUnitPrice,
-            flatFeePrice: price.flatFeePrice,
-          };
-          const existing = usageBasedPrices.find((f) => f.unit === unit.unit && f.currency === price.currency);
-          if (existing) {
-            existing.tiers.push(unitTier);
-          } else {
-            usageBasedPrices.push({
-              id: "",
-              subscriptionProductId: "",
-              stripeId: "",
-              billingPeriod: SubscriptionBillingPeriod.MONTHLY,
-              currency: price.currency,
-              unit: unit.unit,
-              unitTitle: unit.unitTitle,
-              unitTitlePlural: unit.unitTitlePlural,
-              usageType: unit.usageType,
-              aggregateUsage: unit.aggregateUsage,
-              tiersMode: unit.tiersMode,
-              billingScheme: unit.billingScheme,
-              tiers: [unitTier],
-            });
-          }
-        });
-    });
-    setUsageBasedPrices(usageBasedPrices);
+    const newUsageBasedPrices = buildUsageBasedPrices(units);
+    setUsageBasedPrices(newUsageBasedPrices);
   }, [units]);
 
   useEffect(() => {

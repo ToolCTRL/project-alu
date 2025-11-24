@@ -1,0 +1,105 @@
+code: "enhanced-pm"
+name: "Enhanced Product Management Module"
+version: "1.0.0"
+default_selected: true
+
+prompt:
+  - "📋 Enhanced Product Management - Master/Sub-PM Pattern"
+  - "Orchestrate PRD creation with isolated contexts, quality-based refinement, and BMM compatibility."
+
+# Quality configuration
+quality_threshold:
+  prompt: "Minimum quality score for auto-accept (1-10)?"
+  default: "6.0"
+  result: "{value}"
+
+max_refine_attempts:
+  prompt: "Maximum refinement attempts per section?"
+  default: "2"
+  result: "{value}"
+
+enable_auto_refine:
+  prompt: "Enable automatic quality-based refinement?"
+  default: "true"
+  result: "{value}"
+  single-select:
+    - value: "true"
+      label: "Yes - Auto-refine sections below threshold"
+    - value: "false"
+      label: "No - Manual refinement only"
+
+# Research configuration
+enable_market_research:
+  prompt: "Include market research phase?"
+  default: "true"
+  result: "{value}"
+  single-select:
+    - value: "true"
+      label: "Yes - Include market analysis"
+    - value: "false"
+      label: "No - Skip market research"
+
+enable_user_research:
+  prompt: "Include user research phase?"
+  default: "true"
+  result: "{value}"
+  single-select:
+    - value: "true"
+      label: "Yes - Include user personas & research"
+    - value: "false"
+      label: "No - Skip user research"
+
+enable_tech_research:
+  prompt: "Include technical feasibility assessment?"
+  default: "true"
+  result: "{value}"
+  single-select:
+    - value: "true"
+      label: "Yes - Include tech assessment"
+    - value: "false"
+      label: "No - Skip tech research"
+
+# Epic batching
+epic_batch_simple_size:
+  prompt: "Max epics per batch (simple epics)?"
+  default: "5"
+  result: "{value}"
+
+epic_batch_medium_size:
+  prompt: "Max epics per batch (medium epics)?"
+  default: "3"
+  result: "{value}"
+
+epic_batch_complex_size:
+  prompt: "Max epics per batch (complex epics)?"
+  default: "1"
+  result: "{value}"
+
+# Output configuration
+output_format:
+  prompt: "PRD output format?"
+  default: "hybrid"
+  result: "{value}"
+  single-select:
+    - value: "hybrid"
+      label: "Hybrid - Complete + Sections + Epics"
+    - value: "single"
+      label: "Single - Just complete PRD file"
+    - value: "multi"
+      label: "Multi - Separate section files only"
+
+# Static configuration
+status_location:
+  result: "{project-root}/.bmad/enhanced-pm"
+
+pm_status_file:
+  result: "{project-root}/.bmad/enhanced-pm/status.yaml"
+
+bmm_compatible:
+  result: "true"
+
+epic_complexity_threshold_medium:
+  result: "4"
+
+epic_complexity_threshold_complex:
+  result: "9"

@@ -100,7 +100,7 @@ function TopItems({ tabs }: { tabs: TopItemDto[] }) {
             {tabs.map((item, idx) => {
               return (
                 <button
-                  key={idx}
+                  key={item.tabTitle}
                   type="button"
                   onClick={() => setSelectedTab(idx)}
                   className={clsx(
@@ -158,9 +158,9 @@ function TopItemsData({ title, items, viewMoreRoute, fallbackName, bgClassName }
   return (
     <>
       <div className="h-48 space-y-1 overflow-y-auto">
-        {items.map((item, idx) => {
+        {items.map((item) => {
           return (
-            <div key={idx} className="flex justify-between space-x-2">
+            <div key={`${item.name}-${item.count}`} className="flex justify-between space-x-2">
               <div className="w-full truncate">
                 <div className={clsx("overflow-visible px-2 py-0.5 text-sm", getWidthPercentageCss(item), bgClassName ?? "bg-orange-50")}>
                   {fallbackName ? <span>{!item.name ? fallbackName : item.name}</span> : <div>{item.name}</div>}

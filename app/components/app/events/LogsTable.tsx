@@ -14,6 +14,58 @@ interface Props {
   pagination: PaginationDto;
 }
 
+function TenantCell({ item }: { item: LogWithDetails }) {
+  return (
+    <div>
+      {item.tenant ? (
+        <Link to={`/app/${item.tenant?.slug}`} className="focus:bg-secondary/90 hover:border-border rounded-md border-b border-dashed border-transparent">
+          {item.tenant.name}
+        </Link>
+      ) : (
+        <div>-</div>
+      )}
+    </div>
+  );
+}
+
+function ActionCell({ item }: { item: LogWithDetails }) {
+  return <div>{item.action}</div>;
+}
+
+function UrlCell({ item }: { item: LogWithDetails }) {
+  return <div>{item.url}</div>;
+}
+
+function DetailsCell({ item }: { item: LogWithDetails }) {
+  return <LogDetailsButton item={item} />;
+}
+
+function CreatedByCell({ item }: { item: LogWithDetails }) {
+  return (
+    <div>
+      {item.user && (
+        <span>
+          {item.user.firstName} {item.user.lastName} <span className=" text-muted-foreground text-xs">({item.user.email})</span>
+        </span>
+      )}
+      {item.apiKey && (
+        <span>
+          API Key <span className=" text-muted-foreground text-xs">({item.apiKey.alias})</span>
+        </span>
+      )}
+    </div>
+  );
+}
+
+function CreatedAtCell({ item }: { item: LogWithDetails }) {
+  return (
+    <div className="flex flex-col">
+      <div>{DateUtils.dateYMD(item.createdAt)}</div>
+      <div className="text-xs">{DateUtils.dateAgo(item.createdAt)}</div>
+    </div>
+  );
+}
+
 export default function LogsTable({ withTenant, items, pagination }: Props) {
   const { t } = useTranslation();
 
@@ -25,17 +77,7 @@ export default function LogsTable({ withTenant, items, pagination }: Props) {
       headers.push({
         name: "tenant",
         title: t("models.tenant.object"),
-        value: (item) => (
-          <div>
-            {item.tenant ? (
-              <Link to={`/app/${item.tenant?.slug}`} className="focus:bg-secondary/90 hover:border-border rounded-md border-b border-dashed border-transparent">
-                {item.tenant.name}
-              </Link>
-            ) : (
-              <div>-</div>
-            )}
-          </div>
-        ),
+        value: (item) => <TenantCell item={item} />,
         breakpoint: "sm",
       });
     }
@@ -44,46 +86,28 @@ export default function LogsTable({ withTenant, items, pagination }: Props) {
       {
         name: "action",
         title: t("models.log.action"),
-        value: (item) => <div>{item.action}</div>,
+        value: (item) => <ActionCell item={item} />,
       },
       {
         name: "url",
         title: t("models.log.url"),
-        value: (item) => <div>{item.url}</div>,
+        value: (item) => <UrlCell item={item} />,
       },
       {
         name: "details",
         title: t("models.log.details"),
-        value: (item) => <LogDetailsButton item={item} />,
+        value: (item) => <DetailsCell item={item} />,
       },
       {
         name: "createdBy",
         title: t("shared.createdBy"),
-        value: (item) => (
-          <div>
-            {item.user && (
-              <span>
-                {item.user.firstName} {item.user.lastName} <span className=" text-muted-foreground text-xs">({item.user.email})</span>
-              </span>
-            )}
-            {item.apiKey && (
-              <span>
-                API Key <span className=" text-muted-foreground text-xs">({item.apiKey.alias})</span>
-              </span>
-            )}
-          </div>
-        ),
+        value: (item) => <CreatedByCell item={item} />,
       },
       {
         name: "createdAt",
         title: t("shared.createdAt"),
         value: (item) => DateUtils.dateAgo(item.createdAt),
-        formattedValue: (item) => (
-          <div className="flex flex-col">
-            <div>{DateUtils.dateYMD(item.createdAt)}</div>
-            <div className="text-xs">{DateUtils.dateAgo(item.createdAt)}</div>
-          </div>
-        ),
+        formattedValue: (item) => <CreatedAtCell item={item} />,
         className: "text-muted-foreground text-xs",
         breakpoint: "sm",
         sortable: true,

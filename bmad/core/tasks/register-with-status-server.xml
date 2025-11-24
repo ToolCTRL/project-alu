@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  BMAD Task: Register with Status Server
+  Register agent with persistent BMAD Status Server V3
+-->
+<task id="register-with-status-server" version="1.0">
+  <metadata>
+    <name>Register with Status Server</name>
+    <description>Register agent with persistent BMAD Status Server and get agent_id</description>
+    <author>BMAD Core</author>
+  </metadata>
+
+  <inputs>
+    <param name="agent_name" required="true" description="Display name of the agent" />
+    <param name="agent_icon" default="🤖" description="Icon/emoji for the agent" />
+    <param name="project_root" required="true" description="Project root path for context" />
+  </inputs>
+
+  <outputs>
+    <param name="agent_id" description="Unique agent ID returned by server" />
+  </outputs>
+
+  <steps>
+    <step id="1">
+      <description>Register with status server</description>
+      <action>
+        Execute bash command:
+
+        node /Users/raffael/Desktop/BMAD-Server/agent-client.js register \
+          "{agent_name}" \
+          "{agent_icon}" \
+          "{project_root}"
+      </action>
+      <capture>
+        Parse output to extract agent_id (last line of output)
+        Store in {agent_id} variable
+      </capture>
+      <on_error>
+        Silent fail - server might not be running
+        Set agent_id to "not-registered"
+      </on_error>
+    </step>
+  </steps>
+
+  <usage>
+    <example>
+      <description>Register agent at workflow start</description>
+      <invocation>
+        Invoke register-with-status-server:
+          agent_name: "Master Developer"
+          agent_icon: "🎯"
+          project_root: {project-root}
+
+        Capture result as: {agent_id}
+
+        Use {agent_id} in subsequent update-status-server calls
+      </invocation>
+    </example>
+  </usage>
+</task>

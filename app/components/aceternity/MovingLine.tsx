@@ -25,8 +25,8 @@ export const MovingLine = () => {
         <path d={PATH} stroke="url(#paint0_linear_207_38)" />
         <defs>
           <linearGradient id="paint0_linear_207_38" x1="1" y1="-102.823" x2="1" y2="1566.02" gradientUnits="userSpaceOnUse">
-            <stop stop-color="#3879E7" stop-opacity="0" />
-            <stop offset="1" stop-color="#3879E7" />
+            <stop stopColor="#3879E7" stopOpacity="0" />
+            <stop offset="1" stopColor="#3879E7" />
           </linearGradient>
         </defs>
         <motion.path

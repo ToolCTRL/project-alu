@@ -489,6 +489,65 @@ interface SubscribeOrBuyButtonProps {
   isUpgrade?: boolean;
   isDowngrade?: boolean;
 }
+function getButtonText(
+  alreadyOwned: boolean | undefined,
+  isPreview: boolean | undefined,
+  isUpgrade: boolean | undefined,
+  isDowngrade: boolean | undefined,
+  model: PricingModel,
+  price: SubscriptionPriceDto | undefined,
+  t: any
+) {
+  if (alreadyOwned) {
+    return model === PricingModel.ONCE ? t("pricing.buyAgain") : t("pricing.alreadyOwned");
+  }
+
+  if (isPreview) {
+    return t("pricing.notCreated");
+  }
+
+  if (isUpgrade) {
+    return (
+      <div className="flex items-center space-x-1">
+        <div>{t("shared.upgrade")}</div>
+        <div>✨</div>
+      </div>
+    );
+  }
+
+  if (isDowngrade) {
+    return t("shared.downgrade");
+  }
+
+  if (price && price.price === 0) {
+    return t("pricing.getItForFree");
+  }
+
+  return model === PricingModel.ONCE ? t("pricing.buy") : t("pricing.subscribe");
+}
+
+function getButtonClassName(badge: string | undefined, disabled: boolean, loading: boolean) {
+  const baseClasses = "truncate group flex w-full items-center justify-center space-x-2 rounded-md border px-8 py-2 text-sm font-medium";
+
+  if (loading) {
+    return clsx(baseClasses, "base-spinner cursor-not-allowed");
+  }
+
+  if (badge && !disabled) {
+    return clsx(baseClasses, "border-primary-foreground bg-primary text-primary-foreground hover:bg-primary/90");
+  }
+
+  if (!badge && !disabled) {
+    return clsx(baseClasses, "text-foreground border-foreground bg-background hover:border-foreground hover:bg-secondary");
+  }
+
+  if (disabled) {
+    return clsx(baseClasses, "cursor-not-allowed opacity-70");
+  }
+
+  return baseClasses;
+}
+
 function SubscribeOrBuyButton({
   product,
   isPreview,
@@ -503,44 +562,10 @@ function SubscribeOrBuyButton({
   isDowngrade,
 }: SubscribeOrBuyButtonProps) {
   const { t } = useTranslation();
+
   return (
-    <button
-      type="button"
-      disabled={disabled}
-      onClick={onClick}
-      className={clsx(
-        "truncate",
-        loading && "base-spinner cursor-not-allowed",
-        badge && !disabled
-          ? " border-primary-foreground bg-primary text-primary-foreground group flex w-full items-center justify-center space-x-2 rounded-md border px-8 py-2 text-sm font-medium "
-          : " text-foreground border-foreground bg-background group flex w-full items-center justify-center space-x-2 rounded-md border px-8 py-2 text-sm font-medium",
-        badge && !disabled && "hover:bg-primary/90",
-        !badge && !disabled && " hover:border-foreground hover:bg-secondary",
-        disabled && "cursor-not-allowed opacity-70"
-      )}
-    >
-      {alreadyOwned ? (
-        <>{model === PricingModel.ONCE ? t("pricing.buyAgain") : t("pricing.alreadyOwned")}</>
-      ) : isPreview ? (
-        <>{t("pricing.notCreated")}</>
-      ) : isUpgrade ? (
-        <div className="flex items-center space-x-1">
-          <div>{t("shared.upgrade")}</div>
-          <div>✨</div>
-        </div>
-      ) : isDowngrade ? (
-        <>{t("shared.downgrade")}</>
-      ) : (
-        <span>
-          <>
-            {price && price.price === 0 ? (
-              <span>{t("pricing.getItForFree")}</span>
-            ) : (
-              <span>{model === PricingModel.ONCE ? t("pricing.buy") : t("pricing.subscribe")}</span>
-            )}
-          </>
-        </span>
-      )}
+    <button type="button" disabled={disabled} onClick={onClick} className={getButtonClassName(badge, disabled, loading)}>
+      {getButtonText(alreadyOwned, isPreview, isUpgrade, isDowngrade, model, price, t)}
     </button>
   );
 }

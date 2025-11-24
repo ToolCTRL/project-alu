@@ -1,0 +1,20 @@
+name: refine-prd
+description: "Refine PRD sections with quality improvements using sub-PM pattern"
+author: "Enhanced PM Module"
+entry_point: instructions.md
+
+config_source: "{project-root}/bmad/enhanced-pm/config.yaml"
+user_name: "{config_source}:user_name"
+communication_language: "{config_source}:communication_language"
+document_output_language: "{config_source}:document_output_language"
+
+prd_folder: "" # Auto-discovered or provided
+status_file: "{project-root}/.bmad/enhanced-pm/status.yaml"
+
+quality_threshold: 6.0
+max_refine_attempts: 3
+
+installed_path: "{project-root}/bmad/enhanced-pm/workflows/refine-prd"
+instructions: "{installed_path}/instructions.md"
+
+standalone: true

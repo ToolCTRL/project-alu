@@ -97,19 +97,22 @@ export default function TenantsTable({ items, pagination, actions = [], tenantIn
       ),
     });
     if (tenantInvoices !== undefined) {
-      function getTenantInvoices(tenant: TenantWithUsage) {
+      const getTenantInvoices = (tenant: TenantWithUsage) => {
         const items = tenantInvoices?.filter((f) => f.customer?.toString() === tenant.subscription?.stripeCustomerId) ?? [];
         const sortedByCreatedDesc = items.sort((a, b) => (a.created > b.created ? 1 : -1));
         return sortedByCreatedDesc;
-      }
-      function lastTenantInvoice(tenant: TenantWithUsage): Stripe.Invoice | undefined {
+      };
+
+      const lastTenantInvoice = (tenant: TenantWithUsage): Stripe.Invoice | undefined => {
         const items = getTenantInvoices(tenant);
         return items.length > 0 ? items[items.length - 1] : undefined;
-      }
-      function getTotalPaid(tenant: TenantWithUsage): number {
+      };
+
+      const getTotalPaid = (tenant: TenantWithUsage): number => {
         const items = getTenantInvoices(tenant);
         return items.reduce((a, b) => a + Number(b.amount_paid / 100), 0);
-      }
+      };
+
       headers.push({
         name: "lastInvoice",
         title: "Last invoice",

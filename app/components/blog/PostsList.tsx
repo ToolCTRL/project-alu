@@ -43,18 +43,7 @@ export default function PostsList({ blogPath, items, withCoverImage, withAuthorN
                     <h2 className="title-font text-foreground mb-3 text-lg font-medium">{item.title}</h2>
                     <p className="text-muted-foreground mb-3 leading-relaxed">{item.description}</p>
                     <div className="flex items-center justify-between">
-                      <div>
-                        {/* {withAuthorName && item.author && (
-                          <div className="flex items-center space-x-2">
-                            {withAuthorAvatar && item.author.image && (
-                              <img className="h-6 w-6 rounded-full" src={item.author.image} alt={item.author.firstName} />
-                            )}
-                            <div className="text-sm text-muted-foreground">
-                              {item.author.firstName} {item.author.lastName}
-                            </div>
-                          </div>
-                        )} */}
-                      </div>
+                      <div></div>
                     </div>
                   </div>
                 </div>

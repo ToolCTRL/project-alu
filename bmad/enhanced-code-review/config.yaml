@@ -1,0 +1,11 @@
+user_name: Raffael
+communication_language: German
+output_folder: '{project-root}/docs/code-reviews'
+review_quality_threshold: 6.0
+file_batch_simple_size: 10
+file_batch_medium_size: 5
+file_batch_complex_size: 2
+enable_interactive_mode: true
+status_location: "{project-root}/.bmad/enhanced-code-review"
+bmm_compatible: true
+module_version: "1.0.0"

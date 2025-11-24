@@ -1,0 +1,30 @@
+name: deploy
+description: "Run tests, optionally build/deploy/commit based on project setup"
+author: "Enhanced Dev Module"
+entry_point: instructions.md
+
+config_source: "{project-root}/bmad/enhanced-dev/config.yaml"
+user_name: "{config_source}:user_name"
+communication_language: "{config_source}:communication_language"
+
+# Test configuration
+run_tests_command: "{config_source}:run_tests_command"
+test_coverage_threshold: "{config_source}:test_coverage_threshold"
+require_tests_pass: true
+
+# Build configuration (optional)
+pre_deploy_command: "" # Optional: build, compile, etc.
+
+# Runtime variables (detected/asked during workflow)
+has_git: false # Detected: git rev-parse --is-inside-work-tree
+deploy_mode: "" # Asked: a=tests only, b/c=deploy
+user_deploy_command: "" # Asked if deploying
+git_action: "" # Asked if git available: a=no, b=commit+push, c=commit only
+
+# Status tracking
+status_file: "{project-root}/.bmad/enhanced-dev/status.yaml"
+
+installed_path: "{project-root}/bmad/enhanced-dev/workflows/deploy"
+instructions: "{installed_path}/instructions.md"
+
+standalone: true

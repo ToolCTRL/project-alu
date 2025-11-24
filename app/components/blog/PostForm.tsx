@@ -58,14 +58,9 @@ export default function PostForm({ item, categories, tags, canUpdate = true, can
   const [readingTime, setReadingTime] = useState(item?.readingTime ?? "");
   const [published, setPublished] = useState(item?.published ?? false);
   const [image, setImage] = useState(item?.image ?? "");
-  // const [content, setContent] = useState(item?.content ?? ``);
   const [content, setContent] = useLocalStorage(!item ? "blog-post-content" : "blog-" + item.slug, item?.content ?? "");
 
   useEffect(() => {
-    // setTimeout(() => {
-    //   inputTitle.current?.input.current?.focus();
-    // }, 100);
-
     if (!item) {
       if (categories.length === 1) {
         setCategory(categories[0].id);
@@ -110,27 +105,6 @@ export default function PostForm({ item, categories, tags, canUpdate = true, can
     setShowMarkdown(true);
   }
 
-  // function create() {
-  //   if (!title || !slug || !description || !author || !category || !content) {
-  //     errorModal.current?.show(t("shared.error"), t("shared.missingFields"));
-  //     return;
-  //   }
-  //   const form = new FormData();
-  //   form.set("action", !item ? "create" : "edit");
-  //   form.set("title", title);
-  //   form.set("slug", slug);
-  //   form.set("author", author ?? "");
-  //   form.set("category", category ?? "");
-  //   form.set("tags", postTags);
-  //   form.set("date", date);
-  //   form.set("description", description);
-  //   form.set("reading-time", readingTime);
-  //   form.set("image", image);
-  //   form.set("content", content);
-  //   submit(form, {
-  //     method: "post",
-  //   });
-  // }
 
   return (
     <Form method="post" className="space-y-6 pb-20">
@@ -139,9 +113,9 @@ export default function PostForm({ item, categories, tags, canUpdate = true, can
       <div className="grid gap-3 lg:grid-cols-12">
         <div className="space-y-2 lg:col-span-8">
           <div className="flex justify-between space-x-2">
-            <label className="text-muted-foreground text-sm font-medium">Blog Post</label>
+            <label htmlFor="content" className="text-muted-foreground text-sm font-medium">Blog Post</label>
           </div>
-          {contentType === "wysiwyg" ? (
+          {contentType === "wysiwyg" && (
             <div>
               <input type="hidden" name="content" value={content} hidden readOnly />
               {typeof window !== "undefined" && (
@@ -155,7 +129,8 @@ export default function PostForm({ item, categories, tags, canUpdate = true, can
                 />
               )}
             </div>
-          ) : contentType === "markdown" ? (
+          )}
+          {contentType === "markdown" && (
             <InputGroup title="">
               <div className="bg-background grid grid-cols-12 gap-3 rounded-md">
                 <InputText
@@ -177,7 +152,7 @@ export default function PostForm({ item, categories, tags, canUpdate = true, can
                 />
               </div>
             </InputGroup>
-          ) : null}
+          )}
         </div>
         <div className="space-y-3 lg:col-span-4">
           <InputGroup
@@ -292,7 +267,6 @@ export default function PostForm({ item, categories, tags, canUpdate = true, can
                       {t("shared.add")}
                     </button>
                   }
-                  // required
                 />
               ) : (
                 <InputText
@@ -344,9 +318,6 @@ export default function PostForm({ item, categories, tags, canUpdate = true, can
               <ButtonSecondary onClick={() => navigate(UrlUtils.getModulePath(params, "blog"))} disabled={loading}>
                 <div>{t("shared.cancel")}</div>
               </ButtonSecondary>
-              {/* <ButtonSecondary onClick={preview} disabled={loading}>
-            {t("shared.preview")}
-          </ButtonSecondary> */}
               <LoadingButton type="submit" disabled={loading || !canUpdate}>
                 {t("shared.save")}
               </LoadingButton>

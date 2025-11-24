@@ -59,13 +59,6 @@ export default function PricingFeaturesTable({ plans, items, setItems }: Props) 
               title: "",
               name: "feature-order",
               className: "w-10",
-              // value: (item) => item.order,
-              // type: InputType.NUMBER,
-              // setValue: (order, idx) =>
-              //   updateItemByIdx(items, setItems, idx, {
-              //     order,
-              //   }),
-              // inputBorderless: true,
               value: (item, index) => (
                 <div className="w-10">
                   <div className="flex items-center space-x-1 truncate">
@@ -222,7 +215,7 @@ export default function PricingFeaturesTable({ plans, items, setItems }: Props) 
         ></TableSimple>
         {items.map((item, idx) => {
           return (
-            <div key={idx} className=" ">
+            <div key={`${item.name}-${idx}`} className=" ">
               <input readOnly hidden type="text" id="features[]" name="features[]" value={JSON.stringify(item)} />
             </div>
           );
@@ -245,6 +238,12 @@ function Buttons({
   onAddFeature: () => void;
 }) {
   const { t } = useTranslation();
+
+  const handleCopyFromProduct = (product: SubscriptionProductDto) => () => {
+    const uniqueFeatures = product.features.filter((feature) => !items.find((item) => item.name === feature.name));
+    setItems([...items, ...uniqueFeatures]);
+  };
+
   return (
     <div className="flex items-center space-x-2">
       <button
@@ -270,16 +269,13 @@ function Buttons({
         btnClassName="mt-2 flex items-center space-x-1 rounded-md border border-border bg-background px-2 py-1 text-xs text-muted-foreground hover:bg-secondary/90 focus:text-foreground focus:ring-3 focus:ring-gray-300 focus:ring-offset-1"
         options={
           <div className="h-64 overflow-auto">
-            {plans?.map((product, idx) => {
+            {plans?.map((product) => {
               return (
-                <Menu.Item key={idx}>
+                <Menu.Item key={product.id}>
                   {({ active }) => (
                     <button
                       type="button"
-                      onClick={() => {
-                        let uniqueFeatures = product.features.filter((feature) => !items.find((item) => item.name === feature.name));
-                        setItems([...items, ...uniqueFeatures]);
-                      }}
+        onClick={handleCopyFromProduct(product)}
                       className={clsx("w-full text-left", active ? "text-foreground bg-secondary/90" : "text-foreground/80", "block px-4 py-2 text-sm")}
                     >
                       {t(product.title)} ({product.features.length})

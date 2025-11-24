@@ -30,16 +30,6 @@ export default function PricingFeaturesForm({ items, setItems, entities }: Props
     ]);
   }
 
-  // useEffect(() => {
-  //   for (let idx = 0; idx < items.length; idx++) {
-  //     const item = items[idx];
-  //     if (item.type !== SubscriptionFeatureLimitType.MAX && item.type !== SubscriptionFeatureLimitType.MONTHLY) {
-  //       updateItemByIdx(items, setItems, idx, {
-  //         value: 0,
-  //       });
-  //     }
-  //   }
-  // }, [items]);
 
   return (
     <>

@@ -21,13 +21,14 @@ export default function EmailsTable({ items, withTenant, pagination }: Props) {
   useEffect(() => {
     const headers: RowHeaderDisplayDto<EmailWithSimpleDetails>[] = [];
     if (withTenant) {
-      headers.push({
+      const tenantHeader: RowHeaderDisplayDto<EmailWithSimpleDetails> = {
         name: "tenant",
         title: t("models.tenant.object"),
         value: (i) => i.tenantInboundAddress?.tenant.name ?? "-",
-      });
+      };
+      headers.push(tenantHeader);
     }
-    headers.push({
+    const fromHeader: RowHeaderDisplayDto<EmailWithSimpleDetails> = {
       name: "from",
       title: t("models.email.from"),
       value: (i) => i.fromEmail,
@@ -37,8 +38,8 @@ export default function EmailsTable({ items, withTenant, pagination }: Props) {
           <div className="truncate">{i.fromEmail}</div>
         </div>
       ),
-    });
-    headers.push({
+    };
+    const toHeader: RowHeaderDisplayDto<EmailWithSimpleDetails> = {
       name: "to",
       title: t("models.email.to"),
       value: (i) => i.toEmail,
@@ -48,8 +49,8 @@ export default function EmailsTable({ items, withTenant, pagination }: Props) {
           <div className="truncate">{i.toEmail}</div>
         </div>
       ),
-    });
-    headers.push({
+    };
+    const subjectHeader: RowHeaderDisplayDto<EmailWithSimpleDetails> = {
       name: "subject",
       title: t("models.email.subject"),
       value: (i) => i.subject,
@@ -61,18 +62,19 @@ export default function EmailsTable({ items, withTenant, pagination }: Props) {
         </div>
       ),
       href: (i) => i.id,
-    });
-    headers.push({
+    };
+    const attachmentsHeader: RowHeaderDisplayDto<EmailWithSimpleDetails> = {
       name: "attachments",
       title: "",
       value: (i) => i._count.attachments,
       formattedValue: (i) => <div>{i._count.attachments > 0 && <PaperClipIcon className="text-muted-foreground h-4 w-4" />}</div>,
-    });
-    headers.push({
+    };
+    const dateHeader: RowHeaderDisplayDto<EmailWithSimpleDetails> = {
       name: "date",
       title: t("models.email.date"),
       value: (i) => DateUtils.dateAgo(i.date),
-    });
+    };
+    headers.push(fromHeader, toHeader, subjectHeader, attachmentsHeader, dateHeader);
     setHeaders(headers);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [withTenant]);

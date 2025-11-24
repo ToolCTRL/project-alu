@@ -1,0 +1,68 @@
+workflow:
+  name: create-test-strategy
+  version: "1.0.0"
+entry_point: instructions.md
+  description: Creates comprehensive test strategy via specialized sub-TEAs
+
+quality:
+  test_strategy_quality_threshold: 6.0
+  max_refine_attempts: 2
+  enable_auto_refine: true
+
+  scoring_criteria:
+    coverage_completeness: 2.5
+    framework_appropriateness: 1.5
+    automation_feasibility: 2.0
+    ci_cd_integration: 1.5
+    maintainability: 1.5
+    performance_considerations: 1.0
+  total_score: 10.0
+
+interactive_decisions:
+  enable: true
+  critical_decisions:
+    - test_framework_selection
+    - coverage_targets
+    - ci_cd_integration
+    - test_data_strategy
+    - performance_tools
+    - security_testing_approach
+
+sub_test_architects:
+  unit_test_strategist:
+    role: "Unit test strategy and framework selection"
+    context_max: 150000
+
+  integration_test_strategist:
+    role: "Integration test patterns and mocking strategies"
+    context_max: 150000
+
+  e2e_test_strategist:
+    role: "End-to-end test scenarios and automation"
+    context_max: 150000
+
+  performance_test_strategist:
+    role: "Performance, load, and stress testing strategy"
+    context_max: 150000
+
+  security_test_strategist:
+    role: "Security testing and penetration test planning"
+    context_max: 150000
+
+  test_infrastructure_strategist:
+    role: "CI/CD integration, tooling, test automation infrastructure"
+    context_max: 150000
+
+output:
+  test_strategy_folder: "{project-root}/docs/testing/"
+  generate_unit_test_strategy: true
+  generate_integration_test_strategy: true
+  generate_e2e_test_strategy: true
+  generate_performance_test_strategy: true
+  generate_security_test_strategy: true
+  generate_test_infrastructure_doc: true
+  generate_complete_test_plan: true
+
+metadata:
+  workflow_type: test_strategy_creation
+  autonomous: false

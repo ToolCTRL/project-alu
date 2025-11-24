@@ -6,10 +6,10 @@ export interface PaginationDto {
   totalItems: number;
   totalPages: number;
   sortedBy?: SortedByDto[];
-  query?: string | undefined;
+  query?: string;
 }
 
 export interface PaginationData<T> {
   items: T[];
-  pagination: PaginationDto | undefined;
+  pagination?: PaginationDto;
 }

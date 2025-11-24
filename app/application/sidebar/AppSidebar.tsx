@@ -81,15 +81,9 @@ export const AppSidebar = ({ t, tenantId, entities, entityGroups, appConfigurati
         title: t("app.sidebar.dashboard"),
         path: `${currentTenantUrl}/dashboard`,
         icon: SvgIcon.DASHBOARD,
-        // tenantUserTypes: [TenantUserType.OWNER, TenantUserType.ADMIN, TenantUserType.MEMBER],
       },
       ...entitiesItems,
       ...crmEntitiesSidebarItems,
-      // {
-      //   title: t("models.email.plural"),
-      //   path: `${currentTenantUrl}/emails`,
-      //   icon: SvgIcon.EMAILS,
-      // },
     ],
   };
   if (appConfiguration?.app.features.tenantBlogs) {
@@ -151,11 +145,3 @@ export const AppSidebar = ({ t, tenantId, entities, entityGroups, appConfigurati
     },
   ];
 };
-
-// function SideText({ text }: { text: string }) {
-//   return (
-//     <div className="inline-flex justify-center space-x-1 items-center px-1.5 py-0.5 rounded-sm text-xs font-medium bg-yellow-100 text-yellow-900 italic truncate w-20">
-//       <div className="truncate">{text}</div>
-//     </div>
-//   );
-// }

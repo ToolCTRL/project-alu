@@ -1,0 +1,18 @@
+name: validate-story
+description: "Validate story context, acceptance criteria, and readiness for development"
+author: "Enhanced Dev Module"
+entry_point: instructions.md
+
+config_source: "{project-root}/bmad/enhanced-dev/config.yaml"
+user_name: "{config_source}:user_name"
+communication_language: "{config_source}:communication_language"
+
+story_file: ""
+story_dir: "{project-root}/stories"
+context_file: "{story_dir}/{{story_key}}.context.xml"
+status_file: "{project-root}/.bmad/enhanced-dev/status.yaml"
+
+installed_path: "{project-root}/bmad/enhanced-dev/workflows/validate-story"
+instructions: "{installed_path}/instructions.md"
+
+standalone: true

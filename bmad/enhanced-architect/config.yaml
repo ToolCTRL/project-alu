@@ -1,0 +1,34 @@
+# Enhanced Architect Module Configuration
+# Generated: 2025-11-02
+
+user_name: Raffael
+communication_language: German
+output_folder: '{project-root}/docs/architecture'
+
+# Quality
+architecture_quality_threshold: 6.0
+max_refine_attempts: 2
+enable_auto_refine: true
+
+# Component batching
+component_batch_simple_size: 8
+component_batch_medium_size: 4
+component_batch_complex_size: 2
+
+# Interactive decisions
+enable_interactive_mode: true
+auto_approve_simple_decisions: false
+decision_timeout_seconds: 300
+
+# Status tracking
+status_location: "{project-root}/.bmad/enhanced-architect"
+architect_status_file: "{project-root}/.bmad/enhanced-architect/status.yaml"
+
+# Integration
+bmm_compatible: true
+input_source: "enhanced-pm"
+handoff_to: "enhanced-dev"
+
+# Module metadata
+module_version: "1.0.0"
+installed_date: "2025-11-02"

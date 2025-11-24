@@ -20,10 +20,8 @@ export default function FeatureOrderButtons({ index, items, editable = true, onC
       if (items.length > index + 1) {
         nextItem = items[index + 1];
       }
-    } else {
-      if (index - 1 >= 0) {
-        prevItem = items[index - 1];
-      }
+    } else if (index - 1 >= 0) {
+      prevItem = items[index - 1];
     }
     const newItems = [...items];
     newItems.forEach((item, idx) => {
@@ -43,8 +41,6 @@ export default function FeatureOrderButtons({ index, items, editable = true, onC
   }
   function isLastItem() {
     return index === items.length - 1;
-    // const maxOrder = Math.max(...items.map((o) => o.order));
-    // return order === maxOrder;
   }
   return (
     <>

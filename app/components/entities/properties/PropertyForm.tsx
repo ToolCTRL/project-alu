@@ -65,14 +65,43 @@ export default function PropertyForm({ item, properties, entities, formulas }: P
 
   const [titleEnabled, setTitleEnabled] = useState(false);
 
+  function updateNameFromTitle(title: string) {
+    if (title.includes(".")) {
+      const keys = title.split(".");
+      return StringUtils.toCamelCase(keys[keys.length - 1].toLowerCase());
+    }
+    return StringUtils.toCamelCase(title.toLowerCase());
+  }
+
+  function getDefaultSubtype(type: PropertyType): string {
+    const defaults: Record<number, string> = {
+      [PropertyType.TEXT]: "singleLine",
+      [PropertyType.SELECT]: "dropdown",
+      [PropertyType.MULTI_SELECT]: "combobox",
+    };
+    return defaults[type] || "";
+  }
+
+  function getValidSubtypes(type: PropertyType): string[] {
+    const validSubtypes: Record<number, string[]> = {
+      [PropertyType.TEXT]: ["singleLine", "email", "phone", "url"],
+      [PropertyType.SELECT]: ["dropdown", "radioGroupCards"],
+      [PropertyType.MULTI_SELECT]: ["combobox", "checkboxCards"],
+    };
+    return validSubtypes[type] || [];
+  }
+
+  function validateSubtype(type: PropertyType, currentSubtype: string): string {
+    const valid = getValidSubtypes(type);
+    if (valid.length > 0 && (!currentSubtype || !valid.includes(currentSubtype))) {
+      return getDefaultSubtype(type);
+    }
+    return currentSubtype;
+  }
+
   useEffect(() => {
     if (!item) {
-      if (title.includes(".")) {
-        const keys = title.split(".");
-        setName(StringUtils.toCamelCase(keys[keys.length - 1].toLowerCase()));
-      } else {
-        setName(StringUtils.toCamelCase(title.toLowerCase()));
-      }
+      setName(updateNameFromTitle(title));
     }
   }, [item, title, type]);
 
@@ -80,38 +109,16 @@ export default function PropertyForm({ item, properties, entities, formulas }: P
     const formula = formulas.find((f) => f.id === formulaId);
     if (!item && formula) {
       setTitle(formula.name);
-      setName(StringUtils.toCamelCase(formula.name.toLowerCase()));
+      setName(updateNameFromTitle(formula.name));
     }
   }, [item, formulaId, formulas]);
 
   useEffect(() => {
     setTitleEnabled(true);
     if (!item) {
-      if (type === PropertyType.TEXT) {
-        setSubtype("singleLine");
-      } else if (type === PropertyType.SELECT) {
-        setSubtype("dropdown");
-      } else if (type === PropertyType.MULTI_SELECT) {
-        setSubtype("combobox");
-      } else {
-        // setSubtype("");
-      }
+      setSubtype(getDefaultSubtype(type));
     } else {
-      if (type === PropertyType.TEXT) {
-        if (!subtype || !["singleLine", "email", "phone", "url"].includes(subtype)) {
-          setSubtype("singleLine");
-        }
-      } else if (type === PropertyType.SELECT) {
-        if (!subtype || !["dropdown", "radioGroupCards"].includes(subtype)) {
-          setSubtype("dropdown");
-        }
-      } else if (type === PropertyType.MULTI_SELECT) {
-        if (!subtype || !["combobox", "checkboxCards"].includes(subtype)) {
-          setSubtype("combobox");
-        }
-      } else {
-        // setSubtype("");
-      }
+      setSubtype(validateSubtype(type, subtype));
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [item, type]);

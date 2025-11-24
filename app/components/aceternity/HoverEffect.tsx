@@ -10,33 +10,71 @@ import XIcon from "../ui/icons/XIcon";
 import ExternalLinkEmptyIcon from "../ui/icons/ExternalLinkEmptyIcon";
 import { Link } from "react-router";
 
+function getGridColumnsClass(itemsLength: number) {
+  const classes = ["grid w-full grid-cols-1"];
+
+  if (itemsLength > 1) {
+    classes.push("md:grid-cols-2");
+  }
+
+  if (itemsLength === 2) {
+    classes.push("lg:grid-cols-2");
+  } else if (itemsLength === 3) {
+    classes.push("lg:grid-cols-3");
+  } else if (itemsLength === 4) {
+    classes.push("lg:grid-cols-4");
+  } else if (itemsLength > 4) {
+    classes.push("lg:grid-cols-3");
+  }
+
+  return clsx(classes);
+}
+
+function getHighlightColorClass(color?: Colors) {
+  if (!color) return "";
+
+  const colorMap: Record<Colors, string> = {
+    [Colors.GREEN]: "bg-teal-500/30 text-teal-800 dark:text-teal-100",
+    [Colors.ROSE]: "bg-rose-500/30 text-rose-800 dark:text-rose-100",
+    [Colors.VIOLET]: "bg-violet-500/30 text-violet-800 dark:text-violet-100",
+    [Colors.BLUE]: "bg-blue-500/30 text-blue-800 dark:text-blue-100",
+    [Colors.YELLOW]: "bg-yellow-500/30 text-yellow-800 dark:text-yellow-100",
+    [Colors.RED]: "bg-red-500/30 text-red-800 dark:text-red-100",
+    [Colors.ORANGE]: "bg-orange-500/30 text-orange-800 dark:text-orange-100",
+    [Colors.CYAN]: "bg-cyan-500/30 text-cyan-800 dark:text-cyan-100",
+    [Colors.INDIGO]: "bg-indigo-500/30 text-indigo-800 dark:text-indigo-100",
+    [Colors.PINK]: "bg-pink-500/30 text-pink-800 dark:text-pink-100",
+    [Colors.PURPLE]: "bg-purple-500/30 text-purple-800 dark:text-purple-100",
+    [Colors.LIME]: "bg-lime-500/30 text-lime-800 dark:text-lime-100",
+    [Colors.EMERALD]: "bg-emerald-500/30 text-emerald-800 dark:text-emerald-100",
+    [Colors.AMBER]: "bg-amber-500/30 text-amber-800 dark:text-amber-100",
+    [Colors.GRAY]: "bg-gray-500/30 text-gray-800 dark:text-gray-100",
+    [Colors.SLATE]: "bg-slate-500/30 text-slate-800 dark:text-slate-100",
+    [Colors.NEUTRAL]: "bg-neutral-500/30 text-neutral-800 dark:text-neutral-100",
+    [Colors.UNDEFINED]: "",
+  };
+
+  return colorMap[color] || "";
+}
+
 export const HoverEffect = ({ items }: { items: FeatureDto[] }) => {
   let [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
   const [selectedImage, setSelectedImage] = useState<FeatureDto | null>(null);
   const [showImage, setShowImage] = useState<boolean>(false);
 
   return (
-    <div
-      className={clsx(
-        "grid w-full grid-cols-1",
-        items.length > 1 && "md:grid-cols-2",
-        items.length === 2 && "lg:grid-cols-2",
-        items.length === 3 && "lg:grid-cols-3",
-        items.length === 4 && "lg:grid-cols-4",
-        items.length > 4 && "lg:grid-cols-3"
-      )}
-    >
-      {items.map((item, idx) => (
+    <div className={getGridColumnsClass(items.length)}>
+      {items.map((item) => (
         <LinkOrAhref
-          key={idx}
+          key={item.name}
           to={item?.link?.href}
           target={item?.link?.target}
           className="group relative  block h-full w-full p-2 "
-          onMouseEnter={() => setHoveredIndex(idx)}
+          onMouseEnter={() => setHoveredIndex(items.indexOf(item))}
           onMouseLeave={() => setHoveredIndex(null)}
         >
           <AnimatePresence>
-            {hoveredIndex === idx && (
+            {hoveredIndex === items.indexOf(item) && (
               <motion.span
                 className="absolute inset-0 block h-full w-full rounded-3xl bg-slate-200/[0.8] dark:bg-slate-800/[0.8]"
                 layoutId="hoverBackground" // required for the background to follow
@@ -53,6 +91,8 @@ export const HoverEffect = ({ items }: { items: FeatureDto[] }) => {
             )}
           </AnimatePresence>
           <div
+            role="article"
+            tabIndex={0}
             className={clsx(
               "relative  h-full w-full overflow-hidden rounded-2xl border border-transparent bg-linear-to-br p-3",
               item.className || "text-muted-foreground bg-slate-900/5 dark:bg-white/5"
@@ -70,27 +110,7 @@ export const HoverEffect = ({ items }: { items: FeatureDto[] }) => {
                     <div
                       className={clsx(
                         "border-border inline-flex cursor-default items-center truncate rounded-md border px-2 py-1 text-sm font-medium",
-                        item.highlight.color &&
-                          clsx(
-                            item.highlight.color === Colors.GREEN && "bg-teal-500/30 text-teal-800 dark:text-teal-100",
-                            item.highlight.color === Colors.ROSE && "bg-rose-500/30 text-rose-800 dark:text-rose-100",
-                            item.highlight.color === Colors.VIOLET && "bg-violet-500/30 text-violet-800 dark:text-violet-100",
-                            item.highlight.color === Colors.BLUE && "bg-blue-500/30 text-blue-800 dark:text-blue-100",
-                            item.highlight.color === Colors.YELLOW && "bg-yellow-500/30 text-yellow-800 dark:text-yellow-100",
-                            item.highlight.color === Colors.RED && "bg-red-500/30 text-red-800 dark:text-red-100",
-                            item.highlight.color === Colors.ORANGE && "bg-orange-500/30 text-orange-800 dark:text-orange-100",
-                            item.highlight.color === Colors.CYAN && "bg-cyan-500/30 text-cyan-800 dark:text-cyan-100",
-                            item.highlight.color === Colors.INDIGO && "bg-indigo-500/30 text-indigo-800 dark:text-indigo-100",
-                            item.highlight.color === Colors.PINK && "bg-pink-500/30 text-pink-800 dark:text-pink-100",
-                            item.highlight.color === Colors.PURPLE && "bg-purple-500/30 text-purple-800 dark:text-purple-100",
-                            item.highlight.color === Colors.LIME && "bg-lime-500/30 text-lime-800 dark:text-lime-100",
-                            item.highlight.color === Colors.EMERALD && "bg-emerald-500/30 text-emerald-800 dark:text-emerald-100",
-                            item.highlight.color === Colors.AMBER && "bg-amber-500/30 text-amber-800 dark:text-amber-100",
-                            item.highlight.color === Colors.GRAY && "bg-gray-500/30 text-gray-800 dark:text-gray-100",
-                            item.highlight.color === Colors.SLATE && "bg-slate-500/30 text-slate-800 dark:text-slate-100",
-                            item.highlight.color === Colors.GRAY && "bg-gray-500/30 text-gray-800 dark:text-gray-100",
-                            item.highlight.color === Colors.NEUTRAL && "bg-neutral-500/30 text-neutral-800 dark:text-neutral-100"
-                          )
+                        getHighlightColorClass(item.highlight.color)
                       )}
                     >
                       {item.highlight.text}
@@ -117,9 +137,9 @@ export const HoverEffect = ({ items }: { items: FeatureDto[] }) => {
 
                 {item.subFeatures && (
                   <div className="mt-4 flex flex-wrap gap-2">
-                    {item.subFeatures.map((subFeature, idx) => (
+                    {item.subFeatures.map((subFeature) => (
                       <div
-                        key={idx}
+                        key={`${item.name}-${subFeature.name}`}
                         className={clsx("text-muted-foreground bg-muted/30 border-border flex space-x-1 rounded-md border px-2 py-1 text-xs font-medium")}
                       >
                         <CheckIcon className="text-muted-foreground/50 h-4 w-4" />

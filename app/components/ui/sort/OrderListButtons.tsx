@@ -44,13 +44,10 @@ export default function OrderListButtons({ index, items, editable = true, action
         order = idx + (forward ? 1 : -1) + 1;
       } else if (prevItem?.id === item.id) {
         order = idx + (forward ? 0 : 1) + 1;
-        // form.append("orders[]", JSON.stringify({ id: item.id, order: order.toString() }));
       } else if (nextItem?.id === item.id) {
         order = idx + (forward ? -1 : 0) + 1;
-        // form.append("orders[]", JSON.stringify({ id: item.id, order: order.toString() }));
       } else {
         order = idx + 1;
-        // form.append("orders[]", JSON.stringify({ id: item.id, order: order.toString() }));
       }
       form.append("orders[]", JSON.stringify({ id: item.id, order: order.toString() }));
       return { ...item, id: item.id, order };
@@ -69,10 +66,9 @@ export default function OrderListButtons({ index, items, editable = true, action
       });
     }
   }
+
   function isLastItem() {
     return index === items.length - 1;
-    // const maxOrder = Math.max(...items.map((o) => o.order));
-    // return order === maxOrder;
   }
   return (
     <>

@@ -101,14 +101,7 @@ export const InfiniteMovingCards = ({
         )}
       >
         {items.map((testimonial, idx) => {
-          let randomColor = "text-yellow-400";
-          if (idx < colors.length) {
-            randomColor = colors[idx];
-          } else {
-            // Math.random() is safe for UI/animation color selection - no cryptographic or security-sensitive use
-            const randomIdx = Math.floor(Math.random() * colors.length);
-            randomColor = colors[randomIdx];
-          }
+          const selectedColor = idx < colors.length ? colors[idx] : colors[Math.floor(Math.random() * colors.length)];
           return (
             <li
               className={clsx(

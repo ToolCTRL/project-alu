@@ -14,9 +14,9 @@ interface Props {
 export default function PostTags({ items }: Props) {
   return (
     <div className="flex items-center space-x-1 text-xs">
-      {items.map((blogTag, idx) => {
+      {items.map((blogTag) => {
         return (
-          <div key={idx}>
+          <div key={blogTag.id}>
             <span className={getTailwindColor(blogTag.tag.color)}> #</span>
             {blogTag.tag.name}
           </div>

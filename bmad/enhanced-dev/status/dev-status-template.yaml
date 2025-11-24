@@ -1,0 +1,129 @@
+# Enhanced Dev Status File
+# Auto-generated and updated by Master Developer workflows
+# DO NOT EDIT MANUALLY - changes will be overwritten
+
+version: "1.0"
+created_at: null  # Will be set on first use
+last_updated: null  # Updated on every change
+
+# Current story being developed
+current_story:
+  id: null
+  title: null
+  status: "idle"  # idle | in_progress | completed | blocked
+  started: null
+  completed: null
+  story_file_path: null
+  context_file_path: null
+
+# Task tracking
+tasks: []
+# Example task structure:
+# - id: "task-1"
+#   description: "Create API endpoint for user authentication"
+#   type: "backend"  # backend | frontend | integration | e2e | documentation
+#   complexity: "medium"  # simple | medium | complex
+#   status: "pending"  # pending | in_progress | completed | blocked
+#   subagent_type: "backend-architect"  # Which sub-developer type
+#   dependencies: []  # IDs of tasks that must complete first
+#   started_at: null
+#   completed_at: null
+#   duration_seconds: null
+#   tests_passed: null
+#   test_count_passing: null
+#   test_count_failing: null
+#   committed: false
+#   commit_hash: null
+#   commit_message: null
+#   attempts: 0  # Number of implementation attempts
+#   fix_attempts: 0  # Number of fix attempts
+#   error: null  # Error message if blocked
+#   error_log: null  # Detailed error log
+#   suggestion: null  # Suggested next step if blocked
+
+# Progress metrics
+progress:
+  total_tasks: 0
+  completed: 0
+  in_progress: 0
+  blocked: 0
+  pending: 0
+  percentage: 0
+  estimated_remaining_minutes: null
+
+# Test results (aggregated)
+tests:
+  passing: 0
+  failing: 0
+  total: 0
+  coverage: 0
+  coverage_threshold: 80
+  last_run: null
+  last_run_command: null
+  last_run_output: null
+
+# Git tracking
+commits:
+  count: 0
+  latest_hash: null
+  latest_message: null
+  latest_timestamp: null
+  auto_commit_enabled: true
+
+# Deployment tracking
+deployment:
+  last_deploy: null
+  deploy_status: "not_deployed"  # not_deployed | deploying | deployed | failed
+  deploy_target: null  # server URL or environment
+  deploy_error: null
+
+# Validation status
+validation:
+  story_validated: false
+  context_loaded: false
+  acceptance_criteria_met: false
+  all_tests_passing: false
+  ready_for_review: false
+  ready_for_deploy: false
+
+# Workflow execution tracking
+workflow:
+  current_workflow: null  # dev-story | validate-story | deploy
+  workflow_status: "idle"  # idle | running | completed | error
+  started_at: null
+  completed_at: null
+  iterations: 0  # Anti-loop tracking
+  max_iterations: 10
+
+# Blocked tasks summary
+blocked_tasks: []
+# Example blocked task:
+# - id: "task-3"
+#   description: "Database integration"
+#   error: "Connection timeout"
+#   attempts: 3
+#   suggestion: "Check database configuration or use connection pool"
+#   blocker_type: "timeout"  # timeout | test_failure | implementation_error | dependency
+
+# Warnings and issues
+warnings: []
+# Example warning:
+# - timestamp: "2025-11-02T14:30:00Z"
+#   level: "warning"  # info | warning | error
+#   message: "Test coverage below threshold (75% < 80%)"
+#   source: "dev-story workflow"
+
+# Next steps and recommendations
+next_steps: []
+# Example next step:
+# - action: "Run validate-story workflow"
+#   reason: "Story context needs validation before development"
+#   priority: "high"  # high | medium | low
+
+# Metadata
+metadata:
+  enhanced_dev_version: "1.0"
+  bmad_version: "6.0.0"
+  project_root: null
+  user_name: null
+  communication_language: "German"

@@ -5,7 +5,7 @@ function getGroupByValues(searchParams: URLSearchParams) {
   const groupByValues = searchParams
     .getAll("groupBy")
     .filter((x) => x)
-    .sort();
+    .sort((a, b) => a.localeCompare(b));
   const groupBy: Prisma.ApiKeyLogScalarFieldEnum[] = [];
   for (const param of groupByValues) {
     if (Object.keys(Prisma.ApiKeyLogScalarFieldEnum).includes(param)) {

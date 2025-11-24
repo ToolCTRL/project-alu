@@ -78,7 +78,7 @@ export default function SetupSteps({ items }: Props) {
         )}
       >
         {items.map((item, index) => (
-          <SetupStep key={index} item={item} index={index} total={items.length} />
+          <SetupStep key={`${item.title}-${index}`} item={item} index={index} total={items.length} />
         ))}
       </ul>
     </div>

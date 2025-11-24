@@ -22,22 +22,23 @@ export default function PropertyFormulaValueBadge({ property, value }: Props) {
   const getDateFormat = () => {
     return property.attributes.find((f) => f.name === PropertyAttributeName.FormatDate)?.value as DateFormatType;
   };
-  return (
-    <div className="flex space-x-1">
-      {/* <div>
-        <div>[resultAs:{property.formula?.resultAs}]</div>
-        <div>[calculationTrigger:{property.formula?.calculationTrigger}]</div>
-        <div>value: {JSON.stringify(value)}</div>
-      </div> */}
-      {property.formula?.resultAs === "number" ? (
-        <RowNumberCell value={Number(value) ?? undefined} format={getNumberFormat()} />
-      ) : property.formula?.resultAs === "boolean" ? (
-        <RowBooleanCell value={Boolean(value) ?? undefined} format={getBooleanFormat()} />
-      ) : property.formula?.resultAs === "date" ? (
-        <RowDateCell value={value ? (value as Date) : undefined} format={getDateFormat()} />
-      ) : (
-        <div>{value?.toString()}</div>
-      )}
-    </div>
-  );
+  function renderFormulaValue() {
+    const resultAs = property.formula?.resultAs;
+
+    if (resultAs === "number") {
+      return <RowNumberCell value={Number(value) || undefined} format={getNumberFormat()} />;
+    }
+
+    if (resultAs === "boolean") {
+      return <RowBooleanCell value={Boolean(value) || undefined} format={getBooleanFormat()} />;
+    }
+
+    if (resultAs === "date") {
+      return <RowDateCell value={value ? (value as Date) : undefined} format={getDateFormat()} />;
+    }
+
+    return <div>{value?.toString()}</div>;
+  }
+
+  return <div className="flex space-x-1">{renderFormulaValue()}</div>;
 }

@@ -69,7 +69,7 @@ export default function CookiesList({
                             <Link to={item.href} className="text-theme-500 text-xs underline">
                               {t("shared.learnMore")}
                             </Link>
-                          ) : null}
+                          ) : undefined}
                         </div>
                         <div className="text-muted-foreground text-sm font-light">{item.description}</div>
                         <div className="border-border w-full border-t" />

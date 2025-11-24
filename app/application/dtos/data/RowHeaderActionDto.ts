@@ -4,8 +4,8 @@ export interface RowHeaderActionDto<T> {
   title?: string | ReactNode;
   onClick?: (idx: number, item: T) => void;
   onClickRoute?: (idx: number, item: T) => string | undefined;
-  onClickRouteTarget?: undefined | "_blank";
-  disabled?: (item: T) => boolean | boolean;
+  onClickRouteTarget?: "_blank";
+  disabled?: boolean | ((item: T) => boolean);
   hidden?: (item: T) => boolean;
   destructive?: boolean;
   firstColumn?: boolean;

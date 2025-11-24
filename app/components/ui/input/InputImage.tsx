@@ -25,6 +25,29 @@ type Props = (WithDefaultValue | WithValueAndSetValue) & {
   description?: string;
   className?: string;
 };
+function getImageClassName(size: string, square: boolean): string {
+  const classes = ["mx-auto"];
+
+  if (square) {
+    classes.push("object-cover");
+  } else {
+    classes.push("object-contain");
+  }
+
+  if (size === "small") {
+    classes.push("h-8");
+    if (square) classes.push("w-8");
+  } else if (size === "medium") {
+    classes.push("h-16");
+    if (square) classes.push("w-16");
+  } else if (size === "large") {
+    classes.push("h-32");
+    if (square) classes.push("w-32");
+  }
+
+  return clsx(...classes);
+}
+
 const InputImage = (props: Props, ref: Ref<RefInputImage>) => {
   const value = "value" in props ? props.value : undefined;
   const setValue = "setValue" in props ? props.setValue : undefined;
@@ -43,14 +66,7 @@ const InputImage = (props: Props, ref: Ref<RefInputImage>) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [image]);
 
-  const imageClassName = clsx(
-    "mx-auto",
-    square ? "object-cover" : "object-contain",
-    size === "small" && "h-8",
-    size === "medium" && "h-16",
-    size === "large" && "h-32",
-    square && clsx(size === "small" && "w-8", size === "medium" && "w-16", size === "large" && "w-32")
-  );
+  const imageClassName = getImageClassName(size, square);
 
   return (
     <div className={clsx("space-y-1", props.className)}>

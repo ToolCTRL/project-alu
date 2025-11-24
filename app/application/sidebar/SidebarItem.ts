@@ -19,7 +19,7 @@ export interface SideBarItem {
   featureFlag?: string;
   redirectTo?: string;
   isCollapsible?: boolean;
-  target?: "_blank" | undefined;
+  target: "_blank" | undefined;
   disabled?: boolean;
   hidden?: boolean;
   isSecondary?: boolean;

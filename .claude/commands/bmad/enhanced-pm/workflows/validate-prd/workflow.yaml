@@ -1,0 +1,16 @@
+name: validate-prd
+description: "Validate PRD for quality, MECE compliance, and metric measurability"
+author: "Enhanced PM Module"
+entry_point: instructions.md
+
+config_source: "{project-root}/bmad/enhanced-pm/config.yaml"
+user_name: "{config_source}:user_name"
+communication_language: "{config_source}:communication_language"
+
+prd_folder: ""
+status_file: "{project-root}/.bmad/enhanced-pm/status.yaml"
+
+installed_path: "{project-root}/bmad/enhanced-pm/workflows/validate-prd"
+instructions: "{installed_path}/instructions.md"
+
+standalone: true

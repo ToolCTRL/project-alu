@@ -13,39 +13,49 @@ interface Props {
   permissions: Permission[];
   className?: string;
 }
+function createPermissionHeader(): RowHeaderDisplayDto<Permission> {
+  return {
+    name: "permission",
+    title: "Permission",
+    className: "w-full",
+    value: (item) => (
+      <div className="max-w-xs truncate">
+        <div>{item.name}</div>
+        <div className="text-muted-foreground truncate text-sm">{item.description}</div>
+      </div>
+    ),
+  };
+}
+
+function createRoleHeader(role: RoleWithPermissions): RowHeaderDisplayDto<Permission> {
+  const existing = (permission: Permission) => role.permissions.find((f) => f.permission.name === permission.name);
+
+  return {
+    name: role.name,
+    title: `${role.name} (${role.permissions.length})`,
+    align: "center",
+    value: (permission) => {
+      const hasPermission = existing(permission);
+      return (
+        <div className="flex justify-center">
+          <div
+            className={clsx("flex h-6 w-6 items-center justify-center rounded-full", hasPermission ? "bg-background text-foreground" : "text-muted-foreground")}
+          >
+            {hasPermission ? <CheckIcon className="h-4 w-4 text-green-500" /> : <XIcon className="text-muted-foreground h-4 w-4" />}
+          </div>
+        </div>
+      );
+    },
+  };
+}
+
 export default function RolesAndPermissionsMatrix({ roles, permissions, className }: Props) {
   const [searchInput, setSearchInput] = useState("");
+
   function getHeaders() {
-    const headers: RowHeaderDisplayDto<Permission>[] = [];
-    headers.push({
-      name: "permission",
-      title: "Permission",
-      className: "w-full",
-      value: (item) => (
-        <div className="max-w-xs truncate">
-          <div>{item.name}</div>
-          <div className="text-muted-foreground truncate text-sm">{item.description}</div>
-        </div>
-      ),
-    });
+    const headers: RowHeaderDisplayDto<Permission>[] = [createPermissionHeader()];
     roles.forEach((role) => {
-      headers.push({
-        name: role.name,
-        title: `${role.name} (${role.permissions.length})`,
-        align: "center",
-        value: (permission) => {
-          const existing = role.permissions.find((f) => f.permission.name === permission.name);
-          return (
-            <div className="flex justify-center">
-              <div
-                className={clsx("flex h-6 w-6 items-center justify-center rounded-full", existing ? "bg-background text-foreground" : "text-muted-foreground")}
-              >
-                {existing ? <CheckIcon className="h-4 w-4 text-green-500" /> : <XIcon className="text-muted-foreground h-4 w-4" />}
-              </div>
-            </div>
-          );
-        },
-      });
+      headers.push(createRoleHeader(role));
     });
     return headers;
   }

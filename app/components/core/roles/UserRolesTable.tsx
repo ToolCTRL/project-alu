@@ -23,33 +23,73 @@ interface Props {
   };
 }
 
+function renderRoleHeader(role: RoleWithPermissions, onRoleClick?: (role: RoleWithPermissions) => void) {
+  if (onRoleClick) {
+    return (
+      <button type="button" onClick={() => onRoleClick(role)} className="hover:underline">
+        {role.name}
+      </button>
+    );
+  }
+  return <div>{role.name}</div>;
+}
+
+function renderRoleCell(
+  item: UserWithRoles,
+  role: RoleWithPermissions,
+  tenantId: string | null,
+  disabled: boolean | undefined,
+  onChange: (item: UserWithRoles, role: RoleWithPermissions, add: any) => void
+) {
+  const existing = item.roles.find((f) => f.roleId === role.id && f.tenantId === tenantId) !== undefined;
+
+  return (
+    <td key={role.name} className="text-muted-foreground whitespace-nowrap px-1 py-1 text-center text-sm">
+      <div className="flex justify-center">
+        <button
+          type="button"
+          disabled={disabled}
+          onClick={() => onChange(item, role, !existing)}
+          className={clsx(
+            "flex h-6 w-6 items-center justify-center rounded-full",
+            existing ? "bg-background text-foreground" : "text-muted-foreground",
+            !disabled && existing && "hover:bg-green-200 hover:text-green-600 dark:hover:bg-green-900 dark:hover:text-green-50",
+            !disabled && !existing && "hover:text-muted-foreground dark:hover:bg-secondary hover:bg-gray-200"
+          )}
+        >
+          {existing ? <CheckIcon className="h-4 w-4 text-green-500" /> : <XIcon className="text-muted-foreground h-4 w-4" />}
+        </button>
+      </div>
+    </td>
+  );
+}
+
 export default function UserRolesTable({ items, roles, className, onChange, tenantId = null, disabled, onRoleClick, actions }: Props) {
   const { t } = useTranslation();
   const appOrAdminData = useAppOrAdminData();
 
-  return (
-    <div>
-      {(() => {
-        if (items.length === 0) {
-          return (
-            <div>
-              <EmptyState
-                className="bg-background"
-                captions={{
-                  thereAreNo: t("app.users.empty"),
-                }}
-              />
-            </div>
-          );
-        } else {
-          return (
-            <div>
-              <div>
-                <div className="flex flex-col">
-                  <div className="overflow-x-auto">
-                    <div className="inline-block min-w-full align-middle">
-                      <div className="border-border overflow-hidden border shadow-xs sm:rounded-lg">
-                        <table className="divide-border min-w-full divide-y">
+  function renderContent() {
+    if (items.length === 0) {
+      return (
+        <div>
+          <EmptyState
+            className="bg-background"
+            captions={{
+              thereAreNo: t("app.users.empty"),
+            }}
+          />
+        </div>
+      );
+    }
+
+    return (
+      <div>
+        <div>
+          <div className="flex flex-col">
+            <div className="overflow-x-auto">
+              <div className="inline-block min-w-full align-middle">
+                <div className="border-border overflow-hidden border shadow-xs sm:rounded-lg">
+                  <table className="divide-border min-w-full divide-y">
                           <thead className="bg-secondary">
                             <tr>
                               <th
@@ -69,13 +109,7 @@ export default function UserRolesTable({ items, roles, className, onChange, tena
                                     className="text-muted-foreground select-none truncate px-1 py-1 text-center text-xs font-medium tracking-wider"
                                   >
                                     <div className="text-muted-foreground flex items-center justify-center space-x-1">
-                                      {onRoleClick ? (
-                                        <button type="button" onClick={() => onRoleClick(role)} className="hover:underline">
-                                          {role.name}
-                                        </button>
-                                      ) : (
-                                        <div>{role.name}</div>
-                                      )}
+                                      {renderRoleHeader(role, onRoleClick)}
                                     </div>
                                   </th>
                                 );
@@ -99,30 +133,7 @@ export default function UserRolesTable({ items, roles, className, onChange, tena
                                       roles={item.roles}
                                     />
                                   </td>
-                                  {roles.map((role) => {
-                                    const existing = item.roles.find((f) => f.roleId === role.id && f.tenantId === tenantId) !== undefined;
-                                    return (
-                                      <td key={role.name} className="text-muted-foreground whitespace-nowrap px-1 py-1 text-center text-sm">
-                                        <div className="flex justify-center">
-                                          <button
-                                            type="button"
-                                            disabled={disabled}
-                                            onClick={() => onChange(item, role, !existing)}
-                                            className={clsx(
-                                              "flex h-6 w-6 items-center justify-center rounded-full",
-                                              existing ? "bg-background text-foreground" : "text-muted-foreground",
-                                              !disabled &&
-                                                existing &&
-                                                "hover:bg-green-200 hover:text-green-600 dark:hover:bg-green-900 dark:hover:text-green-50",
-                                              !disabled && !existing && "hover:text-muted-foreground dark:hover:bg-secondary hover:bg-gray-200"
-                                            )}
-                                          >
-                                            {existing ? <CheckIcon className="h-4 w-4 text-green-500" /> : <XIcon className="text-muted-foreground h-4 w-4" />}
-                                          </button>
-                                        </div>
-                                      </td>
-                                    );
-                                  })}
+                                  {roles.map((role) => renderRoleCell(item, role, tenantId, disabled, onChange))}
                                   {/* {onEditRoute && (
                                     <td className="whitespace-nowrap px-1 py-1 text-center text-sm text-muted-foreground">
                                       <Link to={onEditRoute(item)} className="hover:underline">
@@ -158,16 +169,15 @@ export default function UserRolesTable({ items, roles, className, onChange, tena
                               );
                             })}
                           </tbody>
-                        </table>
-                      </div>
-                    </div>
-                  </div>
+                  </table>
                 </div>
               </div>
             </div>
-          );
-        }
-      })()}
-    </div>
-  );
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  return <div>{renderContent()}</div>;
 }

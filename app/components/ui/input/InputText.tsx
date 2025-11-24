@@ -8,6 +8,25 @@ import NovelEditor from "~/modules/novel/ui/editor";
 import { PromptFlowWithDetails } from "~/modules/promptBuilder/db/promptFlows.db.server";
 import { Input } from "../input";
 import { Textarea } from "../textarea";
+import { i18n as I18nInstance, TFunction } from "i18next";
+
+function getTranslation(i18n: I18nInstance, t: TFunction, value: string): string | null {
+  if (!i18n.exists(value)) {
+    return null;
+  }
+  return t(value);
+}
+
+function handleValueChange(
+  value: string,
+  setActualValue: React.Dispatch<React.SetStateAction<string>>,
+  setValue?: React.Dispatch<React.SetStateAction<string>>
+): void {
+  setActualValue(value);
+  if (setValue) {
+    setValue(value);
+  }
+}
 
 export interface RefInputText {
   input: RefObject<HTMLInputElement | null> | RefObject<HTMLTextAreaElement | null>;
@@ -132,26 +151,6 @@ const InputText = (props: InputTextProps, ref: Ref<RefInputText>) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [actualValue]);
 
-  function getTranslation(value: string) {
-    if (!i18n.exists(value)) {
-      return null;
-    }
-    return t(value);
-  }
-
-  function onChange(value: string) {
-    setActualValue(value);
-    if (setValue) {
-      setValue(value);
-      // if (lowercase) {
-      //   setValue(value.toLowerCase());
-      // } else if (uppercase) {
-      //   setValue(value.toUpperCase());
-      // } else {
-      //   setValue(value);
-      // }
-    }
-  }
 
   return (
     <div className={clsx(className, !darkMode && "")}>
@@ -167,7 +166,7 @@ const InputText = (props: InputTextProps, ref: Ref<RefInputText>) => {
           {withTranslation && value?.includes(".") && (
             <div className="text-muted-foreground truncate font-light italic" title={t(value, { 0: translationParams })}>
               {t("admin.pricing.i18n")}:{" "}
-              {getTranslation(value) ? (
+              {getTranslation(i18n, t, value) ? (
                 <span className="text-muted-foreground">{t(value, { 0: translationParams })}</span>
               ) : (
                 <span className="text-red-600">{t("shared.invalid")}</span>
@@ -209,7 +208,7 @@ const InputText = (props: InputTextProps, ref: Ref<RefInputText>) => {
                 }}
                 value={value}
                 defaultValue={defaultValue}
-                onChange={(e) => onChange(e ?? "")}
+                onChange={(e) => handleValueChange(e ?? "", setActualValue, setValue)}
               />
             )}
           </>
@@ -233,7 +232,7 @@ const InputText = (props: InputTextProps, ref: Ref<RefInputText>) => {
                 borderless && "border-transparent"
               )}
               content={value || defaultValue}
-              onChange={(e) => onChange(e?.html ?? "")}
+              onChange={(e) => handleValueChange(e?.html ?? "", setActualValue, setValue)}
               promptFlows={promptFlows}
             />
           </>
@@ -256,7 +255,7 @@ const InputText = (props: InputTextProps, ref: Ref<RefInputText>) => {
               maxLength={maxLength}
               defaultValue={defaultValue}
               value={value}
-              onChange={(e) => onChange(e.currentTarget.value)}
+              onChange={(e) => handleValueChange(e.currentTarget.value, setActualValue, setValue)}
               onBlur={onBlur}
               onFocus={onFocus}
               disabled={disabled}
@@ -292,7 +291,7 @@ const InputText = (props: InputTextProps, ref: Ref<RefInputText>) => {
             maxLength={maxLength}
             defaultValue={defaultValue}
             value={value}
-            onChange={(e) => onChange(e.currentTarget.value)}
+            onChange={(e) => handleValueChange(e.currentTarget.value, setActualValue, setValue)}
             onBlur={onBlur}
             onFocus={onFocus}
             disabled={disabled}

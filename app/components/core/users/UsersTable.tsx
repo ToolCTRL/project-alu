@@ -29,26 +29,26 @@ export default function UsersTable({ items, canImpersonate, canChangePassword, c
   const [headers, setHeaders] = useState<RowHeaderDisplayDto<UserWithDetails>[]>([]);
   const [actions, setActions] = useState<RowHeaderActionDto<UserWithDetails>[]>([]);
 
-  useEffect(() => {
-    function getUserRoles(user: UserWithDetails, tenantId: string | null): Role[] {
-      const roles: Role[] = [];
-      user.roles
-        .filter((f) => (tenantId ? f.tenantId === tenantId && f.role.type === "app" : f.role.type === "admin"))
-        .forEach((role) => {
-          if (roles.find((f) => f.name === role.role.name) === undefined) {
-            roles.push(role.role);
-          }
-        });
-      // sort by type then by order
-      const sorted = roles.sort((a, b) => {
-        if (a.type === b.type) {
-          return a.order - b.order;
+  const getUserRoles = (user: UserWithDetails, tenantId: string | null): Role[] => {
+    const roles: Role[] = [];
+    user.roles
+      .filter((f) => (tenantId ? f.tenantId === tenantId && f.role.type === "app" : f.role.type === "admin"))
+      .forEach((role) => {
+        if (roles.find((f) => f.name === role.role.name) === undefined) {
+          roles.push(role.role);
         }
-        // sort by type (text)
-        return a.type.localeCompare(b.type);
       });
-      return sorted;
-    }
+
+    const sorted = roles.sort((a, b) => {
+      if (a.type === b.type) {
+        return a.order - b.order;
+      }
+      return a.type.localeCompare(b.type);
+    });
+    return sorted;
+  };
+
+  useEffect(() => {
     const headers: RowHeaderDisplayDto<UserWithDetails>[] = [
       {
         name: "user",

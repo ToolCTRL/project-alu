@@ -83,7 +83,7 @@ const InputMultiText = (
 
   useEffect(() => {
     const selection = value?.map((f) => f.value) ?? [];
-    if (selection.sort().join(",") !== actualValue.sort().join(",")) {
+    if ([...selection].sort().join(",") !== [...actualValue].sort().join(",")) {
       setActualValue(selection);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps

@@ -1,0 +1,56 @@
+name: create-prd
+description: "Orchestrate PRD creation using sub-PM pattern with research, vision, epic planning, and assembly"
+author: "Enhanced PM Module"
+entry_point: instructions.md
+
+# Critical variables from config
+config_source: "{project-root}/bmad/enhanced-pm/config.yaml"
+output_folder: "{config_source}:output_folder"
+user_name: "{config_source}:user_name"
+communication_language: "{config_source}:communication_language"
+document_output_language: "{config_source}:document_output_language"
+
+# Product configuration
+product_name: ""  # Auto-prompted or provided
+prd_output_folder: "{output_folder}/prd/{product_name}"
+
+# Enhanced PM status tracking
+status_file: "{project-root}/.bmad/enhanced-pm/status.yaml"
+status_template: "{project-root}/bmad/enhanced-pm/status/pm-status-template.yaml"
+
+# Quality and refinement configuration
+quality_threshold: 6.0  # Out of 10
+max_refine_attempts: 2
+enable_auto_refine: true
+
+# Epic batching configuration (dynamic)
+epic_batch_simple_size: 5     # Epics with 1-3 requirements
+epic_batch_medium_size: 3     # Epics with 4-8 requirements
+epic_batch_complex_size: 1    # Epics with 9+ requirements
+epic_complexity_threshold_medium: 4
+epic_complexity_threshold_complex: 9
+
+# Research configuration
+enable_market_research: true
+enable_user_research: true
+enable_tech_research: true
+
+# Output configuration
+output_format: "hybrid"  # single | multi | hybrid
+generate_complete_prd: true
+generate_section_files: true
+generate_epic_files: true
+bmm_compatible: true
+
+# Templates
+template_folder: "{project-root}/bmad/enhanced-pm/templates"
+prd_complete_template: "{template_folder}/prd-complete-template.md"
+section_template_folder: "{template_folder}/sections"
+epic_template: "{template_folder}/epics/epic-template.md"
+
+# Workflow components
+installed_path: "{project-root}/bmad/enhanced-pm/workflows/create-prd"
+instructions: "{installed_path}/instructions.md"
+checklist: "{installed_path}/checklist.md"
+
+standalone: true

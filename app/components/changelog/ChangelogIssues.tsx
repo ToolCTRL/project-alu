@@ -49,42 +49,32 @@ export default function ChangelogIssues({ title, icon, items }: Props) {
                 )}
               </div>
               <ul>
-                {items.map((issue, idx) => {
+                {items.map((issue) => {
                   return (
-                    <li key={idx}>
+                    <li key={issue.title}>
                       {icon} {issue.title}
                       {viewImages && (
                         <div className="flex items-baseline space-x-3">
                           {issue.img?.map((image, idx) => {
                             return (
-                              <img
+                              <button
+                                type="button"
                                 onClick={() => setSelectedImage(image)}
-                                key={idx}
-                                alt={image.title}
-                                src={image.img}
-                                className="border-border hover:border-border w-28 cursor-pointer overflow-hidden rounded-lg border-2 border-dashed object-cover shadow-lg hover:opacity-90 hover:shadow-2xl"
-                              />
+                                key={`${image.title}-${idx}`}
+                                role="button"
+                                tabIndex={0}
+                                className="border-border hover:border-border w-28 cursor-pointer overflow-hidden rounded-lg border-2 border-dashed shadow-lg hover:opacity-90 hover:shadow-2xl"
+                              >
+                                <img
+                                  alt={image.title}
+                                  src={image.img}
+                                  className="h-full w-full object-cover"
+                                />
+                              </button>
                             );
                           })}
                         </div>
                       )}
-                      {/* {viewImages && (
-                        <>
-                          {issue.img?.map((image, idx) => {
-                            return (
-                              <div key={idx} className="">
-                                <img alt={image.title} src={image.img} className="object-cover rounded-lg shadow-lg overflow-hidden" />
-                                {image.title && <h4 className="text-sm font-normal text-center flex justify-center mx-auto text-muted-foreground">{image.title}</h4>}
-                              </div>
-                            );
-                          })}
-                          {issue.video && (
-                            <a href={issue.video} target="_blank" rel="noreferrer">
-                              Watch demo video
-                            </a>
-                          )}
-                        </>
-                      )} */}
                     </li>
                   );
                 })}

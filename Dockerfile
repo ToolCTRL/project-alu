@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # base node image
-FROM --platform=linux/amd64 node:20-bookworm-slim as base
+FROM --platform=linux/amd64 node:20-bookworm-slim AS base
 
 # set for base and all layer that inherit from it
 ENV NODE_ENV production
@@ -10,7 +10,7 @@ ENV NODE_ENV production
 RUN apt-get update && apt-get install -y --no-install-recommends openssl && rm -rf /var/lib/apt/lists/*
 
 # Install all node_modules, including dev dependencies
-FROM base as deps
+FROM base AS deps
 
 WORKDIR /myapp
 
@@ -18,7 +18,7 @@ COPY package.json ./
 RUN npm install --production=false --legacy-peer-deps --ignore-scripts
 
 # Setup production node_modules
-FROM base as production-deps
+FROM base AS production-deps
 
 WORKDIR /myapp
 
@@ -27,7 +27,7 @@ ADD package.json ./
 RUN npm prune --production --legacy-peer-deps
 
 # Build the app
-FROM base as build
+FROM base AS build
 
 WORKDIR /myapp
 

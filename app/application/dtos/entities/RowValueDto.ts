@@ -5,12 +5,12 @@ export type RowValueDto = {
   id?: string | null;
   property: PropertyWithDetails;
   propertyId: string;
-  textValue?: string | undefined;
-  numberValue?: number | undefined;
-  dateValue?: Date | undefined;
-  booleanValue?: boolean | undefined;
-  selectedOption?: string | undefined;
+  textValue?: string;
+  numberValue?: number;
+  dateValue?: Date;
+  booleanValue?: boolean;
+  selectedOption?: string;
   media?: RowMedia[];
   multiple?: RowValueMultiple[];
-  range?: RowValueRange | undefined;
+  range?: RowValueRange;
 };

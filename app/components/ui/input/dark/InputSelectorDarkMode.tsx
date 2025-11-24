@@ -259,31 +259,7 @@ const InputSelectorDarkMode = (
                     )}
 
                     {group.items.map((item, idx) => (
-                      <Listbox.Option
-                        key={idx}
-                        disabled={item.disabled}
-                        className={({ active }) =>
-                          clsx(
-                            "relative cursor-default py-2 pr-9 pl-3 text-gray-200 select-none hover:text-white",
-                            !item.disabled && active && "bg-accent-500",
-                            !item.disabled && !active && "",
-                            item.disabled && "cursor-not-allowed"
-                          )
-                        }
-                        value={item}
-                      >
-                        {({ selected, active }) => (
-                          <Fragment>
-                            {item.link ? (
-                              <Link to={item.link}>
-                                <Item item={item} selected={selected} active={active} withColors={withColors} />
-                              </Link>
-                            ) : (
-                              <Item item={item} selected={selected} active={active} withColors={withColors} />
-                            )}
-                          </Fragment>
-                        )}
-                      </Listbox.Option>
+                      <OptionItem key={idx} item={item} withColors={withColors} />
                     ))}
                   </Fragment>
                 ))}
@@ -321,6 +297,33 @@ function Item({ item, selected, active, withColors = true }: { item: ItemDto; se
         </span>
       ) : null}
     </Fragment>
+  );
+}
+
+function OptionItem({ item, withColors }: { item: ItemDto; withColors?: boolean }) {
+  return (
+    <Listbox.Option
+      disabled={item.disabled}
+      className={({ active }) =>
+        clsx(
+          "relative cursor-default py-2 pr-9 pl-3 text-gray-200 select-none hover:text-white",
+          !item.disabled && active && "bg-accent-500",
+          !item.disabled && !active && "",
+          item.disabled && "cursor-not-allowed"
+        )
+      }
+      value={item}
+    >
+      {({ selected, active }) =>
+        item.link ? (
+          <Link to={item.link}>
+            <Item item={item} selected={selected} active={active} withColors={withColors} />
+          </Link>
+        ) : (
+          <Item item={item} selected={selected} active={active} withColors={withColors} />
+        )
+      }
+    </Listbox.Option>
   );
 }
 

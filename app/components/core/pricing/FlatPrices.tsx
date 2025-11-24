@@ -114,102 +114,96 @@ export default function FlatPrices({ model, prices, setPrices, disabled, isPorta
   }, [flatPrices, trialPeriodDays]);
 
   useEffect(() => {
-    let headers: RowHeaderDisplayDto<FlatPriceDto>[] = [
-      {
-        name: "currency",
-        title: "Currency",
-        value: (e) => e.currency?.toUpperCase(),
-        formattedValue: (e) => (
-          <div>
-            {e.currency?.toUpperCase()}
-            {/* currencies.find((o) => o.value === e.currency)?.name */}
-          </div>
-        ),
-      },
-    ];
+    const currencyHeader: RowHeaderDisplayDto<FlatPriceDto> = {
+      name: "currency",
+      title: "Currency",
+      value: (e) => e.currency?.toUpperCase(),
+      formattedValue: (e) => (
+        <div>
+          {e.currency?.toUpperCase()}
+        </div>
+      ),
+    };
+    let headers: RowHeaderDisplayDto<FlatPriceDto>[] = [currencyHeader];
 
     if (model !== PricingModel.ONCE) {
-      headers = [
-        ...headers,
-        {
-          name: "monthlyPrice",
-          title: "Monthly Price",
-          value: (e) => e.monthlyPrice,
-          type: InputType.NUMBER,
-          inputNumberStep: "0.01",
-          setValue: (e, idx) => updateItemByIdx(flatPrices, setFlatPrices, idx, { monthlyPrice: e }),
-          editable: () => !disabled,
-          inputOptional: true,
-          hidden: !selectedBillingPeriods.find((f) => f === SubscriptionBillingPeriod.MONTHLY),
-        },
-        {
-          name: "quarterlyPrice",
-          title: "Quarterly Price",
-          value: (e) => e.quarterlyPrice,
-          type: InputType.NUMBER,
-          inputNumberStep: "0.01",
-          setValue: (e, idx) => updateItemByIdx(flatPrices, setFlatPrices, idx, { quarterlyPrice: e }),
-          editable: () => !disabled,
-          inputOptional: true,
-          hidden: !selectedBillingPeriods.find((f) => f === SubscriptionBillingPeriod.QUARTERLY),
-        },
-        {
-          name: "semiAnnualPrice",
-          title: "Semi-Annual Price",
-          value: (e) => e.semiAnnualPrice,
-          type: InputType.NUMBER,
-          inputNumberStep: "0.01",
-          setValue: (e, idx) => updateItemByIdx(flatPrices, setFlatPrices, idx, { semiAnnualPrice: e }),
-          editable: () => !disabled,
-          inputOptional: true,
-          hidden: !selectedBillingPeriods.find((f) => f === SubscriptionBillingPeriod.SEMI_ANNUAL),
-        },
-        {
-          name: "yearlyPrice",
-          title: "Yearly Price",
-          value: (e) => e.yearlyPrice,
-          type: InputType.NUMBER,
-          inputNumberStep: "0.01",
-          setValue: (e, idx) => updateItemByIdx(flatPrices, setFlatPrices, idx, { yearlyPrice: e }),
-          editable: () => !disabled,
-          inputOptional: true,
-          hidden: !selectedBillingPeriods.find((f) => f === SubscriptionBillingPeriod.YEARLY),
-        },
-        {
-          name: "discount",
-          title: "Yearly Discount",
-          className: "text-center",
-          value: (e) => getYearlyDiscount(e),
-          formattedValue: (e) => (
-            <div className="flex justify-center">
-              {getYearlyDiscount(e) ? (
-                <span className="ml-1 inline-flex items-center rounded-md bg-teal-100 px-2.5 py-0.5 text-sm font-medium text-teal-800">
-                  {getYearlyDiscount(e)}
-                </span>
-              ) : (
-                <div className="text-muted-foreground text-xs italic">NA</div>
-              )}
-            </div>
-          ),
-          hidden:
-            !selectedBillingPeriods.find((f) => f === SubscriptionBillingPeriod.YEARLY) ||
-            !selectedBillingPeriods.find((f) => f === SubscriptionBillingPeriod.MONTHLY),
-        },
-      ];
+      const monthlyPriceHeader: RowHeaderDisplayDto<FlatPriceDto> = {
+        name: "monthlyPrice",
+        title: "Monthly Price",
+        value: (e) => e.monthlyPrice,
+        type: InputType.NUMBER,
+        inputNumberStep: "0.01",
+        setValue: (e, idx) => updateItemByIdx(flatPrices, setFlatPrices, idx, { monthlyPrice: e }),
+        editable: () => !disabled,
+        inputOptional: true,
+        hidden: !selectedBillingPeriods.find((f) => f === SubscriptionBillingPeriod.MONTHLY),
+      };
+      const quarterlyPriceHeader: RowHeaderDisplayDto<FlatPriceDto> = {
+        name: "quarterlyPrice",
+        title: "Quarterly Price",
+        value: (e) => e.quarterlyPrice,
+        type: InputType.NUMBER,
+        inputNumberStep: "0.01",
+        setValue: (e, idx) => updateItemByIdx(flatPrices, setFlatPrices, idx, { quarterlyPrice: e }),
+        editable: () => !disabled,
+        inputOptional: true,
+        hidden: !selectedBillingPeriods.find((f) => f === SubscriptionBillingPeriod.QUARTERLY),
+      };
+      const semiAnnualPriceHeader: RowHeaderDisplayDto<FlatPriceDto> = {
+        name: "semiAnnualPrice",
+        title: "Semi-Annual Price",
+        value: (e) => e.semiAnnualPrice,
+        type: InputType.NUMBER,
+        inputNumberStep: "0.01",
+        setValue: (e, idx) => updateItemByIdx(flatPrices, setFlatPrices, idx, { semiAnnualPrice: e }),
+        editable: () => !disabled,
+        inputOptional: true,
+        hidden: !selectedBillingPeriods.find((f) => f === SubscriptionBillingPeriod.SEMI_ANNUAL),
+      };
+      const yearlyPriceHeader: RowHeaderDisplayDto<FlatPriceDto> = {
+        name: "yearlyPrice",
+        title: "Yearly Price",
+        value: (e) => e.yearlyPrice,
+        type: InputType.NUMBER,
+        inputNumberStep: "0.01",
+        setValue: (e, idx) => updateItemByIdx(flatPrices, setFlatPrices, idx, { yearlyPrice: e }),
+        editable: () => !disabled,
+        inputOptional: true,
+        hidden: !selectedBillingPeriods.find((f) => f === SubscriptionBillingPeriod.YEARLY),
+      };
+      const discountHeader: RowHeaderDisplayDto<FlatPriceDto> = {
+        name: "discount",
+        title: "Yearly Discount",
+        className: "text-center",
+        value: (e) => getYearlyDiscount(e),
+        formattedValue: (e) => (
+          <div className="flex justify-center">
+            {getYearlyDiscount(e) ? (
+              <span className="ml-1 inline-flex items-center rounded-md bg-teal-100 px-2.5 py-0.5 text-sm font-medium text-teal-800">
+                {getYearlyDiscount(e)}
+              </span>
+            ) : (
+              <div className="text-muted-foreground text-xs italic">NA</div>
+            )}
+          </div>
+        ),
+        hidden:
+          !selectedBillingPeriods.find((f) => f === SubscriptionBillingPeriod.YEARLY) ||
+          !selectedBillingPeriods.find((f) => f === SubscriptionBillingPeriod.MONTHLY),
+      };
+      headers = [...headers, monthlyPriceHeader, quarterlyPriceHeader, semiAnnualPriceHeader, yearlyPriceHeader, discountHeader];
     } else {
-      headers = [
-        ...headers,
-        {
-          name: "oneTimePrice",
-          title: "One time Price",
-          value: (e) => e.oneTimePrice,
-          type: InputType.NUMBER,
-          inputNumberStep: "0.01",
-          setValue: (e, idx) => updateItemByIdx(flatPrices, setFlatPrices, idx, { oneTimePrice: e }),
-          editable: () => !disabled,
-          inputOptional: true,
-        },
-      ];
+      const oneTimePriceHeader: RowHeaderDisplayDto<FlatPriceDto> = {
+        name: "oneTimePrice",
+        title: "One time Price",
+        value: (e) => e.oneTimePrice,
+        type: InputType.NUMBER,
+        inputNumberStep: "0.01",
+        setValue: (e, idx) => updateItemByIdx(flatPrices, setFlatPrices, idx, { oneTimePrice: e }),
+        editable: () => !disabled,
+        inputOptional: true,
+      };
+      headers = [...headers, oneTimePriceHeader];
     }
     setHeaders(headers);
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -265,7 +259,7 @@ export default function FlatPrices({ model, prices, setPrices, disabled, isPorta
         )}
         {prices.map((item, idx) => {
           return (
-            <div key={idx} className=" ">
+            <div key={`${item.currency}-${item.billingPeriod}-${idx}`} className=" ">
               <input hidden readOnly type="text" id="prices[]" name="prices[]" value={JSON.stringify(item)} />
             </div>
           );

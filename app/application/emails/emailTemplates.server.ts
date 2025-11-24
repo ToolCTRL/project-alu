@@ -2,6 +2,12 @@ import { EmailTemplate } from "../dtos/email/EmailTemplate";
 import fs from "fs";
 import path from "path";
 
+function cmp(a: any, b: any) {
+  if (a > b) return +1;
+  if (a < b) return -1;
+  return 0;
+}
+
 export default async function emailTemplates(): Promise<EmailTemplate[]> {
   const items: EmailTemplate[] = [];
 
@@ -26,10 +32,5 @@ export default async function emailTemplates(): Promise<EmailTemplate[]> {
       });
     }
   });
-  function cmp(a: any, b: any) {
-    if (a > b) return +1;
-    if (a < b) return -1;
-    return 0;
-  }
   return items.sort((x, y) => cmp(x.type, y.type) || cmp(Number(x.name.split("-")[0]), Number(y.name.split("-")[0])));
 }

@@ -139,7 +139,7 @@ export default function ApiKeyForm({ entities, item, tenants, canUpdate = true, 
                       .filter((f) => (f.type === DefaultEntityTypes.AppOnly || f.type === DefaultEntityTypes.All) && f.hasApi)
                       .map((item, idx) => {
                         return (
-                          <tr key={idx}>
+                          <tr key={item.id}>
                             <input
                               type="hidden"
                               name="entities[]"

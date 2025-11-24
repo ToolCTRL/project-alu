@@ -14,6 +14,54 @@ interface Props {
   items: BlogPostWithDetails[];
 }
 
+function TitleCell({ item, blogPath, t }: { item: BlogPostWithDetails; blogPath: string; t: any }) {
+  return (
+    <div className="flex flex-col">
+      <div>
+        {item.title}{" "}
+        <span>
+          {!item.published && (
+            <span className="text-xs text-red-500">({t("blog.draft")})</span>
+          )}
+        </span>
+      </div>
+      <a href={blogPath + "/" + item.slug} target="_blank" rel="noreferrer" className="text-muted-foreground underline">
+        {item.slug}
+      </a>
+    </div>
+  );
+}
+
+function CreatedAtCellPost({ item }: { item: BlogPostWithDetails }) {
+  return (
+    <div>
+      <DateCell date={item.createdAt} displays={["ymd"]} />
+    </div>
+  );
+}
+
+function AuthorCell({ item }: { item: BlogPostWithDetails }) {
+  return (
+    <div className="flex flex-col">
+      {item.author ? (
+        <div>
+          {item.author.firstName} {item.author.lastName}
+        </div>
+      ) : (
+        <div className="text-muted-foreground text-xs italic hover:underline">No author</div>
+      )}
+    </div>
+  );
+}
+
+function ActionsCell({ item, params, t }: { item: BlogPostWithDetails; params: any; t: any }) {
+  return (
+    <div className="flex items-center space-x-2">
+      <ButtonTertiary to={UrlUtils.getModulePath(params, "blog/" + item.id)}>{t("shared.edit")}</ButtonTertiary>
+    </div>
+  );
+}
+
 export default function PostsTable({ blogPath, items }: Props) {
   const { t } = useTranslation();
   const params = useParams();
@@ -54,69 +102,22 @@ export default function PostsTable({ blogPath, items }: Props) {
             name: "title",
             title: t("models.post.object"),
             className: "w-full",
-            value: (item) => (
-              <div className="flex flex-col">
-                <div>
-                  {item.title}{" "}
-                  <span>
-                    {item.published ? (
-                      <span className="text-xs text-teal-500">{/* ({t("blog.published")}) */}</span>
-                    ) : (
-                      <span className="text-xs text-red-500">({t("blog.draft")})</span>
-                    )}
-                  </span>
-                </div>
-                <a href={blogPath + "/" + item.slug} target="_blank" rel="noreferrer" className="text-muted-foreground underline">
-                  {item.slug}
-                </a>
-              </div>
-            ),
+            value: (item) => <TitleCell item={item} blogPath={blogPath} t={t} />,
           },
-          // {
-          //   name: "category",
-          //   title: t("models.post.category"),
-          //   value: (item) => (
-          //     <div className="flex flex-col">
-          //       <div className="">
-          //         <span className="font-medium">{item.category.name}</span>{" "}
-          //         {item.readingTime && <span className="italic text-muted-foreground">({item.readingTime})</span>}
-          //       </div>
-          //       <PostTags items={item.tags} />
-          //     </div>
-          //   ),
-          // },
           {
             name: "createdAt",
             title: t("shared.createdAt"),
-            value: (item) => (
-              <div>
-                <DateCell date={item.createdAt} displays={["ymd"]} />
-              </div>
-            ),
+            value: (item) => <CreatedAtCellPost item={item} />,
           },
           {
             name: "author",
             title: t("models.post.author"),
-            value: (item) => (
-              <div className="flex flex-col">
-                {item.author ? (
-                  <div>
-                    {item.author.firstName} {item.author.lastName}
-                  </div>
-                ) : (
-                  <div className="text-muted-foreground text-xs italic hover:underline">No author</div>
-                )}
-              </div>
-            ),
+            value: (item) => <AuthorCell item={item} />,
           },
           {
             name: "actions",
             title: t("shared.actions"),
-            value: (item) => (
-              <div className="flex items-center space-x-2">
-                <ButtonTertiary to={UrlUtils.getModulePath(params, "blog/" + item.id)}>{t("shared.edit")}</ButtonTertiary>
-              </div>
-            ),
+            value: (item) => <ActionsCell item={item} params={params} t={t} />,
           },
         ]}
       />

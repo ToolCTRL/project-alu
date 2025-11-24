@@ -23,7 +23,9 @@ const PropertyMultiSelector = ({ name, title, options, subtype, disabled, value,
 
   useEffect(() => {
     const selection = value?.map((f) => f.value) ?? [];
-    if (selection.sort().join(",") !== actualValue.sort().join(",")) {
+    const sortedSelection = [...selection].sort((a, b) => String(a).localeCompare(String(b)));
+    const sortedActual = [...actualValue].sort((a, b) => String(a).localeCompare(String(b)));
+    if (sortedSelection.join(",") !== sortedActual.join(",")) {
       setActualValue(selection);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
