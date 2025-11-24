@@ -1,4 +1,5 @@
 import { useEffect } from "react";
+import DOMPurify from "isomorphic-dompurify";
 
 interface ScriptInjectorProps {
   scripts?: {
@@ -11,14 +12,16 @@ const ScriptInjector = ({ scripts }: ScriptInjectorProps) => {
   useEffect(() => {
     if (scripts?.head) {
       const headDiv = document.createElement("div");
-      headDiv.innerHTML = scripts.head;
+      // Sanitize before parsing to prevent XSS
+      headDiv.innerHTML = DOMPurify.sanitize(scripts.head, { ADD_TAGS: ["script"], ADD_ATTR: ["src", "async", "defer"] });
       Array.from(headDiv.childNodes).forEach((node) => {
         if (node.nodeType === Node.ELEMENT_NODE) {
           const script = document.createElement("script");
           Array.from((node as Element).attributes).forEach((attr) => {
             script.setAttribute(attr.name, attr.value);
           });
-          script.innerHTML = (node as Element).innerHTML;
+          // Use textContent instead of innerHTML for script content
+          script.textContent = (node as Element).textContent;
           document.head.appendChild(script);
         }
       });
@@ -26,14 +29,16 @@ const ScriptInjector = ({ scripts }: ScriptInjectorProps) => {
 
     if (scripts?.body) {
       const bodyDiv = document.createElement("div");
-      bodyDiv.innerHTML = scripts.body;
+      // Sanitize before parsing to prevent XSS
+      bodyDiv.innerHTML = DOMPurify.sanitize(scripts.body, { ADD_TAGS: ["script"], ADD_ATTR: ["src", "async", "defer"] });
       Array.from(bodyDiv.childNodes).forEach((node) => {
         if (node.nodeType === Node.ELEMENT_NODE) {
           const script = document.createElement("script");
           Array.from((node as Element).attributes).forEach((attr) => {
             script.setAttribute(attr.name, attr.value);
           });
-          script.innerHTML = (node as Element).innerHTML;
+          // Use textContent instead of innerHTML for script content
+          script.textContent = (node as Element).textContent;
           document.body.appendChild(script);
         }
       });
