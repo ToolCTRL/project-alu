@@ -16,13 +16,9 @@ export default function LogoLightMode({ className = "", size = "h-9", to }: Read
     <Link to={to ?? "/"} className={clsx(className, "flex")}>
       {/* <BrandLogo className="h-10 w-auto mx-auto" /> */}
       {appConfiguration?.branding.logo ? (
-        <Fragment>
-          <img className={clsx(size, "mx-auto w-auto")} src={appConfiguration.branding.logo} alt="Logo" />
-        </Fragment>
+        <img className={clsx(size, "mx-auto w-auto")} src={appConfiguration.branding.logo} alt="Logo" />
       ) : (
-        <Fragment>
-          <img className={clsx(size, "mx-auto w-auto")} src={LogoLight} alt="Logo" />
-        </Fragment>
+        <img className={clsx(size, "mx-auto w-auto")} src={LogoLight} alt="Logo" />
       )}
     </Link>
   );

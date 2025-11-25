@@ -23,7 +23,7 @@ export default function CookieConsentSettings({ onUpdated }: Readonly<Props>) {
   useEffect(() => {
     const initial: CookieCategory[] = [];
     allCookieCategories.forEach((cookie) => {
-      if (userSession.cookies.find((f) => f.allowed && f.category === CookieCategory[cookie])) {
+      if (userSession.cookies.some((f) => f.allowed && f.category === CookieCategory[cookie])) {
         initial.push(cookie);
       }
     });

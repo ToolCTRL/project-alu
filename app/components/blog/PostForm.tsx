@@ -158,11 +158,9 @@ export default function PostForm({ item, categories, tags, canUpdate = true, can
           <InputGroup
             title="Content"
             right={
-              <>
-                <button type="button" className="text-sm font-medium underline" onClick={onPreview}>
-                  {t("shared.preview")}
-                </button>
-              </>
+              <button type="button" className="text-sm font-medium underline" onClick={onPreview}>
+                {t("shared.preview")}
+              </button>
             }
           >
             <InputRadioGroupCards

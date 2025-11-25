@@ -5,9 +5,7 @@ import { PermissionWithRoles } from "~/utils/db/permissions/permissions.db.serve
 import InputCheckboxWithDescription from "~/components/ui/input/InputCheckboxWithDescription";
 import { useEffect, useState } from "react";
 import FormGroup from "~/components/ui/forms/FormGroup";
-import ButtonTertiary from "~/components/ui/buttons/ButtonTertiary";
 import RoleBadge from "./RoleBadge";
-import InputRadioGroup from "~/components/ui/input/InputRadioGroup";
 import InputSearch from "~/components/ui/input/InputSearch";
 import { useAppOrAdminData } from "~/utils/data/useAppOrAdminData";
 import InputSelect from "~/components/ui/input/InputSelect";
@@ -21,12 +19,12 @@ interface Props {
   canDelete?: boolean;
 }
 
-export default function PermissionForm({ item, roles, onCancel, canUpdate = true, canDelete }: Props) {
+export default function PermissionForm({ item, roles, onCancel, canUpdate = true, canDelete }: Readonly<Props>) {
   const { t } = useTranslation();
   const appOrAdminData = useAppOrAdminData();
 
   const [permissionRoles, setRoles] = useState<string[]>([]);
-  const [type, setType] = useState<string | number | undefined>(item?.type ?? "admin");
+  const [type, setType] = useState<string | number>(item?.type ?? "admin");
 
   const [searchInput, setSearchInput] = useState("");
 
@@ -101,6 +99,7 @@ export default function PermissionForm({ item, roles, onCancel, canUpdate = true
         <label className="text-muted-foreground flex justify-between space-x-2 truncate text-xs font-medium">
           <div className="flex items-center justify-between space-x-1">
             <div className="text-foreground text-lg font-bold">{t("models.role.plural")}</div>
+            <div className="sr-only">{t("models.role.plural")}</div>
           </div>
           <div>
             {filteredItems().length === permissionRoles.length ? (

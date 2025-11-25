@@ -37,16 +37,15 @@ export default function ChangelogIssues({ title, icon, items }: Readonly<Props>)
   return (
     <div className="mx-auto ">
       <div className="prose dark:prose-dark text-sm">
-        <>
-          {items.length > 0 && (
-            <>
-              <div className=" flex items-baseline space-x-1">
-                <h2 className="dark text-sm font-semibold">{title}</h2>
-                {imageCount() > 0 && (
-                  <button className=" text-xs underline" type="button" onClick={() => setViewImages(!viewImages)}>
-                    ({!viewImages ? "Click here to show images" : "Hide images"})
-                  </button>
-                )}
+        {items.length > 0 && (
+          <>
+            <div className=" flex items-baseline space-x-1">
+              <h2 className="dark text-sm font-semibold">{title}</h2>
+              {imageCount() > 0 && (
+                <button className=" text-xs underline" type="button" onClick={() => setViewImages(!viewImages)}>
+                  ({viewImages ? "Hide images" : "Click here to show images"})
+                </button>
+              )}
               </div>
               <ul>
                 {items.map((issue) => {
@@ -78,8 +77,7 @@ export default function ChangelogIssues({ title, icon, items }: Readonly<Props>)
                 })}
               </ul>
             </>
-          )}
-        </>
+        )}
         {selectedImage && (
           <OpenModal onClose={() => setSelectedImage(undefined)}>
             <div>

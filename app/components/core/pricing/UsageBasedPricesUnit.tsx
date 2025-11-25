@@ -19,7 +19,27 @@ interface Props {
   disabled: boolean;
 }
 
-function FromTitleCell({ tiersMode, idx }: { readonly tiersMode: string; readonly idx: number }) {
+interface InnerComponentProps {
+  readonly tiersMode: string;
+  readonly idx: number;
+}
+
+interface InnerCurrencyPriceProps {
+  readonly currency: string;
+  readonly idx: number;
+  readonly allTiers: { from: number; to?: number }[];
+  readonly prices: Array<{
+    currency: string;
+    from: number;
+    to?: number;
+    perUnitPrice?: number;
+    flatFeePrice?: number;
+  }>;
+  readonly setPerUnitPrice: (idx: number, currency: string, price: number) => void;
+  readonly setFlatFeePrice: (idx: number, currency: string, price: number) => void;
+}
+
+function FromTitleCell({ tiersMode, idx }: InnerComponentProps) {
   return <>{tiersMode === "graduated" ? <div>{idx === 0 ? <div>For the first</div> : <div>For the next</div>}</div> : <div>Total units</div>}</>;
 }
 
@@ -42,6 +62,25 @@ function updateNewTierLimits(tiers: { from: number; to?: number }[]) {
     }
   }
   return tiers;
+}
+
+function CurrencyPricePerUnitColumn({ currency, idx, allTiers, prices, setPerUnitPrice }: {
+  readonly currency: { name: string; value: string; disabled?: boolean };
+  readonly idx: number;
+  readonly allTiers: { from: number; to?: number }[];
+  readonly prices: Array<{ currency: string; from: number; to?: number; perUnitPrice?: number; flatFeePrice?: number }>;
+  readonly setPerUnitPrice: (idx: number, currency: string, price: number) => void;
+}) {
+  const getCurrencyPrice = (tierIdx: number, cur: string) => {
+    if (allTiers.length > tierIdx) {
+      const { from, to } = allTiers[tierIdx];
+      const existingPrice = prices.find((f) => f.currency === cur && f.from === from && f.to === to);
+      return existingPrice;
+    }
+  };
+
+  // Return nothing, the column is handled by the parent
+  return null;
 }
 
 export default function UsageBasedPricesUnit({ item, onUpdate, disabled }: Readonly<Props>) {

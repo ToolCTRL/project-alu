@@ -44,6 +44,7 @@ function PermissionOrderCell({ item, idx, items }: { readonly item: PermissionWi
 export default function PermissionsTable({ items, className, canCreate, canUpdate = true, tenantId, canReorder }: Readonly<Props>): JSX.Element {
   const { t } = useTranslation();
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [actions, setActions] = useState<any[]>([]);
   const [headers, setHeaders] = useState<RowHeaderDisplayDto<PermissionWithRoles>[]>([]);
 
@@ -52,6 +53,7 @@ export default function PermissionsTable({ items, className, canCreate, canUpdat
       setActions([
         {
           title: t("shared.edit"),
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           onClickRoute: (_: any, item: any) => item.id,
         },
       ]);
