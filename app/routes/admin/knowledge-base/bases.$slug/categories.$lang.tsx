@@ -107,6 +107,97 @@ async function handleSetArticleOrders(form: FormData) {
   return Response.json({ updated: true });
 }
 
+async function handleDeleteCategory(request: Request, form: FormData) {
+  await verifyUserHasPermission(request, "admin.kb.delete");
+  const id = form.get("id")?.toString() ?? "";
+  const existing = await getKbCategoryById(id);
+  if (!existing) {
+    return Response.json({ error: "Category not found" }, { status: 400 });
+  }
+  await deleteKnowledgeBaseCategory(id);
+  return Response.json({ deleted: true });
+}
+
+async function handleDeleteSection(request: Request, form: FormData) {
+  await verifyUserHasPermission(request, "admin.kb.delete");
+  const id = form.get("id")?.toString() ?? "";
+  const existing = await getKbCategorySectionById(id);
+  if (!existing) {
+    return Response.json({ error: "Section not found" }, { status: 400 });
+  }
+  await deleteKnowledgeBaseCategorySection(id);
+  return Response.json({ deleted: true });
+}
+
+async function handleDeleteArticle(request: Request, form: FormData) {
+  await verifyUserHasPermission(request, "admin.kb.delete");
+  const id = form.get("id")?.toString() ?? "";
+  const existing = await getKbArticleById(id);
+  if (!existing) {
+    return Response.json({ error: "Article not found" }, { status: 400 });
+  }
+  await deleteKnowledgeBaseArticle(id);
+  return Response.json({ deleted: true });
+}
+
+async function handleDuplicateCategory(request: Request, kb: KnowledgeBaseDto, params: any, form: FormData) {
+  await verifyUserHasPermission(request, "admin.kb.create");
+  try {
+    const categoryId = form.get("id")?.toString() ?? "";
+    await KnowledgeBaseService.duplicateCategory({ kb, language: params.lang!, categoryId });
+    return Response.json({ duplicated: true });
+  } catch (e: any) {
+    return Response.json({ error: e.message }, { status: 400 });
+  }
+}
+
+async function handleNewArticle(request: Request, kb: KnowledgeBaseDto, params: any, userInfo: any, form: FormData) {
+  await verifyUserHasPermission(request, "admin.kb.create");
+  try {
+    const categoryId = form.get("categoryId")?.toString() ?? "";
+    const sectionId = form.get("sectionId")?.toString() ?? "";
+    const position = form.get("position")?.toString() ?? "";
+    const title = form.get("title")?.toString() ?? "";
+    const slug = form.get("slug")?.toString() ?? "";
+    await KnowledgeBaseService.newArticle({
+      kb,
+      params,
+      categoryId: categoryId.length > 0 ? categoryId : undefined,
+      sectionId: sectionId.length > 0 ? sectionId : undefined,
+      userId: userInfo.userId,
+      title: title.length > 0 ? title : undefined,
+      initialSlug: slug.length > 0 ? slug : undefined,
+      position: position as any,
+    });
+    return Response.json({ created: true });
+  } catch (e: any) {
+    return Response.json({ error: e.message }, { status: 400 });
+  }
+}
+
+async function handleUpdateArticleTitle(kb: KnowledgeBaseDto, params: any, form: FormData) {
+  try {
+    const id = form.get("id")?.toString() ?? "";
+    const title = form.get("title")?.toString() ?? "";
+    const slug = UrlUtils.slugify(title);
+    const existing = await getKbArticleBySlug({
+      knowledgeBaseId: kb.id,
+      slug,
+      language: params.lang!,
+    });
+    if (existing && existing.id !== id) {
+      return Response.json({ error: "Slug already exists" }, { status: 400 });
+    }
+    await updateKnowledgeBaseArticle(id, {
+      title,
+      slug,
+    });
+    return Response.json({ updated: true });
+  } catch (e: any) {
+    return Response.json({ error: e.message }, { status: 400 });
+  }
+}
+
 export const action = async ({ request, params }: ActionFunctionArgs) => {
   await verifyUserHasPermission(request, "admin.kb.update");
   const userInfo = await getUserInfo(request);
@@ -122,84 +213,17 @@ export const action = async ({ request, params }: ActionFunctionArgs) => {
   } else if (action === "set-article-orders") {
     return handleSetArticleOrders(form);
   } else if (action === "delete-category") {
-    await verifyUserHasPermission(request, "admin.kb.delete");
-    const id = form.get("id")?.toString() ?? "";
-    const existing = await getKbCategoryById(id);
-    if (!existing) {
-      return Response.json({ error: "Category not found" }, { status: 400 });
-    }
-    await deleteKnowledgeBaseCategory(id);
-    return Response.json({ deleted: true });
+    return handleDeleteCategory(request, form);
   } else if (action === "delete-section") {
-    await verifyUserHasPermission(request, "admin.kb.delete");
-    const id = form.get("id")?.toString() ?? "";
-    const existing = await getKbCategorySectionById(id);
-    if (!existing) {
-      return Response.json({ error: "Section not found" }, { status: 400 });
-    }
-    await deleteKnowledgeBaseCategorySection(id);
-    return Response.json({ deleted: true });
+    return handleDeleteSection(request, form);
   } else if (action === "delete-article") {
-    await verifyUserHasPermission(request, "admin.kb.delete");
-    const id = form.get("id")?.toString() ?? "";
-    const existing = await getKbArticleById(id);
-    if (!existing) {
-      return Response.json({ error: "Article not found" }, { status: 400 });
-    }
-    await deleteKnowledgeBaseArticle(id);
-    return Response.json({ deleted: true });
+    return handleDeleteArticle(request, form);
   } else if (action === "duplicate") {
-    await verifyUserHasPermission(request, "admin.kb.create");
-    try {
-      const categoryId = form.get("id")?.toString() ?? "";
-      await KnowledgeBaseService.duplicateCategory({ kb, language: params.lang!, categoryId });
-      return Response.json({ duplicated: true });
-    } catch (e: any) {
-      return Response.json({ error: e.message }, { status: 400 });
-    }
+    return handleDuplicateCategory(request, kb, params, form);
   } else if (action === "new") {
-    await verifyUserHasPermission(request, "admin.kb.create");
-    try {
-      const categoryId = form.get("categoryId")?.toString() ?? "";
-      const sectionId = form.get("sectionId")?.toString() ?? "";
-      const position = form.get("position")?.toString() ?? "";
-      const title = form.get("title")?.toString() ?? "";
-      const slug = form.get("slug")?.toString() ?? "";
-      await KnowledgeBaseService.newArticle({
-        kb,
-        params,
-        categoryId: categoryId.length > 0 ? categoryId : undefined,
-        sectionId: sectionId.length > 0 ? sectionId : undefined,
-        userId: userInfo.userId,
-        title: title.length > 0 ? title : undefined,
-        initialSlug: slug.length > 0 ? slug : undefined,
-        position: position as any,
-      });
-      return Response.json({ created: true });
-    } catch (e: any) {
-      return Response.json({ error: e.message }, { status: 400 });
-    }
+    return handleNewArticle(request, kb, params, userInfo, form);
   } else if (action === "update-article-title") {
-    try {
-      const id = form.get("id")?.toString() ?? "";
-      const title = form.get("title")?.toString() ?? "";
-      const slug = UrlUtils.slugify(title);
-      const existing = await getKbArticleBySlug({
-        knowledgeBaseId: kb.id,
-        slug,
-        language: params.lang!,
-      });
-      if (existing && existing.id !== id) {
-        return Response.json({ error: "Slug already exists" }, { status: 400 });
-      }
-      await updateKnowledgeBaseArticle(id, {
-        title,
-        slug,
-      });
-      return Response.json({ updated: true });
-    } catch (e: any) {
-      return Response.json({ error: e.message }, { status: 400 });
-    }
+    return handleUpdateArticleTitle(kb, params, form);
   }
   return Response.json({ error: "Invalid action" }, { status: 400 });
 };

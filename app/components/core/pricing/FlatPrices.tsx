@@ -20,6 +20,25 @@ interface Props {
   disabled: boolean;
   isPortalPlan?: boolean;
 }
+
+// Extracted component definitions
+const CurrencyCell = ({ currency }: { currency?: string }) => (
+  <div>
+    {currency?.toUpperCase()}
+  </div>
+);
+
+const DiscountCell = ({ discount }: { discount?: string }) => (
+  <div className="flex justify-center">
+    {discount ? (
+      <span className="ml-1 inline-flex items-center rounded-md bg-teal-100 px-2.5 py-0.5 text-sm font-medium text-teal-800">
+        {discount}
+      </span>
+    ) : (
+      <div className="text-muted-foreground text-xs italic">NA</div>
+    )}
+  </div>
+);
 export default function FlatPrices({ model, prices, setPrices, disabled, isPortalPlan }: Props) {
   const { t } = useTranslation();
   const [headers, setHeaders] = useState<RowHeaderDisplayDto<FlatPriceDto>[]>([]);
@@ -118,11 +137,7 @@ export default function FlatPrices({ model, prices, setPrices, disabled, isPorta
       name: "currency",
       title: "Currency",
       value: (e) => e.currency?.toUpperCase(),
-      formattedValue: (e) => (
-        <div>
-          {e.currency?.toUpperCase()}
-        </div>
-      ),
+      formattedValue: (e) => <CurrencyCell currency={e.currency} />,
     };
     let headers: RowHeaderDisplayDto<FlatPriceDto>[] = [currencyHeader];
 
@@ -176,17 +191,7 @@ export default function FlatPrices({ model, prices, setPrices, disabled, isPorta
         title: "Yearly Discount",
         className: "text-center",
         value: (e) => getYearlyDiscount(e),
-        formattedValue: (e) => (
-          <div className="flex justify-center">
-            {getYearlyDiscount(e) ? (
-              <span className="ml-1 inline-flex items-center rounded-md bg-teal-100 px-2.5 py-0.5 text-sm font-medium text-teal-800">
-                {getYearlyDiscount(e)}
-              </span>
-            ) : (
-              <div className="text-muted-foreground text-xs italic">NA</div>
-            )}
-          </div>
-        ),
+        formattedValue: (e) => <DiscountCell discount={getYearlyDiscount(e)} />,
         hidden:
           !selectedBillingPeriods.find((f) => f === SubscriptionBillingPeriod.YEARLY) ||
           !selectedBillingPeriods.find((f) => f === SubscriptionBillingPeriod.MONTHLY),

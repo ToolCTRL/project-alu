@@ -15,7 +15,7 @@ type LoaderData = {
   item: PortalWithDetails;
   overview: AnalyticsOverviewDto;
 };
-export let loader = async ({ request, params }: LoaderFunctionArgs) => {
+export const loader = async ({ request, params }: LoaderFunctionArgs) => {
   await requireAuth({ request, params });
   const appConfiguration = await getAppConfiguration({ request });
   if (!appConfiguration.portals?.analytics) {

@@ -11,6 +11,44 @@ interface Props {
   items: Stripe.Invoice[];
 }
 
+const InvoiceDateCell = ({ created }: { created: number }) => (
+  <div className="flex flex-col">
+    <div>{DateUtils.dateYMD(new Date(created * 1000))}</div>
+    <div className="text-xs">{DateUtils.dateAgo(new Date(created * 1000))}</div>
+  </div>
+);
+
+const InvoiceAmountCell = ({ currency, amountPaid }: { currency: string; amountPaid: number }) => (
+  <div className="flex flex-col">
+    <div>
+      {getFormattedPriceInCurrency({
+        currency: currency,
+        price: Number(amountPaid) / 100,
+      })}
+    </div>
+    <div className="text-muted-foreground text-xs uppercase">{currency}</div>
+  </div>
+);
+
+const InvoiceStatusCell = ({ status, t }: { status: string; t: any }) => (
+  <div>
+    <SimpleBadge title={t("app.subscription.invoices.status." + status)} color={status === "paid" ? Colors.GREEN : Colors.YELLOW} />
+  </div>
+);
+
+const InvoiceItemsCell = ({ lineItems, t }: { lineItems: Stripe.InvoiceLineItem[]; t: any }) => (
+  <div className="flex flex-col">
+    {lineItems.map((lineItem) => {
+      return (
+        <div key={lineItem.id}>
+          {lineItem.price?.nickname && <span>{t(lineItem.price?.nickname)} - </span>}
+          {lineItem.description}
+        </div>
+      );
+    })}
+  </div>
+);
+
 export default function MyInvoices({ items }: Props) {
   const { t } = useTranslation();
   return (
@@ -26,53 +64,23 @@ export default function MyInvoices({ items }: Props) {
               name: "date",
               title: t("shared.createdAt"),
               value: (i) => DateUtils.dateYMD(new Date(i.created * 1000)),
-              formattedValue: (item) => (
-                <div className="flex flex-col">
-                  <div>{DateUtils.dateYMD(new Date(item.created * 1000))}</div>
-                  <div className="text-xs">{DateUtils.dateAgo(new Date(item.created * 1000))}</div>
-                </div>
-              ),
+              formattedValue: (item) => <InvoiceDateCell created={item.created} />,
             },
             {
               name: "amount",
               title: t("app.subscription.invoices.amount"),
-              value: (i) => (
-                <div className="flex flex-col">
-                  <div>
-                    {getFormattedPriceInCurrency({
-                      currency: i.currency,
-                      price: Number(i.amount_paid) / 100,
-                    })}
-                  </div>
-                  <div className="text-muted-foreground text-xs uppercase">{i.currency}</div>
-                </div>
-              ),
+              value: (i) => <InvoiceAmountCell currency={i.currency} amountPaid={i.amount_paid} />,
             },
             {
               name: "status",
               title: t("shared.status"),
-              value: (i) => (
-                <div>
-                  <SimpleBadge title={t("app.subscription.invoices.status." + i.status)} color={i.status === "paid" ? Colors.GREEN : Colors.YELLOW} />
-                </div>
-              ),
+              value: (i) => <InvoiceStatusCell status={i.status} t={t} />,
             },
             {
               className: "w-full",
               name: "items",
               title: t("app.subscription.invoices.items"),
-              value: (i) => (
-                <div className="flex flex-col">
-                  {i.lines.data.map((lineItem, idx) => {
-                    return (
-                      <div key={idx}>
-                        {lineItem.price?.nickname && <span>{t(lineItem.price?.nickname)} - </span>}
-                        {lineItem.description}
-                      </div>
-                    );
-                  })}
-                </div>
-              ),
+              value: (i) => <InvoiceItemsCell lineItems={i.lines.data} t={t} />,
             },
           ]}
           actions={[

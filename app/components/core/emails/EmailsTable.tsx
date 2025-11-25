@@ -14,6 +14,34 @@ interface Props {
   withTenant: boolean;
   pagination: PaginationDto;
 }
+
+// Extracted component definitions
+const FromCell = ({ item }: { item: EmailWithSimpleDetails }) => (
+  <div className="flex w-40 flex-col truncate">
+    <div className={clsx("truncate", item._count.reads === 0 && "text-foreground font-medium")}>{item.fromName}</div>
+    <div className="truncate">{item.fromEmail}</div>
+  </div>
+);
+
+const ToCell = ({ item }: { item: EmailWithSimpleDetails }) => (
+  <div className="flex w-40 flex-col truncate">
+    <div className={clsx("truncate", item._count.reads === 0 && "text-foreground font-medium")}>{item.toName}</div>
+    <div className="truncate">{item.toEmail}</div>
+  </div>
+);
+
+const SubjectCell = ({ item }: { item: EmailWithSimpleDetails }) => (
+  <div className="flex max-w-sm items-center space-x-1 truncate">
+    <div className={clsx(item._count.reads === 0 && "text-foreground font-medium")}>{item.subject}</div>
+    <div className="text-muted-foreground">-</div>
+    <div className="text-muted-foreground truncate font-light">{item.textBody}</div>
+  </div>
+);
+
+const AttachmentsCell = ({ item }: { item: EmailWithSimpleDetails }) => (
+  <div>{item._count.attachments > 0 && <PaperClipIcon className="text-muted-foreground h-4 w-4" />}</div>
+);
+
 export default function EmailsTable({ items, withTenant, pagination }: Props) {
   const { t } = useTranslation();
   const [headers, setHeaders] = useState<RowHeaderDisplayDto<EmailWithSimpleDetails>[]>([]);
@@ -32,42 +60,26 @@ export default function EmailsTable({ items, withTenant, pagination }: Props) {
       name: "from",
       title: t("models.email.from"),
       value: (i) => i.fromEmail,
-      formattedValue: (i) => (
-        <div className="flex w-40 flex-col truncate">
-          <div className={clsx("truncate", i._count.reads === 0 && "text-foreground font-medium")}>{i.fromName}</div>
-          <div className="truncate">{i.fromEmail}</div>
-        </div>
-      ),
+      formattedValue: (i) => <FromCell item={i} />,
     };
     const toHeader: RowHeaderDisplayDto<EmailWithSimpleDetails> = {
       name: "to",
       title: t("models.email.to"),
       value: (i) => i.toEmail,
-      formattedValue: (i) => (
-        <div className="flex w-40 flex-col truncate">
-          <div className={clsx("truncate", i._count.reads === 0 && "text-foreground font-medium")}>{i.toName}</div>
-          <div className="truncate">{i.toEmail}</div>
-        </div>
-      ),
+      formattedValue: (i) => <ToCell item={i} />,
     };
     const subjectHeader: RowHeaderDisplayDto<EmailWithSimpleDetails> = {
       name: "subject",
       title: t("models.email.subject"),
       value: (i) => i.subject,
-      formattedValue: (i) => (
-        <div className="flex max-w-sm items-center space-x-1 truncate">
-          <div className={clsx(i._count.reads === 0 && "text-foreground font-medium")}>{i.subject}</div>
-          <div className="text-muted-foreground">-</div>
-          <div className="text-muted-foreground truncate font-light">{i.textBody}</div>
-        </div>
-      ),
+      formattedValue: (i) => <SubjectCell item={i} />,
       href: (i) => i.id,
     };
     const attachmentsHeader: RowHeaderDisplayDto<EmailWithSimpleDetails> = {
       name: "attachments",
       title: "",
       value: (i) => i._count.attachments,
-      formattedValue: (i) => <div>{i._count.attachments > 0 && <PaperClipIcon className="text-muted-foreground h-4 w-4" />}</div>,
+      formattedValue: (i) => <AttachmentsCell item={i} />,
     };
     const dateHeader: RowHeaderDisplayDto<EmailWithSimpleDetails> = {
       name: "date",

@@ -255,10 +255,18 @@ export function ShadcnAppSidebar({
   function checkFeatureFlags(item: SideBarItem) {
     return !item.featureFlag || rootData.featureFlags?.includes(item.featureFlag);
   }
+  function filterItem(f: SideBarItem) {
+    return f.hidden !== true && allowCurrentUserType(f) && allowCurrentTenantUserType(f) && checkUserRolePermissions(f) && checkFeatureFlags(f);
+  }
+
+  function processMenuItemWithSubItems(f: SideBarItem) {
+    return {
+      ...f,
+      items: f.items?.filter((item) => filterItem(item)),
+    };
+  }
+
   const getMenu = (): SidebarGroupDto[] => {
-    function filterItem(f: SideBarItem) {
-      return f.hidden !== true && allowCurrentUserType(f) && allowCurrentTenantUserType(f) && checkUserRolePermissions(f) && checkFeatureFlags(f);
-    }
     const _menu: SidebarGroupDto[] = [];
     getMenuItems()
       .filter((f) => filterItem(f))
@@ -271,15 +279,7 @@ export function ShadcnAppSidebar({
         }
         _menu.push({
           title: f.title.toString(),
-          items:
-            f.items
-              ?.filter((f) => filterItem(f))
-              .map((f) => {
-                return {
-                  ...f,
-                  items: f.items?.filter((f) => filterItem(f)),
-                };
-              }) ?? [],
+          items: f.items?.filter((item) => filterItem(item)).map((item) => processMenuItemWithSubItems(item)) ?? [],
           type,
         });
       });

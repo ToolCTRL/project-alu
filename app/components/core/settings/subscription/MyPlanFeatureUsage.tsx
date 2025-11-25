@@ -12,8 +12,6 @@ export default function MyPlanFeatureUsage({ item }: Props) {
     <div>
       {item ? (
         <div>
-          {/* {JSON.stringify(item)} */}
-
           <div className="flex items-baseline space-x-1 font-medium">
             {item.type === SubscriptionFeatureLimitType.INCLUDED && (
               <span className="text-foreground flex items-center space-x-1 truncate text-sm">

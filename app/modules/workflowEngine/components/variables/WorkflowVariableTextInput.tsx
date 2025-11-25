@@ -27,11 +27,11 @@ export default function WorkflowVariableTextInput({
     if (!refString.current) {
       return;
     }
-    var start = refString.current.selectionStart || 0;
-    var end = refString.current.selectionEnd || 0;
-    var text = refString.current.value;
-    var before = text.substring(0, start);
-    var after = text.substring(end, text.length);
+    const start = refString.current.selectionStart || 0;
+    const end = refString.current.selectionEnd || 0;
+    const text = refString.current.value;
+    const before = text.substring(0, start);
+    const after = text.substring(end, text.length);
     onChange(before + variable.name + after);
   }
   return (

@@ -141,9 +141,9 @@ export default function ChangeSubscription({ items, current, billingPeriod, curr
             <div className={clsx("mt-6 grid gap-4 lg:gap-2", products.length === 2 && "lg:grid-cols-2", products.length > 2 && "lg:grid-cols-3")}>
               {products
                 .filter((f) => f.public)
-                .map((plan, index) => {
+                .map((plan) => {
                   return (
-                    <div key={index}>
+                    <div key={plan.id}>
                       <section
                         className={clsx(
                           "relative flex w-full flex-col rounded-md p-6 shadow-2xs",
@@ -180,10 +180,10 @@ export default function ChangeSubscription({ items, current, billingPeriod, curr
                           {/* Features */}
                           <ul className="flex-1 space-y-1">
                             {plan.features
-                              .sort((a, b) => (a.order > b.order ? 1 : -1))
-                              .map((feature, idxFeature) => {
+                              .toSorted((a, b) => (a.order > b.order ? 1 : -1))
+                              .map((feature) => {
                                 return (
-                                  <li key={idxFeature}>
+                                  <li key={feature.name}>
                                     <div className="flex items-center">
                                       {feature.type !== SubscriptionFeatureLimitType.NOT_INCLUDED ? (
                                         <svg

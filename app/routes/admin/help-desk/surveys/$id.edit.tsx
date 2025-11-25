@@ -15,11 +15,11 @@ type LoaderData = {
   item: SurveyWithDetails;
 };
 
-export let loader = async ({ request, params }: LoaderFunctionArgs) => {
+export const loader = async ({ request, params }: LoaderFunctionArgs) => {
   await requireAuth({ request, params });
   await verifyUserHasPermission(request, "admin.surveys");
   const tenantId = await getTenantIdOrNull({ request, params });
-  let item = await getSurveyById({ tenantId, id: params.id! });
+  const item = await getSurveyById({ tenantId, id: params.id! });
   if (!item) {
     return redirect("/admin/help-desk/surveys");
   }
@@ -29,7 +29,7 @@ export let loader = async ({ request, params }: LoaderFunctionArgs) => {
   return data;
 };
 
-export let action = async ({ request, params }: ActionFunctionArgs) => {
+export const action = async ({ request, params }: ActionFunctionArgs) => {
   await requireAuth({ request, params });
   await verifyUserHasPermission(request, "admin.surveys");
   const { t } = await getTranslations(request);

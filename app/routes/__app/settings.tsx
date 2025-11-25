@@ -42,19 +42,128 @@ type ActionData = {
   success?: string;
   error?: string;
 };
+
+async function handleProfileUpdate(
+  request: Request,
+  userInfo: any,
+  user: any,
+  firstName: string,
+  lastName: string,
+  avatar: string
+) {
+  const fieldErrors = {
+    firstName: firstName.length < 2 ? "First name required" : "",
+    lastName: lastName.length < 2 ? "Last name required" : "",
+  };
+  if (Object.values(fieldErrors).some(Boolean)) {
+    return Response.json({ error: `Form not submitted correctly.`, fields: fieldErrors }, { status: 400 });
+  }
+
+  const avatarStored = avatar ? await storeSupabaseFile({ bucket: "users-icons", content: avatar, id: userInfo?.userId }) : avatar;
+  const profile = await updateUserProfile({ firstName, lastName, avatar: avatarStored }, userInfo?.userId);
+  if (!profile) {
+    return Response.json({ error: `Something went wrong.` }, { status: 400 });
+  }
+  await EventsService.create({
+    request,
+    event: "user.profile.updated",
+    tenantId: null,
+    userId: user.id,
+    data: {
+      email: user.email,
+      new: { firstName, lastName },
+      old: { firstName: user.firstName, lastName: user.lastName },
+      userId: userInfo?.userId,
+    } satisfies UserProfileUpdatedDto,
+  });
+  return Response.json({ success: "Profile updated" });
+}
+
+async function handlePasswordUpdate(
+  request: Request,
+  t: any,
+  userInfo: any,
+  user: any,
+  passwordCurrent: string,
+  passwordNew: string,
+  passwordNewConfirm: string
+) {
+  if (passwordNew !== passwordNewConfirm) {
+    return Response.json({ error: t("account.shared.passwordMismatch") }, { status: 400 });
+  }
+
+  if (passwordNew.length < 6) {
+    return Response.json({ error: `Passwords must have least 6 characters.` }, { status: 400 });
+  }
+
+  const isCorrectPassword = await bcrypt.compare(passwordCurrent, user.passwordHash);
+  if (!isCorrectPassword) {
+    return Response.json({ error: `Invalid password.` }, { status: 400 });
+  }
+
+  const passwordHash = await bcrypt.hash(passwordNew, 10);
+  await updateUserPassword({ passwordHash }, userInfo?.userId);
+  await EventsService.create({
+    request,
+    event: "user.password.updated",
+    tenantId: null,
+    userId: user.id,
+    data: {
+      user: { id: user.id, email: user.email },
+    } satisfies UserPasswordUpdatedDto,
+  });
+
+  return Response.json({ success: "Password updated" });
+}
+
+async function handleAccountDelete(request: Request, user: any) {
+  if (user.admin !== null) {
+    return Response.json({ error: "Cannot delete an admin" }, { status: 400 });
+  }
+
+  try {
+    const { deletedTenants } = await deleteUserWithItsTenants(user.id);
+    const deletedAccounts = await Promise.all(
+      deletedTenants.map(async (tenant) => {
+        const data = {
+          tenant: { id: tenant.id, name: tenant.name },
+          user: { id: user.id, email: user.email },
+        } satisfies AccountDeletedDto;
+        await EventsService.create({
+          request,
+          event: "account.deleted",
+          tenantId: null,
+          userId: null,
+          data,
+        });
+        return data;
+      })
+    );
+    await EventsService.create({
+      request,
+      event: "user.profile.deleted",
+      tenantId: null,
+      userId: null,
+      data: {
+        id: user.id,
+        email: user.email,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        deletedAccounts,
+      } satisfies UserProfileDeletedDto,
+    });
+  } catch (e: any) {
+    return Response.json({ error: e }, { status: 400 });
+  }
+
+  return redirect("/login");
+}
+
 export const action = async ({ request, params }: ActionFunctionArgs) => {
   const { t } = await getTranslations(request);
   const userInfo = await getUserInfo(request);
   const form = await request.formData();
   const action = form.get("action");
-
-  const firstName = form.get("firstName")?.toString();
-  const lastName = form.get("lastName")?.toString();
-  const avatar = form.get("avatar")?.toString() ?? "";
-
-  const passwordCurrent = form.get("passwordCurrent")?.toString();
-  const passwordNew = form.get("passwordNew")?.toString();
-  const passwordNewConfirm = form.get("passwordNewConfirm")?.toString();
 
   if (typeof action !== "string") {
     return Response.json({ error: `Form not submitted correctly.` }, { status: 400 });
@@ -62,144 +171,41 @@ export const action = async ({ request, params }: ActionFunctionArgs) => {
 
   const user = await db.user.findUnique({
     where: { id: userInfo?.userId },
-    include: {
-      admin: true,
-    },
+    include: { admin: true },
   });
   if (!user) {
     return Response.json({ error: `User not found.` }, { status: 400 });
   }
-  switch (action) {
-    case "profile": {
-      const fields = { action, firstName, lastName, avatar, passwordCurrent, passwordNew, passwordNewConfirm };
-      const fieldErrors = {
-        firstName: action === "profile" && (fields.firstName ?? "").length < 2 ? "First name required" : "",
-        lastName: action === "profile" && (fields.lastName ?? "").length < 2 ? "Last name required" : "",
-      };
-      if (Object.values(fieldErrors).some(Boolean)) {
-        return Response.json({ error: `Form not submitted correctly.`, fields: fieldErrors }, { status: 400 });
-      }
 
-      if (typeof firstName !== "string" || typeof lastName !== "string") {
-        return Response.json({ error: `Form not submitted correctly.` }, { status: 400 });
-      }
+  if (action === "profile") {
+    const firstName = form.get("firstName")?.toString();
+    const lastName = form.get("lastName")?.toString();
+    const avatar = form.get("avatar")?.toString() ?? "";
 
-      let avatarStored = avatar ? await storeSupabaseFile({ bucket: "users-icons", content: avatar, id: userInfo?.userId }) : avatar;
-      const profile = await updateUserProfile({ firstName, lastName, avatar: avatarStored }, userInfo?.userId);
-      if (!profile) {
-        return Response.json({ error: `Something went wrong.` }, { status: 400 });
-      }
-      await EventsService.create({
-        request,
-        event: "user.profile.updated",
-        tenantId: null,
-        userId: user.id,
-        data: {
-          email: user.email,
-          new: { firstName, lastName },
-          old: { firstName: user.firstName, lastName: user.lastName },
-          userId: userInfo?.userId,
-        } satisfies UserProfileUpdatedDto,
-      });
-      return Response.json({ success: "Profile updated" });
+    if (typeof firstName !== "string" || typeof lastName !== "string") {
+      return Response.json({ error: `Form not submitted correctly.` }, { status: 400 });
     }
-    case "password": {
-      if (typeof passwordCurrent !== "string" || typeof passwordNew !== "string" || typeof passwordNewConfirm !== "string") {
-        return Response.json({ error: `Form not submitted correctly.` }, { status: 400 });
-      }
 
-      if (passwordNew !== passwordNewConfirm) {
-        return Response.json({ error: t("account.shared.passwordMismatch") }, { status: 400 });
-      }
-
-      if (passwordNew.length < 6) {
-        return Response.json(
-          {
-            error: `Passwords must have least 6 characters.`,
-          },
-          { status: 400 }
-        );
-      }
-
-      if (!user) return null;
-
-      const isCorrectPassword = await bcrypt.compare(passwordCurrent, user.passwordHash);
-      if (!isCorrectPassword) {
-        return Response.json({ error: `Invalid password.` }, { status: 400 });
-      }
-
-      const passwordHash = await bcrypt.hash(passwordNew, 10);
-      await updateUserPassword({ passwordHash }, userInfo?.userId);
-      await EventsService.create({
-        request,
-        event: "user.password.updated",
-        tenantId: null,
-        userId: user.id,
-        data: {
-          user: { id: user.id, email: user.email },
-        } satisfies UserPasswordUpdatedDto,
-      });
-
-      return Response.json({
-        success: "Password updated",
-      });
-    }
-    case "deleteAccount": {
-      if (!user) {
-        return null;
-      }
-      if (user.admin !== null) {
-        return Response.json(
-          {
-            error: "Cannot delete an admin",
-          },
-          { status: 400 }
-        );
-      }
-
-      try {
-        const { deletedTenants } = await deleteUserWithItsTenants(user.id);
-        const deletedAccounts = await Promise.all(
-          deletedTenants.map(async (tenant) => {
-            const data = {
-              tenant: { id: tenant.id, name: tenant.name },
-              user: { id: user.id, email: user.email },
-            } satisfies AccountDeletedDto;
-            await EventsService.create({
-              request,
-              event: "account.deleted",
-              tenantId: null,
-              userId: null,
-              data,
-            });
-            return data;
-          })
-        );
-        await EventsService.create({
-          request,
-          event: "user.profile.deleted",
-          tenantId: null,
-          userId: null,
-          data: {
-            id: user.id,
-            email: user.email,
-            firstName: user.firstName,
-            lastName: user.lastName,
-            deletedAccounts,
-          } satisfies UserProfileDeletedDto,
-        });
-      } catch (e: any) {
-        return Response.json(
-          {
-            error: e,
-          },
-          { status: 400 }
-        );
-      }
-
-      return redirect("/login");
-    }
+    return handleProfileUpdate(request, userInfo, user, firstName, lastName, avatar);
   }
+
+  if (action === "password") {
+    const passwordCurrent = form.get("passwordCurrent")?.toString();
+    const passwordNew = form.get("passwordNew")?.toString();
+    const passwordNewConfirm = form.get("passwordNewConfirm")?.toString();
+
+    if (typeof passwordCurrent !== "string" || typeof passwordNew !== "string" || typeof passwordNewConfirm !== "string") {
+      return Response.json({ error: `Form not submitted correctly.` }, { status: 400 });
+    }
+
+    return handlePasswordUpdate(request, t, userInfo, user, passwordCurrent, passwordNew, passwordNewConfirm);
+  }
+
+  if (action === "deleteAccount") {
+    return handleAccountDelete(request, user);
+  }
+
+  return Response.json({ error: `Invalid action` }, { status: 400 });
 };
 
 export default function () {

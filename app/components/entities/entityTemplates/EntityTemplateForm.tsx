@@ -47,7 +47,12 @@ function renderBooleanProperty(
   updateConfig: (value: any) => void,
   t: (key: string) => string
 ) {
-  const boolValue = config[property.name] === "false" ? false : config[property.name] === "true" ? true : config[property.name];
+  let boolValue = config[property.name];
+  if (config[property.name] === "false") {
+    boolValue = false;
+  } else if (config[property.name] === "true") {
+    boolValue = true;
+  }
   return <InputCheckbox name={property.name} title={t(property.title)} value={boolValue} setValue={updateConfig} />;
 }
 

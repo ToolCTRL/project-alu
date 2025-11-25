@@ -19,10 +19,6 @@ export default function MemberInvitationsListAndTable({ items, canDelete }: Prop
   const [sortByColumn, setSortByColumn] = useState("");
   const [sortDirection, setSortDirection] = useState(1);
   const headers = [
-    // {
-    //   name: "role",
-    //   title: t("settings.profile.type"),
-    // },
     {
       name: "email",
       title: t("account.shared.email"),
@@ -33,19 +29,6 @@ export default function MemberInvitationsListAndTable({ items, canDelete }: Prop
     },
   ];
 
-  // function getUserRole(item: TenantUserInvitation) {
-  //   return t("settings.profile.types." + TenantUserType[item.type]);
-  // }
-  // function getUserRoleClass(item: TenantUserInvitation) {
-  //   switch (item.type as TenantUserType) {
-  //     case TenantUserType.OWNER:
-  //       return "bg-secondary text-foreground border border-border";
-  //     case TenantUserType.ADMIN:
-  //       return "bg-rose-50 border border-rose-200";
-  //     case TenantUserType.MEMBER:
-  //       return "bg-blue-50 border border-blue-200";
-  //   }
-  // }
   function sortBy(column: string | undefined) {
     if (column) {
       setSortDirection(sortDirection === -1 ? 1 : -1);

@@ -16,8 +16,8 @@ export default function MyUpcomingInvoice({ items }: Props) {
           <div className="flex justify-between space-x-2">
             <div className="text-sm font-medium">{t("app.subscription.invoices.upcoming")}</div>
           </div>
-          {items.map((item, idx) => (
-            <div key={idx} className="border-border bg-secondary flex flex-col rounded-md border border-dashed p-3">
+          {items.map((item) => (
+            <div key={item.id} className="border-border bg-secondary flex flex-col rounded-md border border-dashed p-3">
               <div>
                 <span className="font-medium">
                   {getFormattedPriceInCurrency({
@@ -30,9 +30,9 @@ export default function MyUpcomingInvoice({ items }: Props) {
                   {item.next_payment_attempt && DateUtils.dateMonthDayYear(new Date(item.next_payment_attempt * 1000))}
                 </div>
               </div>
-              {item.lines.data.map((lineItem, idx) => {
+              {item.lines.data.map((lineItem) => {
                 return (
-                  <div key={idx} className="text-sm">
+                  <div key={lineItem.id} className="text-sm">
                     {lineItem.price?.nickname && <span>{t(lineItem.price?.nickname)} &rarr; </span>}
                     {lineItem.description}
                   </div>

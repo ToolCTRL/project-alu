@@ -27,7 +27,7 @@ export function compile(template: string, data: any) {
   const compiled = Handlebars.compile(template);
   let result = compiled(data);
   // replace more three or more newlines with two newlines
-  var times = 0;
+  let times = 0;
   do {
     result = result.replace(/\n{3,}/gm, "\n\n");
     times++;

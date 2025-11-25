@@ -3,8 +3,8 @@ import { getMyTenants } from "~/utils/db/tenants.db.server";
 import { getUser } from "~/utils/db/users.db.server";
 import { getUserInfo } from "~/utils/session.server";
 
-let redirectTo = "settings/subscription";
-export let loader: LoaderFunction = async ({ request }) => {
+const redirectTo = "settings/subscription";
+export const loader: LoaderFunction = async ({ request }) => {
   const userInfo = await getUserInfo(request);
   const user = await getUser(userInfo.userId);
   if (!user) {

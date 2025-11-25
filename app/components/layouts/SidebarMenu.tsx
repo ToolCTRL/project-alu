@@ -20,6 +20,257 @@ interface Props {
   menuItems?: SideBarItem[];
 }
 
+interface MenuItemProps {
+  menuItem: SideBarItem;
+  onSelected?: () => void;
+  cssStates: () => { selected: string };
+  isCurrent: (menuItem: SideBarItem) => boolean | undefined;
+  getPath: (item: SideBarItem) => string;
+  menuItemIsExpanded: (path: string) => boolean;
+  toggleMenuItem: (path: string) => void;
+  t: (key: string) => string;
+}
+
+function MobileMenuItem({ menuItem, onSelected, cssStates, isCurrent, getPath, menuItemIsExpanded, toggleMenuItem, t }: MenuItemProps) {
+  if (!menuItem.items || menuItem.items.length === 0) {
+    return (
+      <div>
+        {menuItem.path.includes("://") ? (
+          <a
+            target="_blank"
+            href={menuItem.path}
+            rel="noreferrer"
+            className={clsx(
+              "group mt-1 flex items-center space-x-4 rounded-sm px-4 py-2 text-base leading-5 transition duration-150 ease-in-out hover:bg-slate-800 hover:text-white focus:bg-slate-800 focus:text-gray-50 focus:outline-hidden"
+            )}
+            onClick={onSelected}
+          >
+            {(menuItem.icon !== undefined || menuItem.entityIcon !== undefined) && <SidebarIcon className="h-5 w-5 " item={menuItem} />}
+            <div>{t(menuItem.title)}</div>
+          </a>
+        ) : (
+          <Link
+            prefetch="intent"
+            id={UrlUtils.slugify(getPath(menuItem))}
+            to={menuItem.redirectTo ?? getPath(menuItem)}
+            className={clsx(
+              "group mt-1 flex items-center space-x-4 rounded-sm px-4 py-2 text-base leading-5 transition duration-150 ease-in-out  focus:outline-hidden",
+              isCurrent(menuItem) && cssStates().selected,
+              !isCurrent(menuItem) && "text-slate-200 hover:bg-slate-800 focus:bg-slate-800"
+            )}
+            onClick={onSelected}
+          >
+            {(menuItem.icon !== undefined || menuItem.entityIcon !== undefined) && <SidebarIcon className="h-5 w-5 " item={menuItem} />}
+            <div>{t(menuItem.title)}</div>
+          </Link>
+        )}
+      </div>
+    );
+  }
+
+  return (
+    <div>
+      <div
+        className="group mt-1 flex items-center justify-between rounded-sm px-4 py-2 text-base leading-5 text-slate-200 transition duration-150 ease-in-out hover:bg-slate-800 hover:text-white focus:bg-slate-800 focus:text-gray-50 focus:outline-hidden"
+        onClick={() => toggleMenuItem(menuItem.path)}
+      >
+        <div className="flex items-center space-x-4 truncate">
+          {(menuItem.icon !== undefined || menuItem.entityIcon !== undefined) && (
+            <span className="h-5 w-5 text-slate-200 transition ease-in-out">
+              <SidebarIcon className="h-5 w-5 " item={menuItem} />
+            </span>
+          )}
+          <div className="truncate">{t(menuItem.title)}</div>
+        </div>
+        <svg
+          className={clsx(
+            "ml-auto h-5 w-5 shrink-0 transform transition-colors duration-150 ease-in-out",
+            menuItemIsExpanded(menuItem.path)
+              ? "group-hover:text-muted-foreground group-focus:text-muted-foreground ml-auto h-3 w-3 rotate-90 transform transition-colors duration-150 ease-in-out"
+              : "group-hover:text-muted-foreground group-focus:text-muted-foreground ml-auto h-3 w-3 transform transition-colors duration-150 ease-in-out"
+          )}
+          viewBox="0 0 20 20"
+        >
+          <path d="M6 6L14 10L6 14V6Z" fill="currentColor" />
+        </svg>
+      </div>
+      {menuItemIsExpanded(menuItem.path) && (
+        <div className="mt-1">
+          {menuItem.items.map((subItem, index) => (
+            <MobileSubMenuItem key={index} subItem={subItem} menuItem={menuItem} onSelected={onSelected} cssStates={cssStates} isCurrent={isCurrent} getPath={getPath} t={t} />
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function MobileSubMenuItem({ subItem, menuItem, onSelected, cssStates, isCurrent, getPath, t }: Omit<MenuItemProps, 'menuItemIsExpanded' | 'toggleMenuItem'> & { subItem: SideBarItem }) {
+  return (
+    <Fragment>
+      {menuItem.path.includes("://") ? (
+        <a
+          target="_blank"
+          href={menuItem.path}
+          rel="noreferrer"
+          className={clsx(
+            "group mt-1 flex items-center rounded-sm py-2 pl-14 leading-5 text-slate-200 transition duration-150 ease-in-out hover:bg-slate-800 hover:text-slate-300 focus:bg-slate-800 focus:text-slate-300 focus:outline-hidden sm:text-sm"
+          )}
+          onClick={onSelected}
+        >
+          {(subItem.icon !== undefined || subItem.entityIcon !== undefined) && (
+            <span className="mr-1 h-5 w-5 transition ease-in-out">
+              <SidebarIcon className="h-5 w-5 " item={subItem} />
+            </span>
+          )}
+          {t(subItem.title)}
+        </a>
+      ) : (
+        <Link
+          prefetch="intent"
+          id={UrlUtils.slugify(getPath(subItem))}
+          to={subItem.redirectTo ?? getPath(subItem)}
+          className={clsx(
+            "group mt-1 flex items-center rounded-sm py-2 pl-14 leading-5 transition duration-150 ease-in-out hover:text-slate-300 focus:text-slate-300 focus:outline-hidden sm:text-sm",
+            isCurrent(subItem) && cssStates().selected,
+            !isCurrent(subItem) && "text-slate-200 hover:bg-slate-800 focus:bg-slate-800"
+          )}
+          onClick={onSelected}
+        >
+          {(subItem.icon !== undefined || subItem.entityIcon !== undefined) && (
+            <span className="mr-1 h-5 w-5 transition ease-in-out">
+              <SidebarIcon className="h-5 w-5 " item={subItem} />
+            </span>
+          )}
+          {t(subItem.title)}
+        </Link>
+      )}
+    </Fragment>
+  );
+}
+
+function DesktopMenuItem({ menuItem, onSelected, cssStates, isCurrent, getPath, menuItemIsExpanded, toggleMenuItem, t }: MenuItemProps) {
+  if (!menuItem.items || menuItem.items.length === 0) {
+    return (
+      <div>
+        {menuItem.path.includes("://") ? (
+          <a
+            target="_blank"
+            href={menuItem.path}
+            rel="noreferrer"
+            className={clsx(
+              "group mt-1 flex items-center justify-between truncate rounded-sm px-4 py-2 text-sm leading-5 text-slate-200 transition duration-150 ease-in-out hover:bg-slate-800 hover:text-white focus:bg-slate-800 focus:text-gray-50 focus:outline-hidden",
+              menuItem.icon !== undefined && "px-4"
+            )}
+            onClick={onSelected}
+          >
+            <div className="flex items-center space-x-5">
+              {(menuItem.icon !== undefined || menuItem.entityIcon !== undefined) && <SidebarIcon className="h-5 w-5 " item={menuItem} />}
+              <div>{t(menuItem.title)}</div>
+            </div>
+            {menuItem.side}
+          </a>
+        ) : (
+          <Link
+            prefetch="intent"
+            id={UrlUtils.slugify(getPath(menuItem))}
+            to={menuItem.redirectTo ?? getPath(menuItem)}
+            className={clsx(
+              "group mt-1 flex items-center justify-between truncate rounded-sm px-4 py-2 text-sm leading-5 transition duration-150 ease-in-out  focus:outline-hidden",
+              menuItem.icon !== undefined && "px-4",
+              isCurrent(menuItem) && cssStates().selected,
+              !isCurrent(menuItem) && "text-slate-200 hover:bg-slate-800 focus:bg-slate-800"
+            )}
+            onClick={onSelected}
+          >
+            <div className="flex items-center space-x-5">
+              {(menuItem.icon !== undefined || menuItem.entityIcon !== undefined) && <SidebarIcon className="h-5 w-5 " item={menuItem} />}
+              <div>{t(menuItem.title)}</div>
+            </div>
+            {menuItem.side}
+          </Link>
+        )}
+      </div>
+    );
+  }
+
+  return (
+    <div>
+      <button
+        type="button"
+        className="group mt-1 flex w-full items-center justify-between truncate rounded-sm px-4 py-2 text-sm leading-5 text-slate-200 transition duration-150 ease-in-out hover:bg-slate-800 hover:text-white focus:bg-slate-800 focus:text-gray-50 focus:outline-hidden"
+        onClick={() => toggleMenuItem(menuItem.path)}
+      >
+        <div className="flex items-center space-x-5 truncate">
+          {(menuItem.icon !== undefined || menuItem.entityIcon !== undefined) && <SidebarIcon className="h-5 w-5 " item={menuItem} />}
+          <div className="truncate">{t(menuItem.title)}</div>
+        </div>
+        {menuItem.side ?? (
+          <svg
+            className={clsx(
+              "ml-auto h-5 w-5 shrink-0 transform bg-slate-900 transition-colors duration-150 ease-in-out",
+              menuItemIsExpanded(menuItem.path)
+                ? "ml-auto h-3 w-3 rotate-90 transform  transition-colors duration-150 ease-in-out"
+                : "ml-auto h-3 w-3 transform  transition-colors duration-150 ease-in-out"
+            )}
+            viewBox="0 0 20 20"
+          >
+            <path d="M6 6L14 10L6 14V6Z" fill="currentColor" />
+          </svg>
+        )}
+      </button>
+      {menuItemIsExpanded(menuItem.path) && (
+        <div className="mt-1">
+          {menuItem.items.map((subItem, index) => (
+            <DesktopSubMenuItem key={index} subItem={subItem} menuItem={menuItem} onSelected={onSelected} cssStates={cssStates} isCurrent={isCurrent} getPath={getPath} t={t} />
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function DesktopSubMenuItem({ subItem, menuItem, onSelected, cssStates, isCurrent, getPath, t }: Omit<MenuItemProps, 'menuItemIsExpanded' | 'toggleMenuItem'> & { subItem: SideBarItem }) {
+  return (
+    <Fragment>
+      {menuItem.path.includes("://") ? (
+        <a
+          target="_blank"
+          href={menuItem.path}
+          rel="noreferrer"
+          className={clsx(
+            isCurrent(subItem) && cssStates().selected,
+            "group mt-1 flex items-center rounded-sm py-2 text-sm leading-5 transition duration-150 ease-in-out  focus:outline-hidden ",
+            menuItem.icon === undefined && "pl-10",
+            menuItem.icon !== undefined && "pl-14"
+          )}
+          onClick={onSelected}
+        >
+          {(subItem.icon !== undefined || subItem.entityIcon !== undefined) && <SidebarIcon className="h-5 w-5 " item={subItem} />}
+          <div>{t(subItem.title)}</div>
+        </a>
+      ) : (
+        <Link
+          prefetch="intent"
+          id={UrlUtils.slugify(getPath(subItem))}
+          to={subItem.redirectTo ?? getPath(subItem)}
+          className={clsx(
+            "group mt-1 flex items-center rounded-sm py-2 text-sm leading-5 transition duration-150 ease-in-out  focus:outline-hidden",
+            menuItem.icon === undefined && "pl-10",
+            menuItem.icon !== undefined && "pl-14",
+            isCurrent(subItem) && cssStates().selected,
+            !isCurrent(subItem) && "hover:bg-slate-800 focus:bg-slate-800"
+          )}
+          onClick={onSelected}
+        >
+          {(subItem.icon !== undefined || subItem.entityIcon !== undefined) && <SidebarIcon className="h-5 w-5 " item={subItem} />}
+          <div>{t(subItem.title)}</div>
+        </Link>
+      )}
+    </Fragment>
+  );
+}
+
 export default function SidebarMenu({ layout, onSelected, menuItems }: Props) {
   const params = useParams();
   const { t } = useTranslation();
@@ -132,25 +383,25 @@ export default function SidebarMenu({ layout, onSelected, menuItems }: Props) {
   function checkFeatureFlags(item: SideBarItem) {
     return !item.featureFlag || rootData.featureFlags?.includes(item.featureFlag);
   }
+  function filterItem(f: SideBarItem) {
+    return allowCurrentUserType(f) && allowCurrentTenantUserType(f) && checkUserRolePermissions(f) && checkFeatureFlags(f);
+  }
+
+  function processMenuItem(f: SideBarItem) {
+    return {
+      ...f,
+      items: f.items?.filter((item) => filterItem(item)),
+    };
+  }
+
   const getMenu = (): SidebarGroupDto[] => {
-    function filterItem(f: SideBarItem) {
-      return allowCurrentUserType(f) && allowCurrentTenantUserType(f) && checkUserRolePermissions(f) && checkFeatureFlags(f);
-    }
     const _menu: SidebarGroupDto[] = [];
     getMenuItems()
       .filter((f) => filterItem(f))
       .forEach(({ title, items }) => {
         _menu.push({
           title: title.toString(),
-          items:
-            items
-              ?.filter((f) => filterItem(f))
-              .map((f) => {
-                return {
-                  ...f,
-                  items: f.items?.filter((f) => filterItem(f)),
-                };
-              }) ?? [],
+          items: items?.filter((f) => filterItem(f)).map((f) => processMenuItem(f)) ?? [],
         });
       });
     return _menu.filter((f) => f.items.length > 0);
@@ -177,128 +428,19 @@ export default function SidebarMenu({ layout, onSelected, menuItems }: Props) {
               <div id={group.title} className="mt-2">
                 <h3 className="px-1 text-xs font-semibold uppercase leading-4 tracking-wider text-slate-500">{t(group.title || "")}</h3>
               </div>
-              {group.items.map((menuItem, index) => {
-                return (
-                  <div key={index}>
-                    {(() => {
-                      if (!menuItem.items || menuItem.items.length === 0) {
-                        return (
-                          <div>
-                            {menuItem.path.includes("://") ? (
-                              <a
-                                target="_blank"
-                                href={menuItem.path}
-                                rel="noreferrer"
-                                className={clsx(
-                                  "group mt-1 flex items-center space-x-4 rounded-sm px-4 py-2 text-base leading-5 transition duration-150 ease-in-out hover:bg-slate-800 hover:text-white focus:bg-slate-800 focus:text-gray-50 focus:outline-hidden"
-                                )}
-                                onClick={onSelected}
-                              >
-                                {(menuItem.icon !== undefined || menuItem.entityIcon !== undefined) && <SidebarIcon className="h-5 w-5 " item={menuItem} />}
-                                <div>{t(menuItem.title)}</div>
-                              </a>
-                            ) : (
-                              <Link
-                                prefetch="intent"
-                                id={UrlUtils.slugify(getPath(menuItem))}
-                                to={menuItem.redirectTo ?? getPath(menuItem)}
-                                className={clsx(
-                                  "group mt-1 flex items-center space-x-4 rounded-sm px-4 py-2 text-base leading-5 transition duration-150 ease-in-out  focus:outline-hidden",
-                                  isCurrent(menuItem) && cssStates().selected,
-                                  !isCurrent(menuItem) && "text-slate-200 hover:bg-slate-800 focus:bg-slate-800"
-                                )}
-                                onClick={onSelected}
-                              >
-                                {(menuItem.icon !== undefined || menuItem.entityIcon !== undefined) && <SidebarIcon className="h-5 w-5 " item={menuItem} />}
-                                <div>{t(menuItem.title)}</div>
-                              </Link>
-                            )}
-                          </div>
-                        );
-                      } else {
-                        return (
-                          <div>
-                            <div
-                              className="group mt-1 flex items-center justify-between rounded-sm px-4 py-2 text-base leading-5 text-slate-200 transition duration-150 ease-in-out hover:bg-slate-800 hover:text-white focus:bg-slate-800 focus:text-gray-50 focus:outline-hidden"
-                              onClick={() => toggleMenuItem(menuItem.path)}
-                            >
-                              <div className="flex items-center space-x-4 truncate">
-                                {(menuItem.icon !== undefined || menuItem.entityIcon !== undefined) && (
-                                  <span className="h-5 w-5 text-slate-200 transition ease-in-out">
-                                    <SidebarIcon className="h-5 w-5 " item={menuItem} />
-                                  </span>
-                                )}
-                                <div className="truncate">{t(menuItem.title)}</div>
-                              </div>
-                              {/*Expanded: "text-muted-foreground rotate-90", Collapsed: "text-slate-200" */}
-                              <svg
-                                className={clsx(
-                                  "ml-auto h-5 w-5 shrink-0 transform transition-colors duration-150 ease-in-out",
-                                  menuItemIsExpanded(menuItem.path)
-                                    ? "group-hover:text-muted-foreground group-focus:text-muted-foreground ml-auto h-3 w-3 rotate-90 transform transition-colors duration-150 ease-in-out"
-                                    : "group-hover:text-muted-foreground group-focus:text-muted-foreground ml-auto h-3 w-3 transform transition-colors duration-150 ease-in-out"
-                                )}
-                                viewBox="0 0 20 20"
-                              >
-                                <path d="M6 6L14 10L6 14V6Z" fill="currentColor" />
-                              </svg>
-                            </div>
-                            {/*Expandable link section, show/hide based on state. */}
-                            {menuItemIsExpanded(menuItem.path) && (
-                              <div className="mt-1">
-                                {menuItem.items.map((subItem, index) => {
-                                  return (
-                                    <Fragment key={index}>
-                                      {menuItem.path.includes("://") ? (
-                                        <a
-                                          target="_blank"
-                                          href={menuItem.path}
-                                          rel="noreferrer"
-                                          className={clsx(
-                                            "group mt-1 flex items-center rounded-sm py-2 pl-14 leading-5 text-slate-200 transition duration-150 ease-in-out hover:bg-slate-800 hover:text-slate-300 focus:bg-slate-800 focus:text-slate-300 focus:outline-hidden sm:text-sm"
-                                          )}
-                                          onClick={onSelected}
-                                        >
-                                          {(subItem.icon !== undefined || subItem.entityIcon !== undefined) && (
-                                            <span className="mr-1 h-5 w-5 transition ease-in-out">
-                                              <SidebarIcon className="h-5 w-5 " item={subItem} />
-                                            </span>
-                                          )}
-                                          {t(subItem.title)}
-                                        </a>
-                                      ) : (
-                                        <Link
-                                          prefetch="intent"
-                                          key={index}
-                                          id={UrlUtils.slugify(getPath(subItem))}
-                                          to={subItem.redirectTo ?? getPath(subItem)}
-                                          className={clsx(
-                                            "group mt-1 flex items-center rounded-sm py-2 pl-14 leading-5 transition duration-150 ease-in-out hover:text-slate-300 focus:text-slate-300 focus:outline-hidden sm:text-sm",
-                                            isCurrent(subItem) && cssStates().selected,
-                                            !isCurrent(subItem) && "text-slate-200 hover:bg-slate-800 focus:bg-slate-800"
-                                          )}
-                                          onClick={onSelected}
-                                        >
-                                          {(subItem.icon !== undefined || subItem.entityIcon !== undefined) && (
-                                            <span className="mr-1 h-5 w-5 transition ease-in-out">
-                                              <SidebarIcon className="h-5 w-5 " item={subItem} />
-                                            </span>
-                                          )}
-                                          {t(subItem.title)}
-                                        </Link>
-                                      )}{" "}
-                                    </Fragment>
-                                  );
-                                })}
-                              </div>
-                            )}
-                          </div>
-                        );
-                      }
-                    })()}
-                  </div>
-                );
-              })}
+              {group.items.map((menuItem, index) => (
+                <MobileMenuItem
+                  key={index}
+                  menuItem={menuItem}
+                  onSelected={onSelected}
+                  cssStates={cssStates}
+                  isCurrent={isCurrent}
+                  getPath={getPath}
+                  menuItemIsExpanded={menuItemIsExpanded}
+                  toggleMenuItem={toggleMenuItem}
+                  t={t}
+                />
+              ))}
             </div>
           );
         })}
@@ -306,148 +448,28 @@ export default function SidebarMenu({ layout, onSelected, menuItems }: Props) {
 
       {/* Desktop */}
       <div className="hidden space-y-1 divide-y-2 divide-slate-800 sm:block">
-        {getMenu().map((group, index) => {
-          return (
-            <div key={index} className="select-none">
-              <div className="mt-2">
-                <h3 id="Group-headline" className="px-1 text-xs font-semibold uppercase leading-4 tracking-wider text-slate-500">
-                  {t(group.title || "")}
-                </h3>
-              </div>
-              {group.items.map((menuItem, index) => {
-                return (
-                  <div key={index}>
-                    {(() => {
-                      if (!menuItem.items || menuItem.items.length === 0) {
-                        return (
-                          <div>
-                            {menuItem.path.includes("://") ? (
-                              <a
-                                target="_blank"
-                                href={menuItem.path}
-                                rel="noreferrer"
-                                className={clsx(
-                                  "group mt-1 flex items-center justify-between truncate rounded-sm px-4 py-2 text-sm leading-5 text-slate-200 transition duration-150 ease-in-out hover:bg-slate-800 hover:text-white focus:bg-slate-800 focus:text-gray-50 focus:outline-hidden",
-                                  menuItem.icon !== undefined && "px-4"
-                                )}
-                                onClick={onSelected}
-                              >
-                                <div className="flex items-center space-x-5">
-                                  {(menuItem.icon !== undefined || menuItem.entityIcon !== undefined) && <SidebarIcon className="h-5 w-5 " item={menuItem} />}
-                                  <div>{t(menuItem.title)}</div>
-                                </div>
-                                {menuItem.side}
-                              </a>
-                            ) : (
-                              <Link
-                                prefetch="intent"
-                                id={UrlUtils.slugify(getPath(menuItem))}
-                                to={menuItem.redirectTo ?? getPath(menuItem)}
-                                className={clsx(
-                                  "group mt-1 flex items-center justify-between truncate rounded-sm px-4 py-2 text-sm leading-5 transition duration-150 ease-in-out  focus:outline-hidden",
-                                  menuItem.icon !== undefined && "px-4",
-                                  isCurrent(menuItem) && cssStates().selected,
-                                  !isCurrent(menuItem) && "text-slate-200 hover:bg-slate-800 focus:bg-slate-800"
-                                )}
-                                onClick={onSelected}
-                              >
-                                <div className="flex items-center space-x-5">
-                                  {(menuItem.icon !== undefined || menuItem.entityIcon !== undefined) && <SidebarIcon className="h-5 w-5 " item={menuItem} />}
-                                  <div>{t(menuItem.title)}</div>
-                                </div>
-                                {menuItem.side}
-                              </Link>
-                            )}
-                          </div>
-                        );
-                      } else {
-                        return (
-                          <div>
-                            <button
-                              type="button"
-                              className="group mt-1 flex w-full items-center justify-between truncate rounded-sm px-4 py-2 text-sm leading-5 text-slate-200 transition duration-150 ease-in-out hover:bg-slate-800 hover:text-white focus:bg-slate-800 focus:text-gray-50 focus:outline-hidden"
-                              onClick={() => toggleMenuItem(menuItem.path)}
-                            >
-                              <div className="flex items-center space-x-5 truncate">
-                                {(menuItem.icon !== undefined || menuItem.entityIcon !== undefined) && <SidebarIcon className="h-5 w-5 " item={menuItem} />}
-                                <div className="truncate">{t(menuItem.title)}</div>
-                              </div>
-                              {/*Expanded: "text-muted-foreground rotate-90", Collapsed: "text-slate-200" */}
-
-                              {menuItem.side ?? (
-                                <svg
-                                  className={clsx(
-                                    "ml-auto h-5 w-5 shrink-0 transform bg-slate-900 transition-colors duration-150 ease-in-out",
-                                    menuItemIsExpanded(menuItem.path)
-                                      ? "ml-auto h-3 w-3 rotate-90 transform  transition-colors duration-150 ease-in-out"
-                                      : "ml-auto h-3 w-3 transform  transition-colors duration-150 ease-in-out"
-                                  )}
-                                  viewBox="0 0 20 20"
-                                >
-                                  <path d="M6 6L14 10L6 14V6Z" fill="currentColor" />
-                                </svg>
-                              )}
-                            </button>
-
-                            {/*Expandable link section, show/hide based on state. */}
-                            {menuItemIsExpanded(menuItem.path) && (
-                              <div className="mt-1">
-                                {menuItem.items.map((subItem, index) => {
-                                  return (
-                                    <Fragment key={index}>
-                                      {menuItem.path.includes("://") ? (
-                                        <a
-                                          target="_blank"
-                                          href={menuItem.path}
-                                          rel="noreferrer"
-                                          className={clsx(
-                                            isCurrent(subItem) && cssStates().selected,
-                                            "group mt-1 flex items-center rounded-sm py-2 text-sm leading-5 transition duration-150 ease-in-out  focus:outline-hidden ",
-                                            menuItem.icon === undefined && "pl-10",
-                                            menuItem.icon !== undefined && "pl-14"
-                                          )}
-                                          onClick={onSelected}
-                                        >
-                                          {(subItem.icon !== undefined || subItem.entityIcon !== undefined) && (
-                                            <SidebarIcon className="h-5 w-5 " item={subItem} />
-                                          )}
-                                          <div>{t(subItem.title)}</div>
-                                        </a>
-                                      ) : (
-                                        <Link
-                                          prefetch="intent"
-                                          id={UrlUtils.slugify(getPath(subItem))}
-                                          to={subItem.redirectTo ?? getPath(subItem)}
-                                          className={clsx(
-                                            "group mt-1 flex items-center rounded-sm py-2 text-sm leading-5 transition duration-150 ease-in-out  focus:outline-hidden",
-                                            menuItem.icon === undefined && "pl-10",
-                                            menuItem.icon !== undefined && "pl-14",
-                                            isCurrent(subItem) && cssStates().selected,
-                                            !isCurrent(subItem) && "hover:bg-slate-800 focus:bg-slate-800"
-                                          )}
-                                          onClick={onSelected}
-                                        >
-                                          {(subItem.icon !== undefined || subItem.entityIcon !== undefined) && (
-                                            <SidebarIcon className="h-5 w-5 " item={subItem} />
-                                          )}
-                                          <div>{t(subItem.title)}</div>
-                                        </Link>
-                                      )}
-                                    </Fragment>
-                                  );
-                                })}
-                              </div>
-                            )}
-                          </div>
-                        );
-                      }
-                    })()}
-                  </div>
-                );
-              })}
+        {getMenu().map((group, index) => (
+          <div key={index} className="select-none">
+            <div className="mt-2">
+              <h3 id="Group-headline" className="px-1 text-xs font-semibold uppercase leading-4 tracking-wider text-slate-500">
+                {t(group.title || "")}
+              </h3>
             </div>
-          );
-        })}
+            {group.items.map((menuItem, idx) => (
+              <DesktopMenuItem
+                key={idx}
+                menuItem={menuItem}
+                onSelected={onSelected}
+                cssStates={cssStates}
+                isCurrent={isCurrent}
+                getPath={getPath}
+                menuItemIsExpanded={menuItemIsExpanded}
+                toggleMenuItem={toggleMenuItem}
+                t={t}
+              />
+            ))}
+          </div>
+        ))}
       </div>
     </div>
   );

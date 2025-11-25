@@ -40,6 +40,17 @@ interface Props {
   onClickFeature?: (name: string) => void;
 }
 
+function confirmed(product: SubscriptionProductDto | undefined) {
+  if (!product) {
+    return;
+  }
+  if (product?.title.includes("Core") || product?.title.includes("Enterprise") || product?.title.includes("Pro")) {
+    window.location.href = "https://alexandromg.gumroad.com/l/SaasRock";
+  } else {
+    window.location.href = "https://alexandromg.gumroad.com/l/SaasRockDevelopment";
+  }
+}
+
 export default function Plan({
   product,
   title,
@@ -90,20 +101,6 @@ export default function Plan({
       }
     }
   }, []);
-  // const [usageBasedTiers, setUsageBasedTiers] = useState<{ from: number; to: number | undefined; prices: UsageBasedPriceDto[] }[]>([]);
-
-  // useEffect(() => {
-  //   const tiers: { from: number; to: number | undefined; prices: UsageBasedPriceDto[] }[] = [];
-  //   usageBasedPrices.forEach((price) => {
-  //     const tier = tiers.find((t) => t.from === price.from && t.to === price.to);
-  //     if (!tier) {
-  //       tiers.push({ from: price.from, to: price.to, prices: [price] });
-  //     } else {
-  //       tier.prices.push(price);
-  //     }
-  //   });
-  //   setUsageBasedTiers(tiers.sort((a, b) => a.from - b.from));
-  // }, [usageBasedPrices]);
 
   function getCurrencySymbol() {
     return currencies.find((f) => f.value === currency)?.symbol;
@@ -182,13 +179,6 @@ export default function Plan({
     submit(form, {
       method: "post",
     });
-    // confirmModal.current?.setValue(product);
-    // confirmModal.current?.show(
-    //   "SaasRock v1.0 is not ready",
-    //   "View pre-launch prices",
-    //   "Back",
-    //   "You're early! I'm still working on SaasRock pre-v1.0, checkout the roadmap at /docs/roadmap for more information or /newsletter to get notified when it's ready."
-    // );
 
     const routeMatch = matches.find((m) => m.pathname == location.pathname);
     AnalyticsHelper.addEvent({
@@ -200,20 +190,6 @@ export default function Plan({
       label: "pricing",
       value: t(product?.title ?? ""),
     });
-
-    // submit(form, {
-    //   method: "post",
-    // });
-  }
-  function confirmed(product: SubscriptionProductDto | undefined) {
-    if (!product) {
-      return;
-    }
-    if (product?.title.includes("Core") || product?.title.includes("Enterprise") || product?.title.includes("Pro")) {
-      window.location.href = "https://alexandromg.gumroad.com/l/SaasRock";
-    } else {
-      window.location.href = "https://alexandromg.gumroad.com/l/SaasRockDevelopment";
-    }
   }
   function isDisabled() {
     if (!canSubmit) {
@@ -245,10 +221,8 @@ export default function Plan({
           return stripeCoupon;
         }
       }
-    } else {
-      if (!stripeCoupon.currency || stripeCoupon.currency === currency) {
-        return stripeCoupon;
-      }
+    } else if (!stripeCoupon.currency || stripeCoupon.currency === currency) {
+      return stripeCoupon;
     }
     return null;
   };
@@ -327,11 +301,11 @@ export default function Plan({
               )}
 
               {usageBasedPrices
-                ?.sort((a, b) => (a.unit > b.unit ? 1 : -1))
+                ?.toSorted((a, b) => (a.unit > b.unit ? 1 : -1))
                 .filter((f) => f.currency === currency)
-                .map((usageBasedPrice, idx) => {
+                .map((usageBasedPrice) => {
                   return (
-                    <div key={idx} className="flex shrink-0 flex-col">
+                    <div key={`${usageBasedPrice.id}-${usageBasedPrice.unit}`} className="flex shrink-0 flex-col">
                       <div className="text-sm font-medium">
                         <span className="">+</span> {usageBasedPrice.unitTitlePlural}
                       </div>
@@ -418,10 +392,10 @@ export default function Plan({
               {/* Features */}
               <ul className="flex-1 space-y-1.5">
                 {features
-                  .sort((a, b) => (a.order > b.order ? 1 : -1))
-                  .map((feature, idxFeature) => {
+                  .toSorted((a, b) => (a.order > b.order ? 1 : -1))
+                  .map((feature) => {
                     return (
-                      <li key={idxFeature}>
+                      <li key={feature.name}>
                         <PlanFeatureDescription feature={feature} onClickFeature={onClickFeature} />
                       </li>
                     );

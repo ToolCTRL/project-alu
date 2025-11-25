@@ -29,7 +29,7 @@ type LoaderData = {
   portalUrl: string;
 };
 
-export let loader = async ({ request, params }: LoaderFunctionArgs) => {
+export const loader = async ({ request, params }: LoaderFunctionArgs) => {
   await requireAuth({ request, params });
   const appConfiguration = await getAppConfiguration({ request });
   if (!appConfiguration.portals?.pricing) {

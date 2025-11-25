@@ -41,9 +41,9 @@ export default function MySubscriptionFeatures({
               features.length === 6 && "grid-cols-1 md:grid-cols-3 xl:grid-cols-2"
             )}
           >
-            {features.map((item, idx) => {
+            {features.map((item) => {
               return (
-                <div key={idx} className="border-border bg-background rounded-lg border p-4 shadow-2xs">
+                <div key={item.name} className="border-border bg-background rounded-lg border p-4 shadow-2xs">
                   <dt className="text-muted-foreground truncate text-xs uppercase tracking-wide">{getTitle(item)}</dt>
                   <dd className="mt-1">
                     <span>{<MyPlanFeatureUsage item={item} />}</span>

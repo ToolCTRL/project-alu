@@ -41,6 +41,58 @@ export namespace Rows_Tags {
   };
 
   const badRequest = (data: { error: string }) => Response.json(data, { status: 400 });
+
+  async function handleNewTag(entityId: string, itemId: string, form: FormData) {
+    const value = form.get("tag-name")?.toString() ?? "";
+    const color = Number(form.get("tag-color") ?? Colors.INDIGO);
+    let tag = await getEntityTag(entityId, value);
+    if (!tag) {
+      tag = await createEntityTag({
+        entityId,
+        value,
+        color,
+      });
+    }
+    const existingTag = await getRowTag(itemId, value);
+    if (tag && !existingTag) {
+      await createRowTag({
+        rowId: itemId,
+        tagId: tag.id,
+      });
+    }
+  }
+
+  async function handleEditTag(form: FormData) {
+    const id = form.get("tag-id")?.toString() ?? "";
+    const value = form.get("tag-name")?.toString() ?? "";
+    const color = Number(form.get("tag-color"));
+    await updateEntityTag(id, {
+      value,
+      color,
+    });
+  }
+
+  async function handleSetTag(itemId: string, form: FormData) {
+    const id = form.get("tag-id")?.toString() ?? "";
+    const tagAction = form.get("tag-action")?.toString() ?? "";
+    if (tagAction === "add") {
+      await createRowTag({
+        rowId: itemId,
+        tagId: id,
+      });
+    } else {
+      await deleteRowTags(itemId, id);
+    }
+  }
+
+  async function handleDeleteTag(form: FormData) {
+    const id = form.get("tag-id")?.toString() ?? "";
+    const tag = await getEntityTagById(id);
+    if (tag) {
+      await deleteEntityTag(tag.id);
+    }
+  }
+
   export const action: ActionFunction = async ({ request, params }) => {
     const { t, userId, tenantId, entity, form } = await RowsRequestUtils.getAction({ request, params });
     const rowData = await RowsApi.get(params.id!, {
@@ -53,55 +105,24 @@ export namespace Rows_Tags {
     if (!rowData.rowPermissions.canUpdate) {
       throw Response.json(new CustomError("You can't update this row", { permissions: rowData.rowPermissions }), { status: 403 });
     }
+
     if (action === "new-tag") {
-      const value = form.get("tag-name")?.toString() ?? "";
-      const color = Number(form.get("tag-color") ?? Colors.INDIGO);
-      let tag = await getEntityTag(entity.id, value);
-      if (!tag) {
-        tag = await createEntityTag({
-          entityId: entity.id,
-          value,
-          color,
-        });
-      }
-      const existingTag = await getRowTag(item.id, value);
-      if (tag && !existingTag) {
-        await createRowTag({
-          rowId: item.id,
-          tagId: tag.id,
-        });
-      }
+      await handleNewTag(entity.id, item.id, form);
       return Response.json({});
-    } else if (action === "edit-tag") {
-      const id = form.get("tag-id")?.toString() ?? "";
-      const value = form.get("tag-name")?.toString() ?? "";
-      const color = Number(form.get("tag-color"));
-      await updateEntityTag(id, {
-        value,
-        color,
-      });
-      return Response.json({});
-    } else if (action === "set-tag") {
-      const id = form.get("tag-id")?.toString() ?? "";
-      const tagAction = form.get("tag-action")?.toString() ?? "";
-      if (tagAction === "add") {
-        await createRowTag({
-          rowId: item.id,
-          tagId: id,
-        });
-      } else {
-        await deleteRowTags(item.id, id);
-      }
-      return Response.json({});
-    } else if (action === "delete-tag") {
-      const id = form.get("tag-id")?.toString() ?? "";
-      const tag = await getEntityTagById(id);
-      if (tag) {
-        await deleteEntityTag(tag.id);
-      }
-      return Response.json({});
-    } else {
-      return badRequest({ error: t("shared.invalidForm") });
     }
+    if (action === "edit-tag") {
+      await handleEditTag(form);
+      return Response.json({});
+    }
+    if (action === "set-tag") {
+      await handleSetTag(item.id, form);
+      return Response.json({});
+    }
+    if (action === "delete-tag") {
+      await handleDeleteTag(form);
+      return Response.json({});
+    }
+
+    return badRequest({ error: t("shared.invalidForm") });
   };
 }

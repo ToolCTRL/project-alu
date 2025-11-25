@@ -12,6 +12,19 @@ interface Props {
   items: GroupWithDetails[];
   onNewRoute: string;
 }
+
+function GroupNameCell({ item }: { item: GroupWithDetails }) {
+  return <GroupBadge item={item} />;
+}
+
+function GroupActionsCell({ item }: { item: GroupWithDetails }) {
+  return (
+    <Link to={`groups/${item.id}`} className="hover:underline">
+      Edit
+    </Link>
+  );
+}
+
 export default function GroupsTable({ items, onNewRoute }: Props) {
   const { t } = useTranslation();
 
@@ -54,7 +67,7 @@ export default function GroupsTable({ items, onNewRoute }: Props) {
             name: "name",
             title: t("models.group.name"),
             value: (i) => i.name,
-            formattedValue: (i) => <GroupBadge item={i} />,
+            formattedValue: (i) => <GroupNameCell item={i} />,
           },
           {
             name: "description",
@@ -70,11 +83,7 @@ export default function GroupsTable({ items, onNewRoute }: Props) {
           {
             name: "actions",
             title: "",
-            value: (i) => (
-              <Link to={`groups/${i.id}`} className="hover:underline">
-                {t("shared.edit")}
-              </Link>
-            ),
+            value: (i) => <GroupActionsCell item={i} />,
           },
         ]}
       />

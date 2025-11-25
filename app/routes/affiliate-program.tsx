@@ -25,7 +25,7 @@ type LoaderData = {
     signUpLink: string;
   };
 };
-export let loader = async ({ request }: LoaderFunctionArgs) => {
+export const loader = async ({ request }: LoaderFunctionArgs) => {
   const { t } = await getTranslations(request);
   const appConfiguration = await getAppConfiguration({ request });
   let affiliatesConfig = appConfiguration.affiliates;

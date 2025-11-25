@@ -61,15 +61,19 @@ export default function CookiesList({
                       <div key={item.name} className="border-border bg-secondary/90 space-y-2 rounded-md border border-dashed p-2 py-2">
                         <div className="flex items-baseline justify-between font-bold">
                           <div>{item.name}</div>
-                          {item.href?.startsWith("http") ? (
-                            <a target="_blank" rel="noreferrer" href={item.href} className="text-theme-500 text-xs underline">
-                              {t("shared.learnMore")}
-                            </a>
-                          ) : item.href ? (
-                            <Link to={item.href} className="text-theme-500 text-xs underline">
-                              {t("shared.learnMore")}
-                            </Link>
-                          ) : undefined}
+                          {item.href && (
+                            <>
+                              {item.href.startsWith("http") ? (
+                                <a target="_blank" rel="noreferrer" href={item.href} className="text-theme-500 text-xs underline">
+                                  {t("shared.learnMore")}
+                                </a>
+                              ) : (
+                                <Link to={item.href} className="text-theme-500 text-xs underline">
+                                  {t("shared.learnMore")}
+                                </Link>
+                              )}
+                            </>
+                          )}
                         </div>
                         <div className="text-muted-foreground text-sm font-light">{item.description}</div>
                         <div className="border-border w-full border-t" />

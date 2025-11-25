@@ -11,6 +11,58 @@ interface Props {
   editing?: boolean;
   onClickFeature?: (name: string) => void;
 }
+
+function FeatureLinkContent({ feature, editing, onClickFeature }: Props) {
+  if (feature.href?.startsWith("http")) {
+    if (editing) {
+      return (
+        <div className="hover:text-primary text-muted-foreground dark:text-muted-foreground ml-2 truncate text-sm font-medium underline">
+          <FeatureTitle feature={feature} />
+        </div>
+      );
+    }
+    return (
+      <a
+        href={feature.href}
+        target="_blank"
+        rel="noreferrer"
+        className="hover:text-primary text-muted-foreground dark:text-muted-foreground ml-2 truncate text-sm font-medium underline"
+      >
+        <FeatureTitle feature={feature} />
+      </a>
+    );
+  }
+
+  if (feature.href?.startsWith("/")) {
+    if (editing) {
+      return (
+        <div className="hover:text-primary text-muted-foreground dark:text-muted-foreground ml-2 truncate text-sm font-medium underline">
+          <FeatureTitle feature={feature} />
+        </div>
+      );
+    }
+    return (
+      <Link to={feature.href} className="hover:text-primary text-muted-foreground dark:text-muted-foreground ml-2 truncate text-sm font-medium underline">
+        <FeatureTitle feature={feature} />
+      </Link>
+    );
+  }
+
+  if (feature.name === DefaultFeatures.Credits && onClickFeature && CreditTypes.length) {
+    return (
+      <button type="button" className="hover:text-primary text-muted-foreground ml-2 truncate text-sm font-medium underline" onClick={() => onClickFeature(feature.name)}>
+        <FeatureTitle feature={feature} />
+      </button>
+    );
+  }
+
+  return (
+    <span className="text-muted-foreground ml-2 truncate text-sm font-medium">
+      <FeatureTitle feature={feature} />
+    </span>
+  );
+}
+
 export default function PlanFeatureDescription({ feature, editing, onClickFeature }: Props) {
   return (
     <div className="flex items-center">
@@ -31,52 +83,7 @@ export default function PlanFeatureDescription({ feature, editing, onClickFeatur
           />
         </svg>
       )}
-      {feature.href?.startsWith("http") ? (
-        <Fragment>
-          {editing ? (
-            <div className="hover:text-primary text-muted-foreground dark:text-muted-foreground ml-2 truncate text-sm font-medium underline">
-              <FeatureTitle feature={feature} />
-            </div>
-          ) : (
-            <a
-              href={feature.href}
-              target="_blank"
-              rel="noreferrer"
-              className="hover:text-primary text-muted-foreground dark:text-muted-foreground ml-2 truncate text-sm font-medium underline"
-            >
-              <FeatureTitle feature={feature} />
-            </a>
-          )}
-        </Fragment>
-      ) : feature.href?.startsWith("/") ? (
-        <Fragment>
-          {editing ? (
-            <div className="hover:text-primary text-muted-foreground dark:text-muted-foreground ml-2 truncate text-sm font-medium underline">
-              <FeatureTitle feature={feature} />
-            </div>
-          ) : (
-            <Link to={feature.href} className="hover:text-primary text-muted-foreground dark:text-muted-foreground ml-2 truncate text-sm font-medium underline">
-              <FeatureTitle feature={feature} />
-            </Link>
-          )}
-        </Fragment>
-      ) : (
-        <Fragment>
-          {feature.name === DefaultFeatures.Credits && onClickFeature && CreditTypes.length ? (
-            <button
-              type="button"
-              className="hover:text-primary text-muted-foreground ml-2 truncate text-sm font-medium underline"
-              onClick={() => onClickFeature(feature.name)}
-            >
-              <FeatureTitle feature={feature} />
-            </button>
-          ) : (
-            <span className="text-muted-foreground ml-2 truncate text-sm font-medium">
-              <FeatureTitle feature={feature} />
-            </span>
-          )}
-        </Fragment>
-      )}
+      <FeatureLinkContent feature={feature} editing={editing} onClickFeature={onClickFeature} />
     </div>
   );
 }

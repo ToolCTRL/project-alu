@@ -21,7 +21,7 @@ import { getTenantIdOrNull } from "~/utils/services/.server/urlService";
 type LoaderData = {
   users: UserInCrmDto[];
 };
-export let loader = async ({ request, params }: LoaderFunctionArgs) => {
+export const loader = async ({ request, params }: LoaderFunctionArgs) => {
   await requireAuth({ request, params });
   await getTenantIdOrNull({ request, params });
   const searchParams = new URL(request.url).searchParams;
@@ -34,7 +34,7 @@ export let loader = async ({ request, params }: LoaderFunctionArgs) => {
   return data;
 };
 
-export let action = async ({ request, params }: ActionFunctionArgs) => {
+export const action = async ({ request, params }: ActionFunctionArgs) => {
   await requireAuth({ request, params });
   await getTenantIdOrNull({ request, params });
   const form = await request.formData();
@@ -42,8 +42,8 @@ export let action = async ({ request, params }: ActionFunctionArgs) => {
   if (action === "sync") {
     const emails = form.getAll("emails[]").map((x) => x.toString());
     const usersInCrm = await CrmService.getUsersInCrm({ invalidateCache: false });
-    let progress: { updated: number; created: number } = { updated: 0, created: 0 };
-    let filteredUsers = usersInCrm.filter((x) => emails.includes(x.email));
+    const progress: { updated: number; created: number } = { updated: 0, created: 0 };
+    const filteredUsers = usersInCrm.filter((x) => emails.includes(x.email));
     for (const userInCrm of filteredUsers) {
       if (userInCrm.status === "to-update" && userInCrm.contact?.id) {
         const changes = await CrmService.updateContact(userInCrm.contact?.id, {

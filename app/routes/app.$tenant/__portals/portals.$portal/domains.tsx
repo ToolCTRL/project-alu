@@ -31,7 +31,7 @@ type LoaderData = {
   certificate: GetCertDto | null;
   portalUrl: string;
 };
-export let loader = async ({ request, params }: LoaderFunctionArgs) => {
+export const loader = async ({ request, params }: LoaderFunctionArgs) => {
   await requireAuth({ request, params });
   await DomainsServer.getConfig({ request }).catch((e) => {
     throw Response.json({ error: e.message }, { status: 400 });
@@ -55,7 +55,7 @@ type ActionData = {
   success?: string;
   error?: string;
 };
-export let action = async ({ request, params }: ActionFunctionArgs) => {
+export const action = async ({ request, params }: ActionFunctionArgs) => {
   await requireAuth({ request, params });
   const { t } = await getTranslations(request);
 

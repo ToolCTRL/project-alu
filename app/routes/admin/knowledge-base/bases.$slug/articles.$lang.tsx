@@ -101,6 +101,89 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
   return data;
 };
 
+async function calculateArticleFeaturedOrder(item: KnowledgeBaseArticleWithDetails, isFeatured: boolean, kb: KnowledgeBaseDto, request: Request) {
+  if (!isFeatured) {
+    return null;
+  }
+  if (item.featuredOrder) {
+    return item.featuredOrder;
+  }
+  const featuredArticles = await KnowledgeBaseService.getFeaturedArticles({
+    kb,
+    params: {},
+    request,
+  });
+  const maxOrder = featuredArticles.length > 0 ? Math.max(...featuredArticles.map((p) => p.featuredOrder ?? 0)) : 0;
+  return maxOrder + 1;
+}
+
+async function handleNewArticle(kb: KnowledgeBaseDto, params: any, userId: string) {
+  await verifyUserHasPermission(null as any, "admin.kb.create");
+  const created = await KnowledgeBaseService.newArticle({
+    kb,
+    params,
+    userId,
+    position: "last",
+  });
+  return redirect(`/admin/knowledge-base/bases/${kb.slug}/articles/${params.lang}/${created.id}/edit`);
+}
+
+async function handleSetOrders(form: FormData) {
+  const items: { id: string; order: number }[] = form.getAll("orders[]").map((f: FormDataEntryValue) => {
+    return JSON.parse(f.toString());
+  });
+  await Promise.all(
+    items.map(async ({ id, order }) => {
+      await updateKnowledgeBaseCategory(id, {
+        order: Number(order),
+      });
+    })
+  );
+  return Response.json({ updated: true });
+}
+
+async function handleSetSectionOrders(form: FormData) {
+  const items: { id: string; order: number }[] = form.getAll("orders[]").map((f: FormDataEntryValue) => {
+    return JSON.parse(f.toString());
+  });
+  await Promise.all(
+    items.map(async ({ id, order }) => {
+      await updateKnowledgeBaseCategorySection(id, {
+        order: Number(order),
+      });
+    })
+  );
+  return Response.json({ updated: true });
+}
+
+async function handleDuplicateArticle(kb: KnowledgeBaseDto, params: any, form: FormData) {
+  await verifyUserHasPermission(null as any, "admin.kb.create");
+  try {
+    const id = form.get("id")?.toString() ?? "";
+    const item = await KnowledgeBaseService.duplicateArticle({ kb, language: params.lang!, articleId: id });
+    return redirect(`/admin/knowledge-base/bases/${kb.slug}/articles/${params.lang}/${item.id}`);
+  } catch (e: any) {
+    return Response.json({ error: e.message }, { status: 400 });
+  }
+}
+
+async function handleToggleFeatured(form: FormData, kb: KnowledgeBaseDto, request: Request) {
+  const id = form.get("id")?.toString() ?? "";
+  const isFeatured = form.get("isFeatured")?.toString() === "true";
+
+  const item = await getKbArticleById(id);
+  if (!item) {
+    return Response.json({ error: "Not found" }, { status: 404 });
+  }
+
+  const featuredOrder = await calculateArticleFeaturedOrder(item, isFeatured, kb, request);
+  await updateKnowledgeBaseArticle(item.id, {
+    featuredOrder,
+  });
+
+  return Response.json({ success: "Updated" });
+}
+
 type ActionData = {
   error?: string;
 };
@@ -113,80 +196,15 @@ export const action = async ({ request, params }: ActionFunctionArgs) => {
   const kb = await KnowledgeBaseService.get({ slug: params.slug!, request });
 
   if (action === "new") {
-    await verifyUserHasPermission(request, "admin.kb.create");
-    const created = await KnowledgeBaseService.newArticle({
-      kb,
-      params,
-      userId: userInfo.userId,
-      position: "last",
-    });
-    return redirect(`/admin/knowledge-base/bases/${kb.slug}/articles/${params.lang}/${created.id}/edit`);
+    return handleNewArticle(kb, params, userInfo.userId);
   } else if (action === "set-orders") {
-    const items: { id: string; order: number }[] = form.getAll("orders[]").map((f: FormDataEntryValue) => {
-      return JSON.parse(f.toString());
-    });
-
-    await Promise.all(
-      items.map(async ({ id, order }) => {
-        await updateKnowledgeBaseCategory(id, {
-          order: Number(order),
-        });
-      })
-    );
-    return Response.json({ updated: true });
+    return handleSetOrders(form);
   } else if (action === "set-section-orders") {
-    const items: { id: string; order: number }[] = form.getAll("orders[]").map((f: FormDataEntryValue) => {
-      return JSON.parse(f.toString());
-    });
-
-    await Promise.all(
-      items.map(async ({ id, order }) => {
-        await updateKnowledgeBaseCategorySection(id, {
-          order: Number(order),
-        });
-      })
-    );
-    return Response.json({ updated: true });
+    return handleSetSectionOrders(form);
   } else if (action === "duplicate") {
-    await verifyUserHasPermission(request, "admin.kb.create");
-    try {
-      const id = form.get("id")?.toString() ?? "";
-      const item = await KnowledgeBaseService.duplicateArticle({ kb, language: params.lang!, articleId: id });
-      return redirect(`/admin/knowledge-base/bases/${kb.slug}/articles/${params.lang}/${item.id}`);
-    } catch (e: any) {
-      return Response.json({ error: e.message }, { status: 400 });
-    }
+    return handleDuplicateArticle(kb, params, form);
   } else if (action === "toggle") {
-    const id = form.get("id")?.toString() ?? "";
-    const isFeatured = form.get("isFeatured")?.toString() === "true";
-
-    const item = await getKbArticleById(id);
-    if (!item) {
-      return Response.json({ error: "Not found" }, { status: 404 });
-    }
-
-    let featuredOrder = item.featuredOrder;
-    if (isFeatured) {
-      if (!item.featuredOrder) {
-        const featuredArticles = await KnowledgeBaseService.getFeaturedArticles({
-          kb,
-          params: {},
-          request,
-        });
-        let maxOrder = 0;
-        if (featuredArticles.length > 0) {
-          maxOrder = Math.max(...featuredArticles.map((p) => p.featuredOrder ?? 0));
-        }
-        featuredOrder = maxOrder + 1;
-      }
-    } else {
-      featuredOrder = null;
-    }
-    await updateKnowledgeBaseArticle(item.id, {
-      featuredOrder,
-    });
-
-    return Response.json({ success: "Updated" });
+    return handleToggleFeatured(form, kb, request);
   }
   return Response.json({ error: "Invalid action" }, { status: 400 });
 };

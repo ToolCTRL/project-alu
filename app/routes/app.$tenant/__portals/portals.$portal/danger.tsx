@@ -20,7 +20,7 @@ import { requireAuth } from "~/utils/loaders.middleware";
 type LoaderData = {
   item: PortalWithDetails & { portalUrl?: string };
 };
-export let loader = async ({ request, params }: LoaderFunctionArgs) => {
+export const loader = async ({ request, params }: LoaderFunctionArgs) => {
   await requireAuth({ request, params });
   const tenantId = await getTenantIdOrNull({ request, params });
   const item: (PortalWithDetails & { portalUrl?: string }) | null = await getPortalById(tenantId, params.portal!);
@@ -38,7 +38,7 @@ type ActionData = {
   success?: string;
   error?: string;
 };
-export let action = async ({ request, params }: ActionFunctionArgs) => {
+export const action = async ({ request, params }: ActionFunctionArgs) => {
   await requireAuth({ request, params });
   const { t } = await getTranslations(request);
 

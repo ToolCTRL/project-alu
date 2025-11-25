@@ -37,32 +37,56 @@ type ActionData = {
   error?: string;
 };
 const badRequest = (data: ActionData) => Response.json(data, { status: 400 });
-export const action: ActionFunction = async ({ request, params }) => {
-  await verifyUserHasPermission(request, "admin.entities.update");
-  const { t } = await getTranslations(request);
 
-  const entity = await getEntityBySlug({ tenantId: null, slug: params.entity ?? "" });
+function validatePropertyName(name: string) {
+  const reservedNames = ["id", "folio", "createdAt", "createdByUser", "sort", "page", "q", "v", "redirect", "tags"];
+  if (reservedNames.includes(name)) {
+    return `${name} is a reserved property name`;
+  }
+  if (name?.includes(" ")) {
+    return "Property names cannot contain spaces";
+  }
+  if (name?.includes("-")) {
+    return "Property names cannot contain: -";
+  }
+  return null;
+}
 
-  const existing = await getProperty(params.id ?? "");
+function processFormData(form: FormData, type: PropertyType) {
+  let isRequired = Boolean(form.get("is-required"));
+  let formulaId = form.get("formula-id")?.toString() ?? null;
 
-  const form = await request.formData();
-  const action = form.get("action")?.toString() ?? "";
-  const name = form.get("name")?.toString() ?? "";
-  const title = form.get("title")?.toString() ?? "";
-  const type = Number(form.get("type")) as PropertyType;
+  if (type !== PropertyType.FORMULA) {
+    formulaId = null;
+  } else {
+    isRequired = false;
+  }
+
+  return { isRequired, formulaId };
+}
+
+async function handleEdit(
+  params: any,
+  form: FormData,
+  name: string,
+  title: string,
+  type: PropertyType,
+  existing: PropertyWithDetails | null,
+  entity: EntityWithDetails
+) {
+  const nameError = validatePropertyName(name);
+  if (nameError) {
+    return badRequest({ error: nameError });
+  }
+
   const subtype = form.get("subtype")?.toString() ?? null;
   const order = Number(form.get("order"));
-  let isRequired = Boolean(form.get("is-required"));
   const isHidden = Boolean(form.get("is-hidden"));
   const isDisplay = Boolean(form.get("is-display"));
   const isReadOnly = Boolean(form.get("is-read-only"));
   const canUpdate = Boolean(form.get("can-update"));
-  let showInCreate = Boolean(form.get("show-in-create"));
-  let formulaId = form.get("formula-id")?.toString() ?? null;
-
-  if (["id", "folio", "createdAt", "createdByUser", "sort", "page", "q", "v", "redirect", "tags"].includes(name)) {
-    return badRequest({ error: name + " is a reserved property name" });
-  }
+  const showInCreate = Boolean(form.get("show-in-create"));
+  const { isRequired, formulaId } = processFormData(form, type);
 
   const options: { order: number; value: string; name?: string; color?: Colors }[] = form.getAll("options[]").map((f: FormDataEntryValue) => {
     return JSON.parse(f.toString());
@@ -72,15 +96,6 @@ export const action: ActionFunction = async ({ request, params }) => {
     return JSON.parse(f.toString());
   });
 
-  if ([PropertyType.SELECT, PropertyType.MULTI_SELECT].includes(type) && options.length === 0) {
-    // return badRequest({ error: "Add at least one option" });
-  }
-
-  if (type !== PropertyType.FORMULA) {
-    formulaId = null;
-  } else {
-    isRequired = false;
-  }
   if ([PropertyType.FORMULA].includes(type) && !formulaId) {
     return badRequest({ error: "Select a formula" });
   }
@@ -90,45 +105,62 @@ export const action: ActionFunction = async ({ request, params }) => {
     return badRequest({ error: errors.join(", ") });
   }
 
+  await updateProperty(params.id ?? "", {
+    name,
+    title,
+    type,
+    subtype,
+    order,
+    isDefault: existing?.isDefault ?? false,
+    isRequired,
+    isHidden,
+    isDisplay,
+    isReadOnly,
+    canUpdate,
+    showInCreate,
+    formulaId,
+  });
+  await updatePropertyOptions(params.id ?? "", options);
+  await updatePropertyAttributes(params.id ?? "", attributes);
+  return redirect(UrlUtils.getModulePath(params, `entities/${params.entity}/properties`));
+}
+
+async function handleDelete(params: any, form: FormData, t: any) {
+  await verifyUserHasPermission(request, "admin.entities.delete");
+  const id = form.get("id")?.toString() ?? "";
+  const existingProperty = await getProperty(id);
+  if (!existingProperty) {
+    return badRequest({ error: t("shared.notFound") });
+  }
+  await deleteProperty(id);
+  return redirect(UrlUtils.getModulePath(params, `entities/${params.entity}/properties`));
+}
+
+export const action: ActionFunction = async ({ request, params }) => {
+  await verifyUserHasPermission(request, "admin.entities.update");
+  const { t } = await getTranslations(request);
+
+  const entity = await getEntityBySlug({ tenantId: null, slug: params.entity ?? "" });
+  const existing = await getProperty(params.id ?? "");
+
+  const form = await request.formData();
+  const action = form.get("action")?.toString() ?? "";
+  const name = form.get("name")?.toString() ?? "";
+  const title = form.get("title")?.toString() ?? "";
+  const type = Number(form.get("type")) as PropertyType;
+
   if (action === "edit") {
     try {
-      if (name?.includes(" ")) {
-        throw Error("Property names cannot contain spaces");
-      }
-      if (name?.includes("-")) {
-        throw Error("Property names cannot contain: -");
-      }
-      await updateProperty(params.id ?? "", {
-        name,
-        title,
-        type,
-        subtype,
-        order,
-        isDefault: existing?.isDefault ?? false,
-        isRequired,
-        isHidden,
-        isDisplay,
-        isReadOnly,
-        canUpdate,
-        showInCreate,
-        formulaId,
-      });
-      await updatePropertyOptions(params.id ?? "", options);
-      await updatePropertyAttributes(params.id ?? "", attributes);
-      return redirect(UrlUtils.getModulePath(params, `entities/${params.entity}/properties`));
+      return await handleEdit(params, form, name, title, type, existing, entity);
     } catch (e: any) {
       return badRequest({ error: e.message });
     }
-  } else if (action === "delete") {
-    await verifyUserHasPermission(request, "admin.entities.delete");
-    const id = form.get("id")?.toString() ?? "";
-    const existingProperty = await getProperty(id);
-    if (!existingProperty) {
-      return badRequest({ error: t("shared.notFound") });
-    }
-    await deleteProperty(id);
-    return redirect(UrlUtils.getModulePath(params, `entities/${params.entity}/properties`));
   }
+
+  if (action === "delete") {
+    return await handleDelete(params, form, t);
+  }
+
   return badRequest({ error: t("shared.invalidForm") });
 };
 

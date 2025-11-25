@@ -19,10 +19,11 @@ function getPropertyType(property: PropertyWithDetails, imports: string[]): stri
       return makeOptional("Date");
     case PropertyType.BOOLEAN:
       return makeOptional("boolean");
-    case PropertyType.MEDIA:
+    case PropertyType.MEDIA: {
       imports.push(`import { MediaDto } from "~/application/dtos/entities/MediaDto";`);
       const isSingleMedia = PropertyAttributeHelper.getPropertyAttributeValue_Number(property, PropertyAttributeName.Max) === 1;
       return isSingleMedia ? makeOptional("MediaDto") : makeOptional("MediaDto[]");
+    }
     case PropertyType.MULTI_SELECT:
     case PropertyType.MULTI_TEXT:
       imports.push(`import { RowValueMultipleDto } from "~/application/dtos/entities/RowValueMultipleDto";`);
@@ -63,7 +64,7 @@ function generateRowToDtoCode(property: PropertyWithDetails): string {
       return `${name}: RowValueHelper.getDate({ entity, row, name: "${name}" })${fallback('new Date()')},`;
     case PropertyType.BOOLEAN:
       return `${name}: RowValueHelper.getBoolean({ entity, row, name: "${name}" }) ?? false,`;
-    case PropertyType.MEDIA:
+    case PropertyType.MEDIA: {
       const isSingle = PropertyAttributeHelper.getPropertyAttributeValue_Number(property, PropertyAttributeName.Max) === 1;
       if (isSingle) {
         return property.isRequired
@@ -71,6 +72,7 @@ function generateRowToDtoCode(property: PropertyWithDetails): string {
           : `${name}: RowValueHelper.getFirstMedia({ entity, row, name: "${name}" }),`;
       }
       return `${name}: RowValueHelper.getMedia({ entity, row, name: "${name}" }),`;
+    }
     case PropertyType.MULTI_SELECT:
     case PropertyType.MULTI_TEXT:
       return `${name}: RowValueHelper.getMultiple({ entity, row, name: "${name}" }),`;
@@ -102,11 +104,12 @@ function generateFormToDtoCode(property: PropertyWithDetails): string {
       return `${name}: FormHelper.getDate(form, "${name}"),`;
     case PropertyType.BOOLEAN:
       return `${name}: FormHelper.getBoolean(form, "${name}"),`;
-    case PropertyType.MEDIA:
+    case PropertyType.MEDIA: {
       const isSingle = PropertyAttributeHelper.getPropertyAttributeValue_Number(property, PropertyAttributeName.Max) === 1;
       return isSingle
         ? `${name}: FormHelper.getFormFirstMedia(form, "${name}"),`
         : `${name}: FormHelper.getFormMedia(form, "${name}"),`;
+    }
     case PropertyType.MULTI_SELECT:
     case PropertyType.MULTI_TEXT:
       return `${name}: FormHelper.getMultiple(form, "${name}"),`;
@@ -278,9 +281,12 @@ function uiFormSelect(code: string[], imports: string[], property: PropertyWithD
   props.push(`defaultValue={${value}}`);
   const withColors = property.options.filter((f) => f.color).length > 0;
   imports.push(`import { Colors } from "~/application/enums/shared/Colors";`);
-  props.push(`options={[${property.options.map((option) =>
-    `{ name: ${option.name === null ? `"${option.value}"` : `"${option.name}"`}, value: "${option.value}", color: ${getColor(option.color)} }`
-  )}]}`);
+  props.push(`options={[${property.options.map((option) => {
+    const optionName = option.name === null ? `"${option.value}"` : `"${option.name}"`;
+    const optionValue = option.value;
+    const colorValue = getColor(option.color);
+    return `{ name: ${optionName}, value: "${optionValue}", color: ${colorValue} }`;
+  })}]}`);
 
   if (!property.subtype || property.subtype === "dropdown") {
     props.push(`withColors={${withColors ? "true" : "false"}}`);
@@ -320,9 +326,12 @@ function uiFormMultiType(code: string[], imports: string[], property: PropertyWi
   if (property.type === PropertyType.MULTI_SELECT) {
     props.push(`value={item?.${property.name}}`);
     imports.push(`import { Colors } from "~/application/enums/shared/Colors";`);
-    props.push(`options={[${property.options.map((option) =>
-      `{ name: ${option.name === null ? `"${option.value}"` : `"${option.name}"`}, value: "${option.value}", color: ${getColor(option.color)} }`
-    )}]}`);
+    props.push(`options={[${property.options.map((option) => {
+      const optionName = option.name === null ? `"${option.value}"` : `"${option.name}"`;
+      const optionValue = option.value;
+      const colorValue = getColor(option.color);
+      return `{ name: ${optionName}, value: "${optionValue}", color: ${colorValue} }`;
+    })}]}`);
     imports.push(`import PropertyMultiSelector from "~/components/entities/properties/PropertyMultiSelector";`);
     if (!property.subtype || property.subtype === "combobox") {
       code.push(`<PropertyMultiSelector name="${property.name}" title={t("${property.title}")} ${props.join(" ")} />`);
@@ -357,163 +366,8 @@ function uiForm({ code, imports, property, index }: { code: string[]; imports: s
 
   if (property.type === PropertyType.TEXT) {
     uiFormText(code, imports, property, props);
-    let defaultValue = PropertyAttributeHelper.getPropertyAttributeValue_String(property, PropertyAttributeName.DefaultValue);
-    let value = `item?.${property.name}`;
-    if (defaultValue) {
-      value = `item?.${property.name} ?? (!item ? "${defaultValue}" : undefined)`;
-    }
-    props.push(`defaultValue={${value}}`);
-    let placeholder = PropertyAttributeHelper.getPropertyAttributeValue_String(property, PropertyAttributeName.Placeholder);
-    if (placeholder) {
-      props.push(`placeholder="${placeholder}"`);
-    }
-    if (min > 0) {
-      props.push(`minLength={${min}}`);
-    }
-    if (max > 0) {
-      props.push(`maxLength={${max}}`);
-    }
-    let rows = property.attributes.find((f) => f.name === PropertyAttributeName.Rows);
-    if (rows) {
-      props.push(`rows={${PropertyAttributeHelper.getPropertyAttributeValue_Number(property, PropertyAttributeName.Rows)}}`);
-    }
-    let pattern = PropertyAttributeHelper.getPropertyAttributeValue_String(property, PropertyAttributeName.Pattern);
-    if (pattern) {
-      props.push(`pattern="${pattern}"`);
-    }
-    let editor = PropertyAttributeHelper.getPropertyAttributeValue_String(property, PropertyAttributeName.Editor);
-    if (editor === "monaco") {
-      props.push(`editor="monaco" editorLanguage="markdown"`);
-    } else if (editor === "wysiwyg") {
-      props.push(`editor="wysiwyg" autoFocus={${index === 0}}`);
-    }
-    if (!property.subtype || property.subtype === "singleLine") {
-      imports.push(`import InputText from "~/components/ui/input/InputText";`);
-      code.push(`<InputText name="${property.name}" title={t("${property.title}")} ${props.join(" ")} />`);
-    } else {
-      imports.push(`import InputTextSubtype from "~/components/ui/input/subtypes/InputTextSubtype";`);
-      code.push(`<InputTextSubtype subtype="${property.subtype}" name="${property.name}" title={t("${property.title}")} ${props.join(" ")} />`);
-    }
-  } else if (property.type === PropertyType.NUMBER) {
-    imports.push(`import InputNumber from "~/components/ui/input/InputNumber";`);
-    let defaultValue = PropertyAttributeHelper.getPropertyAttributeValue_Number(property, PropertyAttributeName.DefaultValue);
-    let value = `item?.${property.name}`;
-    if (defaultValue) {
-      value = `item?.${property.name} ?? (!item ? ${defaultValue} : undefined)`;
-    }
-    props.push(`defaultValue={${value}}`);
-    if (min > 0) {
-      props.push(`min={${min}}`);
-    }
-    if (max > 0) {
-      props.push(`max={${max}}`);
-    }
-    let step = PropertyAttributeHelper.getPropertyAttributeValue_Number(property, PropertyAttributeName.Step);
-    if (step) {
-      props.push(`step="${step}"`);
-    }
-    code.push(`<InputNumber name="${property.name}" title={t("${property.title}")} ${props.join(" ")} />`);
-  } else if (property.type === PropertyType.DATE) {
-    imports.push(`import InputDate from "~/components/ui/input/InputDate";`);
-    code.push(`<InputDate name="${property.name}" title={t("${property.title}")} defaultValue={item?.${property.name}} ${props.join(" ")} />`);
-  } else if (property.type === PropertyType.SELECT) {
-    let defaultValue = PropertyAttributeHelper.getPropertyAttributeValue_String(property, PropertyAttributeName.DefaultValue);
-    let value = `item?.${property.name}`;
-    if (defaultValue) {
-      value = `item?.${property.name} ?? (!item ? "${defaultValue}" : undefined)`;
-    }
-    props.push(`defaultValue={${value}}`);
-    const withColors = property.options.filter((f) => f.color).length > 0;
-
-    imports.push(`import { Colors } from "~/application/enums/shared/Colors";`);
-    props.push(
-      `options={[${property.options.map((option) => {
-        return `{ name: ${option.name === null ? `"${option.value}"` : `"${option.name}"`}, value: "${option.value}", color: ${getColor(option.color)} }`;
-      })}]}`
-    );
-    if (!property.subtype || property.subtype === "dropdown") {
-      // props.push(`withSearch={false}`);
-      props.push(`withColors={${withColors ? "true" : "false"}}`);
-      imports.push(`import InputSelect from "~/components/ui/input/InputSelect";`);
-      code.push(`<InputSelect name="${property.name}" title={t("${property.title}")} ${props.join(" ")} />`);
-    } else if (property.subtype === "radioGroupCards") {
-      imports.push(`import InputRadioGroupCards from "~/components/ui/input/InputRadioGroupCards";`);
-      code.push(`<InputRadioGroupCards name="${property.name}" title={t("${property.title}")} ${props.join(" ")} />`);
-    }
-  } else if (property.type === PropertyType.BOOLEAN) {
-    imports.push(`import InputCheckbox from "~/components/ui/input/InputCheckbox";`);
-    let defaultValue = PropertyAttributeHelper.getPropertyAttributeValue_Boolean(property, PropertyAttributeName.DefaultValue);
-    let value = `item?.${property.name}`;
-    if (defaultValue) {
-      value = `item?.${property.name} ?? (!item ? ${defaultValue} : undefined)`;
-    }
-    props.push(`value={${value}}`);
-    code.push(`<InputCheckbox name="${property.name}" title={t("${property.title}")} asToggle ${props.join(" ")} />`);
-  } else if (property.type === PropertyType.MEDIA) {
-    imports.push(`import InputMedia from "~/components/ui/input/InputMedia";`);
-    if (PropertyAttributeHelper.getPropertyAttributeValue_Number(property, PropertyAttributeName.Max) === 1) {
-      props.push(`initialMedia={item?.${property.name} ? [item?.${property.name}] : []}`);
-    } else {
-      props.push(`initialMedia={item?.${property.name}}`);
-    }
-    let acceptFileTypes = PropertyAttributeHelper.getPropertyAttributeValue_String(property, PropertyAttributeName.AcceptFileTypes);
-    if (min > 0) {
-      props.push(`min={${min}}`);
-    }
-    if (max > 0) {
-      props.push(`max={${max}}`);
-    }
-    if (acceptFileTypes) {
-      props.push(`accept="${acceptFileTypes}"`);
-    }
-    let maxSize = PropertyAttributeHelper.getPropertyAttributeValue_Number(property, PropertyAttributeName.MaxSize) ?? 0;
-    if (maxSize > 0) {
-      props.push(`maxSize={${maxSize}}`);
-    }
-    code.push(`<InputMedia name="${property.name}" title={t("${property.title}")} ${props.join(" ")} />`);
-  } else if (property.type === PropertyType.MULTI_SELECT) {
-    props.push(`value={item?.${property.name}}`);
-
-    imports.push(`import { Colors } from "~/application/enums/shared/Colors";`);
-    props.push(
-      `options={[${property.options.map((option) => {
-        return `{ name: ${option.name === null ? `"${option.value}"` : `"${option.name}"`}, value: "${option.value}", color: ${getColor(option.color)} }`;
-      })}]}`
-    );
-    if (!property.subtype || property.subtype === "combobox") {
-      // imports.push(`import InputCombobox from "~/components/ui/input/InputCombobox";`);
-      imports.push(`import PropertyMultiSelector from "~/components/entities/properties/PropertyMultiSelector";`);
-      code.push(`<PropertyMultiSelector name="${property.name}" title={t("${property.title}")} ${props.join(" ")} />`);
-    } else if (property.subtype === "checkboxCards") {
-      imports.push(`import PropertyMultiSelector from "~/components/entities/properties/PropertyMultiSelector";`);
-      code.push(`<PropertyMultiSelector subtype="checkboxCards" name="${property.name}" title={t("${property.title}")} ${props.join(" ")} />`);
-    }
-  } else if (property.type === PropertyType.RANGE_NUMBER) {
-    imports.push(`import InputRangeNumber from "~/components/ui/input/ranges/InputRangeNumber";`);
-    code.push(
-      `<InputRangeNumber name="${property.name}" title={t("${property.title}")} ${props.join(" ")} defaultValueMin={item?.${
-        property.name
-      }?.numberMin ? Number(item.${property.name}.numberMin) : undefined} defaultValueMax={item?.${property.name}?.numberMax ? Number(item.${
-        property.name
-      }.numberMax) : undefined} />`
-    );
-  } else if (property.type === PropertyType.RANGE_DATE) {
-    imports.push(`import InputRangeDate from "~/components/ui/input/ranges/InputRangeDate";`);
-    code.push(
-      `<InputRangeDate name="${property.name}" title={t("${property.title}")} ${props.join(" ")} defaultValueMin={item?.${
-        property.name
-      }?.dateMin} defaultValueMax={item?.${property.name}?.dateMax} />`
-    );
-  } else if (property.type === PropertyType.MULTI_TEXT) {
-    imports.push(`import InputMultiText from "~/components/ui/input/InputMultiText";`);
-    let separator = PropertyAttributeHelper.getPropertyAttributeValue_String(property, PropertyAttributeName.Separator);
-    if (separator) {
-      props.push(`separator="${separator}"`);
-    }
-    props.push(`value={item?.${property.name}}`);
-    code.push(`<InputMultiText name="${property.name}" title={t("${property.title}")} ${props.join(" ")} />`);
   } else {
-    code.push(`/* TODO: ${property.name} (${PropertyType[property.type]}) */`);
+    uiFormOtherTypes(code, imports, property, props, index);
   }
 
   if (!property.showInCreate) {

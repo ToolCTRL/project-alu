@@ -11,6 +11,18 @@ interface Props {
   onDelete: (id: string) => void;
 }
 
+const PaymentMethodBrand = ({ brand }: { brand?: string }) => <div className="flex flex-col uppercase">{brand}</div>;
+
+const PaymentMethodCountry = ({ country }: { country?: string }) => <div className="flex flex-col">{country}</div>;
+
+const PaymentMethodExpiration = ({ expMonth, expYear }: { expMonth?: number; expYear?: number }) => (
+  <div className="flex flex-col">
+    {expMonth?.toString().padStart(2, "0")}/{expYear}
+  </div>
+);
+
+const PaymentMethodLast4 = ({ last4 }: { last4?: string }) => <div className="flex flex-col">**** **** **** {last4}</div>;
+
 export default function MyPaymentMethods({ items, onAdd, onDelete }: Props) {
   const { t } = useTranslation();
   const confirmModal = useRef<RefConfirmModal>(null);
@@ -27,9 +39,6 @@ export default function MyPaymentMethods({ items, onAdd, onDelete }: Props) {
     <div className="space-y-2">
       <div className="flex items-baseline justify-between space-x-2">
         <div className="text-sm font-medium">{t("app.subscription.paymentMethods.cards")}</div>
-        {/* <button className="text-sm hover:underline text-theme-600 hover:text-theme-700 font-medium" type="button" onClick={onAdd}>
-          {t("shared.add")}
-        </button> */}
       </div>
       {items.length > 0 ? (
         <TableSimple
@@ -45,26 +54,22 @@ export default function MyPaymentMethods({ items, onAdd, onDelete }: Props) {
             {
               name: "brand",
               title: t("app.subscription.paymentMethods.brand"),
-              value: (i) => <div className="flex flex-col uppercase">{i.card?.brand}</div>,
+              value: (i) => <PaymentMethodBrand brand={i.card?.brand} />,
             },
             {
               name: "country",
               title: t("app.subscription.paymentMethods.country"),
-              value: (i) => <div className="flex flex-col">{i.card?.country}</div>,
+              value: (i) => <PaymentMethodCountry country={i.card?.country} />,
             },
             {
               name: "expiration",
               title: t("app.subscription.paymentMethods.expiration"),
-              value: (i) => (
-                <div className="flex flex-col">
-                  {i.card?.exp_month.toString().padStart(2, "0")}/{i.card?.exp_year}
-                </div>
-              ),
+              value: (i) => <PaymentMethodExpiration expMonth={i.card?.exp_month} expYear={i.card?.exp_year} />,
             },
             {
               name: "last4",
               title: t("app.subscription.paymentMethods.last4"),
-              value: (i) => <div className="flex flex-col">**** **** **** {i.card?.last4}</div>,
+              value: (i) => <PaymentMethodLast4 last4={i.card?.last4} />,
             },
           ]}
         />

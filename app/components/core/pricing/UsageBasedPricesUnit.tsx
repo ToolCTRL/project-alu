@@ -18,6 +18,32 @@ interface Props {
   onUpdate: (item: SubscriptionUsageBasedUnitDto) => void;
   disabled: boolean;
 }
+
+function FromTitleCell({ tiersMode, idx }: { tiersMode: string; idx: number }) {
+  return <>{tiersMode === "graduated" ? <div>{idx === 0 ? <div>For the first</div> : <div>For the next</div>}</div> : <div>Total units</div>}</>;
+}
+
+function ToValueCell({ to }: { to?: number }) {
+  return <div className="text-muted-foreground flex justify-center font-medium">{to ? <span>{NumberUtils.numberFormat(to)}</span> : <span>∞</span>}</div>;
+}
+
+function updateNewTierLimits(tiers: { from: number; to?: number }[]) {
+  for (let idx = 0; idx < tiers.length; idx++) {
+    const tier = tiers[idx];
+    if (idx === 0) {
+      tier.from = 0;
+    }
+    if (idx === tiers.length - 1) {
+      tier.to = undefined;
+    }
+    if (idx > 0) {
+      const previousTier = tiers[idx - 1];
+      previousTier.to = tier.from - 1;
+    }
+  }
+  return tiers;
+}
+
 export default function UsageBasedPricesUnit({ item, onUpdate, disabled }: Props) {
   const { t } = useTranslation();
 
@@ -33,15 +59,6 @@ export default function UsageBasedPricesUnit({ item, onUpdate, disabled }: Props
 
   const [perUnitHeaders, setPerUnitHeaders] = useState<RowHeaderDisplayDto<{ from: number; to?: number }>[]>([]);
   const [flatFeeHeaders, setFlatFeeHeaders] = useState<RowHeaderDisplayDto<{ from: number; to?: number }>[]>([]);
-
-  // useEffect(() => {
-  //   const usageBasedUnit = usageBasedUnits.find((f) => f.name === unit);
-  //   if (usageBasedUnit) {
-  //     setUnitTitle(usageBasedUnit.title);
-  //     setUnitTitlePlural(usageBasedUnit.titlePlural);
-  //   }
-  //   // eslint-disable-next-line react-hooks/exhaustive-deps
-  // }, [unit]);
 
   useEffect(() => {
     onUpdate({
@@ -87,9 +104,7 @@ export default function UsageBasedPricesUnit({ item, onUpdate, disabled }: Props
         name: "fromTitle",
         title: "",
         value: (_) => "",
-        formattedValue: (_, idx) => (
-          <>{tiersMode === "graduated" ? <div>{idx === 0 ? <div>For the first</div> : <div>For the next</div>}</div> : <div>Total units</div>}</>
-        ),
+        formattedValue: (_, idx) => <FromTitleCell tiersMode={tiersMode} idx={idx} />,
       },
       {
         name: "from",
@@ -104,9 +119,7 @@ export default function UsageBasedPricesUnit({ item, onUpdate, disabled }: Props
         name: "to",
         title: "To",
         value: (e) => (e.to ? e.to : "∞"),
-        formattedValue: (e) => (
-          <div className="text-muted-foreground flex justify-center font-medium">{e.to ? <span>{NumberUtils.numberFormat(e.to)}</span> : <span>∞</span>}</div>
-        ),
+        formattedValue: (e) => <ToValueCell to={e.to} />,
         className: "w-24",
       },
     ];
@@ -196,23 +209,6 @@ export default function UsageBasedPricesUnit({ item, onUpdate, disabled }: Props
     setPrices([]);
   }
 
-  function updateNewTierLimits(tiers: { from: number; to?: number }[]) {
-    for (let idx = 0; idx < tiers.length; idx++) {
-      const tier = tiers[idx];
-      if (idx === 0) {
-        tier.from = 0;
-      }
-      if (idx === tiers.length - 1) {
-        tier.to = undefined;
-      }
-      if (idx > 0) {
-        const previousTier = tiers[idx - 1];
-        previousTier.to = tier.from - 1;
-      }
-    }
-    return tiers;
-  }
-
   function removeTier(idx: number) {
     if (allTiers.length > 1) {
       setAllTiers(updateNewTierLimits(allTiers.filter((o, i) => i !== idx)));
@@ -246,24 +242,6 @@ export default function UsageBasedPricesUnit({ item, onUpdate, disabled }: Props
         </div>
 
         <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
-          {/* <InputSelect
-            className="col-span-2 sm:col-span-1"
-            disabled={disabled}
-            name="unit"
-            title={t("pricing.usageBased.unit")}
-            options={[
-              ...usageBasedUnits.map((item) => {
-                return {
-                  name: `${t(item.title)} (${item.name})`,
-                  value: item.name,
-                };
-              }),
-            ]}
-            setValue={(e) => {
-              setUnit(e?.toString() ?? "");
-            }}
-            value={unit}
-          /> */}
           <InputText
             className="col-span-2 sm:col-span-1"
             disabled={disabled}

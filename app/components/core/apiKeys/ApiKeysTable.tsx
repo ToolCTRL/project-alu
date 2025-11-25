@@ -52,6 +52,15 @@ export default function ApiKeysTable({ entities, items, withTenant, canCreate }:
   const [searchInput, setSearchInput] = useState("");
   const [headers, setHeaders] = useState<Header[]>([]);
 
+  // Helper function to handle copying API keys
+  const handleCopyKey = (key: string) => {
+    setCopiedKey(key);
+    setTimeout(() => {
+      setCopiedKey("");
+    }, 2000);
+    navigator.clipboard.writeText(key);
+  };
+
   useEffect(() => {
     const headers: Header[] = [];
     if (withTenant) {
@@ -111,10 +120,10 @@ export default function ApiKeysTable({ entities, items, withTenant, canCreate }:
                   <table className="divide-border min-w-full divide-y">
                           <thead className="bg-secondary">
                             <tr>
-                              {headers.map((header, idx) => {
+                              {headers.map((header) => {
                                 return (
                                   <th
-                                    key={idx}
+                                    key={header.name || header.title}
                                     scope="col"
                                     className="text-muted-foreground select-none truncate px-3 py-2 text-left text-xs font-medium tracking-wider"
                                   >
@@ -127,23 +136,15 @@ export default function ApiKeysTable({ entities, items, withTenant, canCreate }:
                             </tr>
                           </thead>
                           <tbody className="divide-border bg-background divide-y">
-                            {filteredItems().map((item, idx) => {
+                            {filteredItems().map((item) => {
                               return (
-                                <tr key={idx}>
+                                <tr key={item.id}>
                                   {withTenant && (
                                     <td className="text-muted-foreground whitespace-nowrap px-3 py-2 text-sm">{item.tenant?.name ?? "- Admin -"}</td>
                                   )}
                                   <td className="text-muted-foreground whitespace-nowrap px-3 py-2 text-sm">
                                     {item.active ? (
-                                      <ButtonTertiary
-                                        onClick={() => {
-                                          setCopiedKey(item.key);
-                                          setTimeout(() => {
-                                            setCopiedKey("");
-                                          }, 2000);
-                                          navigator.clipboard.writeText(item.key);
-                                        }}
-                                      >
+                                      <ButtonTertiary onClick={() => handleCopyKey(item.key)}>
                                         {copiedKey === item.key ? t("shared.copied") : t("shared.copy")}
                                       </ButtonTertiary>
                                     ) : (

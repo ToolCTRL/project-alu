@@ -26,7 +26,7 @@ type LoaderData = {
   stripeAccount: Stripe.Account | null;
 };
 
-export let loader = async ({ request, params }: LoaderFunctionArgs) => {
+export const loader = async ({ request, params }: LoaderFunctionArgs) => {
   await requireAuth({ request, params });
   const appConfiguration = await getAppConfiguration({ request });
   if (!appConfiguration.portals?.pricing) {
@@ -59,7 +59,7 @@ type ActionData = {
   error?: string;
   success?: string;
 };
-export let action = async ({ request, params }: ActionFunctionArgs) => {
+export const action = async ({ request, params }: ActionFunctionArgs) => {
   await requireAuth({ request, params });
   const userInfo = await getUserInfo(request);
   const user = await getUser(userInfo.userId);

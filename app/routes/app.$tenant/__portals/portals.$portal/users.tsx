@@ -27,7 +27,7 @@ type LoaderData = {
   item: PortalWithDetails;
   items: PortalUserDto[];
 };
-export let loader = async ({ request, params }: LoaderFunctionArgs) => {
+export const loader = async ({ request, params }: LoaderFunctionArgs) => {
   await requireAuth({ request, params });
   const { t } = await getTranslations(request);
   const tenantId = await getTenantIdOrNull({ request, params });

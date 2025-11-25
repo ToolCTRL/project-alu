@@ -19,10 +19,10 @@ type LoaderData = {
   submissions: SurveySubmissionWithDetails[];
 };
 
-export let loader = async ({ request, params }: LoaderFunctionArgs) => {
+export const loader = async ({ request, params }: LoaderFunctionArgs) => {
   await requireAuth({ request, params });
   const tenantId = await getTenantIdOrNull({ request, params });
-  let item = await getSurveyById({ tenantId, id: params.id! });
+  const item = await getSurveyById({ tenantId, id: params.id! });
   if (!item) {
     return redirect("/admin/help-desk/surveys");
   }

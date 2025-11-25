@@ -91,7 +91,6 @@ export default function Plans({ items, tenantSubscription, canSubmit, className,
             size="sm"
             billingPeriod={billingPeriod}
             onChange={(e) => {
-              // console.log("Set billing period: ", SubscriptionBillingPeriod[e]);
               searchParams.set("b", getBillingPeriodParams(e));
               setSearchParams(searchParams, {
                 preventScrollReset: true,
@@ -116,11 +115,11 @@ export default function Plans({ items, tenantSubscription, canSubmit, className,
           items.length >= 8 && "lg:grid-cols-3 xl:grid-cols-3"
         )}
       >
-        {products.map((plan, index) => {
+        {products.map((plan) => {
           return (
             <Plan
-              key={index}
-              className={clsx((products.length === 1 || (products.length === 4 && index === 3)) && "lg:col-span-1")}
+              key={plan.id}
+              className="lg:col-span-1"
               product={plan}
               title={plan.title}
               description={plan.description ?? undefined}
@@ -132,7 +131,6 @@ export default function Plans({ items, tenantSubscription, canSubmit, className,
               model={plan.model}
               usageBasedPrices={plan.usageBasedPrices}
               alreadyOwned={alreadyOwned(plan)}
-              // tenantSubscription={tenantSubscription}
               canSubmit={canSubmit}
               isUpgrade={checkUpgradeDowngrade(plan)?.upgrade}
               isDowngrade={checkUpgradeDowngrade(plan)?.downgrade}

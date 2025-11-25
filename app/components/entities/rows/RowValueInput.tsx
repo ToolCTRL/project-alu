@@ -47,7 +47,7 @@ interface Props {
   readOnly: boolean;
   className?: string;
   autoFocus?: boolean;
-  promptFlows?: { rowId: string | undefined; prompts: PromptFlowWithDetails[] } | undefined;
+  promptFlows?: { rowId: string | undefined; prompts: PromptFlowWithDetails[] };
 }
 
 function useFocusHandlers(selected: PropertyWithDetails | undefined) {
@@ -99,9 +99,8 @@ function renderPropertyInput(
     readOnly: boolean;
     className?: string;
     autoFocus?: boolean;
-    promptFlows?: { rowId: string | undefined; prompts: PromptFlowWithDetails[] } | undefined;
+    promptFlows?: { rowId?: string; prompts: PromptFlowWithDetails[] };
     t: any;
-    media: MediaDto[];
     setMedia: (media: MediaDto[]) => void;
     numberInput: Ref<RefInputNumber>;
     textInput: Ref<RefInputText>;
@@ -127,7 +126,6 @@ function renderPropertyInput(
     autoFocus,
     promptFlows,
     t,
-    media,
     setMedia,
     numberInput,
     dateInput,
@@ -294,7 +292,7 @@ const RowValueInput = (
 ) => {
   const { t } = useTranslation();
   const { focus, numberInput, textInput, dateInput } = useFocusHandlers(selected);
-  const { media, setMedia } = useMediaChangeEffect(selected, onChangeMedia);
+  const { setMedia } = useMediaChangeEffect(selected, onChangeMedia);
   const multipleInput = useRef<RefInputMultiText>(null);
 
   useImperativeHandle(ref, () => ({ focus }));
@@ -321,7 +319,6 @@ const RowValueInput = (
     autoFocus,
     promptFlows,
     t,
-    media,
     setMedia,
     numberInput,
     textInput,
@@ -346,7 +343,7 @@ function TextPropertyInput({
   className?: string;
   onChange?: (value: string | number | Date | boolean | undefined | null) => void;
   autoFocus?: boolean;
-  promptFlows?: { rowId: string | undefined; prompts: PromptFlowWithDetails[] } | undefined;
+  promptFlows?: { rowId: string | undefined; prompts: PromptFlowWithDetails[] };
   t: any;
 }) {
   const editor = PropertyAttributeHelper.getPropertyAttributeValue_String(selected, PropertyAttributeName.Editor) ?? "";

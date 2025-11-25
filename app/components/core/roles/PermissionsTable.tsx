@@ -15,6 +15,32 @@ interface Props {
   canReorder?: boolean;
 }
 
+function PermissionNameCell({ item }: { item: PermissionWithRoles }) {
+  return <RoleBadge item={item} />;
+}
+
+function PermissionRolesCell({ item }: { item: PermissionWithRoles }) {
+  return (
+    <div className="w-64 truncate">
+      <span className="max-w-sm truncate text-sm italic">
+        {item.inRoles
+          .sort((a, b) => a.role.order - b.role.order)
+          .map((f) => f.role.name)
+          .join(", ")}
+      </span>
+    </div>
+  );
+}
+
+function PermissionOrderCell({ item, idx, items }: { item: PermissionWithRoles; idx: number; items: PermissionWithRoles[] }) {
+  return (
+    <div>
+      {item.order}
+      <OrderListButtons index={idx} items={items.map((f) => ({ ...f, order: f.order ?? 0 }))} editable={true} />
+    </div>
+  );
+}
+
 export default function PermissionsTable({ items, className, canCreate, canUpdate = true, tenantId, canReorder }: Props) {
   const { t } = useTranslation();
 
@@ -36,7 +62,7 @@ export default function PermissionsTable({ items, className, canCreate, canUpdat
         name: "name",
         title: t("models.permission.name"),
         value: (i) => i.name,
-        formattedValue: (i) => <RoleBadge item={i} />,
+        formattedValue: (i) => <PermissionNameCell item={i} />,
         className: "max-w-xs truncate",
       },
       {
@@ -49,16 +75,7 @@ export default function PermissionsTable({ items, className, canCreate, canUpdat
         name: "roles",
         title: t("models.permission.inRoles"),
         value: (i) => i.inRoles.length,
-        formattedValue: (i) => (
-          <div className="w-64 truncate">
-            <span className="max-w-sm truncate text-sm italic">
-              {i.inRoles
-                .sort((a, b) => a.role.order - b.role.order)
-                .map((f) => f.role.name)
-                .join(", ")}
-            </span>
-          </div>
-        ),
+        formattedValue: (i) => <PermissionRolesCell item={i} />,
         className: canUpdate ? "max-w-xs truncate" : "",
       },
     ];
@@ -67,12 +84,7 @@ export default function PermissionsTable({ items, className, canCreate, canUpdat
       headers.unshift({
         name: "order",
         title: t("shared.order"),
-        value: (_item, idx) => (
-          <div>
-            {_item.order}
-            <OrderListButtons index={idx} items={items.map((f) => ({ ...f, order: f.order ?? 0 }))} editable={true} />
-          </div>
-        ),
+        value: (_item, idx) => <PermissionOrderCell item={_item} idx={idx} items={items} />,
       });
     }
 

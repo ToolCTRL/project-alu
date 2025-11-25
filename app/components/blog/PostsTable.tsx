@@ -1,6 +1,6 @@
 import { useTranslation } from "react-i18next";
 import DateUtils from "~/utils/shared/DateUtils";
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { BlogPostWithDetails } from "~/modules/blog/db/blog.db.server";
 import ButtonTertiary from "../ui/buttons/ButtonTertiary";
 import InputSearch from "../ui/input/InputSearch";
@@ -92,35 +92,40 @@ export default function PostsTable({ blogPath, items }: Props) {
     );
   };
 
+  const renderTitleCell = (item: BlogPostWithDetails) => <TitleCell item={item} blogPath={blogPath} t={t} />;
+  const renderActionsCell = (item: BlogPostWithDetails) => <ActionsCell item={item} params={params} t={t} />;
+
+  const headers = useMemo(
+    () => [
+      {
+        name: "title",
+        title: t("models.post.object"),
+        className: "w-full",
+        value: renderTitleCell,
+      },
+      {
+        name: "createdAt",
+        title: t("shared.createdAt"),
+        value: CreatedAtCellPost,
+      },
+      {
+        name: "author",
+        title: t("models.post.author"),
+        value: AuthorCell,
+      },
+      {
+        name: "actions",
+        title: t("shared.actions"),
+        value: renderActionsCell,
+      },
+    ],
+    [renderTitleCell, renderActionsCell]
+  );
+
   return (
     <div className="space-y-2">
       <InputSearch value={searchInput} setValue={setSearchInput} />
-      <TableSimple
-        items={filteredItems()}
-        headers={[
-          {
-            name: "title",
-            title: t("models.post.object"),
-            className: "w-full",
-            value: (item) => <TitleCell item={item} blogPath={blogPath} t={t} />,
-          },
-          {
-            name: "createdAt",
-            title: t("shared.createdAt"),
-            value: CreatedAtCellPost,
-          },
-          {
-            name: "author",
-            title: t("models.post.author"),
-            value: AuthorCell,
-          },
-          {
-            name: "actions",
-            title: t("shared.actions"),
-            value: (item) => <ActionsCell item={item} params={params} t={t} />,
-          },
-        ]}
-      />
+      <TableSimple items={filteredItems()} headers={headers} />
     </div>
   );
 }

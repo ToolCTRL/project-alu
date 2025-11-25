@@ -16,6 +16,53 @@ interface Props {
   pagination: PaginationDto;
 }
 
+// Extracted component definitions
+const CreatedAtCell = ({ item }: { item: ApiKeyLogWithDetails }) => (
+  <div className="text-muted-foreground text-xs">
+    {item.createdAt && <span>{DateUtils.dateYMDHMS(item.createdAt)}</span>}
+  </div>
+);
+
+const AliasCell = ({ item }: { item: ApiKeyLogWithDetails }) => (
+  <div>{item.apiKey ? item.apiKey?.alias : <span className="text-gray-300">?</span>}</div>
+);
+
+const IpCell = ({ item }: { item: ApiKeyLogWithDetails }) => (
+  <div>{item.ip.length > 0 ? item.ip : <span className="text-gray-300">?</span>}</div>
+);
+
+const MethodCell = ({ item }: { item: ApiKeyLogWithDetails }) => (
+  <div>
+    <SimpleBadge title={item.method} color={ApiUtils.getMethodColor(item.method)} />
+  </div>
+);
+
+const StatusCell = ({ item }: { item: ApiKeyLogWithDetails }) => (
+  <div>
+    {item.status ? (
+      <span>
+        <SimpleBadge title={item.status.toString()} color={item.status.toString().startsWith("4") ? Colors.RED : Colors.GREEN} />
+      </span>
+    ) : (
+      <span className="text-gray-300">?</span>
+    )}
+  </div>
+);
+
+const DurationCell = ({ item }: { item: ApiKeyLogWithDetails }) => (
+  <div>
+    <div>{item.duration ? <span>{item.duration / 1000} s</span> : <span className="text-gray-300">?</span>}</div>
+  </div>
+);
+
+const ParamsCell = ({ item }: { item: ApiKeyLogWithDetails }) => (
+  <ShowPayloadModalButton description={item.params} payload={item.params} />
+);
+
+const ErrorCell = ({ item }: { item: ApiKeyLogWithDetails }) => (
+  <div className="text-red-500">{item.error}</div>
+);
+
 export default function ApiKeyLogsTable({ withTenant, items, pagination }: Props) {
   const { t } = useTranslation();
 
@@ -28,7 +75,7 @@ export default function ApiKeyLogsTable({ withTenant, items, pagination }: Props
       name: "createdAt",
       title: t("shared.createdAt"),
       value: (item) => DateUtils.dateYMDHMS(item.createdAt),
-      formattedValue: (item) => <div className="text-muted-foreground text-xs">{item.createdAt && <span>{DateUtils.dateYMDHMS(item.createdAt)}</span>}</div>,
+      formattedValue: (item) => <CreatedAtCell item={item} />,
     };
     headers.push(createdAtHeader);
     if (withTenant) {
@@ -43,14 +90,14 @@ export default function ApiKeyLogsTable({ withTenant, items, pagination }: Props
       name: "alias",
       title: t("models.apiKey.alias"),
       value: (item) => item.apiKey?.alias,
-      formattedValue: (item) => <div>{item.apiKey ? item.apiKey?.alias : <span className="text-gray-300">?</span>}</div>,
+      formattedValue: (item) => <AliasCell item={item} />,
     };
     headers.push(aliasHeader);
     const ipHeader: RowHeaderDisplayDto<ApiKeyLogWithDetails> = {
       name: "ip",
       title: t("models.apiKeyLog.ip"),
       value: (item) => item.ip,
-      formattedValue: (item) => <div>{item.ip.length > 0 ? item.ip : <span className="text-gray-300">?</span>}</div>,
+      formattedValue: (item) => <IpCell item={item} />,
     };
     headers.push(ipHeader);
     const endpointHeader: RowHeaderDisplayDto<ApiKeyLogWithDetails> = {
@@ -63,46 +110,28 @@ export default function ApiKeyLogsTable({ withTenant, items, pagination }: Props
       name: "method",
       title: t("models.apiKeyLog.method"),
       value: (item) => item.method,
-      formattedValue: (item) => (
-        <div>
-          <SimpleBadge title={item.method} color={ApiUtils.getMethodColor(item.method)} />
-        </div>
-      ),
+      formattedValue: (item) => <MethodCell item={item} />,
     };
     const statusHeader: RowHeaderDisplayDto<ApiKeyLogWithDetails> = {
       name: "status",
       title: t("models.apiKeyLog.status"),
       value: (item) => item.status,
-      formattedValue: (item) => (
-        <div>
-          {item.status ? (
-            <span>
-              <SimpleBadge title={item.status.toString()} color={item.status.toString().startsWith("4") ? Colors.RED : Colors.GREEN} />
-            </span>
-          ) : (
-            <span className="text-gray-300">?</span>
-          )}
-        </div>
-      ),
+      formattedValue: (item) => <StatusCell item={item} />,
     };
     const durationHeader: RowHeaderDisplayDto<ApiKeyLogWithDetails> = {
       name: "duration",
       title: "Duration",
-      value: (item) => (
-        <div>
-          <div>{item.duration ? <span>{item.duration / 1000} s</span> : <span className="text-gray-300">?</span>}</div>
-        </div>
-      ),
+      value: (item) => <DurationCell item={item} />,
     };
     const paramsHeader: RowHeaderDisplayDto<ApiKeyLogWithDetails> = {
       name: "params",
       title: t("models.apiKeyLog.params"),
-      value: (item) => <ShowPayloadModalButton description={item.params} payload={item.params} />,
+      value: (item) => <ParamsCell item={item} />,
     };
     const errorHeader: RowHeaderDisplayDto<ApiKeyLogWithDetails> = {
       name: "error",
       title: "Error",
-      value: (item) => <div className="text-red-500">{item.error}</div>,
+      value: (item) => <ErrorCell item={item} />,
     };
     headers = [...headers, methodHeader, statusHeader, durationHeader, paramsHeader, errorHeader];
     setHeaders(headers);

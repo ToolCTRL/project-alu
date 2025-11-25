@@ -59,6 +59,77 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
   return data;
 };
 
+async function calculateFeaturedOrder(item: KnowledgeBaseArticleWithDetails, isFeatured: boolean, knowledgeBaseId: string, language: string) {
+  if (!isFeatured) {
+    return null;
+  }
+  if (item.featuredOrder) {
+    return item.featuredOrder;
+  }
+  const featuredArticles = await getFeaturedKnowledgeBaseArticles({
+    knowledgeBaseId,
+    language,
+  });
+  const maxOrder = featuredArticles.length > 0 ? Math.max(...featuredArticles.map((p) => p.featuredOrder ?? 0)) : 0;
+  return maxOrder + 1;
+}
+
+async function handleEditAction(request: Request, params: any, form: FormData, item: KnowledgeBaseArticleWithDetails) {
+  const knowledgeBaseId = form.get("knowledgeBaseId")?.toString() ?? "";
+  const categoryId = form.get("categoryId")?.toString() ?? "";
+  const sectionId = form.get("sectionId")?.toString() ?? "";
+  const language = form.get("language")?.toString() ?? "";
+  const slug = form.get("slug")?.toString() ?? "";
+  const title = form.get("title")?.toString() ?? "";
+  const description = form.get("description")?.toString() ?? "";
+  const seoImage = form.get("seoImage")?.toString() ?? "";
+  const isFeatured = Boolean(form.get("isFeatured"));
+  const relatedArticles = form.getAll("relatedArticles[]").map((l) => l.toString());
+
+  const knowledgeBase = await KnowledgeBaseService.getById({ id: knowledgeBaseId, request });
+  if (!knowledgeBase) {
+    return Response.json({ error: "Knowledge base not found" }, { status: 400 });
+  }
+
+  const existingLanguage = KnowledgeBaseUtils.supportedLanguages.find((f) => f.value === language);
+  if (!existingLanguage) {
+    return Response.json({ error: "Language not found: " + language }, { status: 400 });
+  }
+
+  const existing = await getKbArticleBySlug({
+    knowledgeBaseId,
+    slug,
+    language,
+  });
+  if (existing && existing.id !== item.id) {
+    return Response.json({ error: "Slug already exists" }, { status: 400 });
+  }
+
+  const featuredOrder = await calculateFeaturedOrder(item, isFeatured, knowledgeBaseId, language);
+
+  await updateKnowledgeBaseArticle(item.id, {
+    categoryId: categoryId?.length ? categoryId : null,
+    sectionId: sectionId?.length ? sectionId : null,
+    slug,
+    title,
+    description,
+    order: item.order,
+    language,
+    featuredOrder,
+    seoImage,
+    relatedArticles,
+  });
+
+  return redirect(`/admin/knowledge-base/bases/${knowledgeBase.slug}/articles/${language}/${item.id}`);
+}
+
+async function handleDeleteAction(request: Request, params: any, item: KnowledgeBaseArticleWithDetails) {
+  await verifyUserHasPermission(request, "admin.kb.delete");
+  const kb = await KnowledgeBaseService.get({ slug: params.slug!, request });
+  await deleteKnowledgeBaseArticle(item.id);
+  return redirect(`/admin/knowledge-base/bases/${kb.slug}/articles/${params.lang}`);
+}
+
 export const action = async ({ request, params }: ActionFunctionArgs) => {
   await verifyUserHasPermission(request, "admin.kb.update");
   const form = await request.formData();
@@ -70,72 +141,9 @@ export const action = async ({ request, params }: ActionFunctionArgs) => {
   }
 
   if (action === "edit") {
-    const knowledgeBaseId = form.get("knowledgeBaseId")?.toString() ?? "";
-    const categoryId = form.get("categoryId")?.toString() ?? "";
-    const sectionId = form.get("sectionId")?.toString() ?? "";
-    const language = form.get("language")?.toString() ?? "";
-    const slug = form.get("slug")?.toString() ?? "";
-    const title = form.get("title")?.toString() ?? "";
-    const description = form.get("description")?.toString() ?? "";
-    const seoImage = form.get("seoImage")?.toString() ?? "";
-    const isFeatured = Boolean(form.get("isFeatured"));
-    const relatedArticles = form.getAll("relatedArticles[]").map((l) => l.toString());
-
-    const knowledgeBase = await KnowledgeBaseService.getById({ id: knowledgeBaseId, request });
-    if (!knowledgeBase) {
-      return Response.json({ error: "Knowledge base not found" }, { status: 400 });
-    }
-
-    const existingLanguage = KnowledgeBaseUtils.supportedLanguages.find((f) => f.value === language);
-    if (!existingLanguage) {
-      return Response.json({ error: "Language not found: " + language }, { status: 400 });
-    }
-
-    const existing = await getKbArticleBySlug({
-      knowledgeBaseId,
-      slug,
-      language,
-    });
-    if (existing && existing.id !== item.id) {
-      return Response.json({ error: "Slug already exists" }, { status: 400 });
-    }
-
-    let featuredOrder = item.featuredOrder;
-    if (isFeatured) {
-      if (!item.featuredOrder) {
-        const featuredArticles = await getFeaturedKnowledgeBaseArticles({
-          knowledgeBaseId,
-          language,
-        });
-        let maxOrder = 0;
-        if (featuredArticles.length > 0) {
-          maxOrder = Math.max(...featuredArticles.map((p) => p.featuredOrder ?? 0));
-        }
-        featuredOrder = maxOrder + 1;
-      }
-    } else {
-      featuredOrder = null;
-    }
-
-    await updateKnowledgeBaseArticle(item.id, {
-      categoryId: categoryId?.length ? categoryId : null,
-      sectionId: sectionId?.length ? sectionId : null,
-      slug,
-      title,
-      description,
-      order: item.order,
-      language,
-      featuredOrder,
-      seoImage,
-      relatedArticles,
-    });
-
-    return redirect(`/admin/knowledge-base/bases/${knowledgeBase.slug}/articles/${language}/${item.id}`);
+    return handleEditAction(request, params, form, item);
   } else if (action === "delete") {
-    await verifyUserHasPermission(request, "admin.kb.delete");
-    const kb = await KnowledgeBaseService.get({ slug: params.slug!, request });
-    await deleteKnowledgeBaseArticle(item.id);
-    return redirect(`/admin/knowledge-base/bases/${kb.slug}/articles/${params.lang}`);
+    return handleDeleteAction(request, params, item);
   }
   return Response.json({ error: "Invalid action" }, { status: 400 });
 };

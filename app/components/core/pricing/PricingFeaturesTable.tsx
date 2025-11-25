@@ -17,6 +17,57 @@ interface Props {
   items: SubscriptionFeatureDto[];
   setItems: React.Dispatch<React.SetStateAction<SubscriptionFeatureDto[]>>;
 }
+
+function renderOrderButtons(
+  item: SubscriptionFeatureDto,
+  index: number,
+  changeOrder: (item: SubscriptionFeatureDto, index: number, direction: "up" | "down") => void,
+  isLastItem: (index: number) => boolean
+) {
+  return (
+    <div className="w-10">
+      <div className="flex items-center space-x-1 truncate">
+        <button
+          title="Move up"
+          type="button"
+          onClick={() => changeOrder(item, index, "up")}
+          className={clsx(
+            index <= 0 ? " bg-secondary/90 cursor-not-allowed text-gray-300" : "hover:text-foreground hover:bg-secondary/90",
+            "text-muted-foreground bg-secondary h-4 w-4 px-0.5 py-0.5 focus:outline-hidden"
+          )}
+          disabled={index <= 0}
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3" viewBox="0 0 20 20" fill="currentColor">
+            <path
+              fillRule="evenodd"
+              d="M14.707 12.707a1 1 0 01-1.414 0L10 9.414l-3.293 3.293a1 1 0 01-1.414-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 010 1.414z"
+              clipRule="evenodd"
+            />
+          </svg>
+        </button>
+        <button
+          title="Move down"
+          type="button"
+          onClick={() => changeOrder(item, index, "down")}
+          className={clsx(
+            isLastItem(index) ? " bg-secondary/90 cursor-not-allowed text-gray-300" : "hover:text-foreground hover:bg-secondary/90",
+            "text-muted-foreground bg-secondary h-4 w-4 px-0.5 py-0.5 focus:outline-hidden"
+          )}
+          disabled={isLastItem(index)}
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3" viewBox="0 0 20 20" fill="currentColor">
+            <path
+              fillRule="evenodd"
+              d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+              clipRule="evenodd"
+            />
+          </svg>
+        </button>
+      </div>
+    </div>
+  );
+}
+
 export default function PricingFeaturesTable({ plans, items, setItems }: Props) {
   const { t } = useTranslation();
   function onAddFeature() {
@@ -59,48 +110,7 @@ export default function PricingFeaturesTable({ plans, items, setItems }: Props) 
               title: "",
               name: "feature-order",
               className: "w-10",
-              value: (item, index) => (
-                <div className="w-10">
-                  <div className="flex items-center space-x-1 truncate">
-                    <button
-                      title="Move up"
-                      type="button"
-                      onClick={() => changeOrder(item, index, "up")}
-                      className={clsx(
-                        index <= 0 ? " bg-secondary/90 cursor-not-allowed text-gray-300" : "hover:text-foreground hover:bg-secondary/90",
-                        "text-muted-foreground bg-secondary h-4 w-4 px-0.5 py-0.5 focus:outline-hidden"
-                      )}
-                      disabled={index <= 0}
-                    >
-                      <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3" viewBox="0 0 20 20" fill="currentColor">
-                        <path
-                          fillRule="evenodd"
-                          d="M14.707 12.707a1 1 0 01-1.414 0L10 9.414l-3.293 3.293a1 1 0 01-1.414-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 010 1.414z"
-                          clipRule="evenodd"
-                        />
-                      </svg>
-                    </button>
-                    <button
-                      title="Move down"
-                      type="button"
-                      onClick={() => changeOrder(item, index, "down")}
-                      className={clsx(
-                        isLastItem(index) ? " bg-secondary/90 cursor-not-allowed text-gray-300" : "hover:text-foreground hover:bg-secondary/90",
-                        "text-muted-foreground bg-secondary h-4 w-4 px-0.5 py-0.5 focus:outline-hidden"
-                      )}
-                      disabled={isLastItem(index)}
-                    >
-                      <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3" viewBox="0 0 20 20" fill="currentColor">
-                        <path
-                          fillRule="evenodd"
-                          d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
-                          clipRule="evenodd"
-                        />
-                      </svg>
-                    </button>
-                  </div>
-                </div>
-              ),
+              value: (item, index) => renderOrderButtons(item, index, changeOrder, isLastItem),
             },
             {
               title: t("shared.title"),

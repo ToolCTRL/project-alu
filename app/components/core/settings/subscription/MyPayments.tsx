@@ -11,6 +11,35 @@ interface Props {
   items: Stripe.PaymentIntent[];
 }
 
+const PaymentPaidAtCell = ({ created }: { created: number }) => (
+  <div>
+    <div className="flex flex-col">
+      <div>{DateUtils.dateYMD(new Date(created * 1000))}</div>
+      <div className="text-xs">{DateUtils.dateAgo(new Date(created * 1000))}</div>
+    </div>
+  </div>
+);
+
+const PaymentAmountCell = ({ amount, currency }: { amount: number; currency: string }) => (
+  <div className="flex flex-col">
+    <div>${NumberUtils.decimalFormat(amount / 100)}</div>
+    <div className="text-muted-foreground text-xs uppercase">{currency}</div>
+  </div>
+);
+
+const PaymentStatusCell = ({ status, t }: { status: string; t: any }) => (
+  <div>
+    <SimpleBadge title={t("app.subscription.payments.status." + status)} color={status === "succeeded" ? Colors.GREEN : Colors.GRAY} />
+  </div>
+);
+
+const PaymentCreatedAtCell = ({ created }: { created: number }) => (
+  <div className="flex flex-col">
+    <div>{DateUtils.dateYMD(new Date(created * 1000))}</div>
+    <div className="text-xs">{DateUtils.dateAgo(new Date(created * 1000))}</div>
+  </div>
+);
+
 export default function MyPayments({ items }: Props) {
   const { t } = useTranslation();
   return (
@@ -25,62 +54,27 @@ export default function MyPayments({ items }: Props) {
             {
               name: "paidAt",
               title: t("app.subscription.invoices.paidAt"),
-              value: (i) => (
-                <div>
-                  <div className="flex flex-col">
-                    <div>{DateUtils.dateYMD(new Date(i.created * 1000))}</div>
-                    <div className="text-xs">{DateUtils.dateAgo(new Date(i.created * 1000))}</div>
-                  </div>
-                </div>
-              ),
+              value: (i) => <PaymentPaidAtCell created={i.created} />,
             },
             {
               name: "amount",
               title: t("app.subscription.invoices.amount"),
-              value: (i) => (
-                <div className="flex flex-col">
-                  <div>${NumberUtils.decimalFormat(i.amount / 100)}</div>
-                  <div className="text-muted-foreground text-xs uppercase">{i.currency}</div>
-                </div>
-              ),
+              value: (i) => <PaymentAmountCell amount={i.amount} currency={i.currency} />,
             },
             {
               name: "status",
               title: t("shared.status"),
-              value: (i) => (
-                <div>
-                  <SimpleBadge title={t("app.subscription.payments.status." + i.status)} color={i.status === "succeeded" ? Colors.GREEN : Colors.GRAY} />
-                </div>
-              ),
+              value: (i) => <PaymentStatusCell status={i.status} t={t} />,
             },
             {
               className: "w-full",
               name: "date",
               title: t("shared.createdAt"),
               value: (i) => DateUtils.dateYMD(new Date(i.created * 1000)),
-              formattedValue: (item) => (
-                <div className="flex flex-col">
-                  <div>{DateUtils.dateYMD(new Date(item.created * 1000))}</div>
-                  <div className="text-xs">{DateUtils.dateAgo(new Date(item.created * 1000))}</div>
-                </div>
-              ),
+              formattedValue: (item) => <PaymentCreatedAtCell created={item.created} />,
             },
           ]}
-          actions={
-            [
-              // {
-              //   title: (
-              //     <div className="flex justify-center">
-              //       <DownloadIcon className="h-4 w-4" />
-              //     </div>
-              //   ),
-              //   onClickRoute: (_, item) => item.charges?.data.find((f) => f.receipt_url)?.receipt_url ?? "",
-              //   disabled: (item) => !item.charges?.data.find((f) => f.receipt_url)?.receipt_url,
-              //   onClickRouteTarget: "_blank",
-              //   firstColumn: true,
-              // },
-            ]
-          }
+          actions={[]}
         />
       )}
     </div>

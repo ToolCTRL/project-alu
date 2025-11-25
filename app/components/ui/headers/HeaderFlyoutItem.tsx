@@ -11,6 +11,37 @@ interface Props {
   items?: NavbarItemDto[];
   className?: string;
 }
+
+function FlyoutPanel({ items, onClose, t }: { items?: NavbarItemDto[]; onClose: () => void; t: (key: string) => string }) {
+  return (
+    <div className="border-border bg-background overflow-hidden rounded-lg border shadow-lg ring-opacity-5">
+      <div className="relative grid gap-6 px-5 py-6 sm:gap-8 sm:p-8">
+        {items?.map((item) => (
+          <Fragment key={item.title}>
+            <ButtonEvent
+              event={{
+                category: "click",
+                action: "header-flyout",
+                label: item.title,
+                value: item.path ?? "",
+              }}
+              onClick={() => onClose()}
+              to={item.path ?? "#"}
+              target={item.target}
+              className="hover:bg-secondary -m-3 block rounded-md p-3 transition duration-150 ease-in-out dark:hover:bg-gray-900"
+            >
+              <p className="text-base font-medium ">
+                {t(item.title)} {item.hint && <span className="text-xs">({t(item.hint)})</span>}
+              </p>
+              {item.description && <p className="text-muted-foreground mt-1 text-sm">{t(item.description)}</p>}
+            </ButtonEvent>
+          </Fragment>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 export default function HeaderFlyoutItem({ title, items, className }: Props) {
   const { t } = useTranslation();
   return (
@@ -38,33 +69,7 @@ export default function HeaderFlyoutItem({ title, items, className }: Props) {
             leaveTo="opacity-0 translate-y-1"
           >
             <Popover.Panel className="absolute left-1/2 z-20 mt-3 w-screen max-w-xs -translate-x-1/2 transform px-2 sm:px-0">
-              {({ close }) => (
-                <div className="border-border bg-background overflow-hidden rounded-lg border shadow-lg ring-opacity-5">
-                  <div className="relative grid gap-6 px-5 py-6 sm:gap-8 sm:p-8">
-                    {items?.map((item) => (
-                      <Fragment key={item.title}>
-                        <ButtonEvent
-                          event={{
-                            category: "click",
-                            action: "header-flyout",
-                            label: item.title,
-                            value: item.path ?? "",
-                          }}
-                          onClick={() => close()}
-                          to={item.path ?? "#"}
-                          target={item.target}
-                          className="hover:bg-secondary -m-3 block rounded-md p-3 transition duration-150 ease-in-out dark:hover:bg-gray-900"
-                        >
-                          <p className="text-base font-medium ">
-                            {t(item.title)} {item.hint && <span className="text-xs">({t(item.hint)})</span>}
-                          </p>
-                          {item.description && <p className="text-muted-foreground mt-1 text-sm">{t(item.description)}</p>}
-                        </ButtonEvent>
-                      </Fragment>
-                    ))}
-                  </div>
-                </div>
-              )}
+              {({ close }) => <FlyoutPanel items={items} onClose={close} t={t} />}
             </Popover.Panel>
           </Transition>
         </>

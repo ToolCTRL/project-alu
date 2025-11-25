@@ -176,6 +176,51 @@ export default function () {
     setItems(getInitialItems(selectedPlans));
   }, [selectedPlans]);
 
+  // Helper functions extracted to reduce nesting depth
+  const createHandleTitleChange = (setItems: (items: SubscriptionFeatureInPlansDto[]) => void, items: SubscriptionFeatureInPlansDto[]) => {
+    return (existing: any, e: string | number | undefined) => {
+      existing.title = e?.toString() ?? "";
+      setItems([...items]);
+    };
+  };
+
+  const createHandleTypeChange = (setItems: (items: SubscriptionFeatureInPlansDto[]) => void, items: SubscriptionFeatureInPlansDto[]) => {
+    return (existing: any, item: any, planId: string, e: string | number | undefined) => {
+      const type = Number(e) as SubscriptionFeatureLimitType;
+      if (existing) {
+        existing.type = type;
+        if (![SubscriptionFeatureLimitType.MAX, SubscriptionFeatureLimitType.MONTHLY].includes(type)) {
+          existing.value = 0;
+        }
+      } else {
+        item.plans.push({
+          id: planId,
+          title: "?",
+          type,
+          value: 0,
+        });
+      }
+      setItems([...items]);
+    };
+  };
+
+  const createHandleValueChange = (setItems: (items: SubscriptionFeatureInPlansDto[]) => void, items: SubscriptionFeatureInPlansDto[]) => {
+    return (existing: any, item: any, planId: string, e: string | number | undefined) => {
+      const value = e as number;
+      if (existing) {
+        existing.value = value;
+      } else {
+        item.plans.push({
+          id: planId,
+          title: "?",
+          type: SubscriptionFeatureLimitType.MAX,
+          value,
+        });
+      }
+      setItems([...items]);
+    };
+  };
+
   useEffect(() => {
     const headers: RowHeaderDisplayDto<SubscriptionFeatureInPlansDto>[] = [
       // {
@@ -288,6 +333,11 @@ export default function () {
       // },
     ];
 
+    // Create handlers outside forEach to reduce nesting
+    const handleTitleChange = createHandleTitleChange(setItems, items);
+    const handleTypeChange = createHandleTypeChange(setItems, items);
+    const handleValueChange = createHandleValueChange(setItems, items);
+
     selectedPlans.forEach((plan) => {
       /*
       {
@@ -344,44 +394,6 @@ export default function () {
               inputBorderless: false,
             },
       */
-
-      const handleTitleChange = (existing: any, e: string | number | undefined) => {
-        existing.title = e?.toString() ?? "";
-        setItems([...items]);
-      };
-
-      const handleTypeChange = (existing: any, item: any, planId: string, e: string | number | undefined) => {
-        const type = Number(e) as SubscriptionFeatureLimitType;
-        if (existing) {
-          existing.type = type;
-          if (![SubscriptionFeatureLimitType.MAX, SubscriptionFeatureLimitType.MONTHLY].includes(type)) {
-            existing.value = 0;
-          }
-        } else {
-          item.plans.push({
-            id: planId,
-            title: "?",
-            type,
-            value: 0,
-          });
-        }
-        setItems([...items]);
-      };
-
-      const handleValueChange = (existing: any, item: any, planId: string, e: string | number | undefined) => {
-        const value = e as number;
-        if (existing) {
-          existing.value = value;
-        } else {
-          item.plans.push({
-            id: planId,
-            title: "?",
-            type: SubscriptionFeatureLimitType.MAX,
-            value,
-          });
-        }
-        setItems([...items]);
-      };
 
       headers.push({
         title: t(plan.title),

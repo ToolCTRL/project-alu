@@ -5,7 +5,7 @@ import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { getTranslations } from "~/locale/i18next.server";
 
-export let action = async ({ request }: ActionFunctionArgs) => {
+export const action = async ({ request }: ActionFunctionArgs) => {
   const { t } = await getTranslations(request);
   try {
     let body: any = {};

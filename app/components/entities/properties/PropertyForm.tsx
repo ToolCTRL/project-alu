@@ -27,6 +27,23 @@ interface Props {
   formulas: FormulaDto[];
 }
 
+function updateNameFromTitle(title: string) {
+  if (title.includes(".")) {
+    const keys = title.split(".");
+    return StringUtils.toCamelCase(keys[keys.length - 1].toLowerCase());
+  }
+  return StringUtils.toCamelCase(title.toLowerCase());
+}
+
+function getDefaultSubtype(type: PropertyType): string {
+  const defaults: Record<number, string> = {
+    [PropertyType.TEXT]: "singleLine",
+    [PropertyType.SELECT]: "dropdown",
+    [PropertyType.MULTI_SELECT]: "combobox",
+  };
+  return defaults[type] || "";
+}
+
 export default function PropertyForm({ item, properties, entities, formulas }: Props) {
   const { t } = useTranslation();
 
@@ -64,23 +81,6 @@ export default function PropertyForm({ item, properties, entities, formulas }: P
   // const [formula, setFormula] = useState<string>();
 
   const [titleEnabled, setTitleEnabled] = useState(false);
-
-  function updateNameFromTitle(title: string) {
-    if (title.includes(".")) {
-      const keys = title.split(".");
-      return StringUtils.toCamelCase(keys[keys.length - 1].toLowerCase());
-    }
-    return StringUtils.toCamelCase(title.toLowerCase());
-  }
-
-  function getDefaultSubtype(type: PropertyType): string {
-    const defaults: Record<number, string> = {
-      [PropertyType.TEXT]: "singleLine",
-      [PropertyType.SELECT]: "dropdown",
-      [PropertyType.MULTI_SELECT]: "combobox",
-    };
-    return defaults[type] || "";
-  }
 
   function getValidSubtypes(type: PropertyType): string[] {
     const validSubtypes: Record<number, string[]> = {

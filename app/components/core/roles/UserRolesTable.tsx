@@ -101,10 +101,10 @@ export default function UserRolesTable({ items, roles, className, onChange, tena
                                 </div>
                               </th>
 
-                              {roles.map((role, idx) => {
+                              {roles.map((role) => {
                                 return (
                                   <th
-                                    key={idx}
+                                    key={role.id}
                                     scope="col"
                                     className="text-muted-foreground select-none truncate px-1 py-1 text-center text-xs font-medium tracking-wider"
                                   >
@@ -121,9 +121,9 @@ export default function UserRolesTable({ items, roles, className, onChange, tena
                             </tr>
                           </thead>
                           <tbody className="divide-border bg-background divide-y">
-                            {items.map((item, idx) => {
+                            {items.map((item) => {
                               return (
-                                <tr key={idx}>
+                                <tr key={item.id}>
                                   <td className="text-muted-foreground whitespace-nowrap px-1 py-1 pl-4 text-sm">
                                     <UserBadge
                                       item={item}
@@ -134,13 +134,6 @@ export default function UserRolesTable({ items, roles, className, onChange, tena
                                     />
                                   </td>
                                   {roles.map((role) => renderRoleCell(item, role, tenantId, disabled, onChange))}
-                                  {/* {onEditRoute && (
-                                    <td className="whitespace-nowrap px-1 py-1 text-center text-sm text-muted-foreground">
-                                      <Link to={onEditRoute(item)} className="hover:underline">
-                                        {t("shared.edit")}
-                                      </Link>
-                                    </td>
-                                  )} */}
                                   {actions && (
                                     <td className="text-muted-foreground whitespace-nowrap px-1 py-1 text-center text-sm">
                                       <div className="flex items-center space-x-2">

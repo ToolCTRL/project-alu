@@ -42,7 +42,7 @@ type ActionData = {
   success?: string;
   error?: string;
 };
-export let action = async ({ request, params }: ActionFunctionArgs) => {
+export const action = async ({ request, params }: ActionFunctionArgs) => {
   await requireAuth({ request, params });
   const tenantId = await getTenantIdOrNull({ request, params });
   const userInfo = await getUserInfo(request);

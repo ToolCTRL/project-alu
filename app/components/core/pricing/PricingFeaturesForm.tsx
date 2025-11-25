@@ -70,8 +70,6 @@ export default function PricingFeaturesForm({ items, setItems, entities }: Props
                           )}
                         </div>
 
-                        {/* {item.type === SubscriptionFeatureLimitType.INCLUDED && <span>Included</span>}
-                        {item.type === SubscriptionFeatureLimitType.NOT_INCLUDED && <span>Included</span>} */}
                         {item.type === SubscriptionFeatureLimitType.MONTHLY && <span>Monthly</span>}
                         {item.type === SubscriptionFeatureLimitType.MAX && <span>Max</span>}
                         {item.type === SubscriptionFeatureLimitType.UNLIMITED && <span>Unlimited</span>}

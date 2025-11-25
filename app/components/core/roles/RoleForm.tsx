@@ -119,7 +119,7 @@ export default function RoleForm({ item, permissions, onCancel, canUpdate = true
           {rolePermissions.map((permission) => {
             return <input key={permission} type="hidden" name="permissions[]" value={permission} />;
           })}
-          {filteredItems().map((permission, idx) => {
+          {filteredItems().map((permission) => {
             return (
               <InputCheckboxWithDescription
                 disabled={!canUpdate}
@@ -128,7 +128,7 @@ export default function RoleForm({ item, permissions, onCancel, canUpdate = true
                 description={permission.name}
                 value={hasPermission(permission)}
                 setValue={(e) => setPermission(permission, e)}
-                key={idx}
+                key={permission.id}
               />
             );
           })}

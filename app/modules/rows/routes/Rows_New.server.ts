@@ -52,57 +52,85 @@ export namespace Rows_New {
     newRow?: RowWithDetails;
     error?: string;
   };
+
+  function handleOnCreatedRedirect(
+    onCreatedRedirect: string,
+    entity: EntityWithDetails,
+    newRow: RowWithDetails,
+    request: Request,
+    params: any,
+    headers: HeadersInit
+  ) {
+    if (onCreatedRedirect === "addAnother") {
+      return Response.json({ saveAndAdd: true, newRow, headers });
+    }
+
+    const routes = EntityHelper.getRoutes({ routes: EntitiesApi.getNoCodeRoutes({ request, params }), entity, item: newRow });
+    if (!routes) {
+      return null;
+    }
+
+    if (!entity.onCreated || entity.onCreated === "redirectToOverview") {
+      return redirect(routes.overview ?? "", { headers });
+    }
+    if (entity.onCreated === "redirectToEdit") {
+      return redirect(routes.edit ?? "", { headers });
+    }
+    if (entity.onCreated === "redirectToList") {
+      return redirect(routes.list ?? "", { headers });
+    }
+    if (entity.onCreated === "redirectToNew") {
+      return Response.json({ newRow, replace: true }, { headers });
+    }
+    if (params.group && entity.onCreated === "redirectToGroup") {
+      return redirect(routes.group ?? "", { headers });
+    }
+
+    return null;
+  }
+
   export const action: ActionFunction = async ({ request, params }) => {
     const { time, getServerTimingHeader } = await createMetrics({ request, params }, `[Rows_New] ${params.entity}`);
     const { t, userId, tenantId, entity, form } = await RowsRequestUtils.getAction({ request, params });
     const action = form.get("action");
-    if (action === "create") {
-      try {
-        await time(verifyUserHasPermission(request, getEntityPermission(entity, "create"), tenantId), "verifyUserHasPermission");
-        const rowValues = RowHelper.getRowPropertiesFromForm({ t: t, entity, form });
-        const newRow = await time(
-          RowsApi.create({
-            entity,
-            tenantId,
-            userId: (await getUserInfo(request)).userId,
-            rowValues,
-          }),
-          "RowsApi.create"
-        );
-        await time(
-          FormulaService.trigger({ trigger: "AFTER_CREATED", rows: [newRow], entity: entity, session: { tenantId, userId }, t }),
-          "FormulaService.trigger.AFTER_CREATED"
-        );
-        const onCreatedRedirect = form.get("onCreatedRedirect");
-        if (onCreatedRedirect) {
-          if (onCreatedRedirect === "addAnother") {
-            return Response.json({ saveAndAdd: true, newRow, headers: getServerTimingHeader() });
-          }
-          const routes = EntityHelper.getRoutes({ routes: EntitiesApi.getNoCodeRoutes({ request, params }), entity, item: newRow });
-          if (routes) {
-            if (!entity.onCreated || entity.onCreated === "redirectToOverview") {
-              return redirect(routes?.overview ?? "", { headers: getServerTimingHeader() });
-            } else if (entity.onCreated === "redirectToEdit") {
-              return redirect(routes?.edit ?? "", { headers: getServerTimingHeader() });
-            } else if (entity.onCreated === "redirectToList") {
-              return redirect(routes?.list ?? "", { headers: getServerTimingHeader() });
-            } else if (entity.onCreated === "redirectToNew") {
-              return Response.json({ newRow, replace: true }, { headers: getServerTimingHeader() });
-            } else if (params.group && entity.onCreated === "redirectToGroup") {
-              return redirect(routes?.group ?? "", { headers: getServerTimingHeader() });
-            }
-          }
-        }
-        const redirectTo = form.get("redirect")?.toString() || new URL(request.url).searchParams.get("redirect")?.toString();
-        if (redirectTo) {
-          return redirect(redirectTo, { headers: getServerTimingHeader() });
-        }
-        return Response.json({ newRow, headers: getServerTimingHeader() });
-      } catch (error: any) {
-        return Response.json({ error: error.message }, { status: 400, headers: getServerTimingHeader() });
-      }
-    } else {
+
+    if (action !== "create") {
       return Response.json({ error: t("shared.invalidForm") }, { status: 400, headers: getServerTimingHeader() });
+    }
+
+    try {
+      await time(verifyUserHasPermission(request, getEntityPermission(entity, "create"), tenantId), "verifyUserHasPermission");
+      const rowValues = RowHelper.getRowPropertiesFromForm({ t: t, entity, form });
+      const newRow = await time(
+        RowsApi.create({
+          entity,
+          tenantId,
+          userId: (await getUserInfo(request)).userId,
+          rowValues,
+        }),
+        "RowsApi.create"
+      );
+      await time(
+        FormulaService.trigger({ trigger: "AFTER_CREATED", rows: [newRow], entity: entity, session: { tenantId, userId }, t }),
+        "FormulaService.trigger.AFTER_CREATED"
+      );
+
+      const onCreatedRedirect = form.get("onCreatedRedirect");
+      if (onCreatedRedirect) {
+        const response = handleOnCreatedRedirect(onCreatedRedirect.toString(), entity, newRow, request, params, getServerTimingHeader());
+        if (response) {
+          return response;
+        }
+      }
+
+      const redirectTo = form.get("redirect")?.toString() || new URL(request.url).searchParams.get("redirect")?.toString();
+      if (redirectTo) {
+        return redirect(redirectTo, { headers: getServerTimingHeader() });
+      }
+
+      return Response.json({ newRow, headers: getServerTimingHeader() });
+    } catch (error: any) {
+      return Response.json({ error: error.message }, { status: 400, headers: getServerTimingHeader() });
     }
   };
 }

@@ -31,7 +31,7 @@ import { TrashIcon } from "lucide-react";
 
 interface Props {
   plans?: SubscriptionProductDto[];
-  item?: SubscriptionProductDto | undefined;
+  item?: SubscriptionProductDto;
   canUpdate?: boolean;
   canDelete?: boolean;
   isPortalPlan?: boolean;
@@ -101,40 +101,26 @@ export default function PricingPlanForm({ plans, item, canUpdate = true, canDele
 
     if (item) {
       setFeatures(item.features);
-    } else {
-      if (!isPortalPlan) {
-        const features: SubscriptionFeatureDto[] = [
-          {
-            order: 1,
-            title: "1 user",
-            name: DefaultFeatures.Users,
-            type: SubscriptionFeatureLimitType.MAX,
-            value: 1,
-            accumulate: false,
-          },
-        ];
-        // appOrAdminData.entities
-        //   .filter((f) => f.active && (f.type === DefaultEntityTypes.AppOnly || f.type === DefaultEntityTypes.All))
-        //   .forEach((entity) => {
-        //     features.push({
-        //       order: features.length + 1,
-        //       title: "100 " + t(entity.titlePlural).toLowerCase() + "/month",
-        //       name: entity.name,
-        //       type: SubscriptionFeatureLimitType.MONTHLY,
-        //       value: 100,
-        //       accumulate: false,
-        //     });
-        //   });
-        features.push({
-          order: features.length + 1,
-          title: "Priority support",
-          name: DefaultFeatures.PrioritySupport,
-          type: SubscriptionFeatureLimitType.NOT_INCLUDED,
-          value: 0,
+    } else if (!isPortalPlan) {
+      const features: SubscriptionFeatureDto[] = [
+        {
+          order: 1,
+          title: "1 user",
+          name: DefaultFeatures.Users,
+          type: SubscriptionFeatureLimitType.MAX,
+          value: 1,
           accumulate: false,
-        });
-        setFeatures(features);
-      }
+        },
+      ];
+      features.push({
+        order: features.length + 1,
+        title: "Priority support",
+        name: DefaultFeatures.PrioritySupport,
+        type: SubscriptionFeatureLimitType.NOT_INCLUDED,
+        value: 0,
+        accumulate: false,
+      });
+      setFeatures(features);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -271,9 +257,6 @@ export default function PricingPlanForm({ plans, item, canUpdate = true, canDele
                     withTranslation={true}
                   />
                 </div>
-                {/* <div className="sm:col-span-9">
-                  <InputText name="model-description" title={"Model description"} value={getModelDescription()} disabled={true} />
-                </div> */}
                 {!isPortalPlan && (
                   <Fragment>
                     <div className="sm:col-span-4">

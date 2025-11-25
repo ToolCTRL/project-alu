@@ -95,7 +95,7 @@ function getGroupByValues(searchParams: URLSearchParams) {
   const groupByValues = searchParams
     .getAll("groupBy")
     .filter((x) => x)
-    .sort();
+    .sort((a, b) => a.localeCompare(b));
   const groupBy: Prisma.MetricLogScalarFieldEnum[] = [];
   for (const param of groupByValues) {
     if (Object.keys(Prisma.MetricLogScalarFieldEnum).includes(param)) {
@@ -113,7 +113,7 @@ export default function () {
   const [headers, setHeaders] = useState<RowHeaderDisplayDto<ItemDto>[]>([]);
 
   useEffect(() => {
-    if (getGroupByValues(searchParams).sort().join(",") !== groupBy.sort().join(",")) {
+    if (getGroupByValues(searchParams).sort((a, b) => a.localeCompare(b)).join(",") !== groupBy.sort((a, b) => a.localeCompare(b)).join(",")) {
       searchParams.delete("groupBy");
       groupBy.forEach((by) => {
         searchParams.append("groupBy", by);

@@ -87,7 +87,7 @@ export default function GroupForm({ item, allUsers, canUpdate = true, canDelete 
         />
 
         <div className="col-span-12 mt-2">
-          <label className="text-muted-foreground flex justify-between space-x-2 truncate text-xs font-medium">
+          <label htmlFor="group-users" className="text-muted-foreground flex justify-between space-x-2 truncate text-xs font-medium">
             <div className=" flex items-center justify-between space-x-1">
               <div className="text-foreground text-sm font-bold">{t("models.user.plural")}</div>
             </div>
@@ -96,7 +96,7 @@ export default function GroupForm({ item, allUsers, canUpdate = true, canDelete 
             {users.map((user) => {
               return <input key={user} type="hidden" name="users[]" value={user} />;
             })}
-            {allUsers.map((user, idx) => {
+            {allUsers.map((user) => {
               return (
                 <InputCheckboxWithDescription
                   disabled={!canUpdate}
@@ -105,7 +105,7 @@ export default function GroupForm({ item, allUsers, canUpdate = true, canDelete 
                   description={""}
                   value={users.includes(user.userId)}
                   setValue={(e) => setUser(user, e)}
-                  key={idx}
+                  key={user.userId}
                 />
               );
             })}

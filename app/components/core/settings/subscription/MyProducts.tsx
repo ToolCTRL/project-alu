@@ -26,16 +26,10 @@ export default function MyProducts({ currentTenant, items, onCancel }: Props) {
       ) : (
         <>
           <div className="grid gap-2">
-            {items.map((item, idx) => {
-              return <TenantProduct key={idx} item={item} onCancel={onCancel} />;
+            {items.map((item) => {
+              return <TenantProduct key={item.id} item={item} onCancel={onCancel} />;
             })}
           </div>
-
-          {/* <div className="flex justify-end mt-2 text-sm">
-            <Link to={`/subscribe/${appData.currentTenant.slug}`} className="underline">
-              {t("settings.subscription.viewAllProducts")}
-            </Link>
-          </div> */}
         </>
       )}
     </div>

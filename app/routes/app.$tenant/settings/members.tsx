@@ -97,16 +97,17 @@ async function handleDeleteInvitation(form: FormData) {
   return Response.json({ success: "Invitation deleted" });
 }
 
-async function addRole(
-  userId: string,
-  roleId: string,
-  tenantId: string,
-  request: Request,
-  fromUser: User,
-  user: User | null,
-  role: Role | null,
-  tenant: { name: string } | null
-) {
+async function addRole(params: {
+  userId: string;
+  roleId: string;
+  tenantId: string;
+  request: Request;
+  fromUser: User;
+  user: User | null;
+  role: Role | null;
+  tenant: { name: string } | null;
+}) {
+  const { userId, roleId, tenantId, request, fromUser, user, role, tenant } = params;
   await createUserRole(userId, roleId, tenantId);
   if (fromUser && user && role) {
     await EventsService.create({
@@ -146,7 +147,7 @@ async function handleEditRole(form: FormData, request: Request, tenantId: string
   }
 
   if (add) {
-    await addRole(userId, roleId, tenantId, request, fromUser, user, role, tenant);
+    await addRole({ userId, roleId, tenantId, request, fromUser, user, role, tenant });
   } else {
     await removeRole(userId, roleId, tenantId, request, user, role, tenant);
   }

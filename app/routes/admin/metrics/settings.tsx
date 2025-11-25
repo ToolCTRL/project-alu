@@ -53,7 +53,7 @@ export const action: ActionFunction = async ({ request }) => {
       metricsIgnoreUrls: ignoreUrls
         .filter((f) => !!f.value)
         .map((i) => i.value)
-        .sort()
+        .sort((a, b) => a.localeCompare(b))
         .join(","),
     });
 
@@ -80,13 +80,13 @@ export default function () {
   const [enabled, setEnabled] = useState<boolean>(data.appConfiguration.metrics.enabled);
   const [logToConsole, setLogToConsole] = useState<boolean>(data.appConfiguration.metrics.logToConsole);
   const [saveToDatabase, setSaveToDatabase] = useState<boolean>(data.appConfiguration.metrics.saveToDatabase);
-  const [ignoredUrls, setIgnoredUrls] = useState<string[]>(data.appConfiguration.metrics.ignoreUrls.sort());
+  const [ignoredUrls, setIgnoredUrls] = useState<string[]>(data.appConfiguration.metrics.ignoreUrls.sort((a, b) => a.localeCompare(b)));
 
   useEffect(() => {
     setEnabled(data.appConfiguration.metrics.enabled);
     setLogToConsole(data.appConfiguration.metrics.logToConsole);
     setSaveToDatabase(data.appConfiguration.metrics.saveToDatabase);
-    setIgnoredUrls(data.appConfiguration.metrics.ignoreUrls.sort());
+    setIgnoredUrls(data.appConfiguration.metrics.ignoreUrls.sort((a, b) => a.localeCompare(b)));
   }, [data]);
 
   function canUpdate() {

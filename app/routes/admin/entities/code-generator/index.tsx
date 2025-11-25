@@ -7,7 +7,7 @@ import { verifyUserHasPermission } from "~/utils/helpers/.server/PermissionsServ
 type LoaderData = {
   entities: EntityWithDetails[];
 };
-export let loader: LoaderFunction = async ({ request }) => {
+export const loader: LoaderFunction = async ({ request }) => {
   await verifyUserHasPermission(request, "admin.entities.view");
   const data: LoaderData = {
     entities: await getAllEntities({ tenantId: null }),

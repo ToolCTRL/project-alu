@@ -72,7 +72,7 @@ const InputEmail = (
   const [isValid, setIsValid] = useState<boolean>(false);
 
   useEffect(() => {
-    const isValid = value?.match(/^[\w.%+-]+@[\w-]+\.[\w]{2,}$/i);
+    const isValid = value?.match(/^[\w.%+-]+@[\w-]+\.\w{2,}$/i);
     setIsValid(isValid ? true : false);
   }, [value]);
 

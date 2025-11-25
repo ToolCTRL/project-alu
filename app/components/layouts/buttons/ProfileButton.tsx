@@ -16,6 +16,130 @@ interface Props {
   items?: { title: string; path: string; hidden?: boolean; onClick?: () => void }[];
 }
 
+function UserAvatar({ user }: { user: Props['user'] }) {
+  if (user?.avatar) {
+    return <img className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-slate-800" src={user.avatar} alt="Avatar" />;
+  }
+  return (
+    <span className="inline-block h-5 w-5 overflow-hidden rounded-full">
+      <svg className="h-full w-full" fill="currentColor" viewBox="0 0 24 24">
+        <path d="M24 20.993V24H0v-2.996A14.977 14.977 0 0112.004 15c4.904 0 9.26 2.354 11.996 5.993zM16.002 8.999a4 4 0 11-8 0 4 4 0 018 0z" />
+      </svg>
+    </span>
+  );
+}
+
+function AppLayoutMenu({ params, appOrAdminData, rootData, closeDropdownUser, t }: {
+  params: any;
+  appOrAdminData: any;
+  rootData: any;
+  closeDropdownUser: () => void;
+  t: (key: string) => string;
+}) {
+  return (
+    <>
+      <Link
+        className="hover:bg-secondary block px-4 py-2 text-sm transition duration-150 ease-in-out"
+        role="menuitem"
+        onClick={closeDropdownUser}
+        to={!params.tenant ? "" : UrlUtils.currentTenantUrl(params, `settings/profile`)}
+      >
+        {t("app.navbar.profile")}
+      </Link>
+
+      {getUserHasPermission(appOrAdminData, "app.settings.members.view") && (
+        <Link
+          className="hover:bg-secondary block px-4 py-2 text-sm transition duration-150 ease-in-out"
+          role="menuitem"
+          onClick={closeDropdownUser}
+          to={!params.tenant ? "" : UrlUtils.currentTenantUrl(params, "settings/members")}
+        >
+          {t("app.navbar.members")}
+        </Link>
+      )}
+
+      {getUserHasPermission(appOrAdminData, "app.settings.subscription.view") && (
+        <Link
+          className="hover:bg-secondary block px-4 py-2 text-sm transition duration-150 ease-in-out"
+          role="menuitem"
+          onClick={closeDropdownUser}
+          to={!params.tenant ? "" : UrlUtils.currentTenantUrl(params, `settings/subscription`)}
+        >
+          {t("app.navbar.subscription")}
+        </Link>
+      )}
+
+      {getUserHasPermission(appOrAdminData, "app.settings.account.view") && (
+        <Link
+          className="hover:bg-secondary block px-4 py-2 text-sm transition duration-150 ease-in-out"
+          role="menuitem"
+          onClick={closeDropdownUser}
+          to={!params.tenant ? "" : UrlUtils.currentTenantUrl(params, "settings/account")}
+        >
+          {t("app.navbar.tenant")}
+        </Link>
+      )}
+
+      {rootData.appConfiguration.app.features.tenantApiKeys && getUserHasPermission(appOrAdminData, "app.settings.apiKeys.view") && (
+        <Link
+          className="hover:bg-secondary block px-4 py-2 text-sm transition duration-150 ease-in-out"
+          role="menuitem"
+          onClick={closeDropdownUser}
+          to={!params.tenant ? "" : UrlUtils.currentTenantUrl(params, `settings/api`)}
+        >
+          {t("models.apiKey.plural")}
+        </Link>
+      )}
+
+      {getUserHasPermission(appOrAdminData, "app.settings.auditTrails.view") && (
+        <Link
+          className="hover:bg-secondary block px-4 py-2 text-sm transition duration-150 ease-in-out"
+          role="menuitem"
+          onClick={closeDropdownUser}
+          to={!params.tenant ? "" : UrlUtils.currentTenantUrl(params, "settings/logs")}
+        >
+          {t("models.log.plural")}
+        </Link>
+      )}
+
+      <div className="border-border mt-1 border-t"></div>
+    </>
+  );
+}
+
+function RootLayoutMenu({ user, closeDropdownUser, t }: { user: Props['user']; closeDropdownUser: () => void; t: (key: string) => string }) {
+  return (
+    <Fragment>
+      {user?.admin && (
+        <Link
+          className="hover:bg-secondary block px-4 py-2 text-sm transition duration-150 ease-in-out"
+          role="menuitem"
+          onClick={closeDropdownUser}
+          to="/admin"
+        >
+          Admin
+        </Link>
+      )}
+      <Link
+        className="hover:bg-secondary block px-4 py-2 text-sm transition duration-150 ease-in-out"
+        role="menuitem"
+        onClick={closeDropdownUser}
+        to={`/settings`}
+      >
+        {t("app.navbar.profile")}
+      </Link>
+      <Link
+        className="hover:bg-secondary block px-4 py-2 text-sm transition duration-150 ease-in-out"
+        role="menuitem"
+        onClick={closeDropdownUser}
+        to={`/settings/subscription`}
+      >
+        {t("app.navbar.subscription")}
+      </Link>
+    </Fragment>
+  );
+}
+
 export default function ProfileButton({ user, layout, items }: Props) {
   const params = useParams();
   const { t } = useTranslation();
@@ -27,9 +151,6 @@ export default function ProfileButton({ user, layout, items }: Props) {
   function closeDropdownUser() {
     setOpened(false);
   }
-  // function signOut() {
-  //   submit(null, { method: "post", action: "/logout" });
-  // }
 
   const clickOutside = useOuterClick(() => setOpened(false));
 
@@ -47,19 +168,7 @@ export default function ProfileButton({ user, layout, items }: Props) {
           aria-label="User menu"
           aria-haspopup="true"
         >
-          {(() => {
-            if (user?.avatar) {
-              return <img className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-slate-800" src={user.avatar} alt="Avatar" />;
-            } else {
-              return (
-                <span className="inline-block h-5 w-5 overflow-hidden rounded-full">
-                  <svg className="h-full w-full" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M24 20.993V24H0v-2.996A14.977 14.977 0 0112.004 15c4.904 0 9.26 2.354 11.996 5.993zM16.002 8.999a4 4 0 11-8 0 4 4 0 018 0z" />
-                  </svg>
-                </span>
-              );
-            }
-          })()}
+          <UserAvatar user={user} />
         </button>
       </div>
 
@@ -84,93 +193,7 @@ export default function ProfileButton({ user, layout, items }: Props) {
             <div className="border-border border-t"></div>
 
             {layout === "app" ? (
-              <>
-                <Link
-                  className="hover:bg-secondary block px-4 py-2 text-sm transition duration-150 ease-in-out"
-                  role="menuitem"
-                  onClick={closeDropdownUser}
-                  to={!params.tenant ? "" : UrlUtils.currentTenantUrl(params, `settings/profile`)}
-                >
-                  {t("app.navbar.profile")}
-                </Link>
-
-                {getUserHasPermission(appOrAdminData, "app.settings.members.view") && (
-                  <Link
-                    className="hover:bg-secondary block px-4 py-2 text-sm transition duration-150 ease-in-out"
-                    role="menuitem"
-                    onClick={closeDropdownUser}
-                    to={!params.tenant ? "" : UrlUtils.currentTenantUrl(params, "settings/members")}
-                  >
-                    {t("app.navbar.members")}
-                  </Link>
-                )}
-
-                {getUserHasPermission(appOrAdminData, "app.settings.subscription.view") && (
-                  <Link
-                    className="hover:bg-secondary block px-4 py-2 text-sm transition duration-150 ease-in-out"
-                    role="menuitem"
-                    onClick={closeDropdownUser}
-                    to={!params.tenant ? "" : UrlUtils.currentTenantUrl(params, `settings/subscription`)}
-                  >
-                    {t("app.navbar.subscription")}
-                  </Link>
-                )}
-
-                {getUserHasPermission(appOrAdminData, "app.settings.account.view") && (
-                  <Link
-                    className="hover:bg-secondary block px-4 py-2 text-sm transition duration-150 ease-in-out"
-                    role="menuitem"
-                    onClick={closeDropdownUser}
-                    to={!params.tenant ? "" : UrlUtils.currentTenantUrl(params, "settings/account")}
-                  >
-                    {t("app.navbar.tenant")}
-                  </Link>
-                )}
-
-                {/* {getUserHasPermission(appOrAdminData, "app.settings.roles.view") && (
-                  <Link
-                    className="block px-4 py-2 text-sm transition duration-150 ease-in-out hover:bg-secondary"
-                    role="menuitem"
-                    onClick={closeDropdownUser}
-                    to={!params.tenant ? "" : UrlUtils.currentTenantUrl(params, "settings/roles-and-permissions")}
-                  >
-                    {t("models.role.plural")}
-                  </Link>
-                )} */}
-
-                {/* <Link
-                  className="block px-4 py-2 text-sm transition duration-150 ease-in-out hover:bg-secondary"
-                  role="menuitem"
-                  onClick={closeDropdownUser}
-                  to={!params.tenant ? "" : UrlUtils.currentTenantUrl(params, "settings/groups")}
-                >
-                  {t("models.group.plural")}
-                </Link> */}
-
-                {rootData.appConfiguration.app.features.tenantApiKeys && getUserHasPermission(appOrAdminData, "app.settings.apiKeys.view") && (
-                  <Link
-                    className="hover:bg-secondary block px-4 py-2 text-sm transition duration-150 ease-in-out"
-                    role="menuitem"
-                    onClick={closeDropdownUser}
-                    to={!params.tenant ? "" : UrlUtils.currentTenantUrl(params, `settings/api`)}
-                  >
-                    {t("models.apiKey.plural")}
-                  </Link>
-                )}
-
-                {getUserHasPermission(appOrAdminData, "app.settings.auditTrails.view") && (
-                  <Link
-                    className="hover:bg-secondary block px-4 py-2 text-sm transition duration-150 ease-in-out"
-                    role="menuitem"
-                    onClick={closeDropdownUser}
-                    to={!params.tenant ? "" : UrlUtils.currentTenantUrl(params, "settings/logs")}
-                  >
-                    {t("models.log.plural")}
-                  </Link>
-                )}
-
-                <div className="border-border mt-1 border-t"></div>
-              </>
+              <AppLayoutMenu params={params} appOrAdminData={appOrAdminData} rootData={rootData} closeDropdownUser={closeDropdownUser} t={t} />
             ) : layout === "admin" ? (
               <Link
                 className="hover:bg-secondary block px-4 py-2 text-sm transition duration-150 ease-in-out"
@@ -181,34 +204,7 @@ export default function ProfileButton({ user, layout, items }: Props) {
                 {t("app.navbar.profile")}
               </Link>
             ) : layout === "/" ? (
-              <Fragment>
-                {user?.admin && (
-                  <Link
-                    className="hover:bg-secondary block px-4 py-2 text-sm transition duration-150 ease-in-out"
-                    role="menuitem"
-                    onClick={closeDropdownUser}
-                    to="/admin"
-                  >
-                    Admin
-                  </Link>
-                )}
-                <Link
-                  className="hover:bg-secondary block px-4 py-2 text-sm transition duration-150 ease-in-out"
-                  role="menuitem"
-                  onClick={closeDropdownUser}
-                  to={`/settings`}
-                >
-                  {t("app.navbar.profile")}
-                </Link>
-                <Link
-                  className="hover:bg-secondary block px-4 py-2 text-sm transition duration-150 ease-in-out"
-                  role="menuitem"
-                  onClick={closeDropdownUser}
-                  to={`/settings/subscription`}
-                >
-                  {t("app.navbar.subscription")}
-                </Link>
-              </Fragment>
+              <RootLayoutMenu user={user} closeDropdownUser={closeDropdownUser} t={t} />
             ) : items ? (
               items.map((item) => (
                 <Link
@@ -231,10 +227,8 @@ export default function ProfileButton({ user, layout, items }: Props) {
             {!items && (
               <Link
                 to="/logout"
-                // onClick={signOut}
                 className="hover:bg-secondary block w-full px-4 py-2 text-left text-sm transition duration-150 ease-in-out focus:outline-hidden"
                 role="menuitem"
-                // disabled={!user}
               >
                 {t("app.navbar.signOut")}
               </Link>

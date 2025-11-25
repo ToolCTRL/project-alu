@@ -2,7 +2,7 @@ import { ActionFunctionArgs } from "react-router";
 import jwt from "jsonwebtoken";
 import { getUser } from "~/utils/db/users.db.server";
 
-export let action = async ({ request }: ActionFunctionArgs) => {
+export const action = async ({ request }: ActionFunctionArgs) => {
   try {
     const token = request.headers.get("Authorization")?.split(" ")[1];
 

@@ -8,6 +8,57 @@ import WorkflowVariablesAndCredentialsService from "./WorkflowVariablesAndCreden
 import { WorkflowBlockDto } from "../dtos/WorkflowBlockDto";
 import { WorkflowStatus } from "../dtos/WorkflowStatus";
 
+async function getOrCreateExecution(
+  workflow: any,
+  session: { tenantId: string | null; userId: string | null },
+  type: "manual" | "api",
+  input: { [key: string]: any } | null,
+  execution?: { id: string } | null,
+  appliesToAllTenants?: boolean
+) {
+  if (execution) {
+    return execution;
+  }
+  return await db.workflowExecution.create({
+    data: {
+      tenantId: session.tenantId,
+      workflowId: workflow.id,
+      type,
+      input: JSON.stringify(input),
+      status: "running",
+      output: null,
+      duration: null,
+      endedAt: null,
+      error: null,
+      appliesToAllTenants,
+    },
+  });
+}
+
+function getFirstBlock(workflow: any, fromBlockId?: string | null): WorkflowBlockDto {
+  if (fromBlockId) {
+    const firstBlock = workflow.blocks.find((f: any) => f.id === fromBlockId);
+    if (!firstBlock) {
+      throw new Error("Workflow has no block with id " + fromBlockId);
+    }
+    return firstBlock;
+  }
+
+  const firstBlock = workflow.blocks.find((f: any) => f.isTrigger);
+  if (!firstBlock) {
+    throw new Error("Workflow has no trigger block");
+  }
+  return firstBlock;
+}
+
+async function getSessionData(session: { tenantId: string | null; userId: string | null }) {
+  const tenant = session.tenantId
+    ? await db.tenant.findFirstOrThrow({ where: { OR: [{ slug: session.tenantId }, { id: session.tenantId }] } }).catch(() => null)
+    : null;
+  const user = session.userId ? await db.user.findUnique({ where: { id: session.userId } }) : null;
+  return { tenant, user };
+}
+
 async function execute(
   workflowId: string,
   {
@@ -30,44 +81,18 @@ async function execute(
   if (!workflow) {
     throw new Error("Workflow not found");
   }
-  if (!execution) {
-    execution = await db.workflowExecution.create({
-      data: {
-        tenantId: session.tenantId,
-        workflowId: workflow.id,
-        type,
-        input: JSON.stringify(input),
-        status: "running",
-        output: null,
-        duration: null,
-        endedAt: null,
-        error: null,
-        appliesToAllTenants,
-      },
-    });
-  }
-  let firstBlock: WorkflowBlockDto | undefined = undefined;
-  if (fromBlockId) {
-    firstBlock = workflow.blocks.find((f) => f.id === fromBlockId);
-    if (!firstBlock) {
-      throw new Error("Workflow has no block with id " + fromBlockId);
-    }
-  } else {
-    firstBlock = workflow.blocks.find((f) => f.isTrigger);
-    if (!firstBlock) {
-      throw new Error("Workflow has no trigger block");
-    }
-  }
+
+  const executionRecord = await getOrCreateExecution(workflow, session, type, input, execution, appliesToAllTenants);
+  const firstBlock = getFirstBlock(workflow, fromBlockId);
+  const { tenant, user } = await getSessionData(session);
+
   const startTime = performance.now();
   let error: string | null = null;
   let result: {
     status: WorkflowStatus;
     workflowContext: { [key: string]: any };
   } = { status: "running", workflowContext: {} };
-  let tenant = session.tenantId
-    ? await db.tenant.findFirstOrThrow({ where: { OR: [{ slug: session.tenantId }, { id: session.tenantId }] } }).catch(() => null)
-    : null;
-  let user = session.userId ? await db.user.findUnique({ where: { id: session.userId } }) : null;
+
   try {
     result = await WorkflowBlockService.execute({
       workflowContext: {
@@ -79,7 +104,7 @@ async function execute(
         $vars: await WorkflowVariablesAndCredentialsService.getVariablesContext({ tenantId: session.tenantId }),
         $credentials: await WorkflowVariablesAndCredentialsService.getCredentialsContext({ tenantId: session.tenantId }),
       },
-      workflowExecutionId: execution.id,
+      workflowExecutionId: executionRecord.id,
       workflow,
       block: firstBlock,
       fromBlock: null,
@@ -92,11 +117,12 @@ async function execute(
       console.error(e.stack);
     }
   }
+
   const endTime = performance.now();
   const duration = endTime - startTime;
 
   delete result.workflowContext.$credentials;
-  const updatedExecution = await updateWorkflowExecution(execution.id, {
+  const updatedExecution = await updateWorkflowExecution(executionRecord.id, {
     status: error ? "error" : result.status,
     output: JSON.stringify(result.workflowContext),
     duration: Math.round(duration),
