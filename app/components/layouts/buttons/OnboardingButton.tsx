@@ -2,7 +2,7 @@ import clsx from "~/utils/shared/ClassesUtils";
 import { OnboardingSessionWithDetails } from "~/modules/onboarding/db/onboardingSessions.db.server";
 import BycicleIcon from "~/components/ui/icons/onboardings/BycicleIcon";
 
-export default function OnboardingButton({ item, onClick }: Readonly<{ item: OnboardingSessionWithDetails; onClick?: () => void }>) {
+export default function OnboardingButton({ item, onClick }: Readonly<{ readonly item: OnboardingSessionWithDetails; readonly onClick?: () => void }>) {
   return (
     <div className="inline-flex divide-x divide-theme-300 rounded-full shadow-none sm:rounded-md">
       <div className="relative z-0 inline-flex rounded-full text-xs shadow-none sm:text-sm">

@@ -9,8 +9,8 @@ import { EntitySimple } from "~/utils/db/entities/entities.db.server";
 import { useRootData } from "~/utils/data/useRootData";
 
 interface Props {
-  entities: EntitySimple[];
-  className?: string;
+  readonly entities: EntitySimple[];
+  readonly className?: string;
 }
 
 export default function QuickActionsButton({ entities, className }: Readonly<Props>) {

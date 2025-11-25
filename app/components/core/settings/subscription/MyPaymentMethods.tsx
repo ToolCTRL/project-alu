@@ -6,24 +6,24 @@ import ConfirmModal, { RefConfirmModal } from "~/components/ui/modals/ConfirmMod
 import TableSimple from "~/components/ui/tables/TableSimple";
 
 interface Props {
-  items: Stripe.PaymentMethod[];
-  onAdd: () => void;
-  onDelete: (id: string) => void;
+  readonly items: Stripe.PaymentMethod[];
+  readonly onAdd: () => void;
+  readonly onDelete: (id: string) => void;
 }
 
-const PaymentMethodBrand = ({ brand }: { brand?: string }) => <div className="flex flex-col uppercase">{brand}</div>;
+const PaymentMethodBrand = ({ brand }: Readonly<{ brand?: string }>) => <div className="flex flex-col uppercase">{brand}</div>;
 
-const PaymentMethodCountry = ({ country }: { country?: string }) => <div className="flex flex-col">{country}</div>;
+const PaymentMethodCountry = ({ country }: Readonly<{ country?: string }>) => <div className="flex flex-col">{country}</div>;
 
-const PaymentMethodExpiration = ({ expMonth, expYear }: { expMonth?: number; expYear?: number }) => (
+const PaymentMethodExpiration = ({ expMonth, expYear }: Readonly<{ expMonth?: number; expYear?: number }>) => (
   <div className="flex flex-col">
     {expMonth?.toString().padStart(2, "0")}/{expYear}
   </div>
 );
 
-const PaymentMethodLast4 = ({ last4 }: { last4?: string }) => <div className="flex flex-col">**** **** **** {last4}</div>;
+const PaymentMethodLast4 = ({ last4 }: Readonly<{ last4?: string }>) => <div className="flex flex-col">**** **** **** {last4}</div>;
 
-export default function MyPaymentMethods({ items, onAdd, onDelete }: Props) {
+export default function MyPaymentMethods({ items, onAdd, onDelete }: Readonly<Props>) {
   const { t } = useTranslation();
   const confirmModal = useRef<RefConfirmModal>(null);
   function deletePaymentMethod(id: string) {

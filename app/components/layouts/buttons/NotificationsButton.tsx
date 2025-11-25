@@ -1,7 +1,7 @@
 import clsx from "clsx";
 
 interface Props {
-  unseenCount?: number;
+  readonly unseenCount?: number;
 }
 export default function NotificationsButton({ unseenCount }: Readonly<Props>) {
   return (

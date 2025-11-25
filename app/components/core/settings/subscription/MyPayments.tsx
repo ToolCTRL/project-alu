@@ -8,10 +8,10 @@ import DateUtils from "~/utils/shared/DateUtils";
 import NumberUtils from "~/utils/shared/NumberUtils";
 
 interface Props {
-  items: Stripe.PaymentIntent[];
+  readonly items: Stripe.PaymentIntent[];
 }
 
-const PaymentPaidAtCell = ({ created }: { created: number }) => (
+const PaymentPaidAtCell = ({ created }: Readonly<{ created: number }>) => (
   <div>
     <div className="flex flex-col">
       <div>{DateUtils.dateYMD(new Date(created * 1000))}</div>
@@ -20,14 +20,14 @@ const PaymentPaidAtCell = ({ created }: { created: number }) => (
   </div>
 );
 
-const PaymentAmountCell = ({ amount, currency }: { amount: number; currency: string }) => (
+const PaymentAmountCell = ({ amount, currency }: Readonly<{ amount: number; currency: string }>) => (
   <div className="flex flex-col">
     <div>${NumberUtils.decimalFormat(amount / 100)}</div>
     <div className="text-muted-foreground text-xs uppercase">{currency}</div>
   </div>
 );
 
-const PaymentStatusCell = ({ status, t }: { status: string; t: any }) => (
+const PaymentStatusCell = ({ status, t }: Readonly<{ status: string; t: any }>) => (
   <div>
     <SimpleBadge title={t("app.subscription.payments.status." + status)} color={status === "succeeded" ? Colors.GREEN : Colors.GRAY} />
   </div>
@@ -40,7 +40,7 @@ const PaymentCreatedAtCell = ({ created }: { created: number }) => (
   </div>
 );
 
-export default function MyPayments({ items }: Props) {
+export default function MyPayments({ items }: Readonly<Props>) {
   const { t } = useTranslation();
   return (
     <div className="space-y-2">
