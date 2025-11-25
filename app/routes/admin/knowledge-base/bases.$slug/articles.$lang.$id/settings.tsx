@@ -75,16 +75,16 @@ async function calculateFeaturedOrder(item: KnowledgeBaseArticleWithDetails, isF
 }
 
 async function handleEditAction(request: Request, params: any, form: FormData, item: KnowledgeBaseArticleWithDetails) {
-  const knowledgeBaseId = form.get("knowledgeBaseId")?.toString() ?? "";
-  const categoryId = form.get("categoryId")?.toString() ?? "";
-  const sectionId = form.get("sectionId")?.toString() ?? "";
-  const language = form.get("language")?.toString() ?? "";
-  const slug = form.get("slug")?.toString() ?? "";
-  const title = form.get("title")?.toString() ?? "";
-  const description = form.get("description")?.toString() ?? "";
-  const seoImage = form.get("seoImage")?.toString() ?? "";
+  const knowledgeBaseId = String(form.get("knowledgeBaseId") ?? "");
+  const categoryId = String(form.get("categoryId") ?? "");
+  const sectionId = String(form.get("sectionId") ?? "");
+  const language = String(form.get("language") ?? "");
+  const slug = String(form.get("slug") ?? "");
+  const title = String(form.get("title") ?? "");
+  const description = String(form.get("description") ?? "");
+  const seoImage = String(form.get("seoImage") ?? "");
   const isFeatured = Boolean(form.get("isFeatured"));
-  const relatedArticles = form.getAll("relatedArticles[]").map((l) => l.toString());
+  const relatedArticles = form.getAll("relatedArticles[]").map((l) => String(l));
 
   const knowledgeBase = await KnowledgeBaseService.getById({ id: knowledgeBaseId, request });
   if (!knowledgeBase) {

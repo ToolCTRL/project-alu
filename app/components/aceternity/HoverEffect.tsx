@@ -119,16 +119,17 @@ export const HoverEffect = ({ items }: { items: FeatureDto[] }) => {
 
                 {item.img && (
                   <div className="hidden xl:block">
-                    <img
+                    <button
+                      type="button"
                       onClick={(e) => {
                         e.stopPropagation();
                         e.preventDefault();
                         setSelectedImage(item);
                         setShowImage(true);
                       }}
-                      src={item.img}
-                      alt={item.name}
                       className={clsx("mt-4 w-full rounded-lg object-cover", items.length === 1 ? "h-full" : "h-44")}
+                      style={{ backgroundImage: `url(${item.img})`, backgroundSize: "cover" }}
+                      aria-label={`View ${item.name}`}
                     />
                   </div>
                 )}

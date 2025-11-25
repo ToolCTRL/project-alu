@@ -25,20 +25,20 @@ function renderViewScope(view: EntityViewWithTenantAndUser) {
     tenantAndUser: () => (
       <div className="flex items-center space-x-1">
         <div>
-          <TenantBadge item={view.tenant!} />
+          <TenantBadge item={view.tenant} />
         </div>
         <div>&rarr;</div>
-        <UserBadge item={view.user!} />
+        <UserBadge item={view.user} />
       </div>
     ),
     tenantOnly: () => (
       <div>
-        <TenantBadge item={view.tenant!} />
+        <TenantBadge item={view.tenant} />
       </div>
     ),
     userOnly: () => (
       <div>
-        <UserBadge item={view.user!} />
+        <UserBadge item={view.user} />
       </div>
     ),
   };

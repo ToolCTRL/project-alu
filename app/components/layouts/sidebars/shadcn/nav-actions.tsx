@@ -10,7 +10,6 @@ import {
 import { Button } from "~/components/ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "~/components/ui/popover";
 import { Sidebar, SidebarContent, SidebarGroup, SidebarGroupContent, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from "~/components/ui/sidebar";
-import NavBar from "../../NavBar";
 import { getUserHasPermission } from "~/utils/helpers/PermissionsHelper";
 import { useAppOrAdminData } from "~/utils/data/useAppOrAdminData";
 import { useRootData } from "~/utils/data/useRootData";

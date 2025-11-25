@@ -159,7 +159,7 @@ async function handleSetSectionOrders(form: FormData) {
 async function handleDuplicateArticle(kb: KnowledgeBaseDto, params: any, form: FormData) {
   await verifyUserHasPermission(null as any, "admin.kb.create");
   try {
-    const id = form.get("id")?.toString() ?? "";
+    const id = String(form.get("id") ?? "");
     const item = await KnowledgeBaseService.duplicateArticle({ kb, language: params.lang!, articleId: id });
     return redirect(`/admin/knowledge-base/bases/${kb.slug}/articles/${params.lang}/${item.id}`);
   } catch (e: any) {
@@ -168,8 +168,8 @@ async function handleDuplicateArticle(kb: KnowledgeBaseDto, params: any, form: F
 }
 
 async function handleToggleFeatured(form: FormData, kb: KnowledgeBaseDto, request: Request) {
-  const id = form.get("id")?.toString() ?? "";
-  const isFeatured = form.get("isFeatured")?.toString() === "true";
+  const id = String(form.get("id") ?? "");
+  const isFeatured = String(form.get("isFeatured") ?? "") === "true";
 
   const item = await getKbArticleById(id);
   if (!item) {

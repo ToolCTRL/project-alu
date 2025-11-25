@@ -10,7 +10,7 @@ interface Props {
   onCancel?: (item: TenantSubscriptionProductWithDetails) => void;
 }
 
-export default function MyProducts({ currentTenant, items, onCancel }: Props) {
+export default function MyProducts({ currentTenant, items, onCancel }: Readonly<Props>): JSX.Element {
   const { t } = useTranslation();
 
   return (

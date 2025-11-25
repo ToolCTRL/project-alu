@@ -26,7 +26,7 @@ const decimalFormat = (value: number, decimalPlaces: number = 2): string => {
 };
 // intFormat uses same implementation as numberFormat for consistent integer formatting
 const intFormat = (value: number | string): string => {
-  return numberFormat(typeof value === 'string' ? parseFloat(value) || 0 : value);
+  return numberFormat(typeof value === 'string' ? Number.parseFloat(value) || 0 : value);
 };
 const pad = (num: number, size: number) => {
   const s = "000000000" + num;

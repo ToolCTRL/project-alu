@@ -6,12 +6,12 @@ import { CreditTypes } from "~/modules/usage/dtos/CreditType";
 import NumberUtils from "~/utils/shared/NumberUtils";
 
 interface Props {
-  feature: { name: string; title: string; type: SubscriptionFeatureLimitType; value: number; href?: string | null; badge?: string | null };
-  editing?: boolean;
-  onClickFeature?: (name: string) => void;
+  readonly feature: { name: string; title: string; type: SubscriptionFeatureLimitType; value: number; href?: string | null; badge?: string | null };
+  readonly editing?: boolean;
+  readonly onClickFeature?: (name: string) => void;
 }
 
-function FeatureLinkContent({ feature, editing, onClickFeature }: Props) {
+function FeatureLinkContent({ feature, editing, onClickFeature }: Readonly<Props>): JSX.Element {
   if (feature.href?.startsWith("http")) {
     if (editing) {
       return (

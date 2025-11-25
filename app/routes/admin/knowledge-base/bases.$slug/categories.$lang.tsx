@@ -109,7 +109,7 @@ async function handleSetArticleOrders(form: FormData) {
 
 async function handleDeleteCategory(request: Request, form: FormData) {
   await verifyUserHasPermission(request, "admin.kb.delete");
-  const id = form.get("id")?.toString() ?? "";
+  const id = String(form.get("id") ?? "");
   const existing = await getKbCategoryById(id);
   if (!existing) {
     return Response.json({ error: "Category not found" }, { status: 400 });
@@ -120,7 +120,7 @@ async function handleDeleteCategory(request: Request, form: FormData) {
 
 async function handleDeleteSection(request: Request, form: FormData) {
   await verifyUserHasPermission(request, "admin.kb.delete");
-  const id = form.get("id")?.toString() ?? "";
+  const id = String(form.get("id") ?? "");
   const existing = await getKbCategorySectionById(id);
   if (!existing) {
     return Response.json({ error: "Section not found" }, { status: 400 });
@@ -131,7 +131,7 @@ async function handleDeleteSection(request: Request, form: FormData) {
 
 async function handleDeleteArticle(request: Request, form: FormData) {
   await verifyUserHasPermission(request, "admin.kb.delete");
-  const id = form.get("id")?.toString() ?? "";
+  const id = String(form.get("id") ?? "");
   const existing = await getKbArticleById(id);
   if (!existing) {
     return Response.json({ error: "Article not found" }, { status: 400 });
@@ -143,7 +143,7 @@ async function handleDeleteArticle(request: Request, form: FormData) {
 async function handleDuplicateCategory(request: Request, kb: KnowledgeBaseDto, params: any, form: FormData) {
   await verifyUserHasPermission(request, "admin.kb.create");
   try {
-    const categoryId = form.get("id")?.toString() ?? "";
+    const categoryId = String(form.get("id") ?? "");
     await KnowledgeBaseService.duplicateCategory({ kb, language: params.lang!, categoryId });
     return Response.json({ duplicated: true });
   } catch (e: any) {
@@ -154,11 +154,11 @@ async function handleDuplicateCategory(request: Request, kb: KnowledgeBaseDto, p
 async function handleNewArticle(request: Request, kb: KnowledgeBaseDto, params: any, userInfo: any, form: FormData) {
   await verifyUserHasPermission(request, "admin.kb.create");
   try {
-    const categoryId = form.get("categoryId")?.toString() ?? "";
-    const sectionId = form.get("sectionId")?.toString() ?? "";
-    const position = form.get("position")?.toString() ?? "";
-    const title = form.get("title")?.toString() ?? "";
-    const slug = form.get("slug")?.toString() ?? "";
+    const categoryId = String(form.get("categoryId") ?? "");
+    const sectionId = String(form.get("sectionId") ?? "");
+    const position = String(form.get("position") ?? "");
+    const title = String(form.get("title") ?? "");
+    const slug = String(form.get("slug") ?? "");
     await KnowledgeBaseService.newArticle({
       kb,
       params,
@@ -177,8 +177,8 @@ async function handleNewArticle(request: Request, kb: KnowledgeBaseDto, params: 
 
 async function handleUpdateArticleTitle(kb: KnowledgeBaseDto, params: any, form: FormData) {
   try {
-    const id = form.get("id")?.toString() ?? "";
-    const title = form.get("title")?.toString() ?? "";
+    const id = String(form.get("id") ?? "");
+    const title = String(form.get("title") ?? "");
     const slug = UrlUtils.slugify(title);
     const existing = await getKbArticleBySlug({
       knowledgeBaseId: kb.id,

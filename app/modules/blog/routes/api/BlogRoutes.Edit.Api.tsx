@@ -59,8 +59,8 @@ export namespace BlogRoutesEditApi {
       return redirect(UrlUtils.getModulePath(params, "blog"));
     }
 
-    const newCategoryValue = form.get("new-category");
-    const addingCategoryName = String(newCategoryValue ?? "");
+    const newCategoryValue = String(form.get("new-category") ?? "");
+    const addingCategoryName = newCategoryValue;
     let category: BlogCategory | null = null;
     if (addingCategoryName) {
       category = await BlogApi.getCategory({ tenantId, idOrName: { name: addingCategoryName } });
@@ -70,33 +70,33 @@ export namespace BlogRoutesEditApi {
     }
 
     const authorId = blogPost.authorId ?? userInfo.userId;
-    const categoryValue = form.get("category");
-    const categoryId = String(categoryValue ?? "");
-    const slugValue = form.get("slug");
-    const slug = String(slugValue ?? "");
-    const tagsValue = form.get("tags");
-    const tags = String(tagsValue ?? "");
+    const categoryValue = String(form.get("category") ?? "");
+    const categoryId = categoryValue;
+    const slugValue = String(form.get("slug") ?? "");
+    const slug = slugValue;
+    const tagsValue = String(form.get("tags") ?? "");
+    const tags = tagsValue;
 
-    const titleValue = form.get("title");
-    const descriptionValue = form.get("description");
-    const dateValue = form.get("date");
-    const imageValue = form.get("image");
-    const contentValue = form.get("content");
-    const readingTimeValue = form.get("reading-time");
-    const contentTypeValue = form.get("contentType");
+    const titleValue = String(form.get("title") ?? "");
+    const descriptionValue = String(form.get("description") ?? "");
+    const dateValue = String(form.get("date") ?? "");
+    const imageValue = String(form.get("image") ?? "");
+    const contentValue = String(form.get("content") ?? "");
+    const readingTimeValue = String(form.get("reading-time") ?? "");
+    const contentTypeValue = String(form.get("contentType") ?? "");
 
     const updated = await updateBlogPost(blogPost.id, {
       slug,
-      title: String(titleValue ?? ""),
-      description: String(descriptionValue ?? ""),
-      date: new Date(String(dateValue ?? "")),
-      image: await storeSupabaseFile({ bucket: "blog", content: String(imageValue ?? ""), id: slug }),
-      content: String(contentValue ?? ""),
-      readingTime: String(readingTimeValue ?? ""),
+      title: titleValue,
+      description: descriptionValue,
+      date: new Date(dateValue),
+      image: await storeSupabaseFile({ bucket: "blog", content: imageValue, id: slug }),
+      content: contentValue,
+      readingTime: readingTimeValue,
       published: FormHelper.getBoolean(form, "published"),
       categoryId: categoryId.length ? categoryId : category?.id ?? null,
       tagNames: tags.split(",").filter((f) => f.trim() != ""),
-      contentType: String(contentTypeValue ?? ""),
+      contentType: contentTypeValue,
       authorId,
     });
 

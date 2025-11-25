@@ -17,8 +17,8 @@ export default async function emailTemplates(): Promise<EmailTemplate[]> {
     if (path.parse(file).ext === ".md") {
       const fileName = path.parse(file).name;
       const content = fs.readFileSync(path.join(dir, file), "utf8").split("`");
-      const alias = content[1].replace(/(\r\n|\n|\r)/gm, "");
-      const subject = content[3].replace(/(\r\n|\n|\r)/gm, "");
+      const alias = content[1].replaceAll(/(\r\n|\n|\r)/gm, "");
+      const subject = content[3].replaceAll(/(\r\n|\n|\r)/gm, "");
       const body = content[5];
       items.push({
         type: alias.startsWith("layout-") ? "layout" : "standard",

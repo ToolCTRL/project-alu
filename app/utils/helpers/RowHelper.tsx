@@ -541,7 +541,7 @@ function parseSimpleFormValue(
   if (!skipValidation) {
     if (property.isRequired && !property.isReadOnly && (formValue === null || formValue === undefined || !formValue)) {
       const errorMessage = t ? `${t(property.title)}: required` : `${property.name}: required`;
-      throw Error(errorMessage);
+      throw new Error(errorMessage);
     }
     validatePropertyValue({ t, property, value: formValue });
   }

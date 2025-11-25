@@ -41,7 +41,7 @@ function PermissionOrderCell({ item, idx, items }: { readonly item: PermissionWi
   );
 }
 
-export default function PermissionsTable({ items, className, canCreate, canUpdate = true, tenantId, canReorder }: Props) {
+export default function PermissionsTable({ items, className, canCreate, canUpdate = true, tenantId, canReorder }: Readonly<Props>): JSX.Element {
   const { t } = useTranslation();
 
   const [actions, setActions] = useState<any[]>([]);

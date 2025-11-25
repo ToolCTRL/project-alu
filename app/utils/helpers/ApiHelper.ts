@@ -57,7 +57,7 @@ function parseRangeNumber(object: any, name: string, propertyName: string): RowV
       dateMax: null,
     };
   } catch (e: any) {
-    throw Error(`Invalid number range (${propertyName}): ${e.message}`);
+    throw new Error(`Invalid number range (${propertyName}): ${e.message}`);
   }
 }
 
@@ -72,7 +72,7 @@ function parseRangeDate(object: any, name: string, propertyName: string): RowVal
       dateMax: max ? new Date(max?.toString()) : null,
     };
   } catch (e: any) {
-    throw Error(`Invalid date range (${propertyName}): ${e.message}`);
+    throw new Error(`Invalid date range (${propertyName}): ${e.message}`);
   }
 }
 

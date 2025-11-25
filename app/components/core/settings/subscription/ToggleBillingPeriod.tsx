@@ -27,7 +27,7 @@ export default function ToggleBillingPeriod({
   darkMode,
   currency,
   products,
-}: Props) {
+}: Readonly<Props>): JSX.Element | null {
   const { t } = useTranslation();
 
   function setBillingPeriod(item: SubscriptionBillingPeriod) {

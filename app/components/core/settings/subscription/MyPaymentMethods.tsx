@@ -31,9 +31,7 @@ export default function MyPaymentMethods({ items, onAdd, onDelete }: Props) {
     confirmModal.current?.show(t("app.subscription.paymentMethods.delete"));
   }
   function confirmedCancel(id: string) {
-    if (onDelete) {
-      onDelete(id);
-    }
+    onDelete(id);
   }
   return (
     <div className="space-y-2">

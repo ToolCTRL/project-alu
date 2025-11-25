@@ -25,7 +25,7 @@ function GroupActionsCell({ item }: { readonly item: GroupWithDetails }) {
   );
 }
 
-export default function GroupsTable({ items, onNewRoute }: Readonly<Props>) {
+export default function GroupsTable({ items, onNewRoute }: Readonly<Props>): JSX.Element {
   const { t } = useTranslation();
 
   const [searchInput, setSearchInput] = useState("");

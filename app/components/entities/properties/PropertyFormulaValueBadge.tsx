@@ -37,7 +37,7 @@ export default function PropertyFormulaValueBadge({ property, value }: Readonly<
       return <RowDateCell value={value ? (value as Date) : undefined} format={getDateFormat()} />;
     }
 
-    return <div>{String(value)}</div>;
+    return <div>{String(value ?? "")}</div>;
   }
 
   return <div className="flex space-x-1">{renderFormulaValue()}</div>;
