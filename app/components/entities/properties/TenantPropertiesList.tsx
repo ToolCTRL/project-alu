@@ -19,9 +19,9 @@ import EyeLashIcon from "~/components/ui/icons/EyeLashIcon";
 import DocumentDuplicateIconFilled from "~/components/ui/icons/DocumentDuplicateIconFilled";
 
 interface Props {
-  tenantId: string | null;
-  items: PropertyWithDetails[];
-  className?: string;
+  readonly tenantId: string | null;
+  readonly items: PropertyWithDetails[];
+  readonly className?: string;
 }
 
 export default function TenantPropertiesList({ tenantId, items, className }: Props) {
@@ -79,20 +79,17 @@ export default function TenantPropertiesList({ tenantId, items, className }: Pro
             </div>
             {items
               .filter((f) => f.tenantId === null)
-              .map((item, idx) => {
+              .map((item) => {
                 return (
-                  <div key={idx} className="border-border bg-secondary/90 rounded-md border px-4 py-2 shadow-2xs">
+                  <div key={item.id} className="border-border bg-secondary/90 rounded-md border px-4 py-2 shadow-2xs">
                     <div className="flex items-center justify-between space-x-2">
                       <div className="flex items-center space-x-2">
                         <div className=" flex items-center space-x-3">
                           <div className="  flex items-center space-x-2">
                             <LockClosedIcon className="h-4 w-4 text-gray-300" />
-                            {/* <PropertyBadge className="h-4 w-4 text-muted-foreground" /> */}
-                            {/* <div className="truncate text-sm text-muted-foreground">{t("entities.fields." + PropertyType[item.type])}</div> */}
                           </div>
 
                           <div className="text-muted-foreground text-sm">
-                            {/* <PropertyTitle item={item} /> */}
                             <div className="flex flex-col">
                               <div>{t(item.title)}</div>
                               <div className="text-muted-foreground text-xs">{item.name}</div>
@@ -123,14 +120,14 @@ export default function TenantPropertiesList({ tenantId, items, className }: Pro
           {items
             .filter((f) => !f.isDefault && f.tenantId === tenantId)
             .sort((a, b) => a.order - b.order)
-            .map((item, idx) => {
+            .map((item) => {
               return (
-                <div key={idx} className="border-border bg-background rounded-md border px-4 py-1 shadow-2xs">
+                <div key={item.id} className="border-border bg-background rounded-md border px-4 py-1 shadow-2xs">
                   <div className="flex items-center justify-between space-x-2">
                     <div className="flex items-center space-x-2 truncate">
                       <div className=" flex items-center space-x-3 truncate">
                         <div className="hidden shrink-0 sm:flex">
-                          <OrderListButtons index={idx} items={items.filter((f) => !f.isDefault)} editable={true} />
+                          <OrderListButtons index={item.order} items={items.filter((f) => !f.isDefault)} editable={true} />
                         </div>
                         <div className="  flex items-center space-x-2">
                           <PropertyBadge type={item.type} className="text-muted-foreground h-4 w-4" />
@@ -192,17 +189,15 @@ export default function TenantPropertiesList({ tenantId, items, className }: Pro
           <span className="text-foreground mt-2 block text-sm font-medium">{t("models.property.actions.add")}</span>
         </Link>
       </div>
-      {/* <PropertyForm ref={propertyForm} entityId={entityId} onCreated={created} onUpdated={updated} onDeleted={deleted} /> */}
       <ConfirmModal ref={confirmDelete} destructive onYes={confirmedDelete} />
     </div>
   );
 }
 
-const PropertyTitle = ({ item }: { item: PropertyWithDetails }) => {
+const PropertyTitle = ({ item }: { readonly item: PropertyWithDetails }) => {
   const { t } = useTranslation();
   return (
-    <>
-      <div className="flex items-baseline space-x-1 truncate">
+    <div className="flex items-baseline space-x-1 truncate">
         <div className="flex flex-col">
           <div>
             {t(EntityHelper.getFieldTitle(item, item.isDefault))}
@@ -224,7 +219,7 @@ const PropertyTitle = ({ item }: { item: PropertyWithDetails }) => {
           </div>
         )}
 
-        {item.attributes.filter((f) => f.value).length > 0 && (
+        {item.attributes.some((f) => f.value) && (
           <div className="text-muted-foreground truncate text-xs">
             [
             {item.attributes
@@ -235,6 +230,5 @@ const PropertyTitle = ({ item }: { item: PropertyWithDetails }) => {
           </div>
         )}
       </div>
-    </>
   );
 };

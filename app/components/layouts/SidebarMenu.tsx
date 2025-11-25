@@ -271,7 +271,7 @@ function DesktopSubMenuItem({ subItem, menuItem, onSelected, cssStates, isCurren
   );
 }
 
-export default function SidebarMenu({ layout, onSelected, menuItems }: Props) {
+export default function SidebarMenu({ layout, onSelected, menuItems }: Readonly<Props>) {
   const params = useParams();
   const { t } = useTranslation();
   const location = useLocation();
@@ -319,16 +319,6 @@ export default function SidebarMenu({ layout, onSelected, menuItems }: Props) {
       item.items?.forEach((subitem) => {
         if (subitem.isCollapsible !== undefined && !subitem.isCollapsible) {
           subitem.items = [];
-        }
-      });
-    });
-    // setMenu(layout === "admin" ? AdminSidebar : );
-    menu.forEach((group) => {
-      group.items?.forEach((element) => {
-        if (element.open || isCurrent(element) || currentIsChild(element)) {
-          // expanded.push(element.path);
-        } else {
-          // setExpanded(expanded.filter((f) => f !== element.path));
         }
       });
     });
@@ -422,15 +412,15 @@ export default function SidebarMenu({ layout, onSelected, menuItems }: Props) {
 
       {/* Mobile */}
       <div className="space-y-1 divide-y-2 divide-slate-800 sm:hidden">
-        {getMenu().map((group, index) => {
+        {getMenu().map((group) => {
           return (
-            <div key={index} className="mt-2">
+            <div key={group.title} className="mt-2">
               <div id={group.title} className="mt-2">
                 <h3 className="px-1 text-xs font-semibold uppercase leading-4 tracking-wider text-slate-500">{t(group.title || "")}</h3>
               </div>
-              {group.items.map((menuItem, index) => (
+              {group.items.map((menuItem) => (
                 <MobileMenuItem
-                  key={index}
+                  key={menuItem.path}
                   menuItem={menuItem}
                   onSelected={onSelected}
                   cssStates={cssStates}
@@ -448,16 +438,16 @@ export default function SidebarMenu({ layout, onSelected, menuItems }: Props) {
 
       {/* Desktop */}
       <div className="hidden space-y-1 divide-y-2 divide-slate-800 sm:block">
-        {getMenu().map((group, index) => (
-          <div key={index} className="select-none">
+        {getMenu().map((group) => (
+          <div key={group.title} className="select-none">
             <div className="mt-2">
               <h3 id="Group-headline" className="px-1 text-xs font-semibold uppercase leading-4 tracking-wider text-slate-500">
                 {t(group.title || "")}
               </h3>
             </div>
-            {group.items.map((menuItem, idx) => (
+            {group.items.map((menuItem) => (
               <DesktopMenuItem
-                key={idx}
+                key={menuItem.path}
                 menuItem={menuItem}
                 onSelected={onSelected}
                 cssStates={cssStates}

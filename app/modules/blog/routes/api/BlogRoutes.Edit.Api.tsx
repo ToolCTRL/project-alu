@@ -59,7 +59,7 @@ export namespace BlogRoutesEditApi {
       return redirect(UrlUtils.getModulePath(params, "blog"));
     }
 
-    const addingCategoryName = form.get("new-category")?.toString() ?? "";
+    const addingCategoryName = String(form.get("new-category") ?? "");
     let category: BlogCategory | null = null;
     if (addingCategoryName) {
       category = await BlogApi.getCategory({ tenantId, idOrName: { name: addingCategoryName } });
@@ -69,22 +69,22 @@ export namespace BlogRoutesEditApi {
     }
 
     const authorId = blogPost.authorId ?? userInfo.userId;
-    const categoryId = form.get("category")?.toString() ?? "";
-    const slug = form.get("slug")?.toString() ?? "";
-    const tags = form.get("tags")?.toString() ?? "";
+    const categoryId = String(form.get("category") ?? "");
+    const slug = String(form.get("slug") ?? "");
+    const tags = String(form.get("tags") ?? "");
 
     const updated = await updateBlogPost(blogPost.id, {
       slug,
-      title: form.get("title")?.toString() ?? "",
-      description: form.get("description")?.toString() ?? "",
-      date: new Date(form.get("date")?.toString() ?? ""),
-      image: await storeSupabaseFile({ bucket: "blog", content: form.get("image")?.toString() ?? "", id: slug }),
-      content: form.get("content")?.toString() ?? "",
-      readingTime: form.get("reading-time")?.toString() ?? "",
+      title: String(form.get("title") ?? ""),
+      description: String(form.get("description") ?? ""),
+      date: new Date(String(form.get("date") ?? "")),
+      image: await storeSupabaseFile({ bucket: "blog", content: String(form.get("image") ?? ""), id: slug }),
+      content: String(form.get("content") ?? ""),
+      readingTime: String(form.get("reading-time") ?? ""),
       published: FormHelper.getBoolean(form, "published"),
       categoryId: categoryId.length ? categoryId : category?.id ?? null,
       tagNames: tags.split(",").filter((f) => f.trim() != ""),
-      contentType: form.get("contentType")?.toString() ?? "",
+      contentType: String(form.get("contentType") ?? ""),
       authorId,
     });
 

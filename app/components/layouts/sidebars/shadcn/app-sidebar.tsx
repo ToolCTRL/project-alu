@@ -10,7 +10,6 @@ import { NavSecondary } from "./nav-secondary";
 import { NavUser } from "./nav-user";
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from "~/components/ui/sidebar";
 import { useAppOrAdminData } from "~/utils/data/useAppOrAdminData";
-import UserUtils from "~/utils/app/UserUtils";
 import { AppSidebar } from "~/application/sidebar/AppSidebar";
 import { useTranslation } from "react-i18next";
 import { useRootData } from "~/utils/data/useRootData";
@@ -22,7 +21,6 @@ import UrlUtils from "~/utils/app/UrlUtils";
 import { useAppData } from "~/utils/data/useAppData";
 import { SidebarGroupDto } from "~/application/sidebar/SidebarGroupDto";
 import { TeamSwitcher } from "./team-switcher";
-import NewTenantSelector from "../../selectors/NewTenantSelector";
 import { DARK_SIDEBAR_IN_LIGHT_MODE } from "~/application/Constants";
 import { cn } from "~/lib/utils";
 
@@ -39,130 +37,6 @@ export function ShadcnAppSidebar({
   const appData = useAppData();
   const params = useParams();
   const appConfiguration = rootData.appConfiguration;
-
-  // const data = {
-  //   // user: {
-  //   //   name: "shadcn",
-  //   //   email: "m@example.com",
-  //   //   avatar: "/avatars/shadcn.jpg",
-  //   // },
-  //   navMain: [
-  //     {
-  //       title: "Playground",
-  //       url: "#",
-  //       icon: SquareTerminal,
-  //       isActive: true,
-  //       items: [
-  //         {
-  //           title: "History",
-  //           url: "#",
-  //         },
-  //         {
-  //           title: "Starred",
-  //           url: "#",
-  //         },
-  //         {
-  //           title: "Settings",
-  //           url: "#",
-  //         },
-  //       ],
-  //     },
-  //     {
-  //       title: "Models",
-  //       url: "#",
-  //       icon: Bot,
-  //       items: [
-  //         {
-  //           title: "Genesis",
-  //           url: "#",
-  //         },
-  //         {
-  //           title: "Explorer",
-  //           url: "#",
-  //         },
-  //         {
-  //           title: "Quantum",
-  //           url: "#",
-  //         },
-  //       ],
-  //     },
-  //     {
-  //       title: "Documentation",
-  //       url: "#",
-  //       icon: BookOpen,
-  //       items: [
-  //         {
-  //           title: "Introduction",
-  //           url: "#",
-  //         },
-  //         {
-  //           title: "Get Started",
-  //           url: "#",
-  //         },
-  //         {
-  //           title: "Tutorials",
-  //           url: "#",
-  //         },
-  //         {
-  //           title: "Changelog",
-  //           url: "#",
-  //         },
-  //       ],
-  //     },
-  //     {
-  //       title: "Settings",
-  //       url: "#",
-  //       icon: Settings2,
-  //       items: [
-  //         {
-  //           title: "General",
-  //           url: "#",
-  //         },
-  //         {
-  //           title: "Team",
-  //           url: "#",
-  //         },
-  //         {
-  //           title: "Billing",
-  //           url: "#",
-  //         },
-  //         {
-  //           title: "Limits",
-  //           url: "#",
-  //         },
-  //       ],
-  //     },
-  //   ],
-  //   navSecondary: [
-  //     {
-  //       title: "Support",
-  //       url: "#",
-  //       icon: LifeBuoy,
-  //     },
-  //     {
-  //       title: "Feedback",
-  //       url: "#",
-  //       icon: Send,
-  //     },
-  //   ],
-  //   projects: [
-  //     {
-  //       name: "Quick link 1",
-  //       url: "#",
-  //       icon: Frame,
-  //     },
-  //     {
-  //       name: "Quick link 2",
-  //       url: "#",
-  //       icon: PieChart,
-  //     },
-  //     {
-  //       name: "Quick link 3",
-  //       url: "#",
-  //       icon: Map,
-  //     },
-  //   ],
-  // };
 
   const getMenuItems = () => {
     let menu: SideBarItem[] = [];
@@ -204,13 +78,10 @@ export function ShadcnAppSidebar({
         }
       });
     });
-    // setMenu(layout === "admin" ? AdminSidebar : );
     menu.forEach((group) => {
       group.items?.forEach((element) => {
         if (element.open || isCurrent(element) || currentIsChild(element)) {
-          // expanded.push(element.path);
-        } else {
-          // setExpanded(expanded.filter((f) => f !== element.path));
+          // do nothing
         }
       });
     });
@@ -311,7 +182,6 @@ export function ShadcnAppSidebar({
               >
                 <Link to={props.layout === "admin" ? "/admin/dashboard" : "/"} className="flex w-full justify-center">
                   <div className="flex h-[96px] w-full shrink-0 items-center justify-center px-0 py-0 overflow-visible">
-                    {/* <Logo size="h-8 p-1 w-auto" /> */}
                     <img
                       className={"mx-auto hidden h-auto max-h-[72px] max-w-[13rem] w-auto p-1 dark:flex object-contain"}
                       src={appConfiguration.branding.logoDarkMode || appConfiguration.branding.logo || LogoDark}
@@ -327,11 +197,6 @@ export function ShadcnAppSidebar({
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>
-        {/* {props.layout === "app" && (
-          <SidebarMenu>
-            <div>{appData?.currentTenant && <NewTenantSelector key={params.tenant} />}</div>
-          </SidebarMenu>
-        )} */}
         {props.layout === "app" && appData?.currentTenant && <TeamSwitcher key={params.tenant} size="md" tenants={appData?.myTenants ?? []} />}
       </SidebarHeader>
       <SidebarContent>

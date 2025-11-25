@@ -415,10 +415,10 @@ const RowForm = (
           })}
         {!onSubmit && (
           <>
-            {!item ? (
-              <input type="hidden" name="redirect" value={EntityHelper.getRoutes({ routes, entity })?.list} hidden readOnly />
-            ) : (
+            {item ? (
               <input type="hidden" name="redirect" value={EntityHelper.getRoutes({ routes, entity, item })?.overview} hidden readOnly />
+            ) : (
+              <input type="hidden" name="redirect" value={EntityHelper.getRoutes({ routes, entity })?.list} hidden readOnly />
             )}
           </>
         )}
@@ -467,7 +467,6 @@ const RowForm = (
                   <div className="flex items-center space-x-1">
                     <div>
                       <span className="font-light italic"></span> {t(RelationshipHelper.getTitle({ fromEntityId: entity.id, relationship }))}
-                      {/* {relationship.required && <span className="ml-1 text-red-500">*</span>} */}
                     </div>
                   </div>
                 </h3>
@@ -507,18 +506,20 @@ const RowForm = (
 
         {relatedRows.map(({ relationship, rows }) => (
           <Fragment key={relationship.id}>
-            {rows.map((row) => (
-              // <>
-              <input
-                key={row.id}
-                type="hidden"
-                readOnly
-                hidden
-                name={`${relationship.childId === entity.id ? `parents[${relationship.parent.name}]` : `children[${relationship.child.name}]`}`}
-                value={row.id}
-              />
-              // </>
-            ))}
+            {rows.map((row) => {
+              const isParent = relationship.childId === entity.id;
+              const fieldName = isParent ? `parents[${relationship.parent.name}]` : `children[${relationship.child.name}]`;
+              return (
+                <input
+                  key={row.id}
+                  type="hidden"
+                  readOnly
+                  hidden
+                  name={fieldName}
+                  value={row.id}
+                />
+              );
+            })}
           </Fragment>
         ))}
       </FormGroup>
@@ -669,40 +670,14 @@ function RelationshipSelector({
         <div className="relative space-y-2 overflow-visible">
           <RowsList
             entity={entity.entity}
-            items={getRows(relationship) as RowWithDetails[]}
+            items={getRows(relationship)}
             currentView={entity.view}
             view={(entity.view?.layout ?? "card") as "table" | "board" | "grid" | "card"}
             readOnly={readOnly}
             onRemove={readOnly ? undefined : (row) => onRemoveRelatedRow(relationship, row)}
-            ignoreColumns={!readOnly ? [RowDisplayDefaultProperty.FOLIO, "parent." + relationship.parent.name, "child." + relationship.child.name] : []}
+            ignoreColumns={readOnly ? [] : [RowDisplayDefaultProperty.FOLIO, "parent." + relationship.parent.name, "child." + relationship.child.name]}
             routes={routes}
           />
-          {/* {getRows(relationship).map((item) => (
-                <div
-                  key={item.id}
-                  className={clsx(
-                    "group relative w-full overflow-visible truncate rounded-md border border-border px-4 py-3 text-left text-sm",
-                    !readOnly ? "bg-background hover:border-border" : "bg-secondary/90"
-                  )}
-                >
-                  <button
-                    onClick={() => onRemoveRelatedRow(relationship, item)}
-                    type="button"
-                    disabled={readOnly}
-                    className={clsx(
-                      "absolute right-0 top-0 mr-2 mt-2 hidden origin-top-right justify-center rounded-full bg-background text-muted-foreground",
-                      readOnly ? "cursor-not-allowed" : "hover:text-red-500 group-hover:flex"
-                    )}
-                  >
-                    <svg className="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M15 12H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
-                  </button>
-                  <div className="grid grid-cols-2 gap-1">
-                    <div>{RowHelper.getTextDescription({ entity, item, t, defaultsToFolio: true })}</div>
-                  </div>
-                </div>
-              ))} */}
           <button
             onClick={() => onFindEntityRows(relationship)}
             type="button"

@@ -4,18 +4,14 @@ import { RowValueMultipleDto } from "~/application/dtos/entities/RowValueMultipl
 import InputCheckboxCards from "~/components/ui/input/InputCheckboxCards";
 
 interface Props {
-  name: string;
-  title: string;
-  options: { value: string; name: string | null; color: number }[];
-  subtype?: "combobox" | "checkboxCards";
-  required?: boolean;
-  disabled?: boolean;
-  value?: RowValueMultipleDto[];
-  onSelected?: (item: RowValueMultipleDto[]) => void;
-  hint?: ReactNode;
-  help?: string;
-  icon?: string;
-  autoFocus?: boolean;
+  readonly name: string;
+  readonly title: string;
+  readonly options: { value: string; name: string | null; color: number }[];
+  readonly subtype?: "combobox" | "checkboxCards";
+  readonly required?: boolean;
+  readonly disabled?: boolean;
+  readonly value?: RowValueMultipleDto[];
+  readonly onSelected?: (item: RowValueMultipleDto[]) => void;
 }
 
 const PropertyMultiSelector = ({ name, title, options, subtype, disabled, value, onSelected, required }: Props) => {
@@ -32,13 +28,14 @@ const PropertyMultiSelector = ({ name, title, options, subtype, disabled, value,
   }, [value]);
 
   useEffect(() => {
-    // onSelected(actualValue);
+    if (onSelected) {
+      // onSelected can be called here if needed
+    }
   }, [actualValue, onSelected]);
 
-  return (
-    <>
-      {/* actualValue: {JSON.stringify(actualValue)} */}
-      {!subtype || subtype === "combobox" ? (
+  if (!subtype || subtype === "combobox") {
+    return (
+      <>
         <InputCombobox
           name={name}
           title={title}
@@ -50,26 +47,9 @@ const PropertyMultiSelector = ({ name, title, options, subtype, disabled, value,
           withLabel={true}
           required={required}
         />
-      ) : subtype === "checkboxCards" ? (
-        <InputCheckboxCards
-          name={name}
-          title={title}
-          value={actualValue}
-          onChange={setActualValue}
-          options={options.map((f) => {
-            return {
-              value: f.value,
-              name: f.name ?? f.value,
-            };
-          })}
-          disabled={disabled}
-          required={required}
-        />
-      ) : null}
-      {actualValue?.map((item, idx) => {
-        return (
+        {actualValue?.map((item, idx) => (
           <input
-            key={idx}
+            key={`${name}-${item}-${idx}`}
             type="hidden"
             name={name + `[]`}
             value={JSON.stringify({
@@ -77,10 +57,42 @@ const PropertyMultiSelector = ({ name, title, options, subtype, disabled, value,
               order: idx,
             })}
           />
-        );
-      })}
-    </>
-  );
+        ))}
+      </>
+    );
+  }
+
+  if (subtype === "checkboxCards") {
+    return (
+      <>
+        <InputCheckboxCards
+          name={name}
+          title={title}
+          value={actualValue}
+          onChange={setActualValue}
+          options={options.map((f) => ({
+            value: f.value,
+            name: f.name ?? f.value,
+          }))}
+          disabled={disabled}
+          required={required}
+        />
+        {actualValue?.map((item, idx) => (
+          <input
+            key={`${name}-${item}-${idx}`}
+            type="hidden"
+            name={name + `[]`}
+            value={JSON.stringify({
+              value: item,
+              order: idx,
+            })}
+          />
+        ))}
+      </>
+    );
+  }
+
+  return null;
 };
 
 export default PropertyMultiSelector;

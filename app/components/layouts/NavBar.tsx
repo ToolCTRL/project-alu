@@ -18,7 +18,7 @@ export default function NavBar({
   onOpenCommandPalette,
   onOpenOnboardingModal,
   children,
-}: {
+}: Readonly<{
   layout?: string;
   title?: string;
   buttons: {
@@ -34,7 +34,7 @@ export default function NavBar({
   onOpenCommandPalette: () => void;
   onOpenOnboardingModal: () => void;
   children?: React.ReactNode;
-}) {
+}>) {
   const appOrAdminData = useAppOrAdminData();
   const rootData = useRootData();
   const navigate = useNavigate();
@@ -42,17 +42,10 @@ export default function NavBar({
     <div className="flex flex-1 justify-between space-x-2">
       <div className="flex flex-1 items-center">{title && <div className="font-extrabold">{title}</div>}</div>
       <div className="flex items-center space-x-2 md:ml-6">
-        {/* {layout === "app" && (
-          <CreditsRemaining
-            feature={appOrAdminData.featureSyncs}
-            redirectTo={appOrAdminData.currentTenant ? `/app/${appOrAdminData.currentTenant.slug}/settings/subscription` : "/settings/subscription"}
-          />
-        )} */}
         {buttons.onboarding && appOrAdminData?.onboardingSession && (
           <OnboardingButton item={appOrAdminData?.onboardingSession} onClick={onOpenOnboardingModal} />
         )}
         {layout === "app" && buttons.mySubscription && <CurrentSubscriptionButton />}
-        {/* <LocaleSelector /> */}
         {buttons.notifications && appOrAdminData?.user && (
           <Inbox
             applicationIdentifier={rootData?.appConfiguration.notifications.novuAppId || ""}
@@ -70,7 +63,6 @@ export default function NavBar({
         {layout === "app" && buttons.feedback && <AddFeedbackButton />}
         {layout === "app" && buttons.chatSupport && <ChatSupportButton />}
         {layout === "app" && buttons.quickActions && <QuickActionsButton entities={appOrAdminData?.entities?.filter((f) => f.showInSidebar)} />}
-        {/* {(layout === "app" || layout === "admin") && <ThemeSelector variant="secondary" />} */}
         {(layout === "app" || layout === "admin") && buttons.userProfile && <ProfileButton user={appOrAdminData?.user} layout={layout} />}
         {children}
       </div>

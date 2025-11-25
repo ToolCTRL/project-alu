@@ -62,7 +62,7 @@ export default function InputPhone({
   onBlur,
   borderless,
   autoFocus,
-}: Props) {
+}: Readonly<Props>) {
   // useImperativeHandle(ref, () => ({ input }));
   const input = useRef<HTMLInputElement>(null);
 

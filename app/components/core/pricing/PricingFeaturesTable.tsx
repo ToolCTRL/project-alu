@@ -68,7 +68,7 @@ function renderOrderButtons(
   );
 }
 
-export default function PricingFeaturesTable({ plans, items, setItems }: Props) {
+export default function PricingFeaturesTable({ plans, items, setItems }: Readonly<Props>) {
   const { t } = useTranslation();
   function onAddFeature() {
     const order = items.length === 0 ? 1 : Math.max(...items.map((o) => o.order)) + 1;
@@ -242,7 +242,7 @@ function handleCopyFromProduct(
   setItems: React.Dispatch<React.SetStateAction<SubscriptionFeatureDto[]>>
 ) {
   return () => {
-    const uniqueFeatures = product.features.filter((feature) => !items.find((item) => item.name === feature.name));
+    const uniqueFeatures = product.features.filter((feature) => !items.some((item) => item.name === feature.name));
     setItems([...items, ...uniqueFeatures]);
   };
 }
@@ -252,12 +252,12 @@ function Buttons({
   items,
   setItems,
   onAddFeature,
-}: {
+}: Readonly<{
   plans: SubscriptionProductDto[] | undefined;
   items: SubscriptionFeatureDto[];
   setItems: React.Dispatch<React.SetStateAction<SubscriptionFeatureDto[]>>;
   onAddFeature: () => void;
-}) {
+}>) {
   const { t } = useTranslation();
 
   return (

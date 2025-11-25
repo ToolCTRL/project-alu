@@ -1,7 +1,7 @@
 import { Link } from "react-router";
 import clsx from "~/utils/shared/ClassesUtils";
 
-export default function SaasRockUpdateButton({ hasUpdate }: { hasUpdate: boolean }) {
+export default function SaasRockUpdateButton({ hasUpdate }: Readonly<{ hasUpdate: boolean }>) {
   return (
     <>
       {hasUpdate && (

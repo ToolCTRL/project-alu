@@ -12,7 +12,7 @@ interface Props {
   className?: string;
 }
 
-function NumberIcon({ className }: { className?: string }) {
+function NumberIcon({ className }: { readonly className?: string }) {
   return (
     <svg xmlns="http://www.w3.org/2000/svg" className={clsx(className, "h-5 w-5 shrink-0")} fill="none" viewBox="0 0 24 24" stroke="currentColor">
       <path
@@ -25,7 +25,7 @@ function NumberIcon({ className }: { className?: string }) {
   );
 }
 
-function DateIcon({ className }: { className?: string }) {
+function DateIcon({ className }: { readonly className?: string }) {
   return (
     <svg xmlns="http://www.w3.org/2000/svg" className={clsx(className, "h-5 w-5 shrink-0")} fill="none" viewBox="0 0 24 24" stroke="currentColor">
       <path
@@ -38,7 +38,7 @@ function DateIcon({ className }: { className?: string }) {
   );
 }
 
-function TextIcon({ className }: { className?: string }) {
+function TextIcon({ className }: { readonly className?: string }) {
   return (
     <svg
       className={clsx(className, "h-5 w-5 shrink-0")}
@@ -74,7 +74,7 @@ function TextIcon({ className }: { className?: string }) {
   );
 }
 
-function SelectIcon({ className }: { className?: string }) {
+function SelectIcon({ className }: { readonly className?: string }) {
   return (
     <svg
       className={clsx(className, "h-5 w-5 shrink-0")}
@@ -154,7 +154,7 @@ function getPropertyIcon(type: PropertyType, className?: string) {
   return <div></div>;
 }
 
-export default function PropertyBadge({ title, type, className }: Props) {
+export default function PropertyBadge({ title, type, className }: Readonly<Props>) {
   if (title) {
     return <SimpleBadge title={title} color={Colors.ORANGE} />;
   }

@@ -6,7 +6,6 @@ import { useOuterClick } from "~/utils/shared/KeypressUtils";
 import { useAppData } from "~/utils/data/useAppData";
 import UrlUtils from "~/utils/app/UrlUtils";
 import { EntitySimple } from "~/utils/db/entities/entities.db.server";
-import { getUserHasPermission } from "~/utils/helpers/PermissionsHelper";
 import { useRootData } from "~/utils/data/useRootData";
 
 interface Props {
@@ -14,7 +13,7 @@ interface Props {
   className?: string;
 }
 
-export default function QuickActionsButton({ entities, className }: Props) {
+export default function QuickActionsButton({ entities, className }: Readonly<Props>) {
   const { t } = useTranslation();
   const params = useParams();
   const appData = useAppData();
@@ -62,20 +61,18 @@ export default function QuickActionsButton({ entities, className }: Props) {
               aria-labelledby="listbox-label"
             >
               {rootData.appConfiguration.portals?.enabled && rootData.appConfiguration.portals.forTenants && (
-                <>
-                  <li className="text-foreground relative cursor-default select-none text-sm" id="listbox-option-2">
-                    <Link
-                      to={UrlUtils.currentTenantUrl(params, "portals/new")}
-                      onClick={() => setOpened(false)}
-                      className="hover:bg-secondary flex w-full flex-col p-4 text-left focus:outline-hidden"
-                    >
-                      <div className="flex justify-between">
-                        <p className="font-semibold">{t("models.portal.actions.new.title")}</p>
-                      </div>
-                      <p className="text-muted-foreground mt-2">{t("models.portal.actions.new.description")}</p>
-                    </Link>
-                  </li>
-                </>
+                <li className="text-foreground relative cursor-default select-none text-sm" id="listbox-option-2">
+                  <Link
+                    to={UrlUtils.currentTenantUrl(params, "portals/new")}
+                    onClick={() => setOpened(false)}
+                    className="hover:bg-secondary flex w-full flex-col p-4 text-left focus:outline-hidden"
+                  >
+                    <div className="flex justify-between">
+                      <p className="font-semibold">{t("models.portal.actions.new.title")}</p>
+                    </div>
+                    <p className="text-muted-foreground mt-2">{t("models.portal.actions.new.description")}</p>
+                  </Link>
+                </li>
               )}
               {entities.map((entity) => {
                 return (

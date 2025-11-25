@@ -7,7 +7,7 @@ interface Props {
   format?: NumberFormatType;
   currencySymbol?: string;
 }
-export default function RowRangeNumberCell({ value, format, currencySymbol }: Props) {
+export default function RowRangeNumberCell({ value, format, currencySymbol }: Readonly<Props>) {
   return (
     <div className="flex items-center space-x-1">
       <RowNumberCell value={Number(value?.numberMin) ?? undefined} format={format} currencySymbol={currencySymbol} />

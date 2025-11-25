@@ -14,7 +14,7 @@ interface Props {
   menuItems?: SideBarItem[];
 }
 
-export default function AppLayout({ layout, children, type = "v3", menuItems }: Props) {
+export default function AppLayout({ layout, children, type = "v3", menuItems }: Readonly<Props>) {
   const [searchParams] = useSearchParams();
   const sidebarParam = searchParams.get("sidebar");
 

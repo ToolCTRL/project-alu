@@ -17,7 +17,7 @@ interface Props {
   canUpdate?: boolean;
   canDelete?: boolean;
 }
-export default function GroupForm({ item, allUsers, canUpdate = true, canDelete }: Props) {
+export default function GroupForm({ item, allUsers, canUpdate = true, canDelete }: Readonly<Props>) {
   const { t } = useTranslation();
 
   const inputName = useRef<RefInputText>(null);

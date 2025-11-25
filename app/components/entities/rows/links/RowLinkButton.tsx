@@ -3,7 +3,7 @@ import { ExternalLinkIcon } from "lucide-react";
 import { useAppOrAdminData } from "~/utils/data/useAppOrAdminData";
 import EntityHelper from "~/utils/helpers/EntityHelper";
 
-export default function RowLinkButton({ entityName, id }: { entityName: string; id: string }) {
+export default function RowLinkButton({ entityName, id }: Readonly<{ entityName: string; id: string }>) {
   const appOrAdminData = useAppOrAdminData();
   const params = useParams();
   const entity = appOrAdminData.entities.find((f) => f.name === entityName)!;

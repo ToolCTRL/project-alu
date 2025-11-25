@@ -42,7 +42,7 @@ const AttachmentsCell = ({ item }: { item: EmailWithSimpleDetails }) => (
   <div>{item._count.attachments > 0 && <PaperClipIcon className="text-muted-foreground h-4 w-4" />}</div>
 );
 
-export default function EmailsTable({ items, withTenant, pagination }: Props) {
+export default function EmailsTable({ items, withTenant, pagination }: Readonly<Props>) {
   const { t } = useTranslation();
   const [headers, setHeaders] = useState<RowHeaderDisplayDto<EmailWithSimpleDetails>[]>([]);
 

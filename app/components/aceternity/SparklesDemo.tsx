@@ -2,7 +2,7 @@
 
 import clsx from "clsx";
 
-export function SparklesDemo({ from, to }: { from: string; to: string }) {
+export function SparklesDemo({ from, to }: { readonly from: string; readonly to: string }) {
   return (
     <div className="hidden flex-col items-center justify-center overflow-hidden md:flex">
       <div className="relative h-5 w-full">

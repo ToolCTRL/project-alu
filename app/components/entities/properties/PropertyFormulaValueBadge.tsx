@@ -12,7 +12,7 @@ interface Props {
   property: PropertyWithDetails;
   value: FormulaValueType;
 }
-export default function PropertyFormulaValueBadge({ property, value }: Props) {
+export default function PropertyFormulaValueBadge({ property, value }: Readonly<Props>) {
   const getNumberFormat = () => {
     return property.attributes.find((f) => f.name === PropertyAttributeName.FormatNumber)?.value as NumberFormatType;
   };
@@ -37,7 +37,7 @@ export default function PropertyFormulaValueBadge({ property, value }: Props) {
       return <RowDateCell value={value ? (value as Date) : undefined} format={getDateFormat()} />;
     }
 
-    return <div>{value?.toString()}</div>;
+    return <div>{String(value)}</div>;
   }
 
   return <div className="flex space-x-1">{renderFormulaValue()}</div>;

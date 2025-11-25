@@ -18,33 +18,52 @@ export function getNumberAsStringValue({ value, format, currencySymbol }: { valu
       return value.toString();
   }
 }
-export default function RowNumberCell({ value, format, currencySymbol }: { value?: number | null; format?: NumberFormatType; currencySymbol?: string }) {
-  return (
-    <>
-      {value === null || value === undefined ? (
-        <div></div>
-      ) : (
-        <div>
-          {!format ? (
-            value
-          ) : format === "integer" ? (
-            <span>{NumberUtils.intFormat(value)}</span>
-          ) : format === "decimal" ? (
-            <span>{NumberUtils.decimalFormat(value)}</span>
-          ) : format === "currency" ? (
-            <span>
-              <span>{currencySymbol ?? NumberUtils.defaultCurrencySymbol}</span>
-              {NumberUtils.decimalFormat(value)}
-            </span>
-          ) : format === "percentage" ? (
-            <span>{NumberUtils.decimalFormat(value)}%</span>
-          ) : format === "rating" ? (
-            <span>
-              <RatingBadge value={value} />
-            </span>
-          ) : null}
-        </div>
-      )}
-    </>
-  );
+
+function getFormattedNumberContent(value: number, format?: NumberFormatType, currencySymbol?: string): JSX.Element | number {
+  if (!format) {
+    return value;
+  }
+
+  if (format === "integer") {
+    return <span>{NumberUtils.intFormat(value)}</span>;
+  }
+
+  if (format === "decimal") {
+    return <span>{NumberUtils.decimalFormat(value)}</span>;
+  }
+
+  if (format === "currency") {
+    return (
+      <span>
+        <span>{currencySymbol ?? NumberUtils.defaultCurrencySymbol}</span>
+        {NumberUtils.decimalFormat(value)}
+      </span>
+    );
+  }
+
+  if (format === "percentage") {
+    return <span>{NumberUtils.decimalFormat(value)}%</span>;
+  }
+
+  if (format === "rating") {
+    return (
+      <span>
+        <RatingBadge value={value} />
+      </span>
+    );
+  }
+
+  return value;
+}
+
+export default function RowNumberCell({
+  value,
+  format,
+  currencySymbol,
+}: Readonly<{ value?: number | null; format?: NumberFormatType; currencySymbol?: string }>) {
+  if (value === null || value === undefined) {
+    return <div></div>;
+  }
+
+  return <div>{getFormattedNumberContent(value, format, currencySymbol)}</div>;
 }

@@ -2,23 +2,9 @@
 
 import * as React from "react";
 import {
-  ArrowDown,
-  ArrowUp,
-  BadgeCheck,
-  Bell,
-  Copy,
-  CornerUpLeft,
-  CornerUpRight,
   CreditCard,
-  FileText,
-  GalleryVerticalEnd,
-  LineChart,
   LogOut,
   MoreHorizontal,
-  Settings2,
-  Star,
-  Trash,
-  Trash2,
 } from "lucide-react";
 
 import { Button } from "~/components/ui/button";
@@ -26,38 +12,30 @@ import { Popover, PopoverContent, PopoverTrigger } from "~/components/ui/popover
 import { Sidebar, SidebarContent, SidebarGroup, SidebarGroupContent, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from "~/components/ui/sidebar";
 import NavBar from "../../NavBar";
 import { getUserHasPermission } from "~/utils/helpers/PermissionsHelper";
-import { useTitleData } from "~/utils/data/useTitleData";
 import { useAppOrAdminData } from "~/utils/data/useAppOrAdminData";
 import { useRootData } from "~/utils/data/useRootData";
 import { Link, useNavigate, useParams } from "react-router";
 import { useTranslation } from "react-i18next";
 import UrlUtils from "~/utils/app/UrlUtils";
 import { GearIcon } from "@radix-ui/react-icons";
-import clsx from "clsx";
-import CreditsRemaining from "~/modules/usage/components/CreditsRemaining";
-import CurrentSubscriptionButton from "../../buttons/CurrentSubscriptionButton";
 import { Inbox } from "@novu/react";
 import { dark } from "@novu/react/themes";
 import Modal from "~/components/ui/modals/Modal";
 import SaasRockProFeature from "~/components/ui/misc/SaasRockProFeature";
 import StarsIconFilled from "~/components/ui/icons/StarsIconFilled";
-import ThemeSelector from "~/components/ui/selectors/ThemeSelector";
 import { useAppData } from "~/utils/data/useAppData";
-import ProfileButton from "../../buttons/ProfileButton";
-import QuickActionsButton from "../../buttons/QuickActionsButton";
 
 export function NavActions({
   layout,
   onOpenCommandPalette,
   setOnboardingModalOpen,
-}: {
+}: Readonly<{
   layout: "admin" | "app" | "docs";
   onOpenCommandPalette: () => void;
   setOnboardingModalOpen: (value: boolean) => void;
-}) {
+}>) {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  // const title = useTitleData() ?? "";
 
   const appOrAdminData = useAppOrAdminData();
   const appData = useAppData();
@@ -74,7 +52,7 @@ export function NavActions({
 
   return (
     <div className="flex items-center gap-2 text-sm">
-      {false && (
+      {!!false && (
         <NavBar
           layout={layout}
           // title={title}
@@ -97,7 +75,7 @@ export function NavActions({
         {/* NavBar Button: My Subscription */}
         {layout === "app" && getUserHasPermission(appOrAdminData, "app.settings.subscription.update") && (
           <React.Fragment>
-            {!hasSubscription() && (
+            {hasSubscription() ? null : (
               <Link to={!params.tenant ? "" : "/subscribe/" + params.tenant}>
                 <Button variant="outline" size="sm">
                   <span>{t("pricing.subscribe")} </span>
@@ -168,13 +146,17 @@ export function NavActions({
             size="icon"
             className="text-muted-foreground"
             onClick={() => {
+              const actions = [
+                ["do", "chat:open"],
+                ["do", "chat:show"]
+              ];
               try {
-                // @ts-ignore
-                $crisp?.push(["do", "chat:open"]);
-                // @ts-ignore
-                $crisp?.push(["do", "chat:show"]);
+                actions.forEach(action => {
+                  // @ts-ignore
+                  $crisp?.push(action);
+                });
               } catch (e) {
-                // ignore
+                console.error("Failed to open chat", e);
               }
             }}
           >
@@ -189,15 +171,6 @@ export function NavActions({
           </Button>
         )}
 
-        {/* NavBar Button: Profile */}
-        {/* {(layout === "app" || layout === "admin") && <ProfileButton user={appOrAdminData?.user} layout={layout} />} */}
-
-        {/* NavBar Button: Theme Selector */}
-        {/* {rootData.debug && <ThemeSelector variant="secondary" />} */}
-
-        {/* NavBar Button: Quick Actions */}
-        {/* {layout === "app" && <QuickActionsButton entities={appOrAdminData?.entities?.filter((f) => f.showInSidebar)} />} */}
-
         {/* NavBar Button: More */}
         <Popover open={isOpen} onOpenChange={setIsOpen}>
           <PopoverTrigger asChild>
@@ -208,46 +181,9 @@ export function NavActions({
           <PopoverContent className="w-56 overflow-hidden rounded-lg p-0" align="end">
             <Sidebar collapsible="none" className="bg-transparent">
               <SidebarContent>
-                {layout === "app" ? (
-                  <SidebarGroup className="border-b last:border-none">
-                    <SidebarGroupContent className="gap-0">
-                      <SidebarMenu>
-                        <SidebarMenuItem>
-                          <Link to={!params.tenant ? "" : UrlUtils.currentTenantUrl(params, `settings/profile`)}>
-                            <SidebarMenuButton>
-                              <GearIcon className="mr-2 h-4 w-4" />
-                              {t("app.navbar.profile")}
-                            </SidebarMenuButton>
-                          </Link>
-                        </SidebarMenuItem>
+                {renderLayoutSpecificSection(layout, params, t)}
 
-                        <SidebarMenuItem>
-                          <Link to={UrlUtils.currentTenantUrl(params, `settings/subscription`)}>
-                            <SidebarMenuButton>
-                              <CreditCard className="mr-2 h-4 w-4" />
-                              {t("app.navbar.subscription")}
-                            </SidebarMenuButton>
-                          </Link>
-                        </SidebarMenuItem>
-                      </SidebarMenu>
-                    </SidebarGroupContent>
-                  </SidebarGroup>
-                ) : layout === "admin" ? (
-                  <SidebarGroup className="border-b last:border-none">
-                    <SidebarGroupContent className="gap-0">
-                      <SidebarMenu>
-                        <SidebarMenuItem>
-                          <Link to="/admin/settings/profile">
-                            <SidebarMenuButton>
-                              <GearIcon className="mr-2 h-4 w-4" />
-                              {t("app.navbar.profile")}
-                            </SidebarMenuButton>
-                          </Link>
-                        </SidebarMenuItem>
-                      </SidebarMenu>
-                    </SidebarGroupContent>
-                  </SidebarGroup>
-                ) : null}
+
 
                 <SidebarGroup className="border-b last:border-none">
                   <SidebarGroupContent className="gap-0">
@@ -270,6 +206,54 @@ export function NavActions({
       </div>
     </div>
   );
+}
+
+function renderLayoutSpecificSection(layout: "admin" | "app" | "docs", params: any, t: any) {
+  if (layout === "app") {
+    return (
+      <SidebarGroup className="border-b last:border-none">
+        <SidebarGroupContent className="gap-0">
+          <SidebarMenu>
+            <SidebarMenuItem>
+              <Link to={params.tenant ? UrlUtils.currentTenantUrl(params, `settings/profile`) : ""}>
+                <SidebarMenuButton>
+                  <GearIcon className="mr-2 h-4 w-4" />
+                  {t("app.navbar.profile")}
+                </SidebarMenuButton>
+              </Link>
+            </SidebarMenuItem>
+
+            <SidebarMenuItem>
+              <Link to={UrlUtils.currentTenantUrl(params, `settings/subscription`)}>
+                <SidebarMenuButton>
+                  <CreditCard className="mr-2 h-4 w-4" />
+                  {t("app.navbar.subscription")}
+                </SidebarMenuButton>
+              </Link>
+            </SidebarMenuItem>
+          </SidebarMenu>
+        </SidebarGroupContent>
+      </SidebarGroup>
+    );
+  } else if (layout === "admin") {
+    return (
+      <SidebarGroup className="border-b last:border-none">
+        <SidebarGroupContent className="gap-0">
+          <SidebarMenu>
+            <SidebarMenuItem>
+              <Link to="/admin/settings/profile">
+                <SidebarMenuButton>
+                  <GearIcon className="mr-2 h-4 w-4" />
+                  {t("app.navbar.profile")}
+                </SidebarMenuButton>
+              </Link>
+            </SidebarMenuItem>
+          </SidebarMenu>
+        </SidebarGroupContent>
+      </SidebarGroup>
+    );
+  }
+  return null;
 }
 
 function AddFeedbackButton() {

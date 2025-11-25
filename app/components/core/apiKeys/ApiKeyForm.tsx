@@ -59,24 +59,22 @@ export default function ApiKeyForm({ entities, item, tenants, canUpdate = true, 
     <FormGroup id={item?.id} editing={true} canUpdate={canUpdate} canDelete={canDelete}>
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-12">
         {tenants && (
-          <>
-            <InputSelect
-              className="col-span-6"
-              name="tenant-id"
-              title={t("models.tenant.object")}
-              value={tenantId}
-              setValue={setTenantId}
-              options={
-                tenants?.map((tenant) => {
-                  return {
-                    name: tenant.name,
-                    value: tenant.id,
-                  };
-                }) ?? []
-              }
-              disabled={tenants === undefined || !canUpdate}
-            ></InputSelect>
-          </>
+          <InputSelect
+            className="col-span-6"
+            name="tenant-id"
+            title={t("models.tenant.object")}
+            value={tenantId}
+            setValue={setTenantId}
+            options={
+              tenants?.map((tenant) => {
+                return {
+                  name: tenant.name,
+                  value: tenant.id,
+                };
+              }) ?? []
+            }
+            disabled={tenants === undefined || !canUpdate}
+          ></InputSelect>
         )}
         <InputText
           disabled={!canUpdate}

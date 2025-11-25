@@ -5,18 +5,18 @@ export default function ChatSupportButton() {
   const [isOpen, setIsOpen] = useState(false);
   function onClick() {
     try {
-      if (!isOpen) {
+      if (isOpen) {
+        // @ts-ignore
+        $crisp?.push(["do", "chat:hide"]);
+        setIsOpen(false);
+      } else {
         // @ts-ignore
         $crisp?.push(["do", "chat:open"]);
         // @ts-ignore
         $crisp?.push(["do", "chat:show"]);
         setIsOpen(true);
-      } else {
-        // @ts-ignore
-        $crisp?.push(["do", "chat:hide"]);
-        setIsOpen(false);
       }
-    } catch (e) {
+    } catch {
       // ignore
     }
   }

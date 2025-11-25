@@ -300,7 +300,7 @@ function Item({ item, selected, active, withColors = true }: { item: ItemDto; se
   );
 }
 
-function OptionItem({ item, withColors }: { item: ItemDto; withColors?: boolean }) {
+function OptionItem({ item, withColors }: { readonly item: ItemDto; readonly withColors?: boolean }) {
   return (
     <Listbox.Option
       disabled={item.disabled}

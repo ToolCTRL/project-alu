@@ -21,16 +21,16 @@ import { FormulaDto } from "~/modules/formulas/dtos/FormulaDto";
 import { Link } from "react-router";
 
 interface Props {
-  item?: PropertyWithDetails;
-  properties: PropertyWithDetails[];
-  entities: EntitySimple[];
-  formulas: FormulaDto[];
+  readonly item?: PropertyWithDetails;
+  readonly properties: PropertyWithDetails[];
+  readonly entities: EntitySimple[];
+  readonly formulas: FormulaDto[];
 }
 
 function updateNameFromTitle(title: string) {
   if (title.includes(".")) {
     const keys = title.split(".");
-    return StringUtils.toCamelCase(keys[keys.length - 1].toLowerCase());
+    return StringUtils.toCamelCase(keys.at(-1)!.toLowerCase());
   }
   return StringUtils.toCamelCase(title.toLowerCase());
 }
@@ -44,12 +44,10 @@ function getDefaultSubtype(type: PropertyType): string {
   return defaults[type] || "";
 }
 
-export default function PropertyForm({ item, properties, entities, formulas }: Props) {
+export default function PropertyForm({ item, properties, entities, formulas }: Readonly<Props>) {
   const { t } = useTranslation();
 
   const selectOptionsForm = useRef<RefPropertyOptionsForm>(null);
-
-  // TODO: Implement User, Role, Entity and Formula types
 
   const [showAdvancedOptions, setShowAdvancedOptions] = useState(true);
 
@@ -77,8 +75,6 @@ export default function PropertyForm({ item, properties, entities, formulas }: P
   const [isReadOnly, setIsReadOnly] = useState<boolean>(item?.isReadOnly ?? false);
   const [canUpdate, setCanUpdate] = useState<boolean>(item ? item.canUpdate : true);
   const [attributes, setAttributes] = useState<{ name: string; value: string | undefined }[]>(item?.attributes ?? []);
-
-  // const [formula, setFormula] = useState<string>();
 
   const [titleEnabled, setTitleEnabled] = useState(false);
 
@@ -115,10 +111,10 @@ export default function PropertyForm({ item, properties, entities, formulas }: P
 
   useEffect(() => {
     setTitleEnabled(true);
-    if (!item) {
-      setSubtype(getDefaultSubtype(type));
-    } else {
+    if (item) {
       setSubtype(validateSubtype(type, subtype));
+    } else {
+      setSubtype(getDefaultSubtype(type));
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [item, type]);
@@ -238,23 +234,6 @@ export default function PropertyForm({ item, properties, entities, formulas }: P
               />
             </div>
 
-            {/* {type === PropertyType.FORMULA && (
-              <div className="w-full">
-                <label htmlFor="formula" className="block text-xs font-medium text-foreground/80">
-                  {t("entities.fields.FORMULA")}
-                </label>
-                <div className="mt-1">
-                  <InputText
-                    name="formula"
-                    title={t("models.property.formula")}
-                    value={formula}
-                    setValue={(e) => setFormula(e.toString())}
-                    disabled={!titleEnabled}
-                    required
-                  />
-                </div>
-              </div>
-            )} */}
             {[PropertyType.SELECT, PropertyType.MULTI_SELECT].includes(type) && (
               <div className="w-full">
                 <label className="text-foreground/80 block text-sm font-medium">Options</label>
@@ -286,7 +265,7 @@ export default function PropertyForm({ item, properties, entities, formulas }: P
 
             <div className="flex">
               <ButtonTertiary onClick={() => setShowAdvancedOptions(!showAdvancedOptions)}>
-                {!showAdvancedOptions ? "Show advanced options" : "Hide advanced options"}
+                {showAdvancedOptions ? "Hide advanced options" : "Show advanced options"}
               </ButtonTertiary>
             </div>
           </div>

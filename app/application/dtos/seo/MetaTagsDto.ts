@@ -23,8 +23,7 @@ type ServerRuntimeMetaDescriptor =
   | {
       tagName: "meta" | "link";
       [name: string]: string;
-    }
-  | any;
+    };
 type LdJsonObject = {
   [Key in string]: LdJsonValue;
 } & {

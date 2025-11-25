@@ -14,7 +14,6 @@ import ToggleBillingPeriod from "../settings/subscription/ToggleBillingPeriod";
 import { SubscriptionFeatureLimitType } from "~/application/enums/subscriptions/SubscriptionFeatureLimitType";
 import PricingFeaturesTable from "./PricingFeaturesTable";
 import { PricingModel } from "~/application/enums/subscriptions/PricingModel";
-import ButtonSecondary from "~/components/ui/buttons/ButtonSecondary";
 import { DefaultFeatures } from "~/application/dtos/shared/DefaultFeatures";
 import FlatPrices from "./FlatPrices";
 import UsageBasedPrices from "./UsageBasedPrices";
@@ -37,7 +36,7 @@ interface Props {
   isPortalPlan?: boolean;
 }
 
-export default function PricingPlanForm({ plans, item, canUpdate = true, canDelete, isPortalPlan }: Props) {
+export default function PricingPlanForm({ plans, item, canUpdate = true, canDelete, isPortalPlan }: Readonly<Props>) {
   const { t } = useTranslation();
   const navigation = useNavigation();
   const loading = navigation.state === "submitting";
@@ -83,7 +82,7 @@ export default function PricingPlanForm({ plans, item, canUpdate = true, canDele
   const [badge, setBadge] = useState(item?.badge ?? "");
   const [isPublic, setIsPublic] = useState(item ? item.public : true);
   const [features, setFeatures] = useState<SubscriptionFeatureDto[]>([]);
-  const [billingAddressCollection, setBillingAddressCollection] = useState(item?.billingAddressCollection === "required" ? true : false);
+  const [billingAddressCollection, setBillingAddressCollection] = useState(item?.billingAddressCollection === "required");
   const [hasQuantity, setHasQuantity] = useState(item?.hasQuantity ?? false);
   const [canBuyAgain, setCanBuyAgain] = useState(item?.canBuyAgain ?? false);
 
@@ -134,15 +133,15 @@ export default function PricingPlanForm({ plans, item, canUpdate = true, canDele
   }, [model, item]);
 
   useEffect(() => {
-    const possibleBillingPeriods = prices.filter((f) => f.price).flatMap((f) => f.billingPeriod);
-    if (possibleBillingPeriods.includes(SubscriptionBillingPeriod.MONTHLY)) {
+    const possibleBillingPeriods = new Set(prices.filter((f) => f.price).map((f) => f.billingPeriod));
+    if (possibleBillingPeriods.has(SubscriptionBillingPeriod.MONTHLY)) {
       setBillingPeriod(SubscriptionBillingPeriod.MONTHLY);
     } else {
       let found = -1;
       billingPeriods
         .filter((f) => !f.disabled)
         .forEach((billingPeriod) => {
-          if (found === -1 && possibleBillingPeriods.includes(billingPeriod.value)) {
+          if (found === -1 && possibleBillingPeriods.has(billingPeriod.value)) {
             found = billingPeriod.value;
           }
         });
@@ -316,9 +315,7 @@ export default function PricingPlanForm({ plans, item, canUpdate = true, canDele
                     value={isPublic}
                     setValue={setIsPublic}
                     description={
-                      <>
-                        <span className="text-muted-foreground font-normal">: is visible to SaaS users</span>
-                      </>
+                      <span className="text-muted-foreground font-normal">: is visible to SaaS users</span>
                     }
                   />
                 </div>
@@ -329,9 +326,7 @@ export default function PricingPlanForm({ plans, item, canUpdate = true, canDele
                     value={billingAddressCollection}
                     setValue={setBillingAddressCollection}
                     description={
-                      <>
-                        <span className="text-muted-foreground font-normal">: is required to collect the billing address from the user</span>
-                      </>
+                      <span className="text-muted-foreground font-normal">: is required to collect the billing address from the user</span>
                     }
                   />
                 </div>
@@ -343,9 +338,7 @@ export default function PricingPlanForm({ plans, item, canUpdate = true, canDele
                       value={hasQuantity}
                       setValue={setHasQuantity}
                       description={
-                        <>
-                          <span className="text-muted-foreground font-normal">: is possible to buy more than one</span>
-                        </>
+                        <span className="text-muted-foreground font-normal">: is possible to buy more than one</span>
                       }
                     />
                   </div>
@@ -358,9 +351,7 @@ export default function PricingPlanForm({ plans, item, canUpdate = true, canDele
                       value={canBuyAgain}
                       setValue={setCanBuyAgain}
                       description={
-                        <>
-                          <span className="text-muted-foreground font-normal">: users can buy even if they already bought it</span>
-                        </>
+                        <span className="text-muted-foreground font-normal">: users can buy even if they already bought it</span>
                       }
                     />
                   </div>

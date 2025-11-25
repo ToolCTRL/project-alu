@@ -8,7 +8,7 @@ interface Props {
   editable?: boolean;
 }
 
-export default function FeatureOrderButtons({ index, items, editable = true, onChange }: Props) {
+export default function FeatureOrderButtons({ index, items, editable = true, onChange }: Readonly<Props>) {
   function changeOrder(forward: boolean) {
     if (index === undefined) {
       return;

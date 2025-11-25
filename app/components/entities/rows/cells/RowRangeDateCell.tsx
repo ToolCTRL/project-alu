@@ -6,7 +6,7 @@ interface Props {
   value: RowValueRangeDto;
   format?: DateFormatType;
 }
-export default function RowRangeDateCell({ value, format }: Props) {
+export default function RowRangeDateCell({ value, format }: Readonly<Props>) {
   return (
     <div className="flex items-center space-x-1">
       <RowDateCell value={value?.dateMin ?? undefined} format={format} />

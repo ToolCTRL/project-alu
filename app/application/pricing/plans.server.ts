@@ -241,11 +241,9 @@ const FLAT_RATE_PRICES: SubscriptionProductDto[] = [
   },
 ];
 
-const PER_SEAT_PRICES: SubscriptionProductDto[] = [
-  ...FLAT_RATE_PRICES.map((item) => {
-    return { ...item, model: PricingModel.PER_SEAT };
-  }),
-];
+const PER_SEAT_PRICES: SubscriptionProductDto[] = FLAT_RATE_PRICES.map((item) => {
+  return { ...item, model: PricingModel.PER_SEAT };
+});
 
 const USAGE_BASED_PRICES: SubscriptionProductDto[] = [
   {
@@ -253,12 +251,12 @@ const USAGE_BASED_PRICES: SubscriptionProductDto[] = [
     prices: [],
     usageBasedPrices: [
       generateUsageBasedPrice("usd", UNIT_API_CALL, "metered", "sum", "volume", "tiered", [
-        { from: 0, to: 10, perUnitPrice: 0.0, flatFeePrice: undefined },
+        { from: 0, to: 10, perUnitPrice: 0, flatFeePrice: undefined },
         { from: 11, to: 20, perUnitPrice: 0.02, flatFeePrice: 5 },
         { from: 21, to: undefined, perUnitPrice: 0.01, flatFeePrice: 10 },
       ]),
       generateUsageBasedPrice("mxn", UNIT_API_CALL, "metered", "sum", "volume", "tiered", [
-        { from: 0, to: 10, perUnitPrice: 0.0, flatFeePrice: undefined },
+        { from: 0, to: 10, perUnitPrice: 0, flatFeePrice: undefined },
         { from: 11, to: 20, perUnitPrice: 0.4, flatFeePrice: 100 },
         { from: 21, to: undefined, perUnitPrice: 0.2, flatFeePrice: 200 },
       ]),
@@ -269,12 +267,12 @@ const USAGE_BASED_PRICES: SubscriptionProductDto[] = [
     prices: [],
     usageBasedPrices: [
       generateUsageBasedPrice("usd", UNIT_API_CALL, "metered", "sum", "volume", "tiered", [
-        { from: 0, to: 10, perUnitPrice: 0.0, flatFeePrice: undefined },
+        { from: 0, to: 10, perUnitPrice: 0, flatFeePrice: undefined },
         { from: 11, to: 20, perUnitPrice: 0.04, flatFeePrice: 10 },
         { from: 21, to: undefined, perUnitPrice: 0.02, flatFeePrice: 20 },
       ]),
       generateUsageBasedPrice("mxn", UNIT_API_CALL, "metered", "sum", "volume", "tiered", [
-        { from: 0, to: 10, perUnitPrice: 0.0, flatFeePrice: undefined },
+        { from: 0, to: 10, perUnitPrice: 0, flatFeePrice: undefined },
         { from: 11, to: 20, perUnitPrice: 0.8, flatFeePrice: 200 },
         { from: 21, to: undefined, perUnitPrice: 0.4, flatFeePrice: 400 },
       ]),
@@ -285,12 +283,12 @@ const USAGE_BASED_PRICES: SubscriptionProductDto[] = [
     prices: [],
     usageBasedPrices: [
       generateUsageBasedPrice("usd", UNIT_API_CALL, "metered", "sum", "volume", "tiered", [
-        { from: 0, to: 10, perUnitPrice: 0.0, flatFeePrice: undefined },
+        { from: 0, to: 10, perUnitPrice: 0, flatFeePrice: undefined },
         { from: 11, to: 20, perUnitPrice: 0.06, flatFeePrice: 15 },
         { from: 21, to: undefined, perUnitPrice: 0.03, flatFeePrice: 30 },
       ]),
       generateUsageBasedPrice("mxn", UNIT_API_CALL, "metered", "sum", "volume", "tiered", [
-        { from: 0, to: 10, perUnitPrice: 0.0, flatFeePrice: undefined },
+        { from: 0, to: 10, perUnitPrice: 0, flatFeePrice: undefined },
         { from: 11, to: 20, perUnitPrice: 1.2, flatFeePrice: 300 },
         { from: 21, to: undefined, perUnitPrice: 0.6, flatFeePrice: 600 },
       ]),
@@ -298,16 +296,14 @@ const USAGE_BASED_PRICES: SubscriptionProductDto[] = [
   },
 ];
 
-const FLAT_RATE_PLUS_USAGE_BASED_PRICES: SubscriptionProductDto[] = [
-  ...FLAT_RATE_PRICES.map((flatRate) => {
-    const usageBasedPrices = USAGE_BASED_PRICES.find((f) => f.order === flatRate.order)?.usageBasedPrices ?? [];
-    return {
-      ...flatRate,
-      usageBasedPrices,
-      model: PricingModel.FLAT_RATE_USAGE_BASED,
-    };
-  }),
-];
+const FLAT_RATE_PLUS_USAGE_BASED_PRICES: SubscriptionProductDto[] = FLAT_RATE_PRICES.map((flatRate) => {
+  const usageBasedPrices = USAGE_BASED_PRICES.find((f) => f.order === flatRate.order)?.usageBasedPrices ?? [];
+  return {
+    ...flatRate,
+    usageBasedPrices,
+    model: PricingModel.FLAT_RATE_USAGE_BASED,
+  };
+});
 
 const ONE_TIME_PRICES: SubscriptionProductDto[] = [
   {

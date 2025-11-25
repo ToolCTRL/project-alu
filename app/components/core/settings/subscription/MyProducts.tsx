@@ -16,21 +16,17 @@ export default function MyProducts({ currentTenant, items, onCancel }: Props) {
   return (
     <div>
       {items.length === 0 ? (
-        <>
-          <WarningBanner title={t("settings.subscription.noSubscription")} text={""}>
-            <Link to={`/subscribe/${currentTenant.slug}`} className="underline">
-              {t("settings.subscription.viewAllProducts")}.
-            </Link>
-          </WarningBanner>
-        </>
+        <WarningBanner title={t("settings.subscription.noSubscription")} text={""}>
+          <Link to={`/subscribe/${currentTenant.slug}`} className="underline">
+            {t("settings.subscription.viewAllProducts")}.
+          </Link>
+        </WarningBanner>
       ) : (
-        <>
-          <div className="grid gap-2">
-            {items.map((item) => {
-              return <TenantProduct key={item.id} item={item} onCancel={onCancel} />;
-            })}
-          </div>
-        </>
+        <div className="grid gap-2">
+          {items.map((item) => {
+            return <TenantProduct key={item.id} item={item} onCancel={onCancel} />;
+          })}
+        </div>
       )}
     </div>
   );

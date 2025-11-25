@@ -13,7 +13,7 @@ interface Props {
   setItems: React.Dispatch<React.SetStateAction<SubscriptionFeatureDto[]>>;
   entities: Entity[];
 }
-export default function PricingFeaturesForm({ items, setItems, entities }: Props) {
+export default function PricingFeaturesForm({ items, setItems, entities }: Readonly<Props>) {
   const { t } = useTranslation();
   function addFeature() {
     const maxOrder = Math.max(...items.map((o) => o.order));
@@ -43,7 +43,6 @@ export default function PricingFeaturesForm({ items, setItems, entities }: Props
                 value={
                   <div className="flex space-x-1">
                     {item.title ? (
-                      <>
                         <div className="flex space-x-2">
                           {item.type !== SubscriptionFeatureLimitType.NOT_INCLUDED ? (
                             <svg
@@ -75,9 +74,9 @@ export default function PricingFeaturesForm({ items, setItems, entities }: Props
                         {item.type === SubscriptionFeatureLimitType.UNLIMITED && <span>Unlimited</span>}
                         <div>{t(item.title)}</div>
                         {(item.type === SubscriptionFeatureLimitType.MONTHLY || item.type === SubscriptionFeatureLimitType.MAX) && <div>{item.value}</div>}
-                      </>
+                        </div>
                     ) : (
-                      <>{t("shared.undefined")}</>
+                      t("shared.undefined")
                     )}
                   </div>
                 }

@@ -279,7 +279,7 @@ function uiFormSelect(code: string[], imports: string[], property: PropertyWithD
   const defaultValue = PropertyAttributeHelper.getPropertyAttributeValue_String(property, PropertyAttributeName.DefaultValue);
   const value = defaultValue ? `item?.${property.name} ?? (!item ? "${defaultValue}" : undefined)` : `item?.${property.name}`;
   props.push(`defaultValue={${value}}`);
-  const withColors = property.options.filter((f) => f.color).length > 0;
+  const withColors = property.options.some((f) => f.color);
   imports.push(`import { Colors } from "~/application/enums/shared/Colors";`);
   props.push(`options={[${property.options.map((option) => {
     const optionName = option.name === null ? `"${option.value}"` : `"${option.name}"`;

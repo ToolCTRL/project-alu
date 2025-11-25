@@ -11,7 +11,7 @@ interface Props {
   onCancel: () => void;
 }
 
-export default function SubscriptionProducts({ products, subscription, canCancel, onCancel }: Props) {
+export default function SubscriptionProducts({ products, subscription, canCancel, onCancel }: Readonly<Props>) {
   const { t } = useTranslation();
   const appOrAdminData = useAppOrAdminData();
 
@@ -27,8 +27,8 @@ export default function SubscriptionProducts({ products, subscription, canCancel
         </>
       ) : (
         <>
-          {products.map((product, idx) => {
-            return <div key={idx}>{t(product.title)}</div>;
+          {products.map((product) => {
+            return <div key={product.id}>{t(product.title)}</div>;
           })}
         </>
       )}

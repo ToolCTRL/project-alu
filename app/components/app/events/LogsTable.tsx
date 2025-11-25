@@ -14,7 +14,7 @@ interface Props {
   pagination: PaginationDto;
 }
 
-function TenantCell({ item }: { item: LogWithDetails }) {
+function TenantCell({ item }: { readonly item: LogWithDetails }) {
   return (
     <div>
       {item.tenant ? (
@@ -28,19 +28,19 @@ function TenantCell({ item }: { item: LogWithDetails }) {
   );
 }
 
-function ActionCell({ item }: { item: LogWithDetails }) {
+function ActionCell({ item }: { readonly item: LogWithDetails }) {
   return <div>{item.action}</div>;
 }
 
-function UrlCell({ item }: { item: LogWithDetails }) {
+function UrlCell({ item }: { readonly item: LogWithDetails }) {
   return <div>{item.url}</div>;
 }
 
-function DetailsCell({ item }: { item: LogWithDetails }) {
+function DetailsCell({ item }: { readonly item: LogWithDetails }) {
   return <LogDetailsButton item={item} />;
 }
 
-function CreatedByCell({ item }: { item: LogWithDetails }) {
+function CreatedByCell({ item }: { readonly item: LogWithDetails }) {
   return (
     <div>
       {item.user && (
@@ -57,7 +57,7 @@ function CreatedByCell({ item }: { item: LogWithDetails }) {
   );
 }
 
-function CreatedAtCell({ item }: { item: LogWithDetails }) {
+function CreatedAtCell({ item }: { readonly item: LogWithDetails }) {
   return (
     <div className="flex flex-col">
       <div>{DateUtils.dateYMD(item.createdAt)}</div>
@@ -66,7 +66,7 @@ function CreatedAtCell({ item }: { item: LogWithDetails }) {
   );
 }
 
-export default function LogsTable({ withTenant, items, pagination }: Props) {
+export default function LogsTable({ withTenant, items, pagination }: Readonly<Props>) {
   const { t } = useTranslation();
 
   const [headers, setHeaders] = useState<RowHeaderDisplayDto<LogWithDetails>[]>([]);

@@ -13,30 +13,31 @@ export default function RowRelationshipRow({
   onRelatedRowClick,
   routes,
   t,
-}: {
+}: Readonly<{
   entity: EntityWithDetails;
   item: RowDto;
   onRelatedRowClick?: () => void;
   routes?: EntitiesApi.Routes;
   t: TFunction;
-}) {
+}>) {
+  const textDescription = RowHelper.getTextDescription({ entity: entity, item, t });
+
+  if (onRelatedRowClick !== undefined) {
+    return (
+      <button type="button" onClick={onRelatedRowClick} className="hover truncate text-left text-sm hover:underline">
+        {textDescription}
+      </button>
+    );
+  }
+
+  const routeOverview = EntityHelper.getRoutes({ routes, entity: entity, item })?.overview;
+  if (!routes || !routeOverview) {
+    return <div className="hover truncate text-left text-sm hover:underline">{textDescription}</div>;
+  }
+
   return (
-    <Fragment>
-      {onRelatedRowClick !== undefined ? (
-        <button type="button" onClick={onRelatedRowClick} className="hover truncate text-left text-sm hover:underline">
-          {RowHelper.getTextDescription({ entity: entity, item, t })}
-        </button>
-      ) : !routes || !EntityHelper.getRoutes({ routes, entity: entity, item })?.overview ? (
-        <div className="hover truncate text-left text-sm hover:underline">{RowHelper.getTextDescription({ entity: entity, item, t })}</div>
-      ) : (
-        <Link
-          onClick={(e) => e.stopPropagation()}
-          to={EntityHelper.getRoutes({ routes, entity: entity, item })?.overview ?? ""}
-          className="hover truncate text-left text-sm hover:underline"
-        >
-          {RowHelper.getTextDescription({ entity: entity, item, t })}
-        </Link>
-      )}
-    </Fragment>
+    <Link onClick={(e) => e.stopPropagation()} to={routeOverview} className="hover truncate text-left text-sm hover:underline">
+      {textDescription}
+    </Link>
   );
 }

@@ -16,7 +16,7 @@ interface Props {
   items?: { title: string; path: string; hidden?: boolean; onClick?: () => void }[];
 }
 
-function UserAvatar({ user }: { user: Props['user'] }) {
+function UserAvatar({ user }: Readonly<{ user: Props['user'] }>) {
   if (user?.avatar) {
     return <img className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-slate-800" src={user.avatar} alt="Avatar" />;
   }
@@ -29,13 +29,13 @@ function UserAvatar({ user }: { user: Props['user'] }) {
   );
 }
 
-function AppLayoutMenu({ params, appOrAdminData, rootData, closeDropdownUser, t }: {
+function AppLayoutMenu({ params, appOrAdminData, rootData, closeDropdownUser, t }: Readonly<{
   params: any;
   appOrAdminData: any;
   rootData: any;
   closeDropdownUser: () => void;
   t: (key: string) => string;
-}) {
+}>) {
   return (
     <>
       <Link
@@ -96,7 +96,7 @@ function AppLayoutMenu({ params, appOrAdminData, rootData, closeDropdownUser, t 
           className="hover:bg-secondary block px-4 py-2 text-sm transition duration-150 ease-in-out"
           role="menuitem"
           onClick={closeDropdownUser}
-          to={!params.tenant ? "" : UrlUtils.currentTenantUrl(params, "settings/logs")}
+          to={params.tenant ? UrlUtils.currentTenantUrl(params, "settings/logs") : ""}
         >
           {t("models.log.plural")}
         </Link>
@@ -107,7 +107,7 @@ function AppLayoutMenu({ params, appOrAdminData, rootData, closeDropdownUser, t 
   );
 }
 
-function RootLayoutMenu({ user, closeDropdownUser, t }: { user: Props['user']; closeDropdownUser: () => void; t: (key: string) => string }) {
+function RootLayoutMenu({ user, closeDropdownUser, t }: Readonly<{ user: Props['user']; closeDropdownUser: () => void; t: (key: string) => string }>) {
   return (
     <Fragment>
       {user?.admin && (
@@ -140,7 +140,7 @@ function RootLayoutMenu({ user, closeDropdownUser, t }: { user: Props['user']; c
   );
 }
 
-export default function ProfileButton({ user, layout, items }: Props) {
+export default function ProfileButton({ user, layout, items }: Readonly<Props>) {
   const params = useParams();
   const { t } = useTranslation();
   const rootData = useRootData();
@@ -192,37 +192,38 @@ export default function ProfileButton({ user, layout, items }: Props) {
             </div>
             <div className="border-border border-t"></div>
 
-            {layout === "app" ? (
+            {layout === "app" && (
               <AppLayoutMenu params={params} appOrAdminData={appOrAdminData} rootData={rootData} closeDropdownUser={closeDropdownUser} t={t} />
-            ) : layout === "admin" ? (
+            )}
+            {layout === "admin" && (
               <Link
                 className="hover:bg-secondary block px-4 py-2 text-sm transition duration-150 ease-in-out"
                 role="menuitem"
                 onClick={closeDropdownUser}
-                to={!user ? "" : `/admin/settings/profile`}
+                to={user ? `/admin/settings/profile` : ""}
               >
                 {t("app.navbar.profile")}
               </Link>
-            ) : layout === "/" ? (
+            )}
+            {layout === "/" && (
               <RootLayoutMenu user={user} closeDropdownUser={closeDropdownUser} t={t} />
-            ) : items ? (
-              items.map((item) => (
-                <Link
-                  key={item.path}
-                  className="hover:bg-secondary block px-4 py-2 text-sm transition duration-150 ease-in-out"
-                  role="menuitem"
-                  onClick={() => {
-                    if (item.onClick) {
-                      item.onClick();
-                    }
-                    closeDropdownUser();
-                  }}
-                  to={item.path}
-                >
-                  {item.title}
-                </Link>
-              ))
-            ) : null}
+            )}
+            {items && items.map((item) => (
+              <Link
+                key={item.path}
+                className="hover:bg-secondary block px-4 py-2 text-sm transition duration-150 ease-in-out"
+                role="menuitem"
+                onClick={() => {
+                  if (item.onClick) {
+                    item.onClick();
+                  }
+                  closeDropdownUser();
+                }}
+                to={item.path}
+              >
+                {item.title}
+              </Link>
+            ))}
 
             {!items && (
               <Link

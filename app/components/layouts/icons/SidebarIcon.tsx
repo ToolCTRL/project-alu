@@ -38,14 +38,12 @@ import IconPromptBuilder from "./IconPromptBuilder";
 import IconWorkflows from "./IconWorkflows";
 import IconMetrics from "./IconMetrics";
 import IconPortals from "./IconPortals";
-// import IconEntities from "./IconEntities";
-
 interface Props {
   className: string;
   item: SideBarItem;
 }
 
-export default function SidebarIcon({ className, item }: Props) {
+export default function SidebarIcon({ className, item }: Readonly<Props>) {
   return (
     <span>
       {typeof item.icon !== "number" && item.icon}

@@ -1,5 +1,4 @@
 import { Link } from "react-router";
-import { Fragment } from "react";
 import { useTranslation } from "react-i18next";
 import { DefaultFeatures } from "~/application/dtos/shared/DefaultFeatures";
 import { SubscriptionFeatureLimitType } from "~/application/enums/subscriptions/SubscriptionFeatureLimitType";
@@ -63,7 +62,7 @@ function FeatureLinkContent({ feature, editing, onClickFeature }: Props) {
   );
 }
 
-export default function PlanFeatureDescription({ feature, editing, onClickFeature }: Props) {
+export default function PlanFeatureDescription({ feature, editing, onClickFeature }: Readonly<Props>) {
   return (
     <div className="flex items-center">
       {feature.type > 0 && feature.type !== SubscriptionFeatureLimitType.NOT_INCLUDED ? (
@@ -88,7 +87,7 @@ export default function PlanFeatureDescription({ feature, editing, onClickFeatur
   );
 }
 
-function FeatureTitle({ feature }: { feature: { title: string; value: number; href?: string | null; badge?: string | null } }) {
+function FeatureTitle({ feature }: Readonly<{ feature: { title: string; value: number; href?: string | null; badge?: string | null } }>) {
   const { t } = useTranslation();
   const value = typeof feature.value === "number" ? NumberUtils.intFormat(feature.value) : feature.value;
   return (

@@ -45,7 +45,7 @@ type Header = {
   name?: string;
   title: string;
 };
-export default function ApiKeysTable({ entities, items, withTenant, canCreate }: Props) {
+export default function ApiKeysTable({ entities, items, withTenant, canCreate }: Readonly<Props>) {
   const { t } = useTranslation();
 
   const [copiedKey, setCopiedKey] = useState("");
@@ -62,22 +62,28 @@ export default function ApiKeysTable({ entities, items, withTenant, canCreate }:
   };
 
   useEffect(() => {
-    const headers: Header[] = [];
+    const headersList: Header[] = [];
     if (withTenant) {
-      headers.push({ name: "tenant", title: t("models.tenant.object") });
+      headersList.push({ name: "tenant", title: t("models.tenant.object") });
     }
-    headers.push({ name: "key", title: t("models.apiKey.key") });
-    headers.push({ name: "alias", title: t("models.apiKey.alias") });
-    headers.push({ name: "usage", title: t("models.apiKey.usage") });
+    headersList.push(
+      { name: "key", title: t("models.apiKey.key") },
+      { name: "alias", title: t("models.apiKey.alias") },
+      { name: "usage", title: t("models.apiKey.usage") }
+    );
+
     entities
       .filter((f) => (f.type === DefaultEntityTypes.AppOnly || f.type === DefaultEntityTypes.All) && f.hasApi)
       .forEach((entity) => {
-        headers.push({ name: "entityId", title: t(entity.titlePlural) });
+        headersList.push({ name: "entityId", title: t(entity.titlePlural) });
       });
-    headers.push({ name: "expires", title: t("models.apiKey.expires") });
-    headers.push({ name: "createdAt", title: t("shared.createdAt") });
-    headers.push({ name: "createdByUser", title: t("shared.createdBy") });
-    setHeaders(headers);
+
+    headersList.push(
+      { name: "expires", title: t("models.apiKey.expires") },
+      { name: "createdAt", title: t("shared.createdAt") },
+      { name: "createdByUser", title: t("shared.createdBy") }
+    );
+    setHeaders(headersList);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [withTenant]);
 

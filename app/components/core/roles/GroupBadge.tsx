@@ -4,7 +4,7 @@ import ColorBadge from "~/components/ui/badges/ColorBadge";
 interface Props {
   item: Group;
 }
-export default function GroupBadge({ item }: Props) {
+export default function GroupBadge({ item }: Readonly<Props>) {
   return (
     <div className="flex items-center space-x-2">
       <ColorBadge color={item.color} />

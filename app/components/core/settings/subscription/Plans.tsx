@@ -24,7 +24,7 @@ interface Props {
   };
   onClickFeature?: (name: string) => void;
 }
-export default function Plans({ items, tenantSubscription, canSubmit, className, stripeCoupon, currenciesAndPeriod, onClickFeature }: Props) {
+export default function Plans({ items, tenantSubscription, canSubmit, className, stripeCoupon, currenciesAndPeriod, onClickFeature }: Readonly<Props>) {
   const [searchParams, setSearchParams] = useSearchParams();
   const [products] = useState(items);
   const [currency, setCurrency] = useState(currenciesAndPeriod.currencies.value);
@@ -57,7 +57,7 @@ export default function Plans({ items, tenantSubscription, canSubmit, className,
   }
 
   function checkUpgradeDowngrade(plan: SubscriptionProductDto) {
-    const existing = tenantSubscription?.products.find((f) => f)?.subscriptionProduct;
+    const existing = tenantSubscription?.products.find(Boolean)?.subscriptionProduct;
     if (existing) {
       if (plan.order > existing.order) {
         return { upgrade: true };

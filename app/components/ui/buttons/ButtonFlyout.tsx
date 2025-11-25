@@ -5,10 +5,10 @@ import clsx from "clsx";
 import ChevronDownIcon from "../icons/ChevronDownIcon";
 
 interface Props {
-  title: string;
-  className?: string;
-  disabled?: boolean;
-  children: ReactNode;
+  readonly title: string;
+  readonly className?: string;
+  readonly disabled?: boolean;
+  readonly children: ReactNode;
 }
 export default function ButtonFlyout({ title, className, disabled, children }: Props) {
   return (

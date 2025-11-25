@@ -185,8 +185,5 @@ export const HoverEffect = ({ items }: { items: FeatureDto[] }) => {
 };
 
 function Name({ item }: { item: FeatureDto }) {
-  switch (item.name) {
-    default:
-      return item.name;
-  }
+  return item.name;
 }

@@ -3,7 +3,7 @@ import clsx from "clsx";
 interface Props {
   onClick: () => void;
 }
-export default function SearchButton({ onClick }: Props) {
+export default function SearchButton({ onClick }: Readonly<Props>) {
   return (
     <div className="relative">
       <div className="inline-flex divide-x divide-gray-300 rounded-sm shadow-none">

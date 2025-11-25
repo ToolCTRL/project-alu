@@ -279,9 +279,7 @@ export default function Plan({
                       <span className="text-4xl font-bold tracking-tight">{getFormattedPrice()}</span>
                     </Fragment>
                   ) : (
-                    <Fragment>
-                      <span className="text-4xl font-bold tracking-tight">{getFormattedPrice()}</span>
-                    </Fragment>
+                    <span className="text-4xl font-bold tracking-tight">{getFormattedPrice()}</span>
                   )}{" "}
                   <span className="pr-1 text-sm font-bold">{getCurrencySymbolAt("end")}</span>
                   <span className="text-muted-foreground truncate uppercase"> {getCurrency()}</span>
@@ -355,11 +353,9 @@ export default function Plan({
                                     <td className="text-muted-foreground truncate px-3 py-2 text-sm lg:table-cell">
                                       {tier.perUnitPrice ? (
                                         <span>
-                                          <>
-                                            {getCurrencySymbol()}
-                                            {tier.perUnitPrice.toString() ?? "-"}
-                                            {/* <span className="text-xs uppercase">{getCurrency()}</span> */}
-                                          </>
+                                          {getCurrencySymbol()}
+                                          {tier.perUnitPrice.toString() ?? "-"}
+                                          {/* <span className="text-xs uppercase">{getCurrency()}</span> */}
                                         </span>
                                       ) : (
                                         "-"
@@ -368,10 +364,8 @@ export default function Plan({
                                     <td className="text-muted-foreground truncate px-3 py-2 text-sm lg:table-cell">
                                       {tier.flatFeePrice ? (
                                         <span>
-                                          <>
-                                            {getCurrencySymbol() ?? ""}
-                                            {tier.flatFeePrice.toString() ?? "-"}
-                                          </>
+                                          {getCurrencySymbol() ?? ""}
+                                          {tier.flatFeePrice.toString() ?? "-"}
                                         </span>
                                       ) : (
                                         "-"
@@ -534,7 +528,7 @@ function SubscribeOrBuyButton({
   alreadyOwned,
   isUpgrade,
   isDowngrade,
-}: SubscribeOrBuyButtonProps) {
+}: Readonly<SubscribeOrBuyButtonProps>) {
   const { t } = useTranslation();
 
   return (

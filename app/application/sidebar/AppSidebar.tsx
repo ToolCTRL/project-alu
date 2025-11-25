@@ -53,9 +53,9 @@ export const AppSidebar = ({ t, tenantId, entities, entityGroups, appConfigurati
     }
   });
 
-  const hiddenCrmSlugs = ["opportunities", "companies", "contacts", "tickets"];
+  const hiddenCrmSlugs = new Set(["opportunities", "companies", "contacts", "tickets"]);
   entities
-    .filter((f) => f.showInSidebar && !hiddenCrmSlugs.includes(f.slug))
+    .filter((f) => f.showInSidebar && !hiddenCrmSlugs.has(f.slug))
     .forEach((entity) => {
       entitiesItems.push({
         title: t(entity.titlePlural),

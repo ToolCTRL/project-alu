@@ -195,7 +195,7 @@ const PropertyOptionsForm = ({ title, onSet }: Props, ref: Ref<RefPropertyOption
                           </div>
                         )}
 
-                        <ButtonSecondary disabled={items.length === 1} type="button" onClick={() => setItems([...items.filter((_, index) => index !== idx)])}>
+                        <ButtonSecondary disabled={items.length === 1} type="button" onClick={() => setItems(items.filter((_, index) => index !== idx))}>
                           <TrashIcon className="text-muted-foreground h-4 w-4" aria-hidden="true" />
                         </ButtonSecondary>
                       </div>

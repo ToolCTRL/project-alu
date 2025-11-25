@@ -19,11 +19,11 @@ interface Props {
   disabled: boolean;
 }
 
-function FromTitleCell({ tiersMode, idx }: { tiersMode: string; idx: number }) {
+function FromTitleCell({ tiersMode, idx }: { readonly tiersMode: string; readonly idx: number }) {
   return <>{tiersMode === "graduated" ? <div>{idx === 0 ? <div>For the first</div> : <div>For the next</div>}</div> : <div>Total units</div>}</>;
 }
 
-function ToValueCell({ to }: { to?: number }) {
+function ToValueCell({ to }: { readonly to?: number }) {
   return <div className="text-muted-foreground flex justify-center font-medium">{to ? <span>{NumberUtils.numberFormat(to)}</span> : <span>∞</span>}</div>;
 }
 
@@ -44,7 +44,7 @@ function updateNewTierLimits(tiers: { from: number; to?: number }[]) {
   return tiers;
 }
 
-export default function UsageBasedPricesUnit({ item, onUpdate, disabled }: Props) {
+export default function UsageBasedPricesUnit({ item, onUpdate, disabled }: Readonly<Props>) {
   const { t } = useTranslation();
 
   const [unit, setUnit] = useState(item.unit);
@@ -78,7 +78,7 @@ export default function UsageBasedPricesUnit({ item, onUpdate, disabled }: Props
     const allTiers: { from: number; to?: number }[] = [];
     if (item) {
       item.tiers.forEach((tier) => {
-        if (!allTiers.find((f) => f.from === tier.from && f.to === tier.to)) {
+        if (!allTiers.some((f) => f.from === tier.from && f.to === tier.to)) {
           allTiers.push({ from: tier.from, to: tier.to ?? undefined });
         }
       });

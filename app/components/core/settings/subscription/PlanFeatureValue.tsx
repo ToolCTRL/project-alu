@@ -8,7 +8,7 @@ import XIcon from "~/components/ui/icons/XIcon";
 interface Props {
   item: SubscriptionFeatureDto | undefined;
 }
-export default function PlanFeatureValue({ item }: Props) {
+export default function PlanFeatureValue({ item }: Readonly<Props>) {
   const { t } = useTranslation();
   return (
     <div>

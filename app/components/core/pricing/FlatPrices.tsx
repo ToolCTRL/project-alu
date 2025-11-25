@@ -39,7 +39,7 @@ const DiscountCell = ({ discount }: { discount?: string }) => (
     )}
   </div>
 );
-export default function FlatPrices({ model, prices, setPrices, disabled, isPortalPlan }: Props) {
+export default function FlatPrices({ model, prices, setPrices, disabled, isPortalPlan }: Readonly<Props>) {
   const { t } = useTranslation();
   const [headers, setHeaders] = useState<RowHeaderDisplayDto<FlatPriceDto>[]>([]);
 
@@ -128,7 +128,7 @@ export default function FlatPrices({ model, prices, setPrices, disabled, isPorta
         } as SubscriptionPriceDto);
       }
     });
-    setPrices(newPrices as SubscriptionPriceDto[]);
+    setPrices(newPrices);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [flatPrices, trialPeriodDays]);
 
@@ -141,63 +141,7 @@ export default function FlatPrices({ model, prices, setPrices, disabled, isPorta
     };
     let headers: RowHeaderDisplayDto<FlatPriceDto>[] = [currencyHeader];
 
-    if (model !== PricingModel.ONCE) {
-      const monthlyPriceHeader: RowHeaderDisplayDto<FlatPriceDto> = {
-        name: "monthlyPrice",
-        title: "Monthly Price",
-        value: (e) => e.monthlyPrice,
-        type: InputType.NUMBER,
-        inputNumberStep: "0.01",
-        setValue: (e, idx) => updateItemByIdx(flatPrices, setFlatPrices, idx, { monthlyPrice: e }),
-        editable: () => !disabled,
-        inputOptional: true,
-        hidden: !selectedBillingPeriods.find((f) => f === SubscriptionBillingPeriod.MONTHLY),
-      };
-      const quarterlyPriceHeader: RowHeaderDisplayDto<FlatPriceDto> = {
-        name: "quarterlyPrice",
-        title: "Quarterly Price",
-        value: (e) => e.quarterlyPrice,
-        type: InputType.NUMBER,
-        inputNumberStep: "0.01",
-        setValue: (e, idx) => updateItemByIdx(flatPrices, setFlatPrices, idx, { quarterlyPrice: e }),
-        editable: () => !disabled,
-        inputOptional: true,
-        hidden: !selectedBillingPeriods.find((f) => f === SubscriptionBillingPeriod.QUARTERLY),
-      };
-      const semiAnnualPriceHeader: RowHeaderDisplayDto<FlatPriceDto> = {
-        name: "semiAnnualPrice",
-        title: "Semi-Annual Price",
-        value: (e) => e.semiAnnualPrice,
-        type: InputType.NUMBER,
-        inputNumberStep: "0.01",
-        setValue: (e, idx) => updateItemByIdx(flatPrices, setFlatPrices, idx, { semiAnnualPrice: e }),
-        editable: () => !disabled,
-        inputOptional: true,
-        hidden: !selectedBillingPeriods.find((f) => f === SubscriptionBillingPeriod.SEMI_ANNUAL),
-      };
-      const yearlyPriceHeader: RowHeaderDisplayDto<FlatPriceDto> = {
-        name: "yearlyPrice",
-        title: "Yearly Price",
-        value: (e) => e.yearlyPrice,
-        type: InputType.NUMBER,
-        inputNumberStep: "0.01",
-        setValue: (e, idx) => updateItemByIdx(flatPrices, setFlatPrices, idx, { yearlyPrice: e }),
-        editable: () => !disabled,
-        inputOptional: true,
-        hidden: !selectedBillingPeriods.find((f) => f === SubscriptionBillingPeriod.YEARLY),
-      };
-      const discountHeader: RowHeaderDisplayDto<FlatPriceDto> = {
-        name: "discount",
-        title: "Yearly Discount",
-        className: "text-center",
-        value: (e) => getYearlyDiscount(e),
-        formattedValue: (e) => <DiscountCell discount={getYearlyDiscount(e)} />,
-        hidden:
-          !selectedBillingPeriods.find((f) => f === SubscriptionBillingPeriod.YEARLY) ||
-          !selectedBillingPeriods.find((f) => f === SubscriptionBillingPeriod.MONTHLY),
-      };
-      headers = [...headers, monthlyPriceHeader, quarterlyPriceHeader, semiAnnualPriceHeader, yearlyPriceHeader, discountHeader];
-    } else {
+    if (model === PricingModel.ONCE) {
       const oneTimePriceHeader: RowHeaderDisplayDto<FlatPriceDto> = {
         name: "oneTimePrice",
         title: "One time Price",
@@ -209,6 +153,62 @@ export default function FlatPrices({ model, prices, setPrices, disabled, isPorta
         inputOptional: true,
       };
       headers = [...headers, oneTimePriceHeader];
+    } else {
+      const monthlyPriceHeader: RowHeaderDisplayDto<FlatPriceDto> = {
+        name: "monthlyPrice",
+        title: "Monthly Price",
+        value: (e) => e.monthlyPrice,
+        type: InputType.NUMBER,
+        inputNumberStep: "0.01",
+        setValue: (e, idx) => updateItemByIdx(flatPrices, setFlatPrices, idx, { monthlyPrice: e }),
+        editable: () => !disabled,
+        inputOptional: true,
+        hidden: !selectedBillingPeriods.some((f) => f === SubscriptionBillingPeriod.MONTHLY),
+      };
+      const quarterlyPriceHeader: RowHeaderDisplayDto<FlatPriceDto> = {
+        name: "quarterlyPrice",
+        title: "Quarterly Price",
+        value: (e) => e.quarterlyPrice,
+        type: InputType.NUMBER,
+        inputNumberStep: "0.01",
+        setValue: (e, idx) => updateItemByIdx(flatPrices, setFlatPrices, idx, { quarterlyPrice: e }),
+        editable: () => !disabled,
+        inputOptional: true,
+        hidden: !selectedBillingPeriods.some((f) => f === SubscriptionBillingPeriod.QUARTERLY),
+      };
+      const semiAnnualPriceHeader: RowHeaderDisplayDto<FlatPriceDto> = {
+        name: "semiAnnualPrice",
+        title: "Semi-Annual Price",
+        value: (e) => e.semiAnnualPrice,
+        type: InputType.NUMBER,
+        inputNumberStep: "0.01",
+        setValue: (e, idx) => updateItemByIdx(flatPrices, setFlatPrices, idx, { semiAnnualPrice: e }),
+        editable: () => !disabled,
+        inputOptional: true,
+        hidden: !selectedBillingPeriods.some((f) => f === SubscriptionBillingPeriod.SEMI_ANNUAL),
+      };
+      const yearlyPriceHeader: RowHeaderDisplayDto<FlatPriceDto> = {
+        name: "yearlyPrice",
+        title: "Yearly Price",
+        value: (e) => e.yearlyPrice,
+        type: InputType.NUMBER,
+        inputNumberStep: "0.01",
+        setValue: (e, idx) => updateItemByIdx(flatPrices, setFlatPrices, idx, { yearlyPrice: e }),
+        editable: () => !disabled,
+        inputOptional: true,
+        hidden: !selectedBillingPeriods.some((f) => f === SubscriptionBillingPeriod.YEARLY),
+      };
+      const discountHeader: RowHeaderDisplayDto<FlatPriceDto> = {
+        name: "discount",
+        title: "Yearly Discount",
+        className: "text-center",
+        value: (e) => getYearlyDiscount(e),
+        formattedValue: (e) => <DiscountCell discount={getYearlyDiscount(e)} />,
+        hidden:
+          !selectedBillingPeriods.some((f) => f === SubscriptionBillingPeriod.YEARLY) ||
+          !selectedBillingPeriods.some((f) => f === SubscriptionBillingPeriod.MONTHLY),
+      };
+      headers = [...headers, monthlyPriceHeader, quarterlyPriceHeader, semiAnnualPriceHeader, yearlyPriceHeader, discountHeader];
     }
     setHeaders(headers);
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -231,8 +231,7 @@ export default function FlatPrices({ model, prices, setPrices, disabled, isPorta
   }
 
   return (
-    <>
-      <div className="space-y-2 divide-gray-300">
+    <div className="space-y-2 divide-gray-300">
         {model !== PricingModel.ONCE && (
           <div className="w-72">
             <InputCombobox
@@ -269,7 +268,6 @@ export default function FlatPrices({ model, prices, setPrices, disabled, isPorta
             </div>
           );
         })}
-      </div>
-    </>
+    </div>
   );
 }

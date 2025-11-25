@@ -2,7 +2,7 @@ interface Props {
   layout: string;
   className?: string;
 }
-export default function EntityViewLayoutBadge({ layout, className = "h-5 w-5 text-muted-foreground" }: Props) {
+export default function EntityViewLayoutBadge({ layout, className = "h-5 w-5 text-muted-foreground" }: Readonly<Props>) {
   return (
     <>
       {layout === "table" && (

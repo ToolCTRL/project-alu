@@ -6,57 +6,55 @@ import CheckIcon from "~/components/ui/icons/CheckIcon";
 import XIcon from "~/components/ui/icons/XIcon";
 import { BooleanFormatType } from "~/utils/shared/BooleanUtils";
 
-export function getBooleanAsStringValue({ value, format, t }: { value?: boolean; format?: BooleanFormatType; t?: TFunction }) {
-  return !format || format === "yesNo"
-    ? value
-      ? t
-        ? t("shared.yes")
-        : "Yes"
-      : t
-      ? t("shared.no")
-      : "No"
-    : format === "trueFalse"
-    ? value
-      ? t
-        ? t("shared.true")
-        : "True"
-      : t
-      ? t("shared.false")
-      : "False"
-    : format === "enabledDisabled"
-    ? value
-      ? t
-        ? t("shared.enabled")
-        : "Enabled"
-      : t
-      ? t("shared.disabled")
-      : "Disabled"
-    : format === "onOff"
-    ? value
-      ? t
-        ? t("shared.on")
-        : "On"
-      : t
-      ? t("shared.off")
-      : "Off"
-    : format === "activeInactive"
-    ? value
-      ? t
-        ? t("shared.active")
-        : "Active"
-      : t
-      ? t("shared.inactive")
-      : "Inactive"
-    : "";
+function getTranslatedText(key: string, fallback: string, t?: TFunction): string {
+  return t ? t(key) : fallback;
 }
-export default function RowBooleanCell({ value, format }: { value?: boolean; format?: BooleanFormatType }) {
+
+function getFormatLabels(format: BooleanFormatType, t?: TFunction): { trueLabel: string; falseLabel: string } {
+  switch (format) {
+    case "yesNo":
+      return {
+        trueLabel: getTranslatedText("shared.yes", "Yes", t),
+        falseLabel: getTranslatedText("shared.no", "No", t),
+      };
+    case "trueFalse":
+      return {
+        trueLabel: getTranslatedText("shared.true", "True", t),
+        falseLabel: getTranslatedText("shared.false", "False", t),
+      };
+    case "enabledDisabled":
+      return {
+        trueLabel: getTranslatedText("shared.enabled", "Enabled", t),
+        falseLabel: getTranslatedText("shared.disabled", "Disabled", t),
+      };
+    case "onOff":
+      return {
+        trueLabel: getTranslatedText("shared.on", "On", t),
+        falseLabel: getTranslatedText("shared.off", "Off", t),
+      };
+    case "activeInactive":
+      return {
+        trueLabel: getTranslatedText("shared.active", "Active", t),
+        falseLabel: getTranslatedText("shared.inactive", "Inactive", t),
+      };
+    default:
+      return { trueLabel: "", falseLabel: "" };
+  }
+}
+
+export function getBooleanAsStringValue({ value, format, t }: { value?: boolean; format?: BooleanFormatType; t?: TFunction }) {
+  const effectiveFormat = format || "yesNo";
+  const labels = getFormatLabels(effectiveFormat, t);
+  return value ? labels.trueLabel : labels.falseLabel;
+}
+export default function RowBooleanCell({ value, format }: Readonly<{ value?: boolean; format?: BooleanFormatType }>) {
   const { t } = useTranslation();
   return (
     <>
-      {!format ? (
-        <div>{value ? <CheckIcon className="h-4 w-4 text-teal-500" /> : <XIcon className="text-muted-foreground h-4 w-4" />}</div>
-      ) : (
+      {format ? (
         <SimpleBadge title={getBooleanAsStringValue({ value, format, t })} color={value ? Colors.GREEN : Colors.GRAY} />
+      ) : (
+        <div>{value ? <CheckIcon className="h-4 w-4 text-teal-500" /> : <XIcon className="text-muted-foreground h-4 w-4" />}</div>
       )}
     </>
   );

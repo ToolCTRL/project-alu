@@ -8,9 +8,9 @@ import SelectorIcon from "../../ui/icons/SelectorIcon";
 import CheckIcon from "../../ui/icons/CheckIcon";
 
 interface Props {
-  className?: string;
-  selected: PropertyType;
-  onSelected: (item: PropertyType) => void;
+  readonly className?: string;
+  readonly selected: PropertyType;
+  readonly onSelected: (item: PropertyType) => void;
 }
 
 export default function PropertyTypeSelector({ className, selected, onSelected }: Props) {
@@ -54,9 +54,9 @@ export default function PropertyTypeSelector({ className, selected, onSelected }
                   <div className=" flex select-none justify-center p-2 text-red-500">There are no fields</div>
                 ) : (
                   <>
-                    {items.map((item, idx) => (
+                    {items.map((item) => (
                       <Listbox.Option
-                        key={idx}
+                        key={item}
                         className={({ active }) =>
                           clsx(active ? " bg-secondary " : "", "hover:bg-secondary relative cursor-default select-none py-2 pl-3 pr-9")
                         }

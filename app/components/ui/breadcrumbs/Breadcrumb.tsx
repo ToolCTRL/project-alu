@@ -9,9 +9,9 @@ interface MenuItem {
 }
 
 interface Props {
-  menu: MenuItem[];
-  className?: string;
-  home?: string;
+  readonly menu: MenuItem[];
+  readonly className?: string;
+  readonly home?: string;
 }
 
 export default function Breadcrumb({ className = "", home = "", menu = [] }: Props) {
@@ -38,9 +38,9 @@ export default function Breadcrumb({ className = "", home = "", menu = [] }: Pro
             </Link>
           </div>
         </li>
-        {menu.map((item, idx) => {
+        {menu.map((item) => {
           return (
-            <li key={idx} className="flex">
+            <li key={item.title || Math.random()} className="flex">
               <div className="flex items-center">
                 <svg
                   className="h-full w-5 shrink-0 text-gray-200 sm:w-6"
@@ -53,21 +53,15 @@ export default function Breadcrumb({ className = "", home = "", menu = [] }: Pro
                   <path d="M.293 0l22 22-22 22h1.414l22-22-22-22H.293z" />
                 </svg>
 
-                {(() => {
-                  if (!item.routePath) {
-                    return (
-                      <div className="text-muted-foreground hover:text-foreground/80 ml-2 select-none truncate font-medium sm:ml-4 sm:text-sm">
-                        {item.title}
-                      </div>
-                    );
-                  } else {
-                    return (
-                      <Link to={item.routePath} className="text-muted-foreground hover:text-foreground/80 ml-2 truncate font-medium sm:ml-4 sm:text-sm">
-                        {item.title}
-                      </Link>
-                    );
-                  }
-                })()}
+                {item.routePath ? (
+                  <Link to={item.routePath} className="text-muted-foreground hover:text-foreground/80 ml-2 truncate font-medium sm:ml-4 sm:text-sm">
+                    {item.title}
+                  </Link>
+                ) : (
+                  <div className="text-muted-foreground hover:text-foreground/80 ml-2 select-none truncate font-medium sm:ml-4 sm:text-sm">
+                    {item.title}
+                  </div>
+                )}
               </div>
             </li>
           );

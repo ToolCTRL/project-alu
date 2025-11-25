@@ -9,7 +9,7 @@ interface Props {
   item?: EntityWebhook;
 }
 
-export default function EntityWebhookForm({ item }: Props) {
+export default function EntityWebhookForm({ item }: Readonly<Props>) {
   const [action, setAction] = useState<string>(item?.action ?? "Created");
   const [method, setMethod] = useState<string>(item?.method ?? "POST");
   const [endpoint, setEndpoint] = useState<string>(item?.endpoint ?? "");

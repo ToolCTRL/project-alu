@@ -1,5 +1,4 @@
 import clsx from "clsx";
-import { Fragment } from "react";
 import { useTranslation } from "react-i18next";
 import { SubscriptionProductDto } from "~/application/dtos/subscriptions/SubscriptionProductDto";
 import { SubscriptionBillingPeriod } from "~/application/enums/subscriptions/SubscriptionBillingPeriod";

@@ -2,7 +2,7 @@ import { clsx } from "clsx";
 import { RowTagWithDetails } from "~/utils/db/entities/rowTags.db.server";
 import { getBackgroundColor } from "~/utils/shared/ColorUtils";
 
-export default function RowTagsCell({ items }: { items: RowTagWithDetails[] }) {
+export default function RowTagsCell({ items }: Readonly<{ items: RowTagWithDetails[] }>) {
   return (
     <div>
       {items?.map((rowTag) => {

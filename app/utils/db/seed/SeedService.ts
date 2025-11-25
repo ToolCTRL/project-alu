@@ -19,7 +19,7 @@ const adminUser = {
 async function seed() {
   if (process.env.NODE_ENV === "production") {
     if (!process.env.SEED_PASSWORD || !process.env.SEED_ADMIN_EMAIL) {
-      throw Error("You must set SEED_PASSWORD and SEED_ADMIN_EMAIL environment variables in production.");
+      throw new Error("You must set SEED_PASSWORD and SEED_ADMIN_EMAIL environment variables in production.");
     }
   }
 

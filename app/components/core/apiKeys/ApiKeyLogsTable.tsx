@@ -63,7 +63,7 @@ const ErrorCell = ({ item }: { item: ApiKeyLogWithDetails }) => (
   <div className="text-red-500">{item.error}</div>
 );
 
-export default function ApiKeyLogsTable({ withTenant, items, pagination }: Props) {
+export default function ApiKeyLogsTable({ withTenant, items, pagination }: Readonly<Props>) {
   const { t } = useTranslation();
 
   const [headers, setHeaders] = useState<RowHeaderDisplayDto<ApiKeyLogWithDetails>[]>([]);

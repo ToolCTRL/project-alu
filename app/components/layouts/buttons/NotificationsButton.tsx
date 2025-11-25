@@ -3,7 +3,7 @@ import clsx from "clsx";
 interface Props {
   unseenCount?: number;
 }
-export default function NotificationsButton({ unseenCount }: Props) {
+export default function NotificationsButton({ unseenCount }: Readonly<Props>) {
   return (
     <div className="relative">
       <div className="inline-flex divide-x divide-gray-300 rounded-sm shadow-none">

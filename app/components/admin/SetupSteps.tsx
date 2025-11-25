@@ -31,13 +31,13 @@ function IncompletedIcon() {
   );
 }
 
-function SetupStep({ item, index, total }: { item: SetupItem; index: number; total: number }) {
+function SetupStep({ item, index, total }: { readonly item: SetupItem; readonly index: number; readonly total: number }) {
   const { t } = useTranslation();
 
   return (
     <li key={index} className="border-border bg-background space-y-3 rounded-lg border p-4">
       <div className="flex items-center space-x-2">
-        <div className="shrink-0">{!item.completed ? <CompletedIcon /> : <IncompletedIcon />}</div>
+        <div className="shrink-0">{item.completed ? <CompletedIcon /> : <IncompletedIcon />}</div>
         <div className="flex w-full justify-between">
           <div className="font-medium">{item.title}</div>
           <div className=" text-muted-foreground text-sm">
@@ -48,14 +48,14 @@ function SetupStep({ item, index, total }: { item: SetupItem; index: number; tot
       <p className=" text-sm">{item.description}</p>
       <div>
         <ButtonSecondary to={item.path} className="mt-3">
-          {!item.completed ? t("app.sidebar.setup") : `${t("shared.goTo")} ${item.title.toLowerCase()}`} &rarr;
+          {item.completed ? `${t("shared.goTo")} ${item.title.toLowerCase()}` : t("app.sidebar.setup")} &rarr;
         </ButtonSecondary>
       </div>
     </li>
   );
 }
 
-export default function SetupSteps({ items }: Props) {
+export default function SetupSteps({ items }: Readonly<Props>) {
   const { t } = useTranslation();
   return (
     <div>

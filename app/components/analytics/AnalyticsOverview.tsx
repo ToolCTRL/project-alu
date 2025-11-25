@@ -8,7 +8,7 @@ import { AnalyticsOverviewDto } from "~/utils/helpers/AnalyticsHelper";
 import NumberUtils from "~/utils/shared/NumberUtils";
 import ColorBadge from "../ui/badges/ColorBadge";
 
-export default function AnalyticsOverview({ overview }: { overview: AnalyticsOverviewDto }) {
+export default function AnalyticsOverview({ overview }: { readonly overview: AnalyticsOverviewDto }) {
   const { t } = useTranslation();
   const { authenticated } = useRootData();
   return (

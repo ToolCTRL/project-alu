@@ -16,7 +16,7 @@ export default function CurrentSubscriptionButton() {
   }
   return (
     <>
-      {!hasSubscription() && (
+      {hasSubscription() ? null : (
         <div className="hidden divide-x divide-gray-300 rounded-sm shadow-none lg:inline-flex">
           <div className="relative z-0 inline-flex rounded-full text-xs shadow-none sm:text-sm">
             <Link

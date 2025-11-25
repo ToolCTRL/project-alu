@@ -5,14 +5,13 @@ import clsx from "clsx";
 import SelectorIcon from "../../ui/icons/SelectorIcon";
 import CheckIcon from "../../ui/icons/CheckIcon";
 import { FormulaDto } from "~/modules/formulas/dtos/FormulaDto";
-// import PropertySubtypeBadge from "./PropertySubtypeBadge";
 
 interface Props {
-  name: string;
-  items: FormulaDto[];
-  className?: string;
-  selected: string | undefined;
-  onSelected: (item: string) => void;
+  readonly name: string;
+  readonly items: FormulaDto[];
+  readonly className?: string;
+  readonly selected: string | undefined;
+  readonly onSelected: (item: string) => void;
 }
 
 export default function PropertyFormulaSelector({ name, items, className, selected, onSelected }: Props) {
@@ -26,7 +25,6 @@ export default function PropertyFormulaSelector({ name, items, className, select
             <Listbox.Button className="focus:border-border focus:ring-ring border-border text-foreground bg-background relative w-full cursor-default rounded-md border py-2 pl-3 pr-10 text-left shadow-2xs focus:outline-hidden focus:ring-1 sm:text-sm">
               {selected ? (
                 <div className="flex items-center space-x-2">
-                  {/* <PropertySubtypeBadge subtype={selected} className="h-4 w-4 text-muted-foreground" /> */}
                   <div className="truncate">{items.find((item) => item.id === selected)?.name}</div>
                 </div>
               ) : (
@@ -43,9 +41,9 @@ export default function PropertyFormulaSelector({ name, items, className, select
                   <div className=" flex select-none justify-center p-2 text-red-500">There are no formulas</div>
                 ) : (
                   <>
-                    {items.map((item, idx) => (
+                    {items.map((item) => (
                       <Listbox.Option
-                        key={idx}
+                        key={item.id}
                         className={({ active }) =>
                           clsx(active ? " bg-secondary " : "", "hover:bg-secondary relative cursor-default select-none py-2 pl-3 pr-9")
                         }

@@ -8,9 +8,9 @@ interface MenuItem {
 }
 
 interface Props {
-  menu: MenuItem[];
-  className?: string;
-  home?: string;
+  readonly menu: MenuItem[];
+  readonly className?: string;
+  readonly home?: string;
 }
 
 export default function BreadcrumbSimple({ menu = [], className = "", home = "" }: Props) {

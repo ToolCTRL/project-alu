@@ -9,10 +9,10 @@ const DEBUG_MODE = false;
 
 interface Props {
   type?: "button" | "submit";
-  to?: string | undefined;
+  to?: string;
   children?: ReactNode;
   className?: string;
-  target?: undefined | "_blank";
+  target?: "_blank";
   role?: string;
   rel?: string;
   event: {

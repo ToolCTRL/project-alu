@@ -27,7 +27,7 @@ export default function RowOverviewHeader({
   buttons,
   customActions,
   truncate = true,
-}: {
+}: Readonly<{
   rowData: RowsApi.GetRowData;
   item: RowWithDetails;
   canUpdate: boolean;
@@ -47,7 +47,7 @@ export default function RowOverviewHeader({
   buttons?: ReactNode;
   customActions?: { entity: string; label: string; action: string }[];
   truncate?: boolean;
-}) {
+}>) {
   const { t } = useTranslation();
   const appOrAdminData = useAppOrAdminData();
   const navigation = useNavigation();

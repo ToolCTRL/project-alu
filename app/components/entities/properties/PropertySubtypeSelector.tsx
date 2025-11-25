@@ -4,13 +4,12 @@ import { useTranslation } from "react-i18next";
 import clsx from "clsx";
 import SelectorIcon from "../../ui/icons/SelectorIcon";
 import CheckIcon from "../../ui/icons/CheckIcon";
-// import PropertySubtypeBadge from "./PropertySubtypeBadge";
 
 interface Props {
-  types: string[];
-  className?: string;
-  selected: string | undefined;
-  onSelected: (item: string) => void;
+  readonly types: string[];
+  readonly className?: string;
+  readonly selected: string | undefined;
+  readonly onSelected: (item: string) => void;
 }
 
 export default function PropertySubtypeSelector({ types, className, selected, onSelected }: Props) {
@@ -24,7 +23,6 @@ export default function PropertySubtypeSelector({ types, className, selected, on
             <Listbox.Button className="focus:border-border focus:ring-ring border-border text-foreground bg-background relative w-full cursor-default rounded-md border py-2 pl-3 pr-10 text-left shadow-2xs focus:outline-hidden focus:ring-1 sm:text-sm">
               {selected ? (
                 <div className="flex items-center space-x-2">
-                  {/* <PropertySubtypeBadge subtype={selected} className="h-4 w-4 text-muted-foreground" /> */}
                   <div className="truncate">{t("entities.subtypes." + selected)}</div>
                 </div>
               ) : (
@@ -41,9 +39,9 @@ export default function PropertySubtypeSelector({ types, className, selected, on
                   <div className=" flex select-none justify-center p-2 text-red-500">There are no subtypes</div>
                 ) : (
                   <>
-                    {types.map((item, idx) => (
+                    {types.map((item) => (
                       <Listbox.Option
-                        key={idx}
+                        key={item}
                         className={({ active }) =>
                           clsx(active ? " bg-secondary " : "", "hover:bg-secondary relative cursor-default select-none py-2 pl-3 pr-9")
                         }
@@ -52,7 +50,6 @@ export default function PropertySubtypeSelector({ types, className, selected, on
                         {({ selected, active }) => (
                           <>
                             <div className="flex items-center space-x-2">
-                              {/* <PropertySubtypeBadge subtype={item} className={clsx(active ? "" : "", "h-4 w-4")} /> */}
                               <div className="truncate">{t("entities.subtypes." + item)}</div>
                             </div>
                             {selected ? (

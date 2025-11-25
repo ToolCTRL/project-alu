@@ -12,14 +12,14 @@ export default function RowRelationshipRowsByEntity({
   onRelatedRowClick,
   routes,
   type,
-}: {
+}: Readonly<{
   entity: EntityWithDetails;
   item: RowWithDetails;
   allEntities: EntityWithDetails[];
   onRelatedRowClick?: () => void;
   routes?: EntitiesApi.Routes;
   type: "parents" | "children";
-}) {
+}>) {
   const { t } = useTranslation();
   const relatedEntities = type === "children" ? entity.childEntities.filter((f) => f.hiddenIfEmpty) : entity.parentEntities.filter((f) => f.hiddenIfEmpty);
   let relatedRows: any[] = [];

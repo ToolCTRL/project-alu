@@ -22,7 +22,7 @@ export default function OnboardingVariantModal({
   onComplete,
   onLinkClick,
   onUpdateCurrentStepState,
-}: {
+}: Readonly<{
   block: OnboardingBlockDto;
   currentStepIdx: number;
   open: boolean;
@@ -32,7 +32,7 @@ export default function OnboardingVariantModal({
   onComplete: () => void;
   onLinkClick: (item: { text: string; href: string }) => void;
   onUpdateCurrentStepState: (state: { [key: string]: string }) => void;
-}) {
+}>) {
   const { t } = useTranslation();
   function dismiss() {
     onDismiss();

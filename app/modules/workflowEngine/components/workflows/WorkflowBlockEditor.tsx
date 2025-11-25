@@ -24,7 +24,7 @@ export default function WorkflowBlockEditor({
   onDeleteConnection,
   onSelectedBlock,
   onUpdateConditionsGroups,
-}: {
+}: Readonly<{
   workflow: WorkflowDto;
 
   block: WorkflowBlockDto;
@@ -35,7 +35,7 @@ export default function WorkflowBlockEditor({
   onDeleteConnection: (connection: { fromBlockId: string; toBlockId: string }) => void;
   onSelectedBlock: (workflowBlock: WorkflowBlockDto | null) => void;
   onUpdateConditionsGroups: (blockId: string, conditionGroups: WorkflowConditionsGroupDto[]) => void;
-}) {
+}>) {
   const workflowBlock = WorkflowBlockTypes.find((x) => x.value === block.type);
   const [errors, setErrors] = useState<string[]>([]);
   useEffect(() => {

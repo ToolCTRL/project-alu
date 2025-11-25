@@ -14,7 +14,7 @@ interface Props {
   items: BlogPostWithDetails[];
 }
 
-function TitleCell({ item, blogPath, t }: { item: BlogPostWithDetails; blogPath: string; t: any }) {
+function TitleCell({ item, blogPath, t }: { readonly item: BlogPostWithDetails; readonly blogPath: string; readonly t: any }) {
   return (
     <div className="flex flex-col">
       <div>
@@ -32,7 +32,7 @@ function TitleCell({ item, blogPath, t }: { item: BlogPostWithDetails; blogPath:
   );
 }
 
-function CreatedAtCellPost({ item }: { item: BlogPostWithDetails }) {
+function CreatedAtCellPost({ item }: { readonly item: BlogPostWithDetails }) {
   return (
     <div>
       <DateCell date={item.createdAt} displays={["ymd"]} />
@@ -40,7 +40,7 @@ function CreatedAtCellPost({ item }: { item: BlogPostWithDetails }) {
   );
 }
 
-function AuthorCell({ item }: { item: BlogPostWithDetails }) {
+function AuthorCell({ item }: { readonly item: BlogPostWithDetails }) {
   return (
     <div className="flex flex-col">
       {item.author ? (
@@ -54,7 +54,7 @@ function AuthorCell({ item }: { item: BlogPostWithDetails }) {
   );
 }
 
-function ActionsCell({ item, params, t }: { item: BlogPostWithDetails; params: any; t: any }) {
+function ActionsCell({ item, params, t }: { readonly item: BlogPostWithDetails; readonly params: any; readonly t: any }) {
   return (
     <div className="flex items-center space-x-2">
       <ButtonTertiary to={UrlUtils.getModulePath(params, "blog/" + item.id)}>{t("shared.edit")}</ButtonTertiary>
@@ -62,7 +62,7 @@ function ActionsCell({ item, params, t }: { item: BlogPostWithDetails; params: a
   );
 }
 
-export default function PostsTable({ blogPath, items }: Props) {
+export default function PostsTable({ blogPath, items }: Readonly<Props>) {
   const { t } = useTranslation();
   const params = useParams();
 

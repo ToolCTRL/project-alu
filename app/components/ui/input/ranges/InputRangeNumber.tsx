@@ -52,7 +52,7 @@ export default function InputRangeNumber({
   icon,
   borderless,
   autoFocus,
-}: Props) {
+}: Readonly<Props>) {
   const { t } = useTranslation();
 
   // useImperativeHandle(ref, () => ({ inputMin, inputMax }));

@@ -13,11 +13,11 @@ interface Props {
   onNewRoute: string;
 }
 
-function GroupNameCell({ item }: { item: GroupWithDetails }) {
+function GroupNameCell({ item }: { readonly item: GroupWithDetails }) {
   return <GroupBadge item={item} />;
 }
 
-function GroupActionsCell({ item }: { item: GroupWithDetails }) {
+function GroupActionsCell({ item }: { readonly item: GroupWithDetails }) {
   return (
     <Link to={`groups/${item.id}`} className="hover:underline">
       Edit
@@ -25,7 +25,7 @@ function GroupActionsCell({ item }: { item: GroupWithDetails }) {
   );
 }
 
-export default function GroupsTable({ items, onNewRoute }: Props) {
+export default function GroupsTable({ items, onNewRoute }: Readonly<Props>) {
   const { t } = useTranslation();
 
   const [searchInput, setSearchInput] = useState("");

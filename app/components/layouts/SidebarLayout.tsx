@@ -12,12 +12,10 @@ import { useTitleData } from "~/utils/data/useTitleData";
 import { useAppOrAdminData } from "~/utils/data/useAppOrAdminData";
 import ChatSupportButton from "./buttons/ChatSupportButton";
 import { useRootData } from "~/utils/data/useRootData";
-import NotificationsButton from "./buttons/NotificationsButton";
 import OnboardingButton from "./buttons/OnboardingButton";
 import OnboardingSession from "~/modules/onboarding/components/OnboardingSession";
 import { useKBar } from "kbar";
 import { getUserHasPermission } from "~/utils/helpers/PermissionsHelper";
-import SaasRockUpdateButton from "./buttons/SaasRockUpdateButton";
 import AddFeedbackButton from "./buttons/AddFeedbackButton";
 import { SideBarItem } from "~/application/sidebar/SidebarItem";
 import clsx from "clsx";
@@ -31,7 +29,7 @@ interface Props {
   className?: string;
 }
 
-export default function SidebarLayout({ layout, children, menuItems, className = "h-screen" }: Props) {
+export default function SidebarLayout({ layout, children, menuItems, className = "h-screen" }: Readonly<Props>) {
   const { query } = useKBar();
 
   const rootData = useRootData();
@@ -49,7 +47,7 @@ export default function SidebarLayout({ layout, children, menuItems, className =
     try {
       // @ts-ignore
       $crisp?.push(["do", "chat:hide"]);
-    } catch (e) {
+    } catch {
       // ignore
     }
   }, []);
@@ -214,7 +212,7 @@ function NavBar({
   buttons,
   onOpenCommandPalette,
   onOpenOnboardingModal,
-}: {
+}: Readonly<{
   layout?: string;
   title?: string;
   buttons: {
@@ -228,7 +226,7 @@ function NavBar({
   };
   onOpenCommandPalette: () => void;
   onOpenOnboardingModal: () => void;
-}) {
+}>) {
   const appOrAdminData = useAppOrAdminData();
   const rootData = useRootData();
   const navigate = useNavigate();

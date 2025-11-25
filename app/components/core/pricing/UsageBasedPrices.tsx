@@ -73,7 +73,7 @@ function buildUsageBasedPrices(units: SubscriptionUsageBasedUnitDto[]): Subscrip
   return usageBasedPrices;
 }
 
-export default function UsageBasedPrices({ initial, onUpdate, disabled }: Props) {
+export default function UsageBasedPrices({ initial, onUpdate, disabled }: Readonly<Props>) {
   const { t } = useTranslation();
 
   const [units, setUnits] = useState<SubscriptionUsageBasedUnitDto[]>([]);

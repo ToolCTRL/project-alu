@@ -1,16 +1,20 @@
 import DateUtils, { DateFormatType } from "~/utils/shared/DateUtils";
 
+function formatDateToIso(value: Date): string {
+  try {
+    const date = new Date(value);
+    return date.toISOString().split("T")[0];
+  } catch {
+    return value.toISOString().split("T")[0];
+  }
+}
+
 export function getDateAsString({ value, format }: { value?: Date | null; format?: DateFormatType }) {
   if (!value) {
     return "";
   }
   if (!format) {
-    try {
-      const date = new Date(value);
-      return date.toISOString().split("T")[0];
-    } catch (e: any) {
-      return value.toISOString().split("T")[0];
-    }
+    return formatDateToIso(value);
   }
   switch (format) {
     case "YYYY-MM-DD":
@@ -26,37 +30,34 @@ export function getDateAsString({ value, format }: { value?: Date | null; format
   }
 }
 
-export default function RowDateCell({ value, format }: { value?: Date | null; format?: DateFormatType }) {
-  function getText() {
-    if (!value) {
-      return "";
-    }
-    try {
-      const date = new Date(value);
-      return date.toISOString().split("T")[0];
-    } catch (e: any) {
-      return value.toISOString().split("T")[0];
-    }
+function getFormattedDateContent(value: Date, format?: DateFormatType): JSX.Element | string {
+  if (!format) {
+    return formatDateToIso(value);
   }
-  return (
-    <>
-      {!value ? (
-        <div></div>
-      ) : (
-        <div>
-          {!format ? (
-            getText()
-          ) : format === "YYYY-MM-DD" ? (
-            <span>{DateUtils.dateYMD(value)}</span>
-          ) : format === "DD-MM-YYYY" ? (
-            <span>{DateUtils.dateDMY(value)}</span>
-          ) : format === "MM-DD-YYYY" ? (
-            <span>{DateUtils.dateMDY(value)}</span>
-          ) : format === "diff" ? (
-            <span>{DateUtils.dateAgo(value)}</span>
-          ) : null}
-        </div>
-      )}
-    </>
-  );
+
+  if (format === "YYYY-MM-DD") {
+    return <span>{DateUtils.dateYMD(value)}</span>;
+  }
+
+  if (format === "DD-MM-YYYY") {
+    return <span>{DateUtils.dateDMY(value)}</span>;
+  }
+
+  if (format === "MM-DD-YYYY") {
+    return <span>{DateUtils.dateMDY(value)}</span>;
+  }
+
+  if (format === "diff") {
+    return <span>{DateUtils.dateAgo(value)}</span>;
+  }
+
+  return "";
+}
+
+export default function RowDateCell({ value, format }: Readonly<{ value?: Date | null; format?: DateFormatType }>) {
+  if (!value) {
+    return <div></div>;
+  }
+
+  return <div>{getFormattedDateContent(value, format)}</div>;
 }

@@ -19,7 +19,7 @@ interface Props {
   children: ReactNode;
 }
 
-export default function StackedLayout({ layout, children }: Props) {
+export default function StackedLayout({ layout, children }: Readonly<Props>) {
   const params = useParams();
   const appData = useAppData();
   const rootData = useRootData();
@@ -85,12 +85,12 @@ export default function StackedLayout({ layout, children }: Props) {
               <div className="hidden md:block">
                 <div className="ml-10 flex items-baseline space-x-4">
                   {/*Current: "bg-gray-900 text-white", Default: "text-gray-300 hover:bg-gray-700 hover:text-white" */}
-                  {getMenu().map((group, index) => {
+                  {getMenu().map((group) => {
                     return (
-                      <div key={index} className="flex items-baseline space-x-4 py-1">
-                        {group.items.map((menuItem, index) => {
+                      <div key={group.title} className="flex items-baseline space-x-4 py-1">
+                        {group.items.map((menuItem) => {
                           return (
-                            <div key={index}>
+                            <div key={menuItem.path}>
                               <Link
                                 to={menuItem.path}
                                 className={clsx(
@@ -112,8 +112,6 @@ export default function StackedLayout({ layout, children }: Props) {
               </div>
             </div>
             <div className="flex shrink-0 items-center space-x-2">
-              {/* {layout === "admin" && <LayoutSelector className="text-sm" />} */}
-              {/* {layout === "admin" && <LocaleSelector className="text-sm" />} */}
               {layout === "app" && <QuickActionsButton entities={appData.entities.filter((f) => f.showInSidebar)} className="text-muted-foreground" />}
               <ProfileButton user={appData.user} layout={layout} />
               <button

@@ -15,7 +15,7 @@ interface Props {
   item: TenantSubscriptionProductWithDetails;
   onCancel?: (item: TenantSubscriptionProductWithDetails) => void;
 }
-export default function TenantProduct({ item, onCancel }: Props) {
+export default function TenantProduct({ item, onCancel }: Readonly<Props>) {
   const { t } = useTranslation();
   const rootData = useRootData();
   const confirmModal = useRef<RefConfirmModal>(null);
@@ -63,12 +63,7 @@ export default function TenantProduct({ item, onCancel }: Props) {
       {item.currentPeriodStart && item.currentPeriodEnd && (
         <div className="text-foreground/80 flex flex-col text-sm sm:flex-row sm:justify-between">
           <div className="flex items-center space-x-2">
-            {!item.endsAt ? (
-              <div title={`From ${DateUtils.dateYMDHMSMS(item.currentPeriodStart)} to ${DateUtils.dateYMDHMSMS(item.currentPeriodEnd)}`}>
-                {t("settings.subscription.period.current")} ({DateUtils.dateMonthDayYear(item.currentPeriodStart)} –{" "}
-                {DateUtils.dateMonthDayYear(item.currentPeriodEnd)})
-              </div>
-            ) : (
+            {item.endsAt ? (
               <div className="flex space-x-2">
                 <div>
                   {new Date() < new Date(item.endsAt) ? (
@@ -81,6 +76,11 @@ export default function TenantProduct({ item, onCancel }: Props) {
                     </span>
                   )}
                 </div>
+              </div>
+            ) : (
+              <div title={`From ${DateUtils.dateYMDHMSMS(item.currentPeriodStart)} to ${DateUtils.dateYMDHMSMS(item.currentPeriodEnd)}`}>
+                {t("settings.subscription.period.current")} ({DateUtils.dateMonthDayYear(item.currentPeriodStart)} –{" "}
+                {DateUtils.dateMonthDayYear(item.currentPeriodEnd)})
               </div>
             )}
           </div>
@@ -122,7 +122,7 @@ export default function TenantProduct({ item, onCancel }: Props) {
                       .sort((a, b) => a.from - b.from)
                       .map((tier, idx) => {
                         return (
-                          <div key={idx} className="flex items-center space-x-1">
+                          <div key={`${tier.from}-${tier.to}`} className="flex items-center space-x-1">
                             {price.subscriptionUsageBasedPrice?.tiersMode === "graduated" ? <div>{idx === 0 ? "First" : "Next"}</div> : <div>Total</div>}
                             {tier.to ? (
                               <>
@@ -138,14 +138,12 @@ export default function TenantProduct({ item, onCancel }: Props) {
                             )}
                             {tier.perUnitPrice && (
                               <div>
-                                <>
-                                  +
-                                  {getFormattedPriceInCurrency({
-                                    price: Number(tier.perUnitPrice),
-                                    currency: price.subscriptionUsageBasedPrice?.currency,
-                                  })}{" "}
-                                  x {t(price.subscriptionUsageBasedPrice?.unitTitle ?? "")}
-                                </>
+                                +
+                                {getFormattedPriceInCurrency({
+                                  price: Number(tier.perUnitPrice),
+                                  currency: price.subscriptionUsageBasedPrice?.currency,
+                                })}{" "}
+                                x {t(price.subscriptionUsageBasedPrice?.unitTitle ?? "")}
                               </div>
                             )}
                             {tier.flatFeePrice && (

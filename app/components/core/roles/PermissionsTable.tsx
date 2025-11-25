@@ -15,11 +15,11 @@ interface Props {
   canReorder?: boolean;
 }
 
-function PermissionNameCell({ item }: { item: PermissionWithRoles }) {
+function PermissionNameCell({ item }: { readonly item: PermissionWithRoles }) {
   return <RoleBadge item={item} />;
 }
 
-function PermissionRolesCell({ item }: { item: PermissionWithRoles }) {
+function PermissionRolesCell({ item }: { readonly item: PermissionWithRoles }) {
   return (
     <div className="w-64 truncate">
       <span className="max-w-sm truncate text-sm italic">
@@ -32,7 +32,7 @@ function PermissionRolesCell({ item }: { item: PermissionWithRoles }) {
   );
 }
 
-function PermissionOrderCell({ item, idx, items }: { item: PermissionWithRoles; idx: number; items: PermissionWithRoles[] }) {
+function PermissionOrderCell({ item, idx, items }: { readonly item: PermissionWithRoles; readonly idx: number; readonly items: PermissionWithRoles[] }) {
   return (
     <div>
       {item.order}

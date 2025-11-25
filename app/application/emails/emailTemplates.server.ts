@@ -1,6 +1,6 @@
 import { EmailTemplate } from "../dtos/email/EmailTemplate";
-import fs from "fs";
-import path from "path";
+import fs from "node:fs";
+import path from "node:path";
 
 function cmp(a: any, b: any) {
   if (a > b) return +1;
