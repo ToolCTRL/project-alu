@@ -50,7 +50,7 @@ export type ApiAccessValidation = {
 };
 async function validateBearerToken(request: Request): Promise<ApiAccessValidation> {
   const authorization = request.headers.get("Authorization");
-  if (!authorization || !authorization.startsWith("Bearer ")) {
+  if (!authorization?.startsWith("Bearer ")) {
     return { tenant: null };
   }
 
@@ -171,7 +171,7 @@ export async function validateTenantApiKey(request: Request, params: Params): Pr
   if (!apiKey.active) {
     throw await setApiError(request, params, "Inactive API Key", 400, apiKeyLog.id);
   }
-  if (apiKey.expires && apiKey?.expires < new Date()) {
+  if (apiKey.expires && apiKey.expires < new Date()) {
     throw await setApiError(request, params, "Expired API Key", 400, apiKeyLog.id);
   }
   const tenantSubscription = await getActiveTenantSubscriptions(apiKey.tenantId);
@@ -209,14 +209,6 @@ export async function validateTenantApiKey(request: Request, params: Params): Pr
     }
   }
 
-  // eslint-disable-next-line no-console
-  // console.log({
-  //   method: request.method,
-  //   pathname: new URL(request.url).pathname,
-  //   params,
-  //   tenant: apiKey.tenant.name,
-  //   apiKeyRemainingQuota: usage?.remaining,
-  // });
 
   return {
     tenant: apiKey.tenant,

@@ -468,9 +468,9 @@ export async function seedRolesAndPermissions(adminEmail?: string): Promise<void
     users
       .filter((f) => f.admin)
       .map(async (user) => {
-        adminRoles.map(async (adminRole) => {
+        adminRoles.forEach(async (adminRole) => {
           if (adminEmail && user.email === adminEmail) {
-            return await createUserRole(user.id, adminRole.id);
+            await createUserRole(user.id, adminRole.id);
           }
         });
       })
@@ -479,11 +479,11 @@ export async function seedRolesAndPermissions(adminEmail?: string): Promise<void
   const tenants = await adminGetAllTenants();
   await Promise.all(
     tenants.map(async (tenant) => {
-      tenant.users.map(async (tenantUser) => {
+      tenant.users.forEach(async (tenantUser) => {
         appRoles
           .filter((role) => role.assignToNewUsers)
-          .map(async (appRole) => {
-            return await createUserRole(tenantUser.userId, appRole.id, tenant.id);
+          .forEach(async (appRole) => {
+            await createUserRole(tenantUser.userId, appRole.id, tenant.id);
           });
       });
     })

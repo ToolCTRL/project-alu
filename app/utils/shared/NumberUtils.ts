@@ -24,12 +24,9 @@ const decimalFormat = (value: number, decimalPlaces: number = 2): string => {
     return value?.toString() ?? "";
   }
 };
+// intFormat uses same implementation as numberFormat for consistent integer formatting
 const intFormat = (value: number | string): string => {
-  try {
-    return numeral(value).format("0,0");
-  } catch (e) {
-    return value?.toString() ?? "";
-  }
+  return numberFormat(typeof value === 'string' ? parseFloat(value) || 0 : value);
 };
 const pad = (num: number, size: number) => {
   const s = "000000000" + num;

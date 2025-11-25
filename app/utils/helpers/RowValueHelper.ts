@@ -116,7 +116,7 @@ function getMultiple({
   let multiple = value as RowValueMultiple[];
   return multiple ?? [];
 }
-function getNumberRange({
+function getRangeValue({
   entity,
   row,
   name,
@@ -133,22 +133,19 @@ function getNumberRange({
     dateMax: null,
   };
 }
-function getDateRange({
-  entity,
-  row,
-  name,
-}: {
+function getNumberRange(params: {
   entity: Entity & { properties: Property[] };
   row: { values: RowValueWithDetails[] };
   name: string;
 }): RowValueRangeDto {
-  const value = RowHelper.getPropertyValue({ entity, item: row, propertyName: name });
-  return (value as RowValueRangeDto) ?? {
-    numberMin: null,
-    numberMax: null,
-    dateMin: null,
-    dateMax: null,
-  };
+  return getRangeValue(params);
+}
+function getDateRange(params: {
+  entity: Entity & { properties: Property[] };
+  row: { values: RowValueWithDetails[] };
+  name: string;
+}): RowValueRangeDto {
+  return getRangeValue(params);
 }
 
 export default {

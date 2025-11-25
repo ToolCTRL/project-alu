@@ -39,28 +39,43 @@ export default function RowValueUI({ property, value, withTitle }: Props) {
         {withTitle && <div className="text-xs font-medium">{property.title}</div>}
       </div>
     );
-  } else if (property.type === PropertyType.SELECT) {
-    const display = property.attributes.find((f) => f.name === PropertyAttributeName.SelectOptions)?.value as SelectOptionsDisplay;
-    return <RowSelectedOptionCell value={rowValue as string} options={property.options ?? []} display={display} />;
-  } else if ([PropertyType.MULTI_SELECT, PropertyType.MULTI_TEXT].includes(property.type)) {
+  }
+
+  if ([PropertyType.SELECT, PropertyType.MULTI_SELECT, PropertyType.MULTI_TEXT].includes(property.type)) {
+    if (property.type === PropertyType.SELECT) {
+      const display = property.attributes.find((f) => f.name === PropertyAttributeName.SelectOptions)?.value as SelectOptionsDisplay;
+      return <RowSelectedOptionCell value={rowValue as string} options={property.options ?? []} display={display} />;
+    }
     return <PropertyMultipleValueBadge values={rowValue as RowValueMultipleDto[]} options={property.options ?? []} />;
-  } else if ([PropertyType.RANGE_NUMBER].includes(property.type)) {
+  }
+
+  if (property.type === PropertyType.RANGE_NUMBER) {
     const range = rowValue as RowValueRangeDto;
     const format = property.attributes.find((f) => f.name === PropertyAttributeName.FormatNumber)?.value as NumberFormatType;
     return <RowRangeNumberCell value={range} format={format} currencySymbol={undefined} />;
-  } else if ([PropertyType.RANGE_DATE].includes(property.type)) {
+  }
+
+  if (property.type === PropertyType.RANGE_DATE) {
     const range = rowValue as RowValueRangeDto;
     const format = property.attributes.find((f) => f.name === PropertyAttributeName.FormatDate)?.value as DateFormatType;
     return <RowRangeDateCell value={range} format={format} />;
-  } else if ([PropertyType.FORMULA].includes(property.type)) {
+  }
+
+  if (property.type === PropertyType.FORMULA) {
     return <PropertyFormulaValueBadge property={property} value={rowValue} />;
-  } else if (property.type === PropertyType.NUMBER) {
+  }
+
+  if (property.type === PropertyType.NUMBER) {
     const format = property.attributes.find((f) => f.name === PropertyAttributeName.FormatNumber)?.value;
     return <RowNumberCell value={rowValue as number} format={format as NumberFormatType} />;
-  } else if (property.type === PropertyType.DATE) {
+  }
+
+  if (property.type === PropertyType.DATE) {
     const format = property.attributes.find((f) => f.name === PropertyAttributeName.FormatDate)?.value;
     return <RowDateCell value={rowValue as Date} format={format as DateFormatType} />;
-  } else if (property.type === PropertyType.MEDIA) {
+  }
+
+  if (property.type === PropertyType.MEDIA) {
     const media = rowValue as MediaDto[];
     return <RowMediaCell media={media} />;
   }

@@ -1,33 +1,90 @@
 {
-  "batch": 12,
-  "date": "2025-11-25",
-  "fixedIssues": 26,
-  "fixesByRule": {
-    "S125": 15,
-    "S1854": 2,
-    "S4043": 1,
-    "S6478": 0,
-    "S6479": 0,
-    "S3358": 0,
-    "S7721": 0,
-    "S6853": 0,
-    "S6772": 0,
-    "S6819": 0
-  },
-  "fixedFiles": [
-    "app/routes/admin/metrics/settings.tsx",
-    "app/routes/admin/metrics/summary.tsx",
-    "app/routes/admin/notifications/channels.tsx",
-    "app/routes/admin/onboarding/onboardings.$id.tsx",
-    "app/routes/admin/onboarding/onboardings.$id/sessions.tsx",
-    "app/routes/admin/onboarding/onboardings.$id/settings.tsx",
-    "app/routes/admin/pages/index.tsx",
-    "app/routes/admin/playground/ai/openai/chatgpt.tsx",
-    "app/routes/admin/playground/long-running-tasks/index.tsx",
-    "app/routes/admin/settings/internationalization.tsx",
-    "app/routes/admin/settings/cookies.tsx",
-    "app/routes/admin/settings/pricing.features.tsx"
-  ],
-  "status": "IN_PROGRESS",
-  "note": "Fixed commented code (S125), useless assignments (S1854), and toSorted (S4043). Remaining: S6478, S6479, S3358, S7721, S6853, S6772, S6819 require more complex refactoring."
+  "batch_11_fixes": {
+    "already_fixed_by_recent_refactoring": [
+      {
+        "file": "app/components/layouts/buttons/ProfileButton.tsx",
+        "rule": "S6582",
+        "status": "FIXED_IN_RECENT_REFACTORING",
+        "note": "Items map now uses conditional rendering with onClick check"
+      },
+      {
+        "file": "app/components/layouts/sidebars/shadcn/nav-actions.tsx",
+        "rule": "S6638",
+        "status": "FIXED_IN_RECENT_REFACTORING",
+        "note": "Fragment and ternary removed, condition simplified to && !hasSubscription()"
+      }
+    ],
+    "high_priority_remaining": [
+      {
+        "rule": "typescript:S125",
+        "count": 15,
+        "action": "Remove commented code",
+        "files": [
+          "ChangeSubscription.tsx (3 instances)",
+          "EntityForm.tsx",
+          "TenantPropertiesList.tsx",
+          "EntityRelationshipsTable.tsx",
+          "RowForm.tsx (5 instances)",
+          "RowProperties.tsx (2 instances)",
+          "RowSettingsPermissions.tsx"
+        ]
+      },
+      {
+        "rule": "typescript:S6479",
+        "count": 17,
+        "action": "Replace array index with unique ID in keys",
+        "files": [
+          "SidebarMenu.tsx (2 instances)",
+          "MemberInvitationsListAndTable.tsx (2 instances)",
+          "PlansGrouped.tsx (2 instances)",
+          "UpdateTenantDetailsForm.tsx",
+          "TenantTypeForm.tsx",
+          "SelectUsers.tsx",
+          "EntitySummaries.tsx",
+          "RowCard.tsx (2 instances)",
+          "RowForm.tsx",
+          "RowLogs.tsx",
+          "RowProperties.tsx",
+          "RowSettingsPermissions.tsx"
+        ]
+      },
+      {
+        "rule": "typescript:S3358",
+        "count": 12,
+        "action": "Extract nested ternary into helper function or if-else",
+        "files": [
+          "UserBadge.tsx",
+          "EntitiesTable.tsx (2 instances)",
+          "EntityRelationshipForm.tsx",
+          "RowActivity.tsx",
+          "RowOverviewHeader.tsx",
+          "RowSettingsPermissions.tsx (4 instances)"
+        ]
+      },
+      {
+        "rule": "typescript:S4043",
+        "count": 4,
+        "action": "Replace sort() with toSorted()",
+        "files": [
+          "TenantsTable.tsx",
+          "UsersTable.tsx",
+          "EntitySummaries.tsx"
+        ]
+      },
+      {
+        "rule": "typescript:S2589",
+        "count": 3,
+        "action": "Remove always-truthy conditions",
+        "files": [
+          "UsersTable.tsx (3 instances)"
+        ]
+      }
+    ],
+    "impact_summary": {
+      "total_issues_to_fix": 57,
+      "estimated_time": "3-4 hours for manual fixes",
+      "automation_possible": "S125 (commented code removal), S4043 (sort->toSorted)",
+      "manual_review_needed": "S6479 (need unique IDs), S3358 (refactoring logic)"
+    }
+  }
 }
