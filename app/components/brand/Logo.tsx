@@ -6,12 +6,12 @@ import { useRootData } from "~/utils/data/useRootData";
 import { Fragment } from "react";
 
 interface Props {
-  className?: string;
-  size?: string;
-  to?: string;
+  readonly className?: string;
+  readonly size?: string;
+  readonly to?: string;
 }
 
-export default function Logo({ className = "", size = "h-9", to }: Props) {
+export default function Logo({ className = "", size = "h-9", to }: Readonly<Props>) {
   const { appConfiguration } = useRootData();
   return (
     <Link to={to ?? "/"} className={clsx(className, "flex")}>

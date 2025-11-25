@@ -16,31 +16,22 @@ export default function CurrentSubscriptionButton() {
   }
   return (
     <>
-      {hasSubscription() ? null : (
+      {!hasSubscription() && (
         <div className="hidden divide-x divide-gray-300 rounded-sm shadow-none lg:inline-flex">
           <div className="relative z-0 inline-flex rounded-full text-xs shadow-none sm:text-sm">
             <Link
               to={!params.tenant ? "" : "/subscribe/" + params.tenant}
               className={clsx(
                 "text-muted-foreground bg-secondary border-border relative inline-flex items-center space-x-1 rounded-md border p-2 font-medium shadow-inner hover:bg-teal-50 hover:text-teal-800 focus:z-10 focus:bg-teal-100 focus:text-teal-900 focus:outline-hidden",
-                hasSubscription() &&
-                  "flex space-x-2 px-3 text-teal-900  hover:bg-teal-50 hover:text-teal-800 focus:z-10 focus:bg-teal-100 focus:text-teal-900 focus:outline-hidden",
-                !hasSubscription() &&
-                  " border-yellow-200 bg-yellow-50 text-yellow-800 hover:bg-yellow-100 hover:text-yellow-900 focus:z-10 focus:bg-yellow-100 focus:text-yellow-900 focus:outline-hidden"
+                " border-yellow-200 bg-yellow-50 text-yellow-800 hover:bg-yellow-100 hover:text-yellow-900 focus:z-10 focus:bg-yellow-100 focus:text-yellow-900 focus:outline-hidden"
               )}
               aria-haspopup="listbox"
               aria-expanded="true"
               aria-labelledby="listbox-label"
             >
-              {hasSubscription() ? (
-                <div>
-                  <span>{getSubscriptionProducts().join(", ")} </span>
-                </div>
-              ) : (
-                <div>
-                  <span>{t("pricing.subscribe")} </span>
-                </div>
-              )}
+              <div>
+                <span>{t("pricing.subscribe")} </span>
+              </div>
               <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
                 <path
                   fillRule="evenodd"

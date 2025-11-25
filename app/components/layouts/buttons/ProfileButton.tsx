@@ -161,8 +161,7 @@ export default function ProfileButton({ user, layout, items }: Readonly<Props>) 
           onClick={() => setOpened(!opened)}
           className={clsx(
             "bg-background text-muted-foreground hover:bg-secondary border-border relative inline-flex items-center rounded-full border font-medium shadow-inner focus:z-10 focus:outline-hidden focus:ring-2 focus:ring-offset-2",
-            !user?.avatar && "p-2",
-            user?.avatar && "p-1"
+            user?.avatar ? "p-1" : "p-2"
           )}
           id="user-menu"
           aria-label="User menu"

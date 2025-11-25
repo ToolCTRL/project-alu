@@ -28,7 +28,7 @@ interface Props {
   canUpdate?: boolean;
   canDelete?: boolean;
 }
-export default function PostForm({ item, categories, tags, canUpdate = true, canDelete = true }: Props) {
+export default function PostForm({ item, categories, tags, canUpdate = true, canDelete = true }: Readonly<Props>) {
   const { t } = useTranslation();
   const navigation = useNavigation();
   const params = useParams();

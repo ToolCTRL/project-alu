@@ -1,16 +1,14 @@
 "use client";
 
-import { ChevronRight } from "lucide-react";
+import { ChevronRight, Settings } from "lucide-react";
 import { Fragment } from "react/jsx-runtime";
 import { SidebarGroupDto } from "~/application/sidebar/SidebarGroupDto";
-import clsx from "clsx";
 
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "~/components/ui/collapsible";
 import {
   SidebarGroup,
   SidebarGroupLabel,
   SidebarMenu,
-  SidebarMenuAction,
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarMenuSub,
@@ -19,23 +17,12 @@ import {
 } from "~/components/ui/sidebar";
 import SidebarIcon from "../../icons/SidebarIcon";
 import { Link } from "react-router";
-import { Settings } from "lucide-react";
 
 export function NavMain({
   items,
-}: {
-  // items: {
-  //   title: string;
-  //   url: string;
-  //   icon: LucideIcon;
-  //   isActive?: boolean;
-  //   items?: {
-  //     title: string;
-  //     url: string;
-  //   }[];
-  // }[];
+}: Readonly<{
   items: SidebarGroupDto[];
-}) {
+}>) {
   return (
     <Fragment>
       {/* <SidebarGroup>
@@ -80,11 +67,11 @@ export function NavMain({
       </SidebarGroup> */}
 
       {items.map((group, idxGroup) => (
-        <SidebarGroup key={idxGroup}>
+        <SidebarGroup key={group.title || idxGroup}>
           {group.title && <SidebarGroupLabel>{group.title}</SidebarGroupLabel>}
           <SidebarMenu>
             {group.items.map((item, idx) => (
-              <Fragment key={idx}>
+              <Fragment key={item.path || idx}>
                 {!item.items?.length ? (
                   <SidebarMenuItem>
                     {(() => {

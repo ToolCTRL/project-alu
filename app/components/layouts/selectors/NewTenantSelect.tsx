@@ -4,7 +4,7 @@ interface Props {
   onOpenCommandPalette: () => void;
 }
 
-export default function NewTenantSelect({ onOpenCommandPalette }: Props) {
+export default function NewTenantSelect({ onOpenCommandPalette }: Readonly<Props>) {
   const appData = useAppData();
   if (!appData.currentTenant) {
     return null;

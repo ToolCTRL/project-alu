@@ -1,7 +1,6 @@
 "use client";
 
 import * as React from "react";
-import { AudioWaveform, BookOpen, Bot, Command, Frame, GalleryVerticalEnd, LifeBuoy, Map, PieChart, Send, Settings2, SquareTerminal } from "lucide-react";
 import LogoDark from "~/assets/img/logo-dark.png";
 import LogoLight from "~/assets/img/logo-light.png";
 import { NavMain } from "./nav-main";

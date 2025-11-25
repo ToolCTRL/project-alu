@@ -11,7 +11,7 @@ import { Button } from "../ui/button";
 interface Props {
   onUpdated?: () => void;
 }
-export default function CookieConsentSettings({ onUpdated }: Props) {
+export default function CookieConsentSettings({ onUpdated }: Readonly<Props>) {
   const { t } = useTranslation();
   let { userSession } = useRootData();
   const submit = useSubmit();

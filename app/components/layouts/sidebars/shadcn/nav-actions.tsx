@@ -134,7 +134,7 @@ export function NavActions({
         {appConfiguration.app.features.tenantFeedback && layout === "app" && <AddFeedbackButton />}
 
         {/* NavBar Button: Chat Support */}
-        {(layout === "app" || layout === "admin") && !!rootData.chatWebsiteId && (
+        {(layout === "app" || layout === "admin") && rootData.chatWebsiteId && (
           <Button
             variant="ghost"
             size="icon"

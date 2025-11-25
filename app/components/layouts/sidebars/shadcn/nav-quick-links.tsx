@@ -1,6 +1,6 @@
 "use client";
 
-import { Folder, MoreHorizontal, Share, Trash2, type LucideIcon } from "lucide-react";
+import { Folder, MoreHorizontal, Share, Trash2 } from "lucide-react";
 import { SidebarGroupDto } from "~/application/sidebar/SidebarGroupDto";
 
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "~/components/ui/dropdown-menu";
@@ -10,14 +10,9 @@ import { useTranslation } from "react-i18next";
 
 export function NavQuickLinks({
   item,
-}: {
-  // items: {
-  //   name: string;
-  //   url: string;
-  //   icon: LucideIcon;
-  // }[];
+}: Readonly<{
   item: SidebarGroupDto;
-}) {
+}>) {
   const { t } = useTranslation();
   const { isMobile } = useSidebar();
 
@@ -25,13 +20,13 @@ export function NavQuickLinks({
     <SidebarGroup className="group-data-[collapsible=icon]:hidden">
       <SidebarGroupLabel>{item.title}</SidebarGroupLabel>
       <SidebarMenu>
-        {item.items.map((item) => (
-          <SidebarMenuItem key={item.path}>
+        {item.items.map((mapItem) => (
+          <SidebarMenuItem key={mapItem.path}>
             <SidebarMenuButton asChild>
-              <a href={item.path}>
-                {/* <item.icon /> */}
-                {(item.icon !== undefined || item.entityIcon !== undefined) && <SidebarIcon className="h-5 w-5 " item={item} />}
-                <span>{item.title}</span>
+              <a href={mapItem.path}>
+                {/* <mapItem.icon /> */}
+                {(mapItem.icon !== undefined || mapItem.entityIcon !== undefined) && <SidebarIcon className="h-5 w-5 " item={mapItem} />}
+                <span>{mapItem.title}</span>
               </a>
             </SidebarMenuButton>
             <DropdownMenu>

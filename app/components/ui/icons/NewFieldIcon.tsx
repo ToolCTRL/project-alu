@@ -1,4 +1,4 @@
-export default function NewFieldIcon({ className }: { className?: string }) {
+export default function NewFieldIcon({ className }: Readonly<{ className?: string }>) {
   return (
     <svg className={className} xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="50" height="50" viewBox="0 0 172 172" fill="currentColor">
       <g

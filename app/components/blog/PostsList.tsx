@@ -12,7 +12,7 @@ interface Props {
   withDate: boolean;
 }
 
-export default function PostsList({ blogPath, items, withCoverImage, withAuthorName = true, withAuthorAvatar = true, withDate = true }: Props) {
+export default function PostsList({ blogPath, items, withCoverImage, withAuthorName = true, withAuthorAvatar = true, withDate = true }: Readonly<Props>) {
   function getLinkPath(item: BlogPostDto) {
     if (item.slug.startsWith("https:")) {
       return item.slug;

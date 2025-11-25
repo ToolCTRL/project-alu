@@ -11,7 +11,7 @@ interface Props {
   };
   redirectTo: string;
 }
-export default function ApiKeyCreatedModal({ apiKey, redirectTo }: Props) {
+export default function ApiKeyCreatedModal({ apiKey, redirectTo }: Readonly<Props>) {
   const { t } = useTranslation();
   const navigate = useNavigate();
   return (

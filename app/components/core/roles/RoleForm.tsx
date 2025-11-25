@@ -6,21 +6,19 @@ import InputCheckboxInline from "~/components/ui/input/InputCheckboxInline";
 import InputCheckboxWithDescription from "~/components/ui/input/InputCheckboxWithDescription";
 import { useEffect, useState } from "react";
 import FormGroup from "~/components/ui/forms/FormGroup";
-import ButtonTertiary from "~/components/ui/buttons/ButtonTertiary";
-import InputRadioGroup from "~/components/ui/input/InputRadioGroup";
 import InputSearch from "~/components/ui/input/InputSearch";
 import InputSelect from "~/components/ui/input/InputSelect";
 import { Button } from "~/components/ui/button";
 
 interface Props {
-  item?: RoleWithPermissions;
-  permissions: PermissionWithRoles[];
-  onCancel: () => void;
-  canUpdate?: boolean;
-  canDelete?: boolean;
+  readonly item?: RoleWithPermissions;
+  readonly permissions: PermissionWithRoles[];
+  readonly onCancel: () => void;
+  readonly canUpdate?: boolean;
+  readonly canDelete?: boolean;
 }
 
-export default function RoleForm({ item, permissions, onCancel, canUpdate = true, canDelete }: Props) {
+export default function RoleForm({ item, permissions, onCancel, canUpdate = true, canDelete }: Readonly<Props>) {
   const { t } = useTranslation();
 
   const [rolePermissions, setRolePermissions] = useState<string[]>([]);

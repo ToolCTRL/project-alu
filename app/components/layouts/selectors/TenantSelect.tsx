@@ -4,14 +4,13 @@ interface Props {
   onOpenCommandPalette: () => void;
 }
 
-export default function TenantSelect({ onOpenCommandPalette }: Props) {
+export default function TenantSelect({ onOpenCommandPalette }: Readonly<Props>) {
   const appData = useAppData();
   if (!appData.currentTenant) {
     return null;
   }
   return (
-    <>
-      <button type="button" onClick={onOpenCommandPalette} className="group flex shrink-0 bg-slate-800 p-4 focus:outline-hidden">
+    <button type="button" onClick={onOpenCommandPalette} className="group flex shrink-0 bg-slate-800 p-4 focus:outline-hidden">
         <div className="group block w-full shrink-0">
           <div className="flex items-center justify-between">
             <div className="flex items-center truncate text-left">
@@ -41,6 +40,5 @@ export default function TenantSelect({ onOpenCommandPalette }: Props) {
           </div>
         </div>
       </button>
-    </>
   );
 }

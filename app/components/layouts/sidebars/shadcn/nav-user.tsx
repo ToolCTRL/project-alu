@@ -1,6 +1,6 @@
 "use client";
 
-import { BadgeCheck, Bell, ChevronsUpDown, CreditCard, LogOut, Sparkles } from "lucide-react";
+import { BadgeCheck, ChevronsUpDown, CreditCard, LogOut } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { Link, useFetcher, useLocation, useMatches, useParams, useSearchParams } from "react-router";
 import { Fragment } from "react";
@@ -21,16 +21,14 @@ import UrlUtils from "~/utils/app/UrlUtils";
 import UserUtils from "~/utils/app/UserUtils";
 import { useRootData } from "~/utils/data/useRootData";
 import AnalyticsHelper from "~/utils/helpers/AnalyticsHelper";
-import { DarkModeSvgs } from "~/components/ui/toggles/DarkModeToggle";
-import { DARK_MODE_IN_APP } from "~/application/Constants";
 
 export function NavUser({
   user,
   layout,
-}: {
+}: Readonly<{
   user: { email: string; firstName: string | null; lastName: string | null; avatar: string | null; admin?: { userId: string } | null };
   layout: "app" | "admin" | "docs";
-}) {
+}>) {
   const { t } = useTranslation();
   const { isMobile } = useSidebar();
   const { userSession } = useRootData();
@@ -42,24 +40,6 @@ export function NavUser({
   const rootData = useRootData();
   const matches = useMatches();
 
-  const onThemeToggle = async () => {
-    const isDarkMode = userSession?.lightOrDarkMode === "dark";
-    const form = new FormData();
-    form.set("action", "toggleLightOrDarkMode");
-    form.set("redirect", location.pathname + "?" + searchParams.toString());
-    fetcher.submit(form, { method: "post", action: "/", preventScrollReset: true });
-
-    const routeMatch = matches.find((m) => m.pathname == location.pathname);
-    AnalyticsHelper.addEvent({
-      url: location.pathname,
-      route: routeMatch?.id,
-      rootData,
-      action: "toggleLightOrDarkMode",
-      category: "user",
-      label: "lightOrDarkMode",
-      value: isDarkMode ? "light" : "dark",
-    });
-  };
 
   return (
     <SidebarMenu>
@@ -99,44 +79,35 @@ export function NavUser({
             <DropdownMenuSeparator />
 
             {layout === "app" ? (
-              <Fragment>
-                <DropdownMenuGroup>
-                  <Link to={!params.tenant ? "" : UrlUtils.currentTenantUrl(params, `settings/profile`)}>
-                    <DropdownMenuItem>
-                      <GearIcon className="mr-2 h-4 w-4" />
-                      {t("app.navbar.profile")}
-                    </DropdownMenuItem>
-                  </Link>
-                  <Link to={UrlUtils.currentTenantUrl(params, `settings/subscription`)}>
-                    <DropdownMenuItem>
-                      <CreditCard className="mr-2 h-4 w-4" />
-                      {t("app.navbar.subscription")}
-                    </DropdownMenuItem>
-                  </Link>
-                  <Link to={UrlUtils.currentTenantUrl(params, `settings/account`)}>
-                    <DropdownMenuItem>
-                      <BadgeCheck className="mr-2 h-4 w-4" />
-                      {t("app.navbar.tenant")}
-                    </DropdownMenuItem>
-                  </Link>
-
-                  {/* <DropdownMenuItem>
-                <Bell className="mr-2 h-4 w-4" />
-                Notifications
-              </DropdownMenuItem> */}
-                </DropdownMenuGroup>
-              </Fragment>
+              <DropdownMenuGroup>
+                <Link to={!params.tenant ? "" : UrlUtils.currentTenantUrl(params, `settings/profile`)}>
+                  <DropdownMenuItem>
+                    <GearIcon className="mr-2 h-4 w-4" />
+                    {t("app.navbar.profile")}
+                  </DropdownMenuItem>
+                </Link>
+                <Link to={UrlUtils.currentTenantUrl(params, `settings/subscription`)}>
+                  <DropdownMenuItem>
+                    <CreditCard className="mr-2 h-4 w-4" />
+                    {t("app.navbar.subscription")}
+                  </DropdownMenuItem>
+                </Link>
+                <Link to={UrlUtils.currentTenantUrl(params, `settings/account`)}>
+                  <DropdownMenuItem>
+                    <BadgeCheck className="mr-2 h-4 w-4" />
+                    {t("app.navbar.tenant")}
+                  </DropdownMenuItem>
+                </Link>
+              </DropdownMenuGroup>
             ) : layout === "admin" ? (
-              <Fragment>
-                <DropdownMenuGroup>
-                  <Link to="/admin/settings/profile">
-                    <DropdownMenuItem>
-                      <GearIcon className="mr-2 h-4 w-4" />
-                      {t("app.navbar.profile")}
-                    </DropdownMenuItem>
-                  </Link>
-                </DropdownMenuGroup>
-              </Fragment>
+              <DropdownMenuGroup>
+                <Link to="/admin/settings/profile">
+                  <DropdownMenuItem>
+                    <GearIcon className="mr-2 h-4 w-4" />
+                    {t("app.navbar.profile")}
+                  </DropdownMenuItem>
+                </Link>
+              </DropdownMenuGroup>
             ) : null}
 
             {/* Dark mode toggle removed */}

@@ -9,7 +9,7 @@ interface Props {
   className?: string;
 }
 
-export default function TenantSelector({ className }: Props) {
+export default function TenantSelector({ className }: Readonly<Props>) {
   const { t } = useTranslation();
   const appData = useAppData();
   const location = useLocation();

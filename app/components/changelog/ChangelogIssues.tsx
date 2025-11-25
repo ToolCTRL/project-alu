@@ -25,7 +25,7 @@ interface Props {
   icon: string;
   items: Issue[];
 }
-export default function ChangelogIssues({ title, icon, items }: Props) {
+export default function ChangelogIssues({ title, icon, items }: Readonly<Props>) {
   const [viewImages, setViewImages] = useState(false);
   const [selectedImage, setSelectedImage] = useState<{
     title: string;

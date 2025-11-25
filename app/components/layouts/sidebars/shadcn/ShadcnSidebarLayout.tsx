@@ -1,4 +1,3 @@
-import { Separator } from "~/components/ui/separator";
 import { SidebarInset, SidebarProvider, SidebarTrigger } from "../../../ui/sidebar";
 import { ShadcnAppSidebar } from "./app-sidebar";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbList, BreadcrumbPage } from "~/components/ui/breadcrumb";
@@ -12,7 +11,6 @@ import { useFeatureFlag } from "~/hooks/useFeatureFlag";
 import { UI_REFRESH_FLAG_GROUPS } from "~/application/featureFlags/constants";
 import { Hammer, Sparkles, UserPlus } from "lucide-react";
 import clsx from "clsx";
-import { Badge } from "~/components/ui/badge";
 import { useAppOrAdminData } from "~/utils/data/useAppOrAdminData";
 import { AnimatePresence, motion } from "framer-motion";
 import { RouteBackground } from "~/components/ui/backgrounds/RouteBackground";
@@ -28,7 +26,6 @@ export default function ShadcnSidebarLayout({
 }) {
   const params = useParams();
   const title = useTitleData() ?? "";
-  const appOrAdminData = useAppOrAdminData();
 
   const mainElement = useRef<HTMLElement>(null);
   const location = useLocation();
@@ -43,12 +40,6 @@ export default function ShadcnSidebarLayout({
   function onOpenCommandPalette() {
     query.toggle();
   }
-
-  const headerQuickActions = [
-    { label: "Kunde anlegen", href: "/admin/accounts/users", icon: <UserPlus className="h-4 w-4" /> },
-    { label: "Auftrag starten", href: "/admin/entities", icon: <Hammer className="h-4 w-4" /> },
-    { label: "Workflow triggern", href: "/admin/workflows", icon: <Sparkles className="h-4 w-4" /> },
-  ];
   return (
     <SidebarProvider className={clsx(navModern && "nav-modern")}>
       <ShadcnAppSidebar layout={layout} items={menuItems} />

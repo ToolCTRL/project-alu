@@ -1,4 +1,4 @@
-export default function IconBlog({ className }: { className: string }) {
+export default function IconBlog({ className }: Readonly<{ className: string }>) {
   return (
     <svg className={className} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
       <path d="M5 3a1 1 0 000 2c5.523 0 10 4.477 10 10a1 1 0 102 0C17 8.373 11.627 3 5 3z" />

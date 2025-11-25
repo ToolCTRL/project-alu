@@ -338,7 +338,7 @@ function TextPropertyInput({
   autoFocus,
   promptFlows,
   t,
-}: {
+}: readonly {
   selected: PropertyWithDetails;
   textValue?: string;
   readOnly: boolean;
@@ -480,7 +480,7 @@ function SelectPropertyInput({
   onChangeOption,
   autoFocus,
   t,
-}: {
+}: readonly {
   selected: PropertyWithDetails;
   initialOption?: string;
   textValue?: string;
@@ -558,7 +558,7 @@ function BooleanPropertyInput({
   onChange,
   autoFocus,
   t,
-}: {
+}: readonly {
   selected: PropertyWithDetails;
   booleanValue?: boolean;
   readOnly: boolean;
@@ -594,7 +594,7 @@ function MediaPropertyInput({
   setMedia,
   autoFocus,
   t,
-}: {
+}: readonly {
   selected: PropertyWithDetails;
   initialMedia?: RowMedia[];
   readOnly: boolean;
@@ -630,7 +630,7 @@ function MultiSelectPropertyInput({
   onChangeMultiple,
   autoFocus,
   t,
-}: {
+}: readonly {
   selected: PropertyWithDetails;
   multiple?: RowValueMultiple[];
   readOnly: boolean;
@@ -701,7 +701,7 @@ function RangeNumberPropertyInput({
   onChangeRange,
   autoFocus,
   t,
-}: {
+}: readonly {
   selected: PropertyWithDetails;
   range?: RowValueRange;
   readOnly: boolean;
@@ -760,7 +760,7 @@ function RangeDatePropertyInput({
   onChangeRange,
   autoFocus,
   t,
-}: {
+}: readonly {
   selected: PropertyWithDetails;
   range?: RowValueRange;
   readOnly: boolean;
@@ -812,7 +812,7 @@ function FormulaPropertyInput({
   numberValue,
   dateValue,
   booleanValue,
-}: {
+}: readonly {
   selected: PropertyWithDetails;
   textValue?: string;
   numberValue?: number;

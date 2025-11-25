@@ -9,7 +9,6 @@ import {
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
-  DropdownMenuShortcut,
   DropdownMenuTrigger,
 } from "~/components/ui/dropdown-menu";
 import { SidebarMenu, SidebarMenuButton, SidebarMenuItem, useSidebar } from "~/components/ui/sidebar";
@@ -19,7 +18,7 @@ import { Link, useLocation, useNavigate } from "react-router";
 import { TenantSimple } from "~/utils/db/tenants.db.server";
 import clsx from "clsx";
 
-export function TeamSwitcher({ tenants, size = "md" }: { tenants: TenantSimple[]; size?: "sm" | "md" }) {
+export function TeamSwitcher({ tenants, size = "md" }: Readonly<{ tenants: TenantSimple[]; size?: "sm" | "md" }>) {
   const { t } = useTranslation();
   const { isMobile } = useSidebar();
 
@@ -27,7 +26,7 @@ export function TeamSwitcher({ tenants, size = "md" }: { tenants: TenantSimple[]
   const location = useLocation();
   const navigate = useNavigate();
 
-  const [activeTenant, setActiveTeam] = React.useState(appData?.currentTenant);
+  const [activeTenant] = React.useState(appData?.currentTenant);
 
   const activeTenantDescription = appData.mySubscription?.products.length
     ? t(appData.mySubscription.products.find((f) => f)?.subscriptionProduct.title || "")
@@ -72,7 +71,7 @@ export function TeamSwitcher({ tenants, size = "md" }: { tenants: TenantSimple[]
             sideOffset={4}
           >
             <DropdownMenuLabel className="text-muted-foreground text-xs">{t("models.tenant.plural")}</DropdownMenuLabel>
-            {tenants.map((tenant, index) => (
+            {tenants.map((tenant) => (
               <DropdownMenuItem
                 key={tenant.name}
                 onClick={() => {
@@ -96,7 +95,6 @@ export function TeamSwitcher({ tenants, size = "md" }: { tenants: TenantSimple[]
                   )}
                 </div>
                 {tenant.name}
-                {/* <DropdownMenuShortcut>⌘{index + 1}</DropdownMenuShortcut> */}
               </DropdownMenuItem>
             ))}
             <DropdownMenuSeparator />

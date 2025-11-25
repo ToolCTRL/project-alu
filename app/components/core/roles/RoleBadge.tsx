@@ -4,10 +4,10 @@ import SimpleBadge from "~/components/ui/badges/SimpleBadge";
 import LockClosedIcon from "~/components/ui/icons/LockClosedIcon";
 
 interface Props {
-  item: Role | Permission;
-  color?: Colors;
+  readonly item: Role | Permission;
+  readonly color?: Colors;
 }
-export default function RoleBadge({ item, color = Colors.INDIGO }: Props) {
+export default function RoleBadge({ item, color = Colors.INDIGO }: Readonly<Props>) {
   return (
     <div className="flex items-center space-x-1">
       <div>{item.name}</div>

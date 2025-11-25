@@ -11,7 +11,7 @@ interface Props {
   fromConfig?: boolean;
 }
 
-export default function Icon({ className = "", size = "h-9", fromConfig = true }: Props) {
+export default function Icon({ className = "", size = "h-9", fromConfig = true }: Readonly<Props>) {
   const { appConfiguration } = useRootData();
   return (
     <Link to="/" className={clsx(className, "flex")}>

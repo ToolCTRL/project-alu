@@ -9,9 +9,9 @@ import TableSimple from "~/components/ui/tables/TableSimple";
 import { RoleWithPermissions } from "~/utils/db/permissions/roles.db.server";
 
 interface Props {
-  roles: RoleWithPermissions[];
-  permissions: Permission[];
-  className?: string;
+  readonly roles: RoleWithPermissions[];
+  readonly permissions: Permission[];
+  readonly className?: string;
 }
 function createPermissionHeader(): RowHeaderDisplayDto<Permission> {
   return {
@@ -27,7 +27,7 @@ function createPermissionHeader(): RowHeaderDisplayDto<Permission> {
   };
 }
 
-function createRoleHeader(role: RoleWithPermissions): RowHeaderDisplayDto<Permission> {
+function createRoleHeader(role: Readonly<RoleWithPermissions>): RowHeaderDisplayDto<Permission> {
   const existing = (permission: Permission) => role.permissions.find((f) => f.permission.name === permission.name);
 
   return {
@@ -49,7 +49,7 @@ function createRoleHeader(role: RoleWithPermissions): RowHeaderDisplayDto<Permis
   };
 }
 
-export default function RolesAndPermissionsMatrix({ roles, permissions, className }: Props) {
+export default function RolesAndPermissionsMatrix({ roles, permissions, className }: Readonly<Props>) {
   const [searchInput, setSearchInput] = useState("");
 
   function getHeaders() {

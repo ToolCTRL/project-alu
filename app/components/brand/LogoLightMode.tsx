@@ -10,7 +10,7 @@ interface Props {
   to?: string;
 }
 
-export default function LogoLightMode({ className = "", size = "h-9", to }: Props) {
+export default function LogoLightMode({ className = "", size = "h-9", to }: Readonly<Props>) {
   const { appConfiguration } = useRootData();
   return (
     <Link to={to ?? "/"} className={clsx(className, "flex")}>

@@ -10,14 +10,9 @@ import { Button } from "~/components/ui/button";
 export function NavSecondary({
   item,
   ...props
-}: {
-  // items: {
-  //   title: string;
-  //   url: string;
-  //   icon: LucideIcon;
-  // }[];
+}: Readonly<{
   item: SidebarGroupDto;
-} & React.ComponentPropsWithoutRef<typeof SidebarGroup>) {
+} & React.ComponentPropsWithoutRef<typeof SidebarGroup>>) {
   const appOrAdminData = useAppOrAdminData();
   return (
     <SidebarGroup {...props}>
@@ -28,13 +23,13 @@ export function NavSecondary({
               <div>{appOrAdminData?.onboardingSession.onboarding.title}</div>
             </Button>
           )}
-          {item.items.map((item) => (
-            <SidebarMenuItem key={item.title}>
+          {item.items.map((mapItem) => (
+            <SidebarMenuItem key={mapItem.title}>
               <SidebarMenuButton asChild>
-                <Link to={item.path}>
-                  {/* <item.icon /> */}
-                  {(item.icon !== undefined || item.entityIcon !== undefined) && <SidebarIcon className="h-5 w-5 " item={item} />}
-                  <span>{item.title}</span>
+                <Link to={mapItem.path}>
+                  {/* <mapItem.icon /> */}
+                  {(mapItem.icon !== undefined || mapItem.entityIcon !== undefined) && <SidebarIcon className="h-5 w-5 " item={mapItem} />}
+                  <span>{mapItem.title}</span>
                 </Link>
               </SidebarMenuButton>
             </SidebarMenuItem>

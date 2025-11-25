@@ -8,7 +8,7 @@ interface Props {
   className?: string;
 }
 
-export default function TenantSelector({ className }: Props) {
+export default function TenantSelector({ className }: Readonly<Props>) {
   const { t } = useTranslation();
   const appData = useAppData();
   const location = useLocation();
@@ -57,7 +57,7 @@ export default function TenantSelector({ className }: Props) {
     return unique;
   }
   return (
-    <Fragment>
+    <>
       {appData.myTenants.length > 1 && (
         <InputSelectorDarkMode
           withSearch={false}
@@ -70,6 +70,6 @@ export default function TenantSelector({ className }: Props) {
           setValue={(e) => setSelected(e?.toString() ?? "")}
         />
       )}
-    </Fragment>
+    </>
   );
 }

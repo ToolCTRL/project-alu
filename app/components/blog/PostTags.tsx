@@ -11,7 +11,7 @@ interface Props {
     };
   }[];
 }
-export default function PostTags({ items }: Props) {
+export default function PostTags({ items }: Readonly<Props>) {
   return (
     <div className="flex items-center space-x-1 text-xs">
       {items.map((blogTag) => {

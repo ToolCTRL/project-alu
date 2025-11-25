@@ -1,4 +1,4 @@
-export default function IconMembers({ className }: { className: string }) {
+export default function IconMembers({ className }: Readonly<{ className: string }>) {
   return (
     <svg className={className} version="1.0" xmlns="http://www.w3.org/2000/svg" width="120.33" height="95.82" viewBox="0 0 90.25 71.87" fill="currentColor">
       <path d="M38.55 1.37c-4.5 1.9-6.3 6.1-6.3 14.5 0 6.3.3 7.6 3.1 11.6 4.7 6.9 4 9-5 13.9-8.1 4.5-10.7 7.2-11.7 12.2l-.6 3.3h13.3c10.3 0 13-.3 12.1-1.2-1.6-1.6-1.5-8.3.2-9.7.8-.7 1.2-2 .9-3-.6-2.2 2.2-8 4.2-8.7.8-.3 3.2-3 5.4-5.9 3.9-5.2 4.1-5.8 4.1-12.5 0-8.6-.7-10-6.4-13.4-5-2.9-8.5-3.2-13.3-1.1z" />
