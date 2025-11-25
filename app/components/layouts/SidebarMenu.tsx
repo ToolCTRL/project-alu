@@ -31,7 +31,7 @@ interface MenuItemProps {
   t: (key: string) => string;
 }
 
-function MobileMenuItem({ menuItem, onSelected, cssStates, isCurrent, getPath, menuItemIsExpanded, toggleMenuItem, t }: MenuItemProps) {
+function MobileMenuItem({ menuItem, onSelected, cssStates, isCurrent, getPath, menuItemIsExpanded, toggleMenuItem, t }: Readonly<MenuItemProps>): JSX.Element {
   if (!menuItem.items || menuItem.items.length === 0) {
     return (
       <div>
@@ -149,7 +149,7 @@ function MobileSubMenuItem({ subItem, menuItem, onSelected, cssStates, isCurrent
   );
 }
 
-function DesktopMenuItem({ menuItem, onSelected, cssStates, isCurrent, getPath, menuItemIsExpanded, toggleMenuItem, t }: MenuItemProps) {
+function DesktopMenuItem({ menuItem, onSelected, cssStates, isCurrent, getPath, menuItemIsExpanded, toggleMenuItem, t }: Readonly<MenuItemProps>): JSX.Element {
   if (!menuItem.items || menuItem.items.length === 0) {
     return (
       <div>

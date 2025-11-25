@@ -54,10 +54,10 @@ function validatePropertyName(name: string) {
 
 function processFormData(form: FormData, type: PropertyType) {
   let isRequired = Boolean(form.get("is-required"));
-  let formulaId = form.get("formula-id")?.toString() ?? null;
+  let formulaId = String(form.get("formula-id") ?? "");
 
   if (type !== PropertyType.FORMULA) {
-    formulaId = null;
+    formulaId = "";
   } else {
     isRequired = false;
   }
@@ -79,7 +79,7 @@ async function handleEdit(
     return badRequest({ error: nameError });
   }
 
-  const subtype = form.get("subtype")?.toString() ?? null;
+  const subtype = String(form.get("subtype") ?? "");
   const order = Number(form.get("order"));
   const isHidden = Boolean(form.get("is-hidden"));
   const isDisplay = Boolean(form.get("is-display"));
@@ -127,7 +127,7 @@ async function handleEdit(
 
 async function handleDelete(params: any, form: FormData, t: any) {
   await verifyUserHasPermission(request, "admin.entities.delete");
-  const id = form.get("id")?.toString() ?? "";
+  const id = String(form.get("id") ?? "");
   const existingProperty = await getProperty(id);
   if (!existingProperty) {
     return badRequest({ error: t("shared.notFound") });

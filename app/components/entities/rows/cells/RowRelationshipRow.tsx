@@ -1,5 +1,4 @@
 import { Link } from "react-router";
-import { Fragment } from "react";
 import { TFunction } from "i18next";
 import { RowDto } from "~/modules/rows/repositories/RowDto";
 import { EntitiesApi } from "~/utils/api/.server/EntitiesApi";

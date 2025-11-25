@@ -13,7 +13,7 @@ export interface RowHeaderActionDto<T> {
   renderIsDestructive?: (item: T) => boolean;
   prefetch?: "intent" | "render" | "none";
   confirmation?: (item: T) => {
-    title: string;
-    description: string;
+    readonly title: string;
+    readonly description: string;
   };
 }

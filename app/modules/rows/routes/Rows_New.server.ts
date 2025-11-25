@@ -117,7 +117,7 @@ export namespace Rows_New {
 
       const onCreatedRedirect = form.get("onCreatedRedirect");
       if (onCreatedRedirect) {
-        const response = handleOnCreatedRedirect(onCreatedRedirect.toString(), entity, newRow, request, params, getServerTimingHeader());
+        const response = handleOnCreatedRedirect(String(onCreatedRedirect), entity, newRow, request, params, getServerTimingHeader());
         if (response) {
           return response;
         }

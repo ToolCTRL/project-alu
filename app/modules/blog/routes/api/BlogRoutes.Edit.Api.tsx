@@ -77,13 +77,13 @@ export namespace BlogRoutesEditApi {
     const tagsValue = String(form.get("tags") ?? "");
     const tags = tagsValue;
 
-    const titleValue = String(form.get("title") ?? "");
-    const descriptionValue = String(form.get("description") ?? "");
-    const dateValue = String(form.get("date") ?? "");
-    const imageValue = String(form.get("image") ?? "");
-    const contentValue = String(form.get("content") ?? "");
-    const readingTimeValue = String(form.get("reading-time") ?? "");
-    const contentTypeValue = String(form.get("contentType") ?? "");
+    const titleValue = form.get("title") ?? "";
+    const descriptionValue = form.get("description") ?? "";
+    const dateValue = form.get("date") ?? "";
+    const imageValue = form.get("image") ?? "";
+    const contentValue = form.get("content") ?? "";
+    const readingTimeValue = form.get("reading-time") ?? "";
+    const contentTypeValue = form.get("contentType") ?? "";
 
     const updated = await updateBlogPost(blogPost.id, {
       slug,

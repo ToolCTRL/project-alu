@@ -14,7 +14,17 @@ interface Props {
   disabled?: boolean;
   autoFocus?: boolean;
 }
-export default function InputCheckboxWithDescription({ name, title, value, setValue, description, className, help, disabled = false, autoFocus }: Readonly<Props>) {
+export default function InputCheckboxWithDescription({
+  name,
+  title,
+  value,
+  setValue,
+  description,
+  className,
+  help,
+  disabled = false,
+  autoFocus,
+}: Readonly<Props>) {
   const [checked, setChecked] = useState(value ?? false);
 
   useEffect(() => {

@@ -11,6 +11,11 @@ import ColorBadge from "../ui/badges/ColorBadge";
 export default function AnalyticsOverview({ overview }: { readonly overview: AnalyticsOverviewDto }) {
   const { t } = useTranslation();
   const { authenticated } = useRootData();
+
+  if (!overview) {
+    return null;
+  }
+
   return (
     <div className="text-foreground space-y-2">
       <dl className="grid gap-2 sm:grid-cols-2 lg:grid-cols-4">
@@ -63,8 +68,8 @@ export default function AnalyticsOverview({ overview }: { readonly overview: Ana
         <TopItems tabs={[{ title: "Top sources", items: overview.top.sources, fallbackName: "noreferrer", bgClassName: "bg-indigo-50" }]} />
         <TopItems
           tabs={[
-            { title: "Top pages", items: overview.top.urls, fallbackName: "?", bgClassName: "bg-emerald-50", tabTitle: "Pages" },
-            { title: "Top routes", items: overview.top.routes, fallbackName: "?", bgClassName: "bg-emerald-50", tabTitle: "Routes" },
+            { title: "Top pages", items: overview.top.urls, fallbackName: "?", bgClassName: "bg-emerald-50" },
+            { title: "Top routes", items: overview.top.routes, fallbackName: "?", bgClassName: "bg-emerald-50" },
           ]}
         />
         <TopItems tabs={[{ title: "Operating systems", items: overview.top.os, fallbackName: "?", bgClassName: "bg-secondary" }]} />
@@ -83,7 +88,7 @@ interface TopItemDto {
   bgClassName?: string;
   tabTitle?: string;
 }
-function TopItems({ tabs }: { tabs: TopItemDto[] }) {
+function TopItems({ tabs }: { readonly tabs: TopItemDto[] }) {
   const [selectedTab, setSelectedTab] = useState(0);
   const [tab, setTab] = useState(tabs[0]);
 
@@ -132,25 +137,35 @@ function TopItemsData({ title, items, viewMoreRoute, fallbackName, bgClassName }
     const percentage = (current.count / max) * 100;
     if (percentage >= 95) {
       return "w-[95%]";
-    } else if (percentage >= 90) {
+    }
+    if (percentage >= 90) {
       return "w-[90%]";
-    } else if (percentage >= 80) {
+    }
+    if (percentage >= 80) {
       return "w-[80%]";
-    } else if (percentage >= 70) {
+    }
+    if (percentage >= 70) {
       return "w-[70%]";
-    } else if (percentage >= 60) {
+    }
+    if (percentage >= 60) {
       return "w-[60%]";
-    } else if (percentage >= 50) {
+    }
+    if (percentage >= 50) {
       return "w-[50%]";
-    } else if (percentage >= 40) {
+    }
+    if (percentage >= 40) {
       return "w-[40%]";
-    } else if (percentage >= 30) {
+    }
+    if (percentage >= 30) {
       return "w-[30%]";
-    } else if (percentage >= 20) {
+    }
+    if (percentage >= 20) {
       return "w-[20%]";
-    } else if (percentage >= 10) {
+    }
+    if (percentage >= 10) {
       return "w-[10%]";
-    } else if (percentage >= 3) {
+    }
+    if (percentage >= 3) {
       return "w-[3%]";
     }
     return "w-[3%]";

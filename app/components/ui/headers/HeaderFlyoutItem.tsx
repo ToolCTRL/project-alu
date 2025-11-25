@@ -42,7 +42,7 @@ function FlyoutPanel({ items, onClose, t }: { items?: NavbarItemDto[]; onClose: 
   );
 }
 
-export default function HeaderFlyoutItem({ title, items, className }: Props) {
+export default function HeaderFlyoutItem({ title, items, className }: Readonly<Props>): JSX.Element {
   const { t } = useTranslation();
   return (
     <Popover className="relative">

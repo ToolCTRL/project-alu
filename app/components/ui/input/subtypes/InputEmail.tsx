@@ -63,7 +63,7 @@ const InputEmail = (
     onBlur,
     borderless,
     autoFocus,
-  }: Props,
+  }: Readonly<Props>,
   ref: Ref<RefInputEmail>
 ) => {
   useImperativeHandle(ref, () => ({ input }));
@@ -72,8 +72,8 @@ const InputEmail = (
   const [isValid, setIsValid] = useState<boolean>(false);
 
   useEffect(() => {
-    const isValid = value?.match(/^[\w.%+-]+@[\w-]+\.\w{2,}$/i);
-    setIsValid(isValid ? true : false);
+    const emailPattern = /^[\w.%+-]+@[\w.-]+\w{2,}$/i;
+    setIsValid(emailPattern.test(value ?? ""));
   }, [value]);
 
   function onChange(value: string) {

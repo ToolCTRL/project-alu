@@ -23,15 +23,15 @@ export default function OnboardingVariantModal({
   onLinkClick,
   onUpdateCurrentStepState,
 }: Readonly<{
-  block: OnboardingBlockDto;
-  currentStepIdx: number;
-  open: boolean;
-  setStep: (idx: number) => void;
-  onClose: () => void;
-  onDismiss: () => void;
-  onComplete: () => void;
-  onLinkClick: (item: { text: string; href: string }) => void;
-  onUpdateCurrentStepState: (state: { [key: string]: string }) => void;
+  readonly block: OnboardingBlockDto;
+  readonly currentStepIdx: number;
+  readonly open: boolean;
+  readonly setStep: (idx: number) => void;
+  readonly onClose: () => void;
+  readonly onDismiss: () => void;
+  readonly onComplete: () => void;
+  readonly onLinkClick: (item: { readonly text: string; readonly href: string }) => void;
+  readonly onUpdateCurrentStepState: (state: { readonly [key: string]: string }) => void;
 }>) {
   const { t } = useTranslation();
   function dismiss() {

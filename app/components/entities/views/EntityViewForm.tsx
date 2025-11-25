@@ -113,7 +113,7 @@ export default function EntityViewForm({
   };
 
   const createFakeRow = (idx: number): RowWithDetails => {
-    const nonDefaultProperties = properties.filter((p) => !defaultDisplayProperties.find((dp) => dp.name === p.name));
+    const nonDefaultProperties = properties.filter((p) => !defaultDisplayProperties.some((dp) => dp.name === p.name));
     return {
       values: nonDefaultProperties.map(({ name }) => createFakePropertyValue(name, idx)),
       folio: idx + 1,

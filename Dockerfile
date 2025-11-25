@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # base node image
-FROM --platform=linux/amd64 node:20-bookworm-slim AS base
+FROM --platform=linux/amd64 node:20-bookworm-slim AS BASE
 
 # set for base and all layer that inherit from it
 ENV NODE_ENV production
@@ -10,24 +10,24 @@ ENV NODE_ENV production
 RUN apt-get update && apt-get install -y --no-install-recommends openssl && rm -rf /var/lib/apt/lists/*
 
 # Install all node_modules, including dev dependencies
-FROM base AS deps
+FROM BASE AS deps
 
 WORKDIR /myapp
 
 COPY package.json ./
-RUN npm install --production=false --legacy-peer-deps --ignore-scripts
+RUN npm install --production=false --legacy-peer-deps --ignore-scripts && rm -rf /var/lib/apt/lists/*
 
 # Setup production node_modules
-FROM base AS production-deps
+FROM BASE AS production-deps
 
 WORKDIR /myapp
 
 COPY --from=deps /myapp/node_modules /myapp/node_modules
-ADD package.json ./
+COPY package.json ./
 RUN npm prune --production --legacy-peer-deps
 
 # Build the app
-FROM base AS build
+FROM BASE AS build
 
 WORKDIR /myapp
 
@@ -39,8 +39,11 @@ RUN npx prisma generate
 COPY . .
 RUN npm run build
 
+# Clean cache
+RUN rm -rf /var/lib/apt/lists/*
+
 # Finally, build the production image with minimal footprint
-FROM base
+FROM BASE
 
 ENV PORT="8080"
 ENV NODE_ENV="production"

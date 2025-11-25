@@ -25,9 +25,7 @@ type ServerRuntimeMetaDescriptor =
       [name: string]: string;
     };
 type LdJsonObject = {
-  [Key in string]: LdJsonValue;
-} & {
-  [Key in string]?: LdJsonValue | undefined;
+  [Key in string]: LdJsonValue | undefined;
 };
 type LdJsonArray = LdJsonValue[] | readonly LdJsonValue[];
 type LdJsonPrimitive = string | number | boolean | null;

@@ -5,7 +5,7 @@ import { UserWithoutPassword } from "~/utils/db/users.db.server";
 import UrlUtils from "~/utils/app/UrlUtils";
 
 interface Props {
-  user: UserWithoutPassword;
+  readonly user: UserWithoutPassword;
 }
 
 export default function ProfileBanner({ user }: Props) {

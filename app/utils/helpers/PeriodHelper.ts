@@ -14,20 +14,22 @@ export const defaultPeriodFilter = "last-30-days";
 function getGreaterThanOrEqualsFromRequest({ request }: { request: Request }) {
   const searchParams = new URL(request.url).searchParams;
   const countFilter = searchParams.get("period") ?? defaultPeriodFilter;
-  if (countFilter === "all-time") {
-    return undefined;
-  } else if (countFilter === "last-year") {
-    return DateUtils.daysFromDate(new Date(), 365 * -1);
-  } else if (countFilter === "last-3-months") {
-    return DateUtils.daysFromDate(new Date(), 90 * -1);
-  } else if (countFilter === "last-30-days") {
-    return DateUtils.daysFromDate(new Date(), 30 * -1);
-  } else if (countFilter === "last-7-days") {
-    return DateUtils.daysFromDate(new Date(), 7 * -1);
-  } else if (countFilter === "last-24-hours") {
-    return DateUtils.daysFromDate(new Date(), 1 * -1);
+  switch (countFilter) {
+    case "all-time":
+      return undefined;
+    case "last-year":
+      return DateUtils.daysFromDate(new Date(), 365 * -1);
+    case "last-3-months":
+      return DateUtils.daysFromDate(new Date(), 90 * -1);
+    case "last-30-days":
+      return DateUtils.daysFromDate(new Date(), 30 * -1);
+    case "last-7-days":
+      return DateUtils.daysFromDate(new Date(), 7 * -1);
+    case "last-24-hours":
+      return DateUtils.daysFromDate(new Date(), 1 * -1);
+    default:
+      return undefined;
   }
-  return undefined;
 }
 
 export default {

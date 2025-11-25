@@ -18,7 +18,7 @@ export type ActionTileProps = {
 };
 
 export function ActionTile({ title, description, hint, icon, tone = "accent", onClick, href, actionLabel = "Öffnen", className, disableTilt }: Readonly<ActionTileProps>) {
-  const tilt = disableTilt ? null : use3DTilt({ maxAngle: 8 });
+  const tilt = !disableTilt ? use3DTilt({ maxAngle: 8 }) : null;
   const baseContent = (
     <div className="flex w-full items-start gap-4 text-left pr-4">
       <div className="flex-1 space-y-2">

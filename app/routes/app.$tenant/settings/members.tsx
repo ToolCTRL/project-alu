@@ -88,7 +88,7 @@ type ActionData = {
 const badRequest = (data: ActionData) => Response.json(data, { status: 400 });
 
 async function handleDeleteInvitation(form: FormData) {
-  const invitationId = form.get("invitation-id")?.toString() ?? "";
+  const invitationId = String(form.get("invitation-id") ?? "");
   const invitation = await getUserInvitation(invitationId);
   if (!invitation) {
     return badRequest({ error: "Invitation not found" });
@@ -131,9 +131,9 @@ async function removeRole(userId: string, roleId: string, tenantId: string, requ
 }
 
 async function handleEditRole(form: FormData, request: Request, tenantId: string, userInfo: UserSimple, fromUser: User) {
-  const userId = form.get("user-id")?.toString() ?? "";
-  const roleId = form.get("role-id")?.toString() ?? "";
-  const add = form.get("add") === "true";
+  const userId = String(form.get("user-id") ?? "");
+  const roleId = String(form.get("role-id") ?? "");
+  const add = String(form.get("add") ?? "") === "true";
 
   const tenant = await getTenant(tenantId);
   const user = await getUser(userId);

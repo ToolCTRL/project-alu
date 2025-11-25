@@ -28,25 +28,25 @@ export default function RowOverviewHeader({
   customActions,
   truncate = true,
 }: Readonly<{
-  rowData: RowsApi.GetRowData;
-  item: RowWithDetails;
-  canUpdate: boolean;
-  isEditing: boolean;
-  routes: EntitiesApi.Routes | undefined;
-  title?: React.ReactNode;
-  options?: {
-    hideTitle?: boolean;
-    hideMenu?: boolean;
-    hideShare?: boolean;
-    hideTags?: boolean;
-    hideTasks?: boolean;
-    hideActivity?: boolean;
-    disableUpdate?: boolean;
-    disableDelete?: boolean;
+  readonly rowData: RowsApi.GetRowData;
+  readonly item: RowWithDetails;
+  readonly canUpdate: boolean;
+  readonly isEditing: boolean;
+  readonly routes: EntitiesApi.Routes | undefined;
+  readonly title?: React.ReactNode;
+  readonly options?: {
+    readonly hideTitle?: boolean;
+    readonly hideMenu?: boolean;
+    readonly hideShare?: boolean;
+    readonly hideTags?: boolean;
+    readonly hideTasks?: boolean;
+    readonly hideActivity?: boolean;
+    readonly disableUpdate?: boolean;
+    readonly disableDelete?: boolean;
   };
-  buttons?: ReactNode;
-  customActions?: { entity: string; label: string; action: string }[];
-  truncate?: boolean;
+  readonly buttons?: ReactNode;
+  readonly customActions?: { readonly entity: string; readonly label: string; readonly action: string }[];
+  readonly truncate?: boolean;
 }>) {
   const { t } = useTranslation();
   const appOrAdminData = useAppOrAdminData();

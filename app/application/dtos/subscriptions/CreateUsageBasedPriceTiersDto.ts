@@ -4,8 +4,8 @@ export interface CreateUsageBasedPriceTiersDto {
   currency: string;
   billingPeriod: SubscriptionBillingPeriod;
   usage_type: "licensed" | "metered";
-  aggregate_usage: "last_during_period" | "last_ever" | "max" | "sum" | string;
-  tiers_mode: "graduated" | "volume" | string;
+  aggregate_usage: "last_during_period" | "last_ever" | "max" | "sum";
+  tiers_mode: "graduated" | "volume";
   billing_scheme: string;
   tiers: {
     from: number;

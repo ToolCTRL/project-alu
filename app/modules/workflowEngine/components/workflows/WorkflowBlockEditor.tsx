@@ -25,16 +25,15 @@ export default function WorkflowBlockEditor({
   onSelectedBlock,
   onUpdateConditionsGroups,
 }: Readonly<{
-  workflow: WorkflowDto;
-
-  block: WorkflowBlockDto;
-  onBack: () => void;
-  onSaveBlock: (block: WorkflowBlockDto) => void;
-  onAddingNextBlock: ({ fromBlock, condition }: { fromBlock: WorkflowBlockDto; condition: string | null }) => void;
-  onDeleteBlock: (blockId: string) => void;
-  onDeleteConnection: (connection: { fromBlockId: string; toBlockId: string }) => void;
-  onSelectedBlock: (workflowBlock: WorkflowBlockDto | null) => void;
-  onUpdateConditionsGroups: (blockId: string, conditionGroups: WorkflowConditionsGroupDto[]) => void;
+  readonly workflow: WorkflowDto;
+  readonly block: WorkflowBlockDto;
+  readonly onBack: () => void;
+  readonly onSaveBlock: (block: WorkflowBlockDto) => void;
+  readonly onAddingNextBlock: ({ fromBlock, condition }: { readonly fromBlock: WorkflowBlockDto; readonly condition: string | null }) => void;
+  readonly onDeleteBlock: (blockId: string) => void;
+  readonly onDeleteConnection: (connection: { readonly fromBlockId: string; readonly toBlockId: string }) => void;
+  readonly onSelectedBlock: (workflowBlock: WorkflowBlockDto | null) => void;
+  readonly onUpdateConditionsGroups: (blockId: string, conditionGroups: WorkflowConditionsGroupDto[]) => void;
 }>) {
   const workflowBlock = WorkflowBlockTypes.find((x) => x.value === block.type);
   const [errors, setErrors] = useState<string[]>([]);

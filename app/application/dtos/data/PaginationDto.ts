@@ -11,5 +11,5 @@ export interface PaginationDto {
 
 export interface PaginationData<T> {
   items: T[];
-  pagination?: PaginationDto;
+  pagination: PaginationDto;
 }

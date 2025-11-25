@@ -132,7 +132,7 @@ export default function RowsList(props: Props & { entity: EntityWithDetails | st
       result = processViewWithLayout(entity, view, undefined);
     }
 
-    let finalColumns = props.columns !== undefined ? props.columns : result.columns;
+    let finalColumns = props.columns ?? result.columns;
 
     setEntity(entity);
     setColumns(finalColumns);

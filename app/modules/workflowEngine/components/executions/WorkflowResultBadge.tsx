@@ -18,7 +18,7 @@ enum State {
   WaitingForBlock = "Waiting for block",
   Unknown = "Unknown",
 }
-export default function WorkflowResultBadge({ startedAt, completedAt, status, error }: Props) {
+export default function WorkflowResultBadge({ startedAt, completedAt, status, error }: Readonly<Props>): JSX.Element {
   function getState() {
     if (status === "running") {
       return State.Running;

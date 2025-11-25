@@ -127,11 +127,10 @@ const binaryOperators: Record<FormulaOperatorType, BinaryOperatorFn> = {
   AND: (a: FormulaValueType, b: FormulaValueType) => {
     if (typeof a === "boolean" && typeof b === "boolean") {
       return a && b;
-    } else {
-      let aIsTrue = (a || a === "true") && a !== "false";
-      let bIsTrue = (b || b === "true") && b !== "false";
-      return aIsTrue && bIsTrue;
     }
+    const aIsTrue = (a || a === "true") && a !== "false";
+    const bIsTrue = (b || b === "true") && b !== "false";
+    return aIsTrue && bIsTrue;
   },
   OR: (a: FormulaValueType, b: FormulaValueType) => Boolean(a || b),
   NOT: (a: FormulaValueType) => !a,
