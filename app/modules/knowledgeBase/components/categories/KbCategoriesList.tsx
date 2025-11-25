@@ -19,7 +19,7 @@ export default function KbCategoriesList({ kb, items }: { kb: KnowledgeBaseDto; 
               <Link to={item.href} className="w-full">
                 <div className="flex items-center space-x-8 p-6">
                   <div className="shrink-0">
-                    {item.icon.startsWith("<svg") ? (
+                    {item.icon.startsWith("<svg") && (
                       <div
                         dangerouslySetInnerHTML={{
                           __html:
@@ -29,11 +29,8 @@ export default function KbCategoriesList({ kb, items }: { kb: KnowledgeBaseDto; 
                             ) ?? "",
                         }}
                       />
-                    ) : item.icon.includes("http") ? (
-                      <img className="h-12 w-12" src={item.icon} alt={item.title} />
-                    ) : (
-                      <></>
                     )}
+                    {!item.icon.startsWith("<svg") && item.icon.includes("http") && <img className="h-12 w-12" src={item.icon} alt={item.title} />}
                   </div>
                   <div className="flex w-full flex-col">
                     <div className="font-bold">{item.title}</div>
@@ -43,10 +40,7 @@ export default function KbCategoriesList({ kb, items }: { kb: KnowledgeBaseDto; 
                         <div className="text-sm">
                           {item.articles.length} <span>{item.articles.length === 1 ? "article" : "articles"}</span>
                         </div>
-                        {/* <div className="text-sm text-gray-300">|</div>
-                        <div className="text-sm">Written by 10 authors</div> */}
                       </div>
-                      {/* <div className="text-sm text-muted-foreground">{item.version}</div> */}
                     </div>
                   </div>
                 </div>

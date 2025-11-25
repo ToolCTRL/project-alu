@@ -56,6 +56,93 @@ type ActionData = {
 };
 
 const badRequest = (data: ActionData) => Response.json(data, { status: 400 });
+
+async function validateEditForm(name: string, slug: string) {
+  if ((name?.length ?? 0) < 1) {
+    return "Account name must have at least 1 character";
+  }
+  if (!slug || slug.length < 1) {
+    return "Account slug must have at least 1 character";
+  }
+  if (["settings"].includes(slug.toLowerCase())) {
+    return "Slug cannot be " + slug;
+  }
+  if (slug.includes(" ")) {
+    return "Slug cannot contain white spaces";
+  }
+  return null;
+}
+
+async function updateTenantSettings(tenantId: string, form: FormData, existing: any, t: any) {
+  const tenantSettingsEntity = await findEntityByName({ tenantId, name: "tenantSettings" });
+  if (tenantSettingsEntity) {
+    await RowsApi.createCustom({
+      entity: tenantSettingsEntity,
+      tenantId,
+      t,
+      form,
+      row: existing?.tenantSettingsRow?.row,
+      rowCreateInput: { tenantSettingsRow: { create: { tenantId } } },
+    });
+  }
+}
+
+async function handleEditAction(request: Request, params: any, form: FormData, tenantId: string, t: any) {
+  const name = form.get("name")?.toString() ?? "";
+  const slug = form.get("slug")?.toString().toLowerCase() ?? "";
+  const icon = form.get("icon")?.toString() ?? "";
+
+  const validationError = await validateEditForm(name, slug);
+  if (validationError) {
+    return badRequest({ updateDetailsError: validationError });
+  }
+
+  const existing = await getTenant(tenantId);
+  if (!existing) {
+    return badRequest({ updateDetailsError: "Tenant not found" });
+  }
+
+  await createLog(request, tenantId, "Update tenant details", JSON.stringify({ name, slug }));
+
+  try {
+    await updateTenantSettings(tenantId, form, existing, t);
+  } catch (e: any) {
+    return badRequest({ updateDetailsError: e.message });
+  }
+
+  const iconStored = icon ? await storeSupabaseFile({ bucket: "accounts-icons", content: icon, id: tenantId }) : icon;
+
+  if (existing?.slug !== slug) {
+    const existingSlug = await getTenantBySlug(slug);
+    if (existingSlug) {
+      return badRequest({ updateDetailsError: "Slug already taken" });
+    }
+    await updateTenant(existing, { name, icon: iconStored, slug });
+    try {
+      return redirect(`/app/${encodeURIComponent(slug)}/settings/account`);
+    } catch (e: any) {
+      // eslint-disable-next-line no-console
+      console.error(e);
+      return redirect(`/app/${tenantId}/settings/account`);
+    }
+  }
+
+  await updateTenant(existing, { name, icon: iconStored, slug });
+  return Response.json({ success: t("settings.tenant.updated") });
+}
+
+async function handleDeleteAction(request: Request, tenantId: string, userInfo: any, t: any) {
+  await verifyUserHasPermission(request, "app.settings.account.delete", tenantId);
+  const activeSubscriptions = await getActiveTenantSubscriptions(tenantId);
+  if (activeSubscriptions && activeSubscriptions.products.find((f) => !f.cancelledAt)) {
+    return badRequest({
+      deleteError: "You cannot delete a tenant with active subscriptions",
+    });
+  }
+  await deleteAndCancelTenant({ tenantId, userId: userInfo.userId, t });
+  return redirect("/app");
+}
+
 export const action: ActionFunction = async ({ request, params }) => {
   const { t } = await getTranslations(request);
   const userInfo = await getUserInfo(request);
@@ -66,88 +153,12 @@ export const action: ActionFunction = async ({ request, params }) => {
   const action = form.get("action")?.toString() ?? "";
 
   if (action === "edit") {
-    const name = form.get("name")?.toString() ?? "";
-    const slug = form.get("slug")?.toString().toLowerCase() ?? "";
-    const icon = form.get("icon")?.toString() ?? "";
-    if ((name?.length ?? 0) < 1) {
-      return badRequest({
-        updateDetailsError: "Account name must have at least 1 character",
-      });
-    }
-    if (!slug || slug.length < 1) {
-      return badRequest({ updateDetailsError: "Account slug must have at least 1 character" });
-    }
-
-    if (["settings"].includes(slug.toLowerCase())) {
-      return badRequest({
-        updateDetailsError: "Slug cannot be " + slug,
-      });
-    }
-    if (slug.includes(" ")) {
-      return badRequest({
-        updateDetailsError: "Slug cannot contain white spaces",
-      });
-    }
-
-    const existing = await getTenant(tenantId);
-    if (!existing) {
-      return badRequest({ updateDetailsError: "Tenant not found" });
-    }
-    await createLog(request, tenantId, "Update tenant details", JSON.stringify({ name, slug }));
-
-    const tenantSettingsEntity = await findEntityByName({ tenantId, name: "tenantSettings" });
-    if (tenantSettingsEntity) {
-      try {
-        await RowsApi.createCustom({
-          entity: tenantSettingsEntity,
-          tenantId,
-          t,
-          form,
-          row: existing?.tenantSettingsRow?.row,
-          rowCreateInput: { tenantSettingsRow: { create: { tenantId } } },
-        });
-      } catch (e: any) {
-        return badRequest({ updateDetailsError: e.message });
-      }
-    }
-
-    if (existing?.slug !== slug) {
-      const existingSlug = await getTenantBySlug(slug);
-      if (existingSlug) {
-        return badRequest({
-          updateDetailsError: "Slug already taken",
-        });
-      }
-      let iconStored = icon ? await storeSupabaseFile({ bucket: "accounts-icons", content: icon, id: tenantId }) : icon;
-      await updateTenant(existing, { name, icon: iconStored, slug });
-      try {
-        return redirect(`/app/${encodeURIComponent(slug)}/settings/account`);
-      } catch (e: any) {
-        // eslint-disable-next-line no-console
-        console.error(e);
-        return redirect(`/app/${tenantId}/settings/account`);
-      }
-    } else {
-      let iconStored = icon ? await storeSupabaseFile({ bucket: "accounts-icons", content: icon, id: tenantId }) : icon;
-      await updateTenant(existing, { name, icon: iconStored, slug });
-      const actionData: ActionData = {
-        success: t("settings.tenant.updated"),
-      };
-      return Response.json(actionData);
-    }
-  } else if (action === "delete") {
-    await verifyUserHasPermission(request, "app.settings.account.delete", tenantId);
-    const activeSubscriptions = await getActiveTenantSubscriptions(tenantId);
-    if (activeSubscriptions && activeSubscriptions.products.find((f) => !f.cancelledAt)) {
-      return badRequest({
-        deleteError: "You cannot delete a tenant with active subscriptions",
-      });
-    }
-    await deleteAndCancelTenant({ tenantId, userId: userInfo.userId, t });
-    return redirect("/app");
-  } else {
-    return badRequest({ updateDetailsError: t("shared.invalidForm") });
+    return handleEditAction(request, params, form, tenantId, t);
   }
+  if (action === "delete") {
+    return handleDeleteAction(request, tenantId, userInfo, t);
+  }
+  return badRequest({ updateDetailsError: t("shared.invalidForm") });
 };
 
 export const meta: MetaFunction<typeof loader> = ({ data }) => [{ title: data?.title }];

@@ -69,6 +69,69 @@ const getCellValue = ({ entity, item, property }: { entity: EntityWithDetails; i
   return formattedValue;
 };
 
+function formatTextValue(property: PropertyWithDetails, value: any): string | null {
+  if (property.attributes.find((f) => f.name === PropertyAttributeName.Editor)?.value) {
+    return null;
+  }
+  return value as string;
+}
+
+function formatSelectValue(property: PropertyWithDetails, value: any): string {
+  const option = property.options.find((f) => f.value === value);
+  if (option) {
+    return option.name ?? option.value;
+  }
+  return value?.toString();
+}
+
+function formatRangeNumber(property: PropertyWithDetails, range: RowValueRangeDto): string {
+  const numberFormat = property.attributes.find((f) => f.name === PropertyAttributeName.FormatNumber)?.value as NumberFormatType;
+  const numberMin = range?.numberMin ? Number(range?.numberMin) : undefined;
+  const numberMax = range?.numberMax ? Number(range?.numberMax) : undefined;
+  const min = getNumberAsStringValue({ value: numberMin, format: numberFormat });
+  const max = getNumberAsStringValue({ value: numberMax, format: numberFormat });
+  return `${min} - ${max}`;
+}
+
+function formatRangeDate(property: PropertyWithDetails, range: RowValueRangeDto): string {
+  const dateFormat = property.attributes.find((f) => f.name === PropertyAttributeName.FormatDate)?.value as DateFormatType;
+  const min = getDateAsString({ value: range?.dateMin, format: dateFormat });
+  const max = getDateAsString({ value: range?.dateMax, format: dateFormat });
+  return `${min} - ${max}`;
+}
+
+function formatFormulaValue(property: PropertyWithDetails, value: any, t?: TFunction): string {
+  if (property.formula?.resultAs === "number") {
+    const numberFormat = property.attributes.find((f) => f.name === PropertyAttributeName.FormatNumber)?.value as NumberFormatType;
+    return getNumberAsStringValue({ value: value as number, format: numberFormat });
+  }
+  if (property.formula?.resultAs === "boolean") {
+    const format = property.attributes.find((f) => f.name === PropertyAttributeName.FormatBoolean)?.value;
+    return getBooleanAsStringValue({ value: value as boolean, format: format as BooleanFormatType, t });
+  }
+  if (property.formula?.resultAs === "date") {
+    const format = property.attributes.find((f) => f.name === PropertyAttributeName.FormatDate)?.value;
+    return getDateAsString({ value: value as Date, format: format as DateFormatType });
+  }
+  return value?.toString();
+}
+
+function extractFileName(name: string): string {
+  let fileName = name;
+  if (name.includes("/")) {
+    fileName = name.split("/").pop() ?? name;
+  }
+  if (name.includes("\\")) {
+    fileName = name.split("\\").pop() ?? name;
+  }
+  return fileName;
+}
+
+function formatMediaValue(value: any): string {
+  const media = value as MediaDto[];
+  return media.map((f) => extractFileName(f.title)).join(", ");
+}
+
 const getValueAsString = ({
   entity,
   item,
@@ -84,71 +147,38 @@ const getValueAsString = ({
   if (value === null) {
     return null;
   }
-  if (property.type === PropertyType.TEXT) {
-    if (property.attributes.find((f) => f.name === PropertyAttributeName.Editor)?.value) {
-      return null;
-    }
-    return value as string;
-  } else if (property.type === PropertyType.BOOLEAN) {
-    const format = property.attributes.find((f) => f.name === PropertyAttributeName.FormatBoolean)?.value;
-    return getBooleanAsStringValue({ value: value as boolean, format: format as BooleanFormatType, t });
-  } else if (property.type === PropertyType.SELECT) {
-    const option = property.options.find((f) => f.value === value);
-    if (option) {
-      return option.name ?? option.value;
-    }
-    return value?.toString();
-  } else if ([PropertyType.MULTI_SELECT, PropertyType.MULTI_TEXT].includes(property.type)) {
-    return (value as RowValueMultiple[]).map((v) => v.value).join(", ");
-  } else if ([PropertyType.RANGE_NUMBER, PropertyType.RANGE_DATE].includes(property.type)) {
-    const range = value as RowValueRangeDto;
-    if (property.type === PropertyType.RANGE_NUMBER) {
-      const numberFormat = property.attributes.find((f) => f.name === PropertyAttributeName.FormatNumber)?.value as NumberFormatType;
-      const numberMin = range?.numberMin ? Number(range?.numberMin) : undefined;
-      const numberMax = range?.numberMax ? Number(range?.numberMax) : undefined;
-      const min = getNumberAsStringValue({ value: numberMin, format: numberFormat });
-      const max = getNumberAsStringValue({ value: numberMax, format: numberFormat });
-      return `${min} - ${max}`;
-    } else {
-      const dateFormat = property.attributes.find((f) => f.name === PropertyAttributeName.FormatDate)?.value as DateFormatType;
-      const min = getDateAsString({ value: range?.dateMin, format: dateFormat });
-      const max = getDateAsString({ value: range?.dateMax, format: dateFormat });
-      return `${min} - ${max}`;
-    }
-  } else if ([PropertyType.FORMULA].includes(property.type)) {
-    if (property.formula?.resultAs === "number") {
-      const numberFormat = property.attributes.find((f) => f.name === PropertyAttributeName.FormatNumber)?.value as NumberFormatType;
-      return getNumberAsStringValue({ value: value as number, format: numberFormat });
-    } else if (property.formula?.resultAs === "boolean") {
+
+  switch (property.type) {
+    case PropertyType.TEXT:
+      return formatTextValue(property, value);
+    case PropertyType.BOOLEAN: {
       const format = property.attributes.find((f) => f.name === PropertyAttributeName.FormatBoolean)?.value;
       return getBooleanAsStringValue({ value: value as boolean, format: format as BooleanFormatType, t });
-    } else if (property.formula?.resultAs === "date") {
+    }
+    case PropertyType.SELECT:
+      return formatSelectValue(property, value);
+    case PropertyType.MULTI_SELECT:
+    case PropertyType.MULTI_TEXT:
+      return (value as RowValueMultiple[]).map((v) => v.value).join(", ");
+    case PropertyType.RANGE_NUMBER:
+      return formatRangeNumber(property, value as RowValueRangeDto);
+    case PropertyType.RANGE_DATE:
+      return formatRangeDate(property, value as RowValueRangeDto);
+    case PropertyType.FORMULA:
+      return formatFormulaValue(property, value, t);
+    case PropertyType.NUMBER: {
+      const format = property.attributes.find((f) => f.name === PropertyAttributeName.FormatNumber)?.value;
+      return getNumberAsStringValue({ value: value as number, format: format as NumberFormatType });
+    }
+    case PropertyType.DATE: {
       const format = property.attributes.find((f) => f.name === PropertyAttributeName.FormatDate)?.value;
       return getDateAsString({ value: value as Date, format: format as DateFormatType });
-    } else {
-      return value?.toString();
     }
-  } else if (property.type === PropertyType.NUMBER) {
-    const format = property.attributes.find((f) => f.name === PropertyAttributeName.FormatNumber)?.value;
-    return getNumberAsStringValue({ value: value as number, format: format as NumberFormatType });
-  } else if (property.type === PropertyType.DATE) {
-    const format = property.attributes.find((f) => f.name === PropertyAttributeName.FormatDate)?.value;
-    return getDateAsString({ value: value as Date, format: format as DateFormatType });
-  } else if (property.type === PropertyType.MEDIA) {
-    const media = value as MediaDto[];
-    function getFileName(name: string) {
-      let fileName = name;
-      if (name.includes("/")) {
-        fileName = name.split("/").pop() ?? name;
-      }
-      if (name.includes("\\")) {
-        fileName = name.split("\\").pop() ?? name;
-      }
-      return fileName;
-    }
-    return media.map((f) => getFileName(f.title)).join(", ");
+    case PropertyType.MEDIA:
+      return formatMediaValue(value);
+    default:
+      return "";
   }
-  return "";
 };
 
 const getPropertyValue = ({
@@ -421,6 +451,138 @@ export type RowValueCreateDto = {
   multiple?: RowValueMultipleDto[];
   range?: RowValueRangeDto;
 };
+
+function parseRangeFromForm(
+  property: PropertyWithDetails,
+  name: string,
+  propertyValue: RowValueCreateDto | undefined,
+  form: FormData | undefined,
+  values: RowValueCreateDto[] | undefined
+): RowValueRangeDto | null {
+  if (propertyValue?.range) {
+    return propertyValue.range;
+  }
+  const min = getFormDataEntryValue({ name: name + "-min", form, values });
+  const max = getFormDataEntryValue({ name: name + "-max", form, values });
+  if (PropertyType.RANGE_NUMBER === property.type) {
+    return {
+      numberMin: Number(min ?? 0),
+      numberMax: Number(max ?? 0),
+      dateMin: null,
+      dateMax: null,
+    };
+  }
+  if (PropertyType.RANGE_DATE === property.type) {
+    return {
+      numberMin: null,
+      numberMax: null,
+      dateMin: min ? new Date(min?.toString()) : null,
+      dateMax: max ? new Date(max?.toString()) : null,
+    };
+  }
+  return null;
+}
+
+function parseMediaFromForm(
+  property: PropertyWithDetails,
+  name: string,
+  propertyValue: RowValueCreateDto | undefined,
+  form: FormData | undefined,
+  values: RowValueCreateDto[] | undefined,
+  t: TFunction | undefined,
+  skipValidation: boolean
+): MediaDto[] {
+  let media: MediaDto[];
+  if (propertyValue?.media) {
+    media = propertyValue.media;
+  } else {
+    media = getFormDataEntryValues({ name, form, values }).map((f: FormDataEntryValue) => {
+      return JSON.parse(f.toString());
+    });
+  }
+  if (!skipValidation) {
+    validatePropertyValue_Media({ t, property, media });
+  }
+  return media;
+}
+
+function parseMultipleFromForm(
+  property: PropertyWithDetails,
+  name: string,
+  propertyValue: RowValueCreateDto | undefined,
+  form: FormData | undefined,
+  values: RowValueCreateDto[] | undefined,
+  t: TFunction | undefined,
+  skipValidation: boolean
+): RowValueMultipleDto[] {
+  let multiple: RowValueMultipleDto[];
+  if (propertyValue?.multiple) {
+    multiple = propertyValue.multiple;
+  } else {
+    multiple = getFormDataEntryValues({ name, form, values }).map((f: FormDataEntryValue) => {
+      return JSON.parse(f.toString());
+    });
+  }
+  if (!skipValidation) {
+    validatePropertyValue_Multiple({ t, property, multiple });
+  }
+  return multiple;
+}
+
+function parseSimpleFormValue(
+  property: PropertyWithDetails,
+  name: string,
+  form: FormData | undefined,
+  values: RowValueCreateDto[] | undefined,
+  t: TFunction | undefined,
+  skipValidation: boolean
+): FormDataEntryValue | null {
+  const formValue = getFormDataEntryValue({ name, form, values });
+  if (!skipValidation) {
+    if (property.isRequired && !property.isReadOnly && (formValue === null || formValue === undefined || !formValue)) {
+      const errorMessage = t ? `${t(property.title)}: required` : `${property.name}: required`;
+      throw Error(errorMessage);
+    }
+    validatePropertyValue({ t, property, value: formValue });
+  }
+  return formValue;
+}
+
+function hasFormValueData(
+  property: PropertyWithDetails,
+  formValue: FormDataEntryValue | null,
+  media: MediaDto[],
+  multiple: RowValueMultipleDto[],
+  range: RowValueRangeDto | null
+): boolean {
+  if (property.type === PropertyType.MEDIA) {
+    return media.length > 0;
+  }
+  if ([PropertyType.MULTI_SELECT, PropertyType.MULTI_TEXT].includes(property.type)) {
+    return multiple.length > 0;
+  }
+  if ([PropertyType.RANGE_NUMBER, PropertyType.RANGE_DATE].includes(property.type)) {
+    return range !== null;
+  }
+  return formValue !== null && formValue !== undefined;
+}
+
+function shouldSkipProperty(property: PropertyWithDetails, hasValue: boolean, existing: RowWithValues | undefined): boolean {
+  if (hasValue) {
+    return false;
+  }
+  if (!property.isRequired) {
+    return true;
+  }
+  if (property.isReadOnly) {
+    return true;
+  }
+  if (!property.canUpdate && existing) {
+    return true;
+  }
+  return false;
+}
+
 const getRowPropertiesFromForm = ({
   t,
   entity,
@@ -444,6 +606,7 @@ const getRowPropertiesFromForm = ({
   childRows?: { relationshipId: string; childId: string }[];
 } => {
   const dynamicProperties: RowValueDto[] = [];
+  const skipValidation = options?.skipValidation ?? false;
 
   entity.properties
     .filter((f) => !f.isHidden && !f.isDefault)
@@ -454,87 +617,29 @@ const getRowPropertiesFromForm = ({
       let range: RowValueRangeDto | null = null;
       let name = property.name;
       const propertyValue = values?.find((f) => f.name === name);
+
       if ([PropertyType.MEDIA, PropertyType.MULTI_SELECT, PropertyType.MULTI_TEXT].includes(property.type)) {
         name += "[]";
       }
+
       if ([PropertyType.RANGE_NUMBER, PropertyType.RANGE_DATE].includes(property.type)) {
-        if (propertyValue?.range) {
-          range = propertyValue.range;
-        } else {
-          const min = getFormDataEntryValue({ name: name + "-min", form, values });
-          const max = getFormDataEntryValue({ name: name + "-max", form, values });
-          if (PropertyType.RANGE_NUMBER === property.type) {
-            range = {
-              numberMin: Number(min ?? 0),
-              numberMax: Number(max ?? 0),
-              dateMin: null,
-              dateMax: null,
-            };
-          } else if (PropertyType.RANGE_DATE === property.type) {
-            range = {
-              numberMin: null,
-              numberMax: null,
-              dateMin: min ? new Date(min?.toString()) : null,
-              dateMax: max ? new Date(max?.toString()) : null,
-            };
-          }
-        }
+        range = parseRangeFromForm(property, name, propertyValue, form, values);
       } else if (property.type === PropertyType.MEDIA) {
-        if (propertyValue?.media) {
-          media = propertyValue.media;
-        } else {
-          media = getFormDataEntryValues({ name, form, values }).map((f: FormDataEntryValue) => {
-            return JSON.parse(f.toString());
-          });
-        }
-        if (!options?.skipValidation) {
-          validatePropertyValue_Media({ t, property, media });
-        }
+        media = parseMediaFromForm(property, name, propertyValue, form, values, t, skipValidation);
       } else if ([PropertyType.MULTI_SELECT, PropertyType.MULTI_TEXT].includes(property.type)) {
-        if (propertyValue?.multiple) {
-          multiple = propertyValue.multiple;
-        } else {
-          multiple = getFormDataEntryValues({ name, form, values }).map((f: FormDataEntryValue) => {
-            return JSON.parse(f.toString());
-          });
-        }
-        if (!options?.skipValidation) {
-          validatePropertyValue_Multiple({ t, property, multiple });
-        }
+        multiple = parseMultipleFromForm(property, name, propertyValue, form, values, t, skipValidation);
       } else {
-        formValue = getFormDataEntryValue({ name, form, values });
-        if (!options?.skipValidation) {
-          if (property.isRequired && !property.isReadOnly && (formValue === null || formValue === undefined || !formValue)) {
-            if (t) {
-              throw Error(`${t(property.title)}: required`);
-            } else {
-              throw Error(`${property.name}: required`);
-            }
-          }
-          validatePropertyValue({ t, property, value: formValue });
-        }
+        formValue = parseSimpleFormValue(property, name, form, values, t, skipValidation);
       }
+
       const value = getValueFromType(property.type, formValue);
       value.media = media;
       value.multiple = multiple;
       value.range = range;
 
-      let hasFormValue = formValue !== null && formValue !== undefined;
-      if (property.type === PropertyType.MEDIA) {
-        hasFormValue = media.length > 0;
-      } else if ([PropertyType.MULTI_SELECT, PropertyType.MULTI_TEXT].includes(property.type)) {
-        hasFormValue = multiple.length > 0;
-      } else if ([PropertyType.RANGE_NUMBER, PropertyType.RANGE_DATE].includes(property.type)) {
-        hasFormValue = range !== null;
-      }
-      if (!hasFormValue) {
-        if (!property.isRequired) {
-          return;
-        } else if (property.isReadOnly) {
-          return;
-        } else if (!property.canUpdate && existing) {
-          return;
-        }
+      const hasValue = hasFormValueData(property, formValue, media, multiple, range);
+      if (shouldSkipProperty(property, hasValue, existing)) {
+        return;
       }
 
       const existingValue = existing?.values?.find((f) => f.propertyId === property.id);
@@ -681,6 +786,7 @@ const getFakePropertyValue = ({ property, idx, t }: { property: PropertyWithDeta
         default:
           break;
       }
+      break;
     }
     case PropertyType.NUMBER:
       rowValue.numberValue = new Decimal(123 * idx);

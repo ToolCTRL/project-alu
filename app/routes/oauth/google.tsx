@@ -4,7 +4,7 @@ import { getAuthenticator } from "~/utils/auth/auth.server";
 
 export const loader = () => redirect("/login");
 
-export let action: ActionFunction = ({ request }) => {
+export const action: ActionFunction = ({ request }) => {
   return getAuthenticator(request).authenticate("google", request);
 };
 

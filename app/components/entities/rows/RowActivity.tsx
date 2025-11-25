@@ -24,6 +24,20 @@ interface Props {
   autoFocus?: boolean;
 }
 
+function getActionDescription(item: LogWithDetails) {
+  return item.action;
+}
+
+function getActionIcon(action: string) {
+  if (action === DefaultLogActions.Created) {
+    return <CalendarFilledIcon className="text-muted-foreground h-4 w-4" aria-hidden="true" />;
+  }
+  if (action === DefaultLogActions.Updated) {
+    return <PencilIcon className="text-muted-foreground h-4 w-4" aria-hidden="true" />;
+  }
+  return <QuestionMarkFilledIcon className="text-muted-foreground h-4 w-4" aria-hidden="true" />;
+}
+
 export default function RowActivity({ items, hasActivity = true, hasComments, onSubmit, withTitle = true, autoFocus }: Props) {
   const { t } = useTranslation();
   const appOrAdminData = useAppOrAdminData();
@@ -51,10 +65,6 @@ export default function RowActivity({ items, hasActivity = true, hasComments, on
       return 1;
     });
   };
-
-  function getActionDescription(item: LogWithDetails) {
-    return item.action;
-  }
 
   function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.stopPropagation();
@@ -99,14 +109,7 @@ export default function RowActivity({ items, hasActivity = true, hasComments, on
                                   <UserAvatarBadge className="h-9 w-9" avatar={item.user?.avatar} />
 
                                   <span className="bg-secondary absolute -bottom-0.5 -right-1 rounded-tl px-0.5 py-px">
-                                    {/* <TagIcon className="h-4 w-4 text-muted-foreground" aria-hidden="true" /> */}
-                                    {item.action === DefaultLogActions.Created ? (
-                                      <CalendarFilledIcon className="text-muted-foreground h-4 w-4" aria-hidden="true" />
-                                    ) : item.action === DefaultLogActions.Updated ? (
-                                      <PencilIcon className="text-muted-foreground h-4 w-4" aria-hidden="true" />
-                                    ) : (
-                                      <QuestionMarkFilledIcon className="text-muted-foreground h-4 w-4" aria-hidden="true" />
-                                    )}
+                                    {getActionIcon(item.action)}
                                   </span>
                                 </div>
                               </div>

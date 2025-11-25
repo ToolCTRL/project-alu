@@ -13,7 +13,7 @@ export default function JsonPropertyValueCell({ property, value }: { property: J
       return value as string;
     case "number":
       return value as number;
-    case "boolean":
+    case "boolean": {
       const booleanValue = value === undefined ? undefined : value === "true" || value === true || value === 1 || value === "1";
       if (value === undefined || value === null) {
         return null;
@@ -23,6 +23,7 @@ export default function JsonPropertyValueCell({ property, value }: { property: J
       } else {
         return <XIcon className="h-4 w-4" />;
       }
+    }
     case "image":
       if (!value) {
         return null;

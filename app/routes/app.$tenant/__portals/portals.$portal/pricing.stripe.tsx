@@ -59,6 +59,74 @@ type ActionData = {
   error?: string;
   success?: string;
 };
+async function handleConnectStripe(user: any, form: FormData, portal: any, params: any, baseUrl: string) {
+  try {
+    const country = form.get("country") as string;
+    if (!country) {
+      return Response.json({ error: "Country is required" }, { status: 400 });
+    }
+    const stripeAccount = await StripeConnectServer.createStripeAccount({
+      email: user!.email,
+      country,
+      metadata: {
+        tenantId: portal.tenantId ?? "{admin}",
+      },
+    });
+    await updatePortal(portal, {
+      stripeAccountId: stripeAccount.id,
+    });
+    portal.stripeAccountId = stripeAccount.id;
+
+    const stripeAccountLink = await StripeConnectServer.createStripeAccountLink({
+      account: portal.stripeAccountId,
+      return_url: baseUrl + UrlUtils.getModulePath(params, `portals/${portal.id}/pricing`),
+      refresh_url: baseUrl + UrlUtils.getModulePath(params, `portals/${portal.id}/pricing`),
+    });
+    return redirect(stripeAccountLink.url);
+  } catch (e: any) {
+    return Response.json({ error: e.message }, { status: 400 });
+  }
+}
+
+async function handleReconnectStripe(portal: any, params: any, baseUrl: string, requestUrl: string) {
+  try {
+    if (!portal.stripeAccountId) {
+      return Response.json({ error: "No Stripe account found" }, { status: 400 });
+    }
+    const stripeAccount = await StripeConnectServer.getStripeAccount(portal.stripeAccountId);
+    if (!stripeAccount) {
+      return Response.json({ error: "No Stripe account found with id: " + portal.stripeAccountId }, { status: 400 });
+    }
+    await updatePortal(portal, {
+      stripeAccountId: stripeAccount.id,
+    });
+    portal.stripeAccountId = stripeAccount.id;
+    const stripeAccountLink = await StripeConnectServer.createStripeAccountLink({
+      account: portal.stripeAccountId,
+      return_url: baseUrl + UrlUtils.getModulePath(params, `portals/${portal.id}/pricing`),
+      refresh_url: requestUrl,
+    });
+    return redirect(stripeAccountLink.url);
+  } catch (e: any) {
+    return Response.json({ error: e.message }, { status: 400 });
+  }
+}
+
+async function handleDeleteStripe(portal: any) {
+  try {
+    if (!portal.stripeAccountId) {
+      return Response.json({ error: "No Stripe account found" }, { status: 400 });
+    }
+    await updatePortal(portal, {
+      stripeAccountId: null,
+    });
+    await StripeConnectServer.deleteStripeAccount(portal.stripeAccountId);
+    return Response.json({ success: "Stripe account deleted" });
+  } catch (e: any) {
+    return Response.json({ error: e.message }, { status: 400 });
+  }
+}
+
 export const action = async ({ request, params }: ActionFunctionArgs) => {
   await requireAuth({ request, params });
   const userInfo = await getUserInfo(request);
@@ -72,71 +140,18 @@ export const action = async ({ request, params }: ActionFunctionArgs) => {
   }
 
   const url = new URL(request.url);
-  let baseUrl = `${url.protocol}//${url.host}`;
+  const baseUrl = `${url.protocol}//${url.host}`;
 
   if (action === "connectStripe") {
-    try {
-      const country = form.get("country") as string;
-      if (!country) {
-        return Response.json({ error: "Country is required" }, { status: 400 });
-      }
-      const stripeAccount = await StripeConnectServer.createStripeAccount({
-        email: user!.email,
-        country,
-        metadata: {
-          tenantId: portal.tenantId ?? "{admin}",
-        },
-      });
-      await updatePortal(portal, {
-        stripeAccountId: stripeAccount.id,
-      });
-      portal.stripeAccountId = stripeAccount.id;
-
-      const stripeAccountLink = await StripeConnectServer.createStripeAccountLink({
-        account: portal.stripeAccountId,
-        return_url: baseUrl + UrlUtils.getModulePath(params, `portals/${portal.id}/pricing`),
-        refresh_url: request.url,
-      });
-      return redirect(stripeAccountLink.url);
-    } catch (e: any) {
-      return Response.json({ error: e.message }, { status: 400 });
-    }
-  } else if (action === "reconnectStripe") {
-    try {
-      if (!portal.stripeAccountId) {
-        return Response.json({ error: "No Stripe account found" }, { status: 400 });
-      }
-      const stripeAccount = await StripeConnectServer.getStripeAccount(portal.stripeAccountId);
-      if (!stripeAccount) {
-        return Response.json({ error: "No Stripe account found with id: " + portal.stripeAccountId }, { status: 400 });
-      }
-      await updatePortal(portal, {
-        stripeAccountId: stripeAccount.id,
-      });
-      portal.stripeAccountId = stripeAccount.id;
-      const stripeAccountLink = await StripeConnectServer.createStripeAccountLink({
-        account: portal.stripeAccountId,
-        return_url: baseUrl + UrlUtils.getModulePath(params, `portals/${portal.id}/pricing`),
-        refresh_url: request.url,
-      });
-      return redirect(stripeAccountLink.url);
-    } catch (e: any) {
-      return Response.json({ error: e.message }, { status: 400 });
-    }
-  } else if (action === "deleteStripe") {
-    try {
-      if (!portal.stripeAccountId) {
-        return Response.json({ error: "No Stripe account found" }, { status: 400 });
-      }
-      await updatePortal(portal, {
-        stripeAccountId: null,
-      });
-      await StripeConnectServer.deleteStripeAccount(portal.stripeAccountId);
-      return Response.json({ success: "Stripe account deleted" });
-    } catch (e: any) {
-      return Response.json({ error: e.message }, { status: 400 });
-    }
+    return handleConnectStripe(user, form, portal, params, baseUrl);
   }
+  if (action === "reconnectStripe") {
+    return handleReconnectStripe(portal, params, baseUrl, request.url);
+  }
+  if (action === "deleteStripe") {
+    return handleDeleteStripe(portal);
+  }
+  return Response.json({ error: "Invalid action" }, { status: 400 });
 };
 
 export default function () {

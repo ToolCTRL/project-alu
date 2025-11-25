@@ -49,34 +49,25 @@ export default function RowProperties({
     }
     return `col-span-${columns}`;
   }
-  // function getValue(property: PropertyWithDetails) {
-  //   return values.find((f) => f.propertyId === property.id);
-  // }
-  // function getInitialOption(property: PropertyWithDetails) {
-  //   const defaultValueString = PropertyAttributeHelper.getPropertyAttributeValue_String(property, PropertyAttributeName.DefaultValue);
-  //   const textValue = getValue(property)?.textValue;
-  //   const selectedOption = property.options?.find((f) => f.value === (textValue ?? defaultValueString));
-  //   return selectedOption?.value;
-  // }
+
   return (
     <div className={clsx("grid gap-2", gridColumns)}>
       {values.map((detailValue, idxDetailValue) => {
         return (
-          <div key={idxDetailValue} className={clsx("w-full", !gridColumns && getPropertyColumnSpan(detailValue.property))}>
-            {/* {prop.type === PropertyType.MULTI_SELECT && <>multiple: {JSON.stringify(value?.multiple)}</>} */}
+          <div key={detailValue.propertyId} className={clsx("w-full", !gridColumns && getPropertyColumnSpan(detailValue.property))}>
             <RowValueInput
               entity={entity}
-              textValue={values[idxDetailValue].textValue}
-              numberValue={values[idxDetailValue].numberValue}
-              dateValue={values[idxDetailValue].dateValue}
-              booleanValue={values[idxDetailValue].booleanValue}
-              multiple={values[idxDetailValue].multiple}
-              range={values[idxDetailValue].range}
+              textValue={detailValue.textValue}
+              numberValue={detailValue.numberValue}
+              dateValue={detailValue.dateValue}
+              booleanValue={detailValue.booleanValue}
+              multiple={detailValue.multiple}
+              range={detailValue.range}
               initialOption={detailValue.selectedOption}
               selected={detailValue.property}
               initialMedia={detailValue.media}
               onChange={(e) => {
-                updateItemByIdx(values, setValues, idxDetailValue, RowHelper.updateFieldValueTypeArray(values[idxDetailValue], e));
+                updateItemByIdx(values, setValues, idxDetailValue, RowHelper.updateFieldValueTypeArray(detailValue, e));
               }}
               onChangeOption={(e) => {
                 updateItemByIdx(values, setValues, idxDetailValue, {

@@ -125,15 +125,16 @@ function Highlight({ className, color, children, highlightText }: { className: s
   const parts = children.split(new RegExp(`(${highlightText})`, "gi"));
   return (
     <span className={clsx(className, " line-clamp-3")}>
-      {parts.map((part, i) =>
-        part.toLowerCase() === highlightText.toLowerCase() ? (
-          <span key={i} className={clsx(ColorBackgroundUtils.getBg400(color), ColorTextUtils.getText100(color))}>
+      {parts.map((part, i) => {
+        const key = `${i}-${part.substring(0, 20)}`;
+        return part.toLowerCase() === highlightText.toLowerCase() ? (
+          <span key={key} className={clsx(ColorBackgroundUtils.getBg400(color), ColorTextUtils.getText100(color))}>
             {part}
           </span>
         ) : (
-          part
-        )
-      )}
+          <span key={key}>{part}</span>
+        );
+      })}
     </span>
   );
 }

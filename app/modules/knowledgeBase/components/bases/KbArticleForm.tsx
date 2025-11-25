@@ -14,7 +14,6 @@ export default function KbArticleForm({ item }: { item: KnowledgeBaseArticleWith
       <div className="grid gap-3">
         <div className="space-y-2">
           <div className="flex justify-between space-x-2">
-            {/* <label className="text-sm font-medium text-muted-foreground">Article</label> */}
             <div className="flex items-center space-x-1">
               <button type="button" onClick={() => setContentType("wysiwyg")} className="text-muted-foreground text-xs hover:underline">
                 <div className={clsx(contentType === "wysiwyg" ? "font-bold" : "")}>WYSIWYG</div>
@@ -26,7 +25,7 @@ export default function KbArticleForm({ item }: { item: KnowledgeBaseArticleWith
             </div>
           </div>
           <input name="contentType" value={contentType} readOnly hidden />
-          {contentType === "wysiwyg" ? (
+          {contentType === "wysiwyg" && (
             <div>
               <input type="hidden" name="content" value={content} hidden readOnly />
               <NovelEditor
@@ -37,9 +36,9 @@ export default function KbArticleForm({ item }: { item: KnowledgeBaseArticleWith
                   }
                 }}
               />
-              {/* <InputText autoFocus name="content" placeholder="Content" value={content} setValue={setContent} /> */}
             </div>
-          ) : contentType === "markdown" ? (
+          )}
+          {contentType === "markdown" && (
             <InputText
               className="col-span-12"
               rows={6}
@@ -56,7 +55,7 @@ export default function KbArticleForm({ item }: { item: KnowledgeBaseArticleWith
                 }
               }}
             />
-          ) : null}
+          )}
         </div>
       </div>
     </div>

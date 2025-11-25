@@ -111,6 +111,14 @@ export default function SetUserRolesRoute() {
     }
   }, [actionData]);
 
+  function handleRoleToggle(checked: boolean, roleId: string) {
+    if (checked) {
+      setSelectedRoles((f) => [...f, roleId]);
+    } else {
+      setSelectedRoles((f) => f.filter((f) => f !== roleId));
+    }
+  }
+
   return (
     <div>
       <Form method="post" className="inline-block w-full overflow-hidden p-1 text-left align-bottom sm:align-middle">
@@ -148,13 +156,7 @@ export default function SetUserRolesRoute() {
                   title={role.name}
                   description={role.description}
                   value={selectedRoles.includes(role.id)}
-                  setValue={(e) => {
-                    if (e) {
-                      setSelectedRoles((f) => [...f, role.id]);
-                    } else {
-                      setSelectedRoles((f) => f.filter((f) => f !== role.id));
-                    }
-                  }}
+                  setValue={(e) => handleRoleToggle(e, role.id)}
                 />
               ))}
             </div>

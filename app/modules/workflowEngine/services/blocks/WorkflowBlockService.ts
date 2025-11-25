@@ -57,28 +57,12 @@ async function execute({
   });
 
   const blockStartTime = performance.now();
-  let result: BlockExecutionResultDto | null = {
-    output: null,
-    toBlockIds: [],
-    error: null,
+  let result = await executeBlockWithErrorHandling({ block, workflowContext, workflow, workflowExecutionId, session });
+
+  workflowContext = {
+    ...workflowContext,
+    [block.variableName]: result.output,
   };
-  try {
-    result = await executeBlock({ block, workflowContext, workflow, workflowExecutionId, session });
-    workflowContext = {
-      ...workflowContext,
-      [block.variableName]: result.output,
-    };
-  } catch (e: any) {
-    if (!result) {
-      result = {
-        error: e.message,
-        output: null,
-        toBlockIds: [],
-      };
-    } else {
-      result.error = e.message;
-    }
-  }
 
   const blockEndTime = performance.now();
   const blockDuration = blockEndTime - blockStartTime;
@@ -113,6 +97,28 @@ async function execute({
     status: error ? "error" : "success",
     workflowContext: workflowContext,
   };
+}
+
+async function executeBlockWithErrorHandling(args: BlockExecutionParamsDto): Promise<BlockExecutionResultDto> {
+  let result: BlockExecutionResultDto | null = {
+    output: null,
+    toBlockIds: [],
+    error: null,
+  };
+  try {
+    result = await executeBlock(args);
+  } catch (e: any) {
+    if (!result) {
+      result = {
+        error: e.message,
+        output: null,
+        toBlockIds: [],
+      };
+    } else {
+      result.error = e.message;
+    }
+  }
+  return result;
 }
 
 async function executeBlock(args: BlockExecutionParamsDto): Promise<BlockExecutionResultDto> {

@@ -24,8 +24,6 @@ export default function KbCategorySectionForm({
   const navigation = useNavigation();
   const navigate = useNavigate();
 
-  // const [showFilterModal, setShowFilterModal] = useState<{ item?: { type: FeatureFlagsFilterType; value: string | null }; idx?: number }>();
-
   const mainInput = useRef<RefInputText>(null);
   useEffect(() => {
     setTimeout(() => {

@@ -51,6 +51,51 @@ type ActionData = {
   error?: string;
   publicUrl?: string;
 };
+async function handleFileSave(supabaseBucketId: string, form: FormData) {
+  const name = form.get("name")?.toString();
+  if (!name) {
+    return Response.json({ error: "Missing name" }, { status: 400 });
+  }
+  const files: MediaDto[] = form.getAll("files[]").map((f: FormDataEntryValue) => {
+    return JSON.parse(f.toString());
+  });
+  if (files.length !== 1) {
+    return Response.json({ error: "Missing file" }, { status: 400 });
+  }
+
+  const storedFile = await storeSupabaseFile({
+    bucket: supabaseBucketId,
+    content: files[0].file,
+    id: name,
+    replace: true,
+  });
+  if (!storedFile) {
+    return Response.json({ error: "Error creating file" }, { status: 400 });
+  }
+  return Response.json({ success: "File saved: " + storedFile });
+}
+
+async function handleFileDelete(supabaseBucketId: string, form: FormData) {
+  const name = form.get("name")?.toString();
+  if (!name) {
+    return Response.json({ error: "Missing id" }, { status: 400 });
+  }
+  await deleteSupabaseFile(supabaseBucketId, name);
+  return Response.json({ success: "File deleted" });
+}
+
+async function handleFileDownload(supabaseBucketId: string, form: FormData) {
+  const name = form.get("name")?.toString();
+  if (!name) {
+    return Response.json({ error: "Missing name" }, { status: 400 });
+  }
+  const publicUrl = await getSupabaseFilePublicUrl(supabaseBucketId, name);
+  if (!publicUrl) {
+    return Response.json({ error: "Error getting file" }, { status: 400 });
+  }
+  return Response.json({ publicUrl });
+}
+
 export const action: ActionFunction = async ({ request, params }) => {
   await requireAuth({ request, params });
   if (process.env.NODE_ENV !== "development") {
@@ -60,45 +105,13 @@ export const action: ActionFunction = async ({ request, params }) => {
 
   const form = await request.formData();
   const action = form.get("action");
-  if (action === "file-save") {
-    const name = form.get("name")?.toString();
-    if (!name) {
-      return Response.json({ error: "Missing name" }, { status: 400 });
-    }
-    const files: MediaDto[] = form.getAll("files[]").map((f: FormDataEntryValue) => {
-      return JSON.parse(f.toString());
-    });
-    if (files.length !== 1) {
-      return Response.json({ error: "Missing file" }, { status: 400 });
-    }
 
-    const storedFile = await storeSupabaseFile({
-      bucket: supabaseBucketId,
-      content: files[0].file,
-      id: name,
-      replace: true,
-    });
-    if (!storedFile) {
-      return Response.json({ error: "Error creating file" }, { status: 400 });
-    }
-    return Response.json({ success: "File saved: " + storedFile });
+  if (action === "file-save") {
+    return handleFileSave(supabaseBucketId, form);
   } else if (action === "file-delete") {
-    const name = form.get("name")?.toString();
-    if (!name) {
-      return Response.json({ error: "Missing id" }, { status: 400 });
-    }
-    await deleteSupabaseFile(supabaseBucketId, name);
-    return Response.json({ success: "File deleted" });
+    return handleFileDelete(supabaseBucketId, form);
   } else if (action === "file-download") {
-    const name = form.get("name")?.toString();
-    if (!name) {
-      return Response.json({ error: "Missing name" }, { status: 400 });
-    }
-    const publicUrl = await getSupabaseFilePublicUrl(supabaseBucketId, name);
-    if (!publicUrl) {
-      return Response.json({ error: "Error getting file" }, { status: 400 });
-    }
-    return Response.json({ publicUrl });
+    return handleFileDownload(supabaseBucketId, form);
   }
   return Response.json({ error: "Invalid action" }, { status: 400 });
 };

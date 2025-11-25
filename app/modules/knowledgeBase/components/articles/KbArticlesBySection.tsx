@@ -11,15 +11,15 @@ export default function KbArticlesBySection({ kb, item }: { kb: KnowledgeBaseDto
         <EmptyState className="bg-background" captions={{ thereAreNo: "No articles" }} />
       ) : (
         <div className="space-y-6">
-          {KnowledgeBaseUtils.getCategoryArticlesBySections({ kb, category: item }).map((item, idx) => {
+          {KnowledgeBaseUtils.getCategoryArticlesBySections({ kb, category: item }).map((sectionItem, idx) => {
             return (
-              <div key={idx} className="space-y-3">
-                {item.section && (
+              <div key={sectionItem.section?.id || `section-${idx}`} className="space-y-3">
+                {sectionItem.section && (
                   <div className="flex items-center space-x-2">
-                    <div className="text-xl font-bold">{item.section.title}</div>
+                    <div className="text-xl font-bold">{sectionItem.section.title}</div>
                   </div>
                 )}
-                <KbArticles kb={kb} items={item.articles} />
+                <KbArticles kb={kb} items={sectionItem.articles} />
               </div>
             );
           })}

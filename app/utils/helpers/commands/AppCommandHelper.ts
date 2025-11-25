@@ -101,28 +101,6 @@ function getCommands({ t, navigate, appData, rootData }: Props): Action[] {
       },
     });
   }
-  // if (getUserHasPermission(appData, "app.settings.roles.view")) {
-  //   actions.push({
-  //     id: "roles",
-  //     name: t("models.role.plural"),
-  //     shortcut: [],
-  //     keywords: "",
-  //     subtitle: t("app.sidebar.settings"),
-  //     perform: () => {
-  //       navigate(`/app/${appData.currentTenant.slug}/settings/roles-and-permissions`);
-  //     },
-  //   });
-  // }
-  // actions.push({
-  //   id: "roles",
-  //   name: t("models.group.plural"),
-  //   shortcut: [],
-  //   keywords: "",
-  //   subtitle: t("app.sidebar.settings"),
-  //   perform: () => {
-  //     navigate(`/app/${appData.currentTenant.slug}/settings/groups`);
-  //   },
-  // });
   if (getUserHasPermission(appData, "app.settings.subscription.view")) {
     actions.push({
       id: "subscription",

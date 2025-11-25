@@ -34,34 +34,3 @@ export async function getGumroadProductSales(id: string, url?: string) {
     console.log("GUMROAD ERROR: ", e);
   }
 }
-
-// export async function getGumroadProductSocialProof(id: string) {
-//   const socialProof: SocialProof = {
-//     totalDownloads: 0,
-//     totalSales: 0,
-//     sales: 0,
-//     rating: 0,
-//   };
-//   const product = await getGumroadProduct(id);
-//   socialProof.totalDownloads = product.sales_count;
-
-//   let productSales = await getGumroadProductSales(id);
-//   do {
-//     if (productSales.success) {
-//       console.log({ productSales });
-//       productSales.sales.forEach((sale: any) => {
-//         socialProof.totalSales += 1;
-//         socialProof.sales += sale.price / 100;
-//         if (sale.product_rating) {
-//           socialProof.rating += sale.product_rating ? Number(sale.product_rating) : 0;
-//         }
-//       });
-//     }
-//     if (productSales.next_page_url && productSales.sales.length > 0) {
-//       productSales = await getGumroadProductSales(id, productSales.next_page_url);
-//     }
-//   } while (productSales.next_page_url);
-//   socialProof.rating = socialProof.rating / socialProof.totalSales;
-
-//   return socialProof;
-// }

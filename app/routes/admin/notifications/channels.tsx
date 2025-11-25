@@ -50,18 +50,7 @@ export const action: ActionFunction = async ({ request }) => {
       return Response.json({ error: e.message }, { status: 500 });
     }
   } else if (action === "create") {
-    // const name = form.get("name")?.toString() ?? "";
-    // const description = form.get("description")?.toString() ?? "";
     try {
-      // await NotificationService.createNotificationTemplate({
-      //   notificationGroupId: "",
-      //   name,
-      //   description,
-      //   steps: [],
-      //   active: true,
-      //   draft: false,
-      //   critical: false,
-      // });
       return Response.json({ success: `TODO` });
     } catch (e: any) {
       return Response.json({ error: e.message }, { status: 500 });
@@ -110,15 +99,6 @@ export default function () {
     }
   }, [actionData]);
 
-  // function onCreate({ name, description }: { name: string; description: string }) {
-  //   const form = new FormData();
-  //   form.append("action", "create");
-  //   form.append("name", name);
-  //   form.append("description", description);
-  //   submit(form, {
-  //     method: "post",
-  //   });
-  // }
   function onDelete(id: string) {
     const form = new FormData();
     form.append("action", "delete");

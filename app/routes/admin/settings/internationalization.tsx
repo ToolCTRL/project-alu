@@ -36,9 +36,6 @@ export const action: ActionFunction = async ({ request }) => {
 
 export default function AdminSettingsInternationalization() {
   const { t, i18n } = useTranslation();
-  // const data = useLoaderData<LoaderData>();
-
-  // const [canUpdate] = useState(getUserHasPermission(adminData, "admin.settings.internationalization.update"));
 
   return (
     <EditPageLayout title={<BackButtonWithTitle href="/admin/settings">{t("settings.admin.internationalization.title")}</BackButtonWithTitle>}>

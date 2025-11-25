@@ -74,10 +74,9 @@ export const action = async ({ request }: ActionFunctionArgs) => {
       plans.map(async (plan) => {
         await deleteSubscriptionFeatures(plan.id ?? "");
         const features = featuresInPlans.filter((f) => f.plans.find((p) => p.id === plan.id));
+        const sortedFeatures = features.toSorted((a, b) => a.order - b.order);
         await Promise.all(
-          features
-            .sort((a, b) => a.order - b.order)
-            .map(async ({ order, name, href, badge, plans, accumulate }) => {
+          sortedFeatures.map(async ({ order, name, href, badge, plans, accumulate }) => {
               const feature = plans.find((p) => p.id === plan.id);
               if (!feature) {
                 return;
@@ -420,64 +419,64 @@ export default function () {
                 </div>
               }
               opened={
-                <div className="flex flex-col space-y-2 px-1 py-2">
-                  {!existing ? (
+                existing ? (
+                  <div className="flex flex-col space-y-2 px-1 py-2">
+                    <div>
+                      <InputText
+                        withTranslation={true}
+                        name="title"
+                        title="Title"
+                        placeholder="Title..."
+                        value={existing?.title}
+                        required
+                        setValue={handleTitleChange.bind(null, existing)}
+                      />
+                    </div>
+                    <div>
+                      <InputSelect
+                        name="type"
+                        title="Type"
+                        value={existing?.type}
+                        setValue={handleTypeChange.bind(null, existing, item, plan.id)}
+                        options={[
+                          {
+                            name: "Not included",
+                            value: SubscriptionFeatureLimitType.NOT_INCLUDED,
+                          },
+                          {
+                            name: "Included",
+                            value: SubscriptionFeatureLimitType.INCLUDED,
+                          },
+                          {
+                            name: "Monthly",
+                            value: SubscriptionFeatureLimitType.MONTHLY,
+                          },
+                          {
+                            name: "Max",
+                            value: SubscriptionFeatureLimitType.MAX,
+                          },
+                          {
+                            name: "Unlimited",
+                            value: SubscriptionFeatureLimitType.UNLIMITED,
+                          },
+                        ]}
+                      />
+                    </div>
+                    <div>
+                      <InputNumber
+                        name="value"
+                        title="Limit"
+                        value={existing?.value}
+                        setValue={handleValueChange.bind(null, existing, item, plan.id)}
+                        disabled={![SubscriptionFeatureLimitType.MONTHLY, SubscriptionFeatureLimitType.MAX].includes(existing?.type ?? 0)}
+                      />
+                    </div>
+                  </div>
+                ) : (
+                  <div className="flex flex-col space-y-2 px-1 py-2">
                     <div>-</div>
-                  ) : (
-                    <Fragment>
-                      <div>
-                        <InputText
-                          withTranslation={true}
-                          name="title"
-                          title="Title"
-                          placeholder="Title..."
-                          value={existing?.title}
-                          required
-                          setValue={(e) => handleTitleChange(existing, e)}
-                        />
-                      </div>
-                      <div>
-                        <InputSelect
-                          name="type"
-                          title="Type"
-                          value={existing?.type}
-                          setValue={(e) => handleTypeChange(existing, item, plan.id, e)}
-                          options={[
-                            {
-                              name: "Not included",
-                              value: SubscriptionFeatureLimitType.NOT_INCLUDED,
-                            },
-                            {
-                              name: "Included",
-                              value: SubscriptionFeatureLimitType.INCLUDED,
-                            },
-                            {
-                              name: "Monthly",
-                              value: SubscriptionFeatureLimitType.MONTHLY,
-                            },
-                            {
-                              name: "Max",
-                              value: SubscriptionFeatureLimitType.MAX,
-                            },
-                            {
-                              name: "Unlimited",
-                              value: SubscriptionFeatureLimitType.UNLIMITED,
-                            },
-                          ]}
-                        />
-                      </div>
-                      <div>
-                        <InputNumber
-                          name="value"
-                          title="Limit"
-                          value={existing?.value}
-                          setValue={(e) => handleValueChange(existing, item, plan.id, e)}
-                          disabled={![SubscriptionFeatureLimitType.MONTHLY, SubscriptionFeatureLimitType.MAX].includes(existing?.type ?? 0)}
-                        />
-                      </div>
-                    </Fragment>
-                  )}
-                </div>
+                  </div>
+                )
               }
             />
           );
@@ -545,9 +544,8 @@ export default function () {
     items.forEach((item) => {
       item.plans.forEach(({ id, title }) => {
         const plan = selectedPlans.find((p) => p.id === id);
-        if (plan) {
-          validateFeatureTitle(title, plan.title, errors);
-        }
+        if (!plan) return;
+        validateFeatureTitle(title, plan.title, errors);
       });
     });
     return errors;

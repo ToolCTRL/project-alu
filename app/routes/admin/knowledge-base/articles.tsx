@@ -99,6 +99,67 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
 type ActionData = {
   error?: string;
 };
+async function handleNewArticle(request: Request, form: FormData, userInfo: any) {
+  await verifyUserHasPermission(request, "admin.kb.create");
+  const kbId = await form.get("kbId")?.toString();
+  const kb = await KnowledgeBaseService.getById({ id: kbId!, request });
+  if (!kb) {
+    return Response.json({ error: "Knowledge base not found" }, { status: 404 });
+  }
+  const created = await KnowledgeBaseService.newArticle({
+    kb,
+    params: {
+      lang: kb.languages.length > 0 ? kb.languages[0] : "en",
+    },
+    userId: userInfo.userId,
+    position: "last",
+  });
+  return redirect(`/admin/knowledge-base/bases/${kb.slug}/articles/${KnowledgeBaseUtils.defaultLanguage}/${created.id}/edit`);
+}
+
+async function handleSetOrders(form: FormData, updateFunction: (id: string, data: any) => Promise<any>) {
+  const items: { id: string; order: number }[] = form.getAll("orders[]").map((f: FormDataEntryValue) => {
+    return JSON.parse(f.toString());
+  });
+
+  await Promise.all(
+    items.map(async ({ id, order }) => {
+      await updateFunction(id, { order: Number(order) });
+    })
+  );
+  return Response.json({ updated: true });
+}
+
+async function handleToggleFeatured(request: Request, form: FormData) {
+  const id = form.get("id")?.toString() ?? "";
+  const isFeatured = form.get("isFeatured")?.toString() === "true";
+
+  const item = await getKbArticleById(id);
+  if (!item) {
+    return Response.json({ error: "Not found" }, { status: 404 });
+  }
+  const kb = await KnowledgeBaseService.getById({ id: item.knowledgeBaseId, request });
+  if (!kb) {
+    return Response.json({ error: "Knowledge base not found" }, { status: 404 });
+  }
+
+  let featuredOrder = item.featuredOrder;
+  if (isFeatured && !item.featuredOrder) {
+    const featuredArticles = await KnowledgeBaseService.getFeaturedArticles({
+      kb,
+      params: {},
+      request,
+    });
+    const maxOrder = featuredArticles.length > 0 ? Math.max(...featuredArticles.map((p) => p.featuredOrder ?? 0)) : 0;
+    featuredOrder = maxOrder + 1;
+  } else if (!isFeatured) {
+    featuredOrder = null;
+  }
+
+  await updateKnowledgeBaseArticle(item.id, { featuredOrder });
+  return Response.json({ success: "Updated" });
+}
+
 export const action = async ({ request }: ActionFunctionArgs) => {
   await verifyUserHasPermission(request, "admin.kb.update");
   const userInfo = await getUserInfo(request);
@@ -106,83 +167,13 @@ export const action = async ({ request }: ActionFunctionArgs) => {
   const action = form.get("action")?.toString() ?? "";
 
   if (action === "new") {
-    await verifyUserHasPermission(request, "admin.kb.create");
-    const kbId = await form.get("kbId")?.toString();
-    const kb = await KnowledgeBaseService.getById({ id: kbId!, request });
-    if (!kb) {
-      return Response.json({ error: "Knowledge base not found" }, { status: 404 });
-    }
-    const created = await KnowledgeBaseService.newArticle({
-      kb,
-      params: {
-        lang: kb.languages.length > 0 ? kb.languages[0] : "en",
-      },
-      userId: userInfo.userId,
-      position: "last",
-    });
-    return redirect(`/admin/knowledge-base/bases/${kb.slug}/articles/${KnowledgeBaseUtils.defaultLanguage}/${created.id}/edit`);
+    return await handleNewArticle(request, form, userInfo);
   } else if (action === "set-orders") {
-    const items: { id: string; order: number }[] = form.getAll("orders[]").map((f: FormDataEntryValue) => {
-      return JSON.parse(f.toString());
-    });
-
-    await Promise.all(
-      items.map(async ({ id, order }) => {
-        await updateKnowledgeBaseCategory(id, {
-          order: Number(order),
-        });
-      })
-    );
-    return Response.json({ updated: true });
+    return await handleSetOrders(form, updateKnowledgeBaseCategory);
   } else if (action === "set-section-orders") {
-    const items: { id: string; order: number }[] = form.getAll("orders[]").map((f: FormDataEntryValue) => {
-      return JSON.parse(f.toString());
-    });
-
-    await Promise.all(
-      items.map(async ({ id, order }) => {
-        await updateKnowledgeBaseCategorySection(id, {
-          order: Number(order),
-        });
-      })
-    );
-    return Response.json({ updated: true });
-  }
-  if (action === "toggle") {
-    const id = form.get("id")?.toString() ?? "";
-    const isFeatured = form.get("isFeatured")?.toString() === "true";
-
-    const item = await getKbArticleById(id);
-    if (!item) {
-      return Response.json({ error: "Not found" }, { status: 404 });
-    }
-    const kb = await KnowledgeBaseService.getById({ id: item.knowledgeBaseId, request });
-    if (!kb) {
-      return Response.json({ error: "Knowledge base not found" }, { status: 404 });
-    }
-
-    let featuredOrder = item.featuredOrder;
-    if (isFeatured) {
-      if (!item.featuredOrder) {
-        const featuredArticles = await KnowledgeBaseService.getFeaturedArticles({
-          kb,
-          params: {},
-          request,
-        });
-        let maxOrder = 0;
-        if (featuredArticles.length > 0) {
-          maxOrder = Math.max(...featuredArticles.map((p) => p.featuredOrder ?? 0));
-        }
-        featuredOrder = maxOrder + 1;
-      }
-    } else {
-      featuredOrder = null;
-    }
-    await updateKnowledgeBaseArticle(item.id, {
-      featuredOrder,
-    });
-
-    return Response.json({ success: "Updated" });
+    return await handleSetOrders(form, updateKnowledgeBaseCategorySection);
+  } else if (action === "toggle") {
+    return await handleToggleFeatured(request, form);
   }
   return Response.json({ error: "Invalid action" }, { status: 400 });
 };

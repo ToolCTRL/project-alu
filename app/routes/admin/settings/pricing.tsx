@@ -298,9 +298,6 @@ export default function AdminPricingRoute() {
                   </svg>
                   <div>{t("shared.preview")}</div>
                 </ButtonSecondary>
-                {/* <ButtonSecondary disabled={loading} to=".">
-              {t("shared.reload")}
-            </ButtonSecondary> */}
 
                 <ButtonPrimary to="new" disabled={loading || !getUserHasPermission(adminData, "admin.pricing.create")}>
                   {t("shared.new")}

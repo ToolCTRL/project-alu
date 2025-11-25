@@ -46,11 +46,14 @@ export default function RowSettingsPermissions({
   function getTypeOrder(permission: PermissionDto) {
     if (permission.tenantId) {
       return 1;
-    } else if (permission.userId) {
+    }
+    if (permission.userId) {
       return 2;
-    } else if (permission.roleId) {
+    }
+    if (permission.roleId) {
       return 3;
-    } else if (permission.groupId) {
+    }
+    if (permission.groupId) {
       return 4;
     }
     return 0;
@@ -58,11 +61,14 @@ export default function RowSettingsPermissions({
   function getName(permission: PermissionDto) {
     if (permission.tenantId) {
       return tenants.find((x) => x.id === permission.tenantId)?.name;
-    } else if (permission.userId) {
+    }
+    if (permission.userId) {
       return users.find((x) => x.id === permission.userId)?.email;
-    } else if (permission.roleId) {
+    }
+    if (permission.roleId) {
       return appOrAdminData.allRoles.find((x) => x.id === permission.roleId)?.name;
-    } else if (permission.groupId) {
+    }
+    if (permission.groupId) {
       return appOrAdminData.myGroups.find((x) => x.id === permission.groupId)?.name;
     }
     return "";
@@ -113,23 +119,11 @@ export default function RowSettingsPermissions({
             </div>
           )}
 
-          {sortedItems().map((item, idx) => {
+          {sortedItems().map((item) => {
             return (
-              <div key={idx} className="flex justify-between space-x-2 px-2 py-2">
+              <div key={item.id} className="flex justify-between space-x-2 px-2 py-2">
                 <div className="flex w-1/2 flex-col">
-                  <div className="text-muted-foreground text-xs font-bold uppercase">
-                    {item.tenantId ? (
-                      <span>{t("models.tenant.object")}</span>
-                    ) : item.roleId ? (
-                      <span>{t("models.role.object")}</span>
-                    ) : item.groupId ? (
-                      <span>{t("models.group.object")}</span>
-                    ) : item.userId ? (
-                      <span>{t("models.user.object")}</span>
-                    ) : item.public ? (
-                      <span>{t("shared.public")}</span>
-                    ) : null}
-                  </div>
+                  <div className="text-muted-foreground text-xs font-bold uppercase">{getPermissionTypeLabel(item, t)}</div>
                   <div className="text-foreground truncate text-sm">{getName(item)}</div>
                 </div>
                 <InputSelect
@@ -180,9 +174,27 @@ export default function RowSettingsPermissions({
       )}
       {adding && <NewPermissionForm tenants={tenants} users={users} onClose={() => setAdding(false)} types={getTypes()} />}
       {actionData?.error && <ErrorBanner title={t("shared.error")} text={actionData?.error} />}
-      {/* {actionData?.success && <InfoBanner title={t("shared.success")} text={actionData?.success} />} */}
     </div>
   );
+}
+
+function getPermissionTypeLabel(item: RowPermission, t: any): React.ReactNode {
+  if (item.tenantId) {
+    return <span>{t("models.tenant.object")}</span>;
+  }
+  if (item.roleId) {
+    return <span>{t("models.role.object")}</span>;
+  }
+  if (item.groupId) {
+    return <span>{t("models.group.object")}</span>;
+  }
+  if (item.userId) {
+    return <span>{t("models.user.object")}</span>;
+  }
+  if (item.public) {
+    return <span>{t("shared.public")}</span>;
+  }
+  return null;
 }
 
 function NewPermissionForm({
@@ -216,11 +228,17 @@ function NewPermissionForm({
   useEffect(() => {
     if (users.length > 0) {
       setType("user");
-    } else if (tenants.length > 0) {
+      return;
+    }
+    if (tenants.length > 0) {
       setType("tenant");
-    } else if (appOrAdminData.allRoles.length > 0) {
+      return;
+    }
+    if (appOrAdminData.allRoles.length > 0) {
       setType("role");
-    } else if (appOrAdminData.myGroups.length > 0) {
+      return;
+    }
+    if (appOrAdminData.myGroups.length > 0) {
       setType("group");
     }
   }, [appOrAdminData.allRoles.length, appOrAdminData.myGroups.length, tenants.length, users.length]);
@@ -230,15 +248,18 @@ function NewPermissionForm({
       return users.map((i) => {
         return { name: i.email + ` (${i.firstName} ${i.lastName})` + (appOrAdminData.user?.id === i.id ? ` (${t("shared.you")})` : ""), value: i.id };
       });
-    } else if (type === "tenant") {
+    }
+    if (type === "tenant") {
       return tenants.map((i) => {
         return { name: i.name + (appData.currentTenant?.id === i.id ? ` (${t("shared.current")})` : ""), value: i.id };
       });
-    } else if (type === "role") {
+    }
+    if (type === "role") {
       return appOrAdminData.allRoles.map((i) => {
         return { name: i.name, value: i.id };
       });
-    } else if (type === "group") {
+    }
+    if (type === "group") {
       return appOrAdminData.myGroups.map((i) => {
         return { name: i.name, value: i.id };
       });

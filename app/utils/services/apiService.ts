@@ -48,49 +48,77 @@ export type ApiAccessValidation = {
     usage: PlanFeatureUsageDto | undefined;
   };
 };
+async function validateBearerToken(request: Request): Promise<ApiAccessValidation> {
+  const authorization = request.headers.get("Authorization");
+  if (!authorization || !authorization.startsWith("Bearer ")) {
+    return { tenant: null };
+  }
+
+  const token = authorization.split(" ")[1];
+  let userId = "";
+  try {
+    const decoded: any = jwt.verify(token, process.env.JWT_SECRET!);
+    userId = decoded.userId;
+  } catch (e: any) {
+    // eslint-disable-next-line no-console
+    console.log("Invalid authorization token: " + e.message);
+    throw Error("Invalid authorization token: " + e.message);
+  }
+
+  const user = await getUser(userId);
+  if (!user) {
+    // eslint-disable-next-line no-console
+    console.log("User not found");
+    throw Error("Unauthorized");
+  }
+
+  let tenantId = request.headers.get("X-Account-Id") ?? request.headers.get("X-Tenant-Id");
+  if (!tenantId) {
+    if (!user.admin) {
+      // eslint-disable-next-line no-console
+      console.log("No X-Account-Id provided");
+      throw Error("No X-Account-Id provided");
+    }
+    tenantId = null;
+  }
+
+  if (tenantId !== null) {
+    const userTenants = await getMyTenants(user.id);
+    if (!userTenants.find((t) => t.id === tenantId || t.slug === tenantId)) {
+      // eslint-disable-next-line no-console
+      console.log(`User ${user.email} is not a member of ${tenantId}`);
+      throw Error("Unauthorized");
+    }
+  }
+
+  const tenant = await getTenantByIdOrSlug(tenantId ?? "");
+  return {
+    userId,
+    tenant: tenantId === null ? null : tenant,
+  };
+}
+
+async function validateAccessToken(request: Request): Promise<ApiAccessValidation> {
+  const searchParams = new URL(request.url).searchParams;
+  const tenantId = searchParams.get("tenantId");
+  if (!tenantId) {
+    return { tenant: null };
+  }
+  const tenant = await getTenantByIdOrSlug(tenantId);
+  if (!tenant) {
+    // eslint-disable-next-line no-console
+    console.log("Account not found: " + tenantId);
+    throw Error("Account not found: " + tenantId);
+  }
+  return { tenant };
+}
+
 export async function validateApiKey(request: Request, params: Params): Promise<ApiAccessValidation> {
   const authorization = request.headers.get("Authorization");
   if (authorization && authorization.startsWith("Bearer ")) {
-    const token = authorization.split(" ")[1];
-    let userId = "";
-    try {
-      const decoded: any = jwt.verify(token, process.env.JWT_SECRET!);
-      userId = decoded.userId;
-    } catch (e: any) {
-      // eslint-disable-next-line no-console
-      console.log("Invalid authorization token: " + e.message);
-      throw Error("Invalid authorization token: " + e.message);
-    }
-    const user = await getUser(userId);
-    if (!user) {
-      // eslint-disable-next-line no-console
-      console.log("User not found");
-      throw Error("Unauthorized");
-    }
-    let tenantId = request.headers.get("X-Account-Id") ?? request.headers.get("X-Tenant-Id");
-    if (!tenantId) {
-      if (!user.admin) {
-        // eslint-disable-next-line no-console
-        console.log("No X-Account-Id provided");
-        throw Error("No X-Account-Id provided");
-      } else {
-        tenantId = null;
-      }
-    }
-    if (tenantId !== null) {
-      const userTenants = await getMyTenants(user.id);
-      if (!userTenants.find((t) => t.id === tenantId || t.slug === tenantId)) {
-        // eslint-disable-next-line no-console
-        console.log(`User ${user.email} is not a member of ${tenantId}`);
-        throw Error("Unauthorized");
-      }
-    }
-    const tenant = await getTenantByIdOrSlug(tenantId ?? "");
-    return {
-      userId,
-      tenant: tenantId === null ? null : tenant,
-    };
+    return validateBearerToken(request);
   }
+
   const apiKeyFromHeaders = request.headers.get("X-Api-Key") ?? "";
   if (!apiKeyFromHeaders) {
     if (!request.url.endsWith("page-views") && !request.url.endsWith("events")) {
@@ -99,26 +127,18 @@ export async function validateApiKey(request: Request, params: Params): Promise<
     }
     throw Error("No X-API-Key header or Authorization token provided");
   }
+
   const searchParams = new URL(request.url).searchParams;
   if (apiKeyFromHeaders === process.env.API_ACCESS_TOKEN && process.env.API_ACCESS_TOKEN.toString().length > 0) {
-    const tenantId = searchParams.get("tenantId");
-    if (!tenantId) {
-      return { tenant: null };
-    }
-    // cached
-    const tenant = await getTenantByIdOrSlug(tenantId);
-    if (!tenant) {
-      // eslint-disable-next-line no-console
-      console.log("Account not found: " + tenantId);
-      throw Error("Account not found: " + tenantId);
-    }
-    return { tenant };
+    return validateAccessToken(request);
   }
+
   if (searchParams.get("tenantId")) {
     // eslint-disable-next-line no-console
     console.log("You cannot use tenantId with an API key");
     throw Error("You cannot use tenantId with an API key");
   }
+
   return validateTenantApiKey(request, params);
 }
 

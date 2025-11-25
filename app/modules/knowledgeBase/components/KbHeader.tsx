@@ -14,7 +14,6 @@ import KbSearch from "./KbSearch";
 
 interface Props {
   kb: KnowledgeBaseDto;
-  // currentVersion: string | undefined;
   withTitleAndDescription: boolean;
   withSearch?: boolean;
 }
@@ -29,13 +28,9 @@ export default function KbHeader({ kb, withTitleAndDescription, withSearch = tru
         <div className="mx-auto max-w-5xl space-y-8 px-8 py-6">
           <div className="flex h-12 items-center justify-between space-x-2">
             <Link to={KnowledgeBaseUtils.getKbUrl({ kb, params })} className="flex select-none items-center space-x-2">
-              {kb.logo === "light" ? (
-                <img className="h-8 w-auto" src={LogoLight} alt="Logo" />
-              ) : kb.logo === "dark" ? (
-                <img className="h-8 w-auto" src={LogoDark} alt="Logo" />
-              ) : (
-                <img className="h-8 w-auto" src={kb.logo} alt="Logo" />
-              )}
+              {kb.logo === "light" && <img className="h-8 w-auto" src={LogoLight} alt="Logo" />}
+              {kb.logo === "dark" && <img className="h-8 w-auto" src={LogoDark} alt="Logo" />}
+              {kb.logo !== "light" && kb.logo !== "dark" && <img className="h-8 w-auto" src={kb.logo} alt="Logo" />}
               {!withTitleAndDescription && (
                 <Fragment>
                   <span className={clsx("hidden px-2 sm:block", ColorTextUtils.getText300(kb.color))}>|</span>
@@ -99,11 +94,6 @@ export default function KbHeader({ kb, withTitleAndDescription, withSearch = tru
           {withSearch && <KbSearch kb={kb} autoFocus={withTitleAndDescription} />}
         </div>
       </div>
-      {/* {searchParams.get("q") && (
-        <div className="mx-auto max-w-5xl space-y-8 px-8 py-6">
-          <WarningBanner title="TODO">TODO: Search results for {searchParams.get("q")}</WarningBanner>
-        </div>
-      )} */}
     </div>
   );
 }

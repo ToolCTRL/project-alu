@@ -23,7 +23,7 @@ export default function KbCategoriesGrid({ kb, items, columns }: { kb: Knowledge
             <Link to={item.href} className="w-full">
               <div className="flex flex-col space-y-3 p-6">
                 <div className="shrink-0">
-                  {item.icon.startsWith("<svg") ? (
+                  {item.icon.startsWith("<svg") && (
                     <div
                       dangerouslySetInnerHTML={{
                         __html:
@@ -33,11 +33,8 @@ export default function KbCategoriesGrid({ kb, items, columns }: { kb: Knowledge
                           ) ?? "",
                       }}
                     />
-                  ) : item.icon.includes("http") ? (
-                    <img className="h-8 w-8" src={item.icon} alt={item.title} />
-                  ) : (
-                    <></>
                   )}
+                  {!item.icon.startsWith("<svg") && item.icon.includes("http") && <img className="h-8 w-8" src={item.icon} alt={item.title} />}
                 </div>
                 <div className="flex items-center space-x-8">
                   <div className="flex w-full flex-col">
@@ -49,7 +46,6 @@ export default function KbCategoriesGrid({ kb, items, columns }: { kb: Knowledge
                           {item.articles.length} <span>{item.articles.length === 1 ? "article" : "articles"}</span>
                         </div>
                       </div>
-                      {/* <div className="text-sm text-muted-foreground">{item.version}</div> */}
                     </div>
                   </div>
                 </div>

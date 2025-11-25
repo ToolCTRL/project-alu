@@ -81,6 +81,16 @@ export async function adminGetAllTenantsIdsAndNames(): Promise<{ id: string; nam
   });
 }
 
+function buildUserFilter(where: Prisma.TenantWhereInput, userId: string): Prisma.TenantWhereInput {
+  const userCondition = { users: { some: { userId } } };
+  return where ? { OR: [where, userCondition] } : userCondition;
+}
+
+function buildTypeFilter(where: Prisma.TenantWhereInput, typeId: string): Prisma.TenantWhereInput {
+  const typeCondition = typeId === "null" ? { types: { none: {} } } : { types: { some: { id: typeId } } };
+  return where ? { OR: [where, typeCondition] } : typeCondition;
+}
+
 export async function adminGetAllTenantsWithUsage(
   filters?: FiltersDto,
   pagination?: { page: number; pageSize: number }
@@ -88,33 +98,11 @@ export async function adminGetAllTenantsWithUsage(
   let where: Prisma.TenantWhereInput = RowFiltersHelper.getFiltersCondition(filters);
   const userId = filters?.properties.find((f) => f.name === "userId")?.value ?? filters?.query ?? "";
   if (userId) {
-    if (where) {
-      where = {
-        OR: [where, { users: { some: { userId } } }],
-      };
-    } else {
-      where = { users: { some: { userId } } };
-    }
+    where = buildUserFilter(where, userId);
   }
   const typeId = filters?.properties.find((f) => f.name === "typeId")?.value;
   if (typeId) {
-    if (where) {
-      if (typeId === "null") {
-        where = {
-          OR: [where, { types: { none: {} } }],
-        };
-      } else {
-        where = {
-          OR: [where, { types: { some: { id: typeId } } }],
-        };
-      }
-    } else {
-      if (typeId === "null") {
-        where = { types: { none: {} } };
-      } else {
-        where = { types: { some: { id: typeId } } };
-      }
-    }
+    where = buildTypeFilter(where, typeId);
   }
   const items = await db.tenant.findMany({
     skip: pagination ? pagination?.pageSize * (pagination?.page - 1) : undefined,

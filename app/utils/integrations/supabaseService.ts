@@ -52,7 +52,6 @@ export async function createSupabaseFile(
     | Buffer
     | FormData
     | NodeJS.ReadableStream
-    | ReadableStream<Uint8Array>
     | URLSearchParams
     | string,
   contentType?: string

@@ -63,9 +63,6 @@ export default function RowValueUI({ property, value, withTitle }: Props) {
   } else if (property.type === PropertyType.MEDIA) {
     const media = rowValue as MediaDto[];
     return <RowMediaCell media={media} />;
-  } else if (property.type === PropertyType.SELECT && rowValue) {
-    const display = property.attributes.find((f) => f.name === PropertyAttributeName.SelectOptions)?.value as SelectOptionsDisplay;
-    return <RowSelectedOptionCell value={rowValue as string} options={property.options ?? []} display={display} />;
   }
   let formattedValue = RowHelper.getFormattedValue(rowValue, property.type);
   if (PropertyAttributeHelper.getPropertyAttributeValue_Boolean(property, PropertyAttributeName.Password)) {

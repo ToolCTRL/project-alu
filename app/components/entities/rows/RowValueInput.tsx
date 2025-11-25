@@ -37,8 +37,8 @@ interface Props {
   booleanValue: boolean | undefined;
   multiple: RowValueMultiple[] | undefined;
   range: RowValueRange | undefined;
-  initialMedia?: RowMedia[] | undefined;
-  initialOption?: string | undefined;
+  initialMedia?: RowMedia[];
+  initialOption?: string;
   onChange?: (value: string | number | Date | boolean | undefined | null) => void;
   onChangeOption?: (option: string | undefined) => void;
   onChangeMedia?: (option: MediaDto[]) => void;
@@ -825,19 +825,21 @@ function FormulaPropertyInput({
 }
 
 function InputFormulaValue(props: { property: PropertyWithDetails; textValue?: string; numberValue?: number; dateValue?: Date; booleanValue?: boolean }) {
-  return (
-    <>
-      {props.property.formula?.resultAs === "string" ? (
-        <InputText name={props.property.name} title={props.property.title} defaultValue={props.textValue} readOnly={true} />
-      ) : props.property.formula?.resultAs === "number" ? (
-        <InputNumber name={props.property.name} title={props.property.title} defaultValue={props.numberValue} readOnly={true} canUnset={true} />
-      ) : props.property.formula?.resultAs === "date" ? (
-        <InputDate name={props.property.name} title={props.property.title} value={props.dateValue} readOnly={true} />
-      ) : props.property.formula?.resultAs === "boolean" ? (
-        <InputCheckbox asToggle={true} name={props.property.name} title={props.property.title} value={props.booleanValue} readOnly={true} />
-      ) : null}
-    </>
-  );
+  const resultAs = props.property.formula?.resultAs;
+
+  if (resultAs === "string") {
+    return <InputText name={props.property.name} title={props.property.title} defaultValue={props.textValue} readOnly={true} />;
+  }
+  if (resultAs === "number") {
+    return <InputNumber name={props.property.name} title={props.property.title} defaultValue={props.numberValue} readOnly={true} canUnset={true} />;
+  }
+  if (resultAs === "date") {
+    return <InputDate name={props.property.name} title={props.property.title} value={props.dateValue} readOnly={true} />;
+  }
+  if (resultAs === "boolean") {
+    return <InputCheckbox asToggle={true} name={props.property.name} title={props.property.title} value={props.booleanValue} readOnly={true} />;
+  }
+  return null;
 }
 
 export default forwardRef(RowValueInput);

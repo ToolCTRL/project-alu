@@ -73,9 +73,6 @@ export const action: ActionFunction = async ({ request, params }) => {
   if (action === "create") {
     const slug = form.get("slug")?.toString() || "";
     const isSubpage1 = form.get("isSubpage1")?.toString() === "true";
-    // if (!slug) {
-    //   return Response.json({ error: "Slug is required" }, { status: 400 });
-    // }
     if (slug.includes("/")) {
       return Response.json({ error: "Slug cannot contain /" }, { status: 400 });
     }

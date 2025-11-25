@@ -152,25 +152,52 @@ export default function NewSidebarMenu({ layout, children, onOpenCommandPalette,
   function checkFeatureFlags(item: SideBarItem) {
     return !item.featureFlag || rootData.featureFlags?.includes(item.featureFlag);
   }
+  const filterItem = (f: SideBarItem): boolean => {
+    return f.hidden !== true && allowCurrentUserType(f) && allowCurrentTenantUserType(f) && checkUserRolePermissions(f) && checkFeatureFlags(f);
+  };
+
+  const filterNestedItems = (item: SideBarItem): SideBarItem => {
+    return {
+      ...item,
+      items: item.items?.filter(filterItem),
+    };
+  };
+
+  const renderSubItem = (subItem: SideBarItem, index: number, menuItem: SideBarItem) => {
+    return (
+      <Fragment key={index}>
+        <Link
+          prefetch="intent"
+          id={UrlUtils.slugify(getPath(subItem))}
+          to={subItem.redirectTo ?? getPath(subItem)}
+          className={clsx(
+            "group mt-1 flex items-center rounded-sm py-2 text-sm leading-5 transition duration-150 ease-in-out  focus:outline-hidden",
+            menuItem.icon === undefined && "pl-10",
+            menuItem.icon !== undefined && "pl-14",
+            isCurrent(menuItem)
+              ? "bg-secondary text-primary dark:text-secondary-foreground"
+              : "hover:bg-secondary hover:text-secondary-foreground text-secondary-foreground/70",
+            "group flex gap-x-3 rounded-md p-2 text-sm leading-5"
+          )}
+          onClick={onSelected}
+        >
+          {(subItem.icon !== undefined || subItem.entityIcon !== undefined) && (
+            <SidebarIcon className="h-5 w-5 " item={subItem} />
+          )}
+          <div>{t(subItem.title)}</div>
+        </Link>
+      </Fragment>
+    );
+  };
+
   const getMenu = (): SidebarGroupDto[] => {
-    function filterItem(f: SideBarItem) {
-      return f.hidden !== true && allowCurrentUserType(f) && allowCurrentTenantUserType(f) && checkUserRolePermissions(f) && checkFeatureFlags(f);
-    }
     const _menu: SidebarGroupDto[] = [];
     getMenuItems()
-      .filter((f) => filterItem(f))
+      .filter(filterItem)
       .forEach(({ title, items }) => {
         _menu.push({
           title: title.toString(),
-          items:
-            items
-              ?.filter((f) => filterItem(f))
-              .map((f) => {
-                return {
-                  ...f,
-                  items: f.items?.filter((f) => filterItem(f)),
-                };
-              }) ?? [],
+          items: items?.filter(filterItem).map(filterNestedItems) ?? [],
         });
       });
     return _menu.filter((f) => f.items.length > 0);
@@ -388,7 +415,7 @@ export default function NewSidebarMenu({ layout, children, onOpenCommandPalette,
                                               : "hover:bg-secondary hover:text-secondary-foreground text-secondary-foreground/70",
                                             "group flex gap-x-3 rounded-md p-2 text-sm leading-5"
                                           )}
-                                          onClick={() => toggleMenuItem(menuItem.path)}
+                                          onClick={toggleMenuItem.bind(null, menuItem.path)}
                                         >
                                           <div className="flex items-center space-x-5 truncate">
                                             {(menuItem.icon !== undefined || menuItem.entityIcon !== undefined) && (
@@ -416,32 +443,7 @@ export default function NewSidebarMenu({ layout, children, onOpenCommandPalette,
                                         {/*Expandable link section, show/hide based on state. */}
                                         {menuItemIsExpanded(menuItem.path) && (
                                           <div className="mt-1">
-                                            {menuItem.items.map((subItem, index) => {
-                                              return (
-                                                <Fragment key={index}>
-                                                  <Link
-                                                    prefetch="intent"
-                                                    id={UrlUtils.slugify(getPath(subItem))}
-                                                    to={subItem.redirectTo ?? getPath(subItem)}
-                                                    className={clsx(
-                                                      "group mt-1 flex items-center rounded-sm py-2 text-sm leading-5 transition duration-150 ease-in-out  focus:outline-hidden",
-                                                      menuItem.icon === undefined && "pl-10",
-                                                      menuItem.icon !== undefined && "pl-14",
-                                                      isCurrent(menuItem)
-                                                        ? "bg-secondary text-primary dark:text-secondary-foreground"
-                                                        : "hover:bg-secondary hover:text-secondary-foreground text-secondary-foreground/70",
-                                                      "group flex gap-x-3 rounded-md p-2 text-sm leading-5"
-                                                    )}
-                                                    onClick={onSelected}
-                                                  >
-                                                    {(subItem.icon !== undefined || subItem.entityIcon !== undefined) && (
-                                                      <SidebarIcon className="h-5 w-5 " item={subItem} />
-                                                    )}
-                                                    <div>{t(subItem.title)}</div>
-                                                  </Link>
-                                                </Fragment>
-                                              );
-                                            })}
+                                            {menuItem.items.map((subItem, index) => renderSubItem(subItem, index, menuItem))}
                                           </div>
                                         )}
                                       </div>

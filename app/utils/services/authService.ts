@@ -53,6 +53,71 @@ export async function getRegistrationFormData(request: Request): Promise<Registr
   return { email, password, company, firstName, lastName, slug };
 }
 
+function validateRegistrationInputs(
+  registrationData: RegistrationData,
+  appConfiguration: any,
+  t: any,
+  githubId?: string,
+  googleId?: string
+) {
+  const { email, password, company, firstName, lastName, slug } = registrationData;
+
+  if (!email || !UserUtils.validateEmail(email)) {
+    throw Error(t("account.register.errors.invalidEmail"));
+  }
+
+  if (!githubId && !googleId) {
+    if (!appConfiguration.auth.requireEmailVerification && !UserUtils.validatePassword(password)) {
+      throw Error(t("account.register.errors.passwordRequired"));
+    } else if (appConfiguration.auth.requireOrganization && typeof company !== "string") {
+      throw Error(t("account.register.errors.organizationRequired"));
+    } else if (appConfiguration.auth.requireName && (typeof firstName !== "string" || typeof lastName !== "string")) {
+      throw Error(t("account.register.errors.nameRequired"));
+    }
+  }
+
+  if (company && company.length > 100) {
+    throw Error("Maximum length for company name is 100 characters");
+  } else if (firstName && firstName.length > 50) {
+    throw Error("Maximum length for first name is 50 characters");
+  } else if (lastName && lastName.length > 50) {
+    throw Error("Maximum length for last name is 50 characters");
+  }
+}
+
+async function checkBlacklists(email: string, ipAddress: string, t: any) {
+  const blacklistedEmail = await findInBlacklist("email", email);
+  if (blacklistedEmail) {
+    await addBlacklistAttempt(blacklistedEmail);
+    throw Error(t("account.register.errors.blacklist.email"));
+  }
+
+  const domain = email.substring(email.lastIndexOf("@") + 1);
+  const blacklistedDomain = await findInBlacklist("domain", domain);
+  if (blacklistedDomain) {
+    await addBlacklistAttempt(blacklistedDomain);
+    throw Error(t("account.register.errors.blacklist.domain"));
+  }
+
+  const blacklistedIp = await findInBlacklist("ip", ipAddress);
+  if (blacklistedIp) {
+    await addBlacklistAttempt(blacklistedIp);
+    throw Error(t("account.register.errors.blacklist.ip"));
+  }
+}
+
+async function validateSlug(slug: string | undefined, appConfiguration: any) {
+  if (appConfiguration.auth.slug?.require) {
+    if (!slug) {
+      throw Error(appConfiguration.auth.slug.type === "tenant" ? "Slug is required" : "Username is required");
+    }
+    const existingTenant = await getTenantBySlug(slug);
+    if (existingTenant) {
+      throw Error(appConfiguration.auth.slug.type === "tenant" ? "Slug is already taken" : "Username is already taken");
+    }
+  }
+}
+
 export async function validateRegistration({
   request,
   registrationData,
@@ -74,64 +139,25 @@ export async function validateRegistration({
   const userInfo = await getUserInfo(request);
   const appConfiguration = await getAppConfiguration({ request });
   const { email, password, company, firstName, lastName, avatarURL, slug } = registrationData;
-  if (!email || !UserUtils.validateEmail(email)) {
-    throw Error(t("account.register.errors.invalidEmail"));
-  }
-  if (!githubId && !googleId) {
-    if (!appConfiguration.auth.requireEmailVerification && !UserUtils.validatePassword(password)) {
-      throw Error(t("account.register.errors.passwordRequired"));
-    } else if (appConfiguration.auth.requireOrganization && typeof company !== "string") {
-      throw Error(t("account.register.errors.organizationRequired"));
-    } else if (appConfiguration.auth.requireName && (typeof firstName !== "string" || typeof lastName !== "string")) {
-      throw Error(t("account.register.errors.nameRequired"));
-    }
-  }
 
-  if (company && company.length > 100) {
-    throw Error("Maximum length for company name is 100 characters");
-  } else if (firstName && firstName.length > 50) {
-    throw Error("Maximum length for first name is 50 characters");
-  } else if (lastName && lastName.length > 50) {
-    throw Error("Maximum length for last name is 50 characters");
-  }
+  validateRegistrationInputs(registrationData, appConfiguration, t, githubId, googleId);
 
   const ipAddress = getClientIPAddress(request.headers)?.toString() ?? "";
-  // eslint-disable-next-line no-console
   console.log("[REGISTRATION ATTEMPT]", { email, domain: email.substring(email.lastIndexOf("@") + 1), ipAddress });
 
-  const blacklistedEmail = await findInBlacklist("email", email);
-  if (blacklistedEmail) {
-    await addBlacklistAttempt(blacklistedEmail);
-    throw Error(t("account.register.errors.blacklist.email"));
-  }
-  const blacklistedDomain = await findInBlacklist("domain", email.substring(email.lastIndexOf("@") + 1));
-  if (blacklistedDomain) {
-    await addBlacklistAttempt(blacklistedDomain);
-    throw Error(t("account.register.errors.blacklist.domain"));
-  }
-  const blacklistedIp = await findInBlacklist("ip", ipAddress);
-  if (blacklistedIp) {
-    await addBlacklistAttempt(blacklistedIp);
-    throw Error(t("account.register.errors.blacklist.ip"));
-  }
+  await checkBlacklists(email, ipAddress, t);
 
   const existingUser = await getUserByEmail(email);
   if (existingUser) {
     throw Error(t("api.errors.userAlreadyRegistered"));
   }
 
-  if (appConfiguration.auth.slug?.require) {
-    if (!slug) {
-      throw Error(appConfiguration.auth.slug.type === "tenant" ? "Slug is required" : "Username is required");
-    }
-    const existingTenant = await getTenantBySlug(slug);
-    if (existingTenant) {
-      throw Error(appConfiguration.auth.slug.type === "tenant" ? "Slug is already taken" : "Username is already taken");
-    }
-  }
+  await validateSlug(slug, appConfiguration);
+
   if (checkEmailVerification && appConfiguration.auth.requireEmailVerification) {
     return { email, ipAddress, verificationRequired: true };
   }
+
   const locale = userInfo.lng;
   const registered = await createUserAndTenant({
     request,
@@ -147,9 +173,11 @@ export async function validateRegistration({
     locale,
     slug,
   });
+
   if (addToTrialOrFreePlan) {
     await autosubscribeToTrialOrFreePlan({ request, t, tenantId: registered.tenant.id, userId: registered.user.id });
   }
+
   return { email, ipAddress, verificationRequired: false, registered };
 }
 
@@ -192,7 +220,7 @@ export async function createRegistrationForm({ request, email, company, firstNam
       }
     }
   } else {
-    var token = crypto.randomBytes(20).toString("hex");
+    const token = crypto.randomBytes(20).toString("hex");
     await createRegistration({
       email,
       firstName: firstName ?? "",

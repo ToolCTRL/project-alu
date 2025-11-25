@@ -127,11 +127,13 @@ export default function RowOverviewHeader({
               )}
               <RunPromptFlowButtons type="edit" row={item} promptFlows={rowData.promptFlows} />
             </Fragment>
-          ) : appOrAdminData.isSuperAdmin ? (
-            <ButtonSecondary to="share">
-              <ShareIcon className="text-muted-foreground h-4 w-4" />
-            </ButtonSecondary>
-          ) : null}
+          ) : (
+            appOrAdminData.isSuperAdmin && (
+              <ButtonSecondary to="share">
+                <ShareIcon className="text-muted-foreground h-4 w-4" />
+              </ButtonSecondary>
+            )
+          )}
         </div>
       </div>
 

@@ -71,6 +71,91 @@ type ActionData = {
   error?: string;
   success?: string;
 };
+async function handleCreateRows(
+  entity: EntityWithDetails,
+  tenant: TenantWithDetails,
+  numberOfRows: number,
+  type: string | undefined,
+  t: any
+) {
+  const status = { totalRows: 0 };
+  const start = performance.now();
+  const apiKeys = type === "apiKeyLog" ? await db.apiKey.findMany({ where: { tenantId: tenant.id } }) : [];
+
+  for (let i = 0; i < numberOfRows; i += BATCH_SIZE) {
+    await Promise.all(
+      Array.from({ length: Math.min(BATCH_SIZE, numberOfRows - i) }).map(async (_, idx) => {
+        if (type === "apiKeyLog") {
+          await createFakeApiKeyLog({ entity, tenantId: tenant.id, idx: i + idx, status, apiKeys });
+        } else {
+          await createFakeRow({ entity, tenantId: tenant.id, idx: i + idx, status });
+        }
+      })
+    );
+  }
+
+  const end = performance.now();
+  const formattedTime = `${NumberUtils.intFormat(end - start)}ms`;
+  return Response.json({ success: `${status.totalRows} ${t(entity.titlePlural)} created (${tenant.name}) in ${formattedTime}` });
+}
+
+async function handleUpdateRows(entity: EntityWithDetails, tenant: TenantWithDetails, numberOfRows: number, t: any) {
+  const start = performance.now();
+  let rows = await db.row.findMany({
+    where: { entityId: entity.id, tenantId: tenant.id, deletedAt: null },
+    include: { values: true },
+  });
+  rows = rows.slice(0, numberOfRows);
+  if (rows.length === 0) {
+    return Response.json({ error: "No rows found" }, { status: 400 });
+  }
+
+  const status = { totalRows: 0 };
+  for (let i = 0; i < rows.length; i += BATCH_SIZE) {
+    await Promise.all(
+      rows.slice(i, i + BATCH_SIZE).map(async (row, idx) => {
+        await updateFakeRow(row, { entity, idx: i + idx, status });
+      })
+    );
+  }
+
+  const end = performance.now();
+  const formattedTime = `${NumberUtils.intFormat(end - start)}ms`;
+  return Response.json({ success: `${status.totalRows} ${t(entity.titlePlural)} updated (${tenant.name}) in ${formattedTime}` });
+}
+
+async function handleDeleteRows(entity: EntityWithDetails, tenant: TenantWithDetails, numberOfRows: number, shadow: boolean, t: any) {
+  if (process.env.NODE_ENV !== "development") {
+    return Response.json({ error: "Not allowed in production" }, { status: 400 });
+  }
+
+  let rowsToDelete = await db.row.findMany({
+    where: { entityId: entity.id, tenantId: tenant.id, ...(shadow ? { deletedAt: null } : {}) },
+  });
+  rowsToDelete = rowsToDelete.slice(0, numberOfRows);
+  if (rowsToDelete.length === 0) {
+    return Response.json({ error: "No rows found" }, { status: 400 });
+  }
+
+  const start = performance.now();
+  for (let i = 0; i < rowsToDelete.length; i += BATCH_SIZE) {
+    if (shadow) {
+      await db.row.updateMany({
+        where: { id: { in: rowsToDelete.slice(i, i + BATCH_SIZE).map((f) => f.id) } },
+        data: { deletedAt: new Date() },
+      });
+    } else {
+      await db.row.deleteMany({
+        where: { id: { in: rowsToDelete.slice(i, i + BATCH_SIZE).map((f) => f.id) } },
+      });
+    }
+  }
+
+  const end = performance.now();
+  const formattedTime = `${NumberUtils.intFormat(end - start)}ms`;
+  return Response.json({ success: `${rowsToDelete.length} ${t(entity.titlePlural)} deleted (${tenant.name}) in ${formattedTime}` });
+}
+
 export const action = async ({ request }: ActionFunctionArgs) => {
   await verifyUserHasPermission(request, "admin.entities.update");
   const { t } = await getTranslations(request);
@@ -87,103 +172,22 @@ export const action = async ({ request }: ActionFunctionArgs) => {
   if (!tenant) {
     return Response.json({ error: "Tenant not found" }, { status: 400 });
   }
-  if (action === "create-rows") {
-    const numberOfRows = Number(form.get("numberOfRows")?.toString());
-    const type = form.get("type")?.toString();
-    try {
-      const status = {
-        totalRows: 0,
-      };
-      const start = performance.now();
 
-      let apiKeys = type === "apiKeyLog" ? await db.apiKey.findMany({ where: { tenantId } }) : [];
-      for (let i = 0; i < numberOfRows; i += BATCH_SIZE) {
-        await Promise.all(
-          Array.from({ length: Math.min(BATCH_SIZE, numberOfRows - i) }).map(async (_, idx) => {
-            if (type === "apiKeyLog") {
-              await createFakeApiKeyLog({ entity, tenantId, idx: i + idx, status, apiKeys });
-            } else {
-              await createFakeRow({ entity, tenantId, idx: i + idx, status });
-            }
-          })
-        );
-      }
-      const end = performance.now();
-      const formattedTime = `${NumberUtils.intFormat(end - start)}ms`;
-      return Response.json({ success: `${status.totalRows} ${t(entity.titlePlural)} created (${tenant.name}) in ${formattedTime}` });
-    } catch (e: any) {
-      return Response.json({ error: e.message }, { status: 400 });
-    }
-  } else if (action === "update-rows") {
+  try {
     const numberOfRows = Number(form.get("numberOfRows")?.toString());
-    const start = performance.now();
-    let rows = await db.row.findMany({
-      where: { entityId, tenantId, deletedAt: null },
-      include: { values: true },
-    });
-    rows = rows.slice(0, numberOfRows);
-    if (rows.length === 0) {
-      return Response.json({ error: "No rows found" }, { status: 400 });
+    if (action === "create-rows") {
+      const type = form.get("type")?.toString();
+      return await handleCreateRows(entity, tenant, numberOfRows, type, t);
+    } else if (action === "update-rows") {
+      return await handleUpdateRows(entity, tenant, numberOfRows, t);
+    } else if (action === "delete-rows") {
+      return await handleDeleteRows(entity, tenant, numberOfRows, false, t);
+    } else if (action === "shadow-delete-rows") {
+      return await handleDeleteRows(entity, tenant, numberOfRows, true, t);
     }
-    const status = {
-      totalRows: 0,
-    };
-    for (let i = 0; i < rows.length; i += BATCH_SIZE) {
-      await Promise.all(
-        rows.slice(i, i + BATCH_SIZE).map(async (row, idx) => {
-          await updateFakeRow(row, { entity, idx: i + idx, status });
-        })
-      );
-    }
-    const end = performance.now();
-    const formattedTime = `${NumberUtils.intFormat(end - start)}ms`;
-    return Response.json({ success: `${status.totalRows} ${t(entity.titlePlural)} updated (${tenant.name}) in ${formattedTime}` });
-  } else if (action === "delete-rows") {
-    if (process.env.NODE_ENV !== "development") {
-      return Response.json({ error: "Not allowed in production" }, { status: 400 });
-    }
-    const numberOfRows = Number(form.get("numberOfRows")?.toString());
-    let rowsToDelete = await db.row.findMany({
-      where: { entityId, tenantId },
-    });
-    rowsToDelete = rowsToDelete.slice(0, numberOfRows);
-    if (rowsToDelete.length === 0) {
-      return Response.json({ error: "No rows found" }, { status: 400 });
-    }
-    const start = performance.now();
-    for (let i = 0; i < rowsToDelete.length; i += BATCH_SIZE) {
-      await db.row.deleteMany({
-        where: { id: { in: rowsToDelete.slice(i, i + BATCH_SIZE).map((f) => f.id) } },
-      });
-    }
-    const end = performance.now();
-    const formattedTime = `${NumberUtils.intFormat(end - start)}ms`;
-    return Response.json({ success: `${rowsToDelete.length} ${t(entity.titlePlural)} deleted (${tenant.name}) in ${formattedTime}` });
-  } else if (action === "shadow-delete-rows") {
-    if (process.env.NODE_ENV !== "development") {
-      return Response.json({ error: "Not allowed in production" }, { status: 400 });
-    }
-    const numberOfRows = Number(form.get("numberOfRows")?.toString());
-    let rowsToDelete = await db.row.findMany({
-      where: { entityId, tenantId, deletedAt: null },
-    });
-    rowsToDelete = rowsToDelete.slice(0, numberOfRows);
-    if (rowsToDelete.length === 0) {
-      return Response.json({ error: "No rows found" }, { status: 400 });
-    }
-
-    const start = performance.now();
-    for (let i = 0; i < rowsToDelete.length; i += BATCH_SIZE) {
-      await db.row.updateMany({
-        where: { id: { in: rowsToDelete.slice(i, i + BATCH_SIZE).map((f) => f.id) } },
-        data: { deletedAt: new Date() },
-      });
-    }
-    const end = performance.now();
-    const formattedTime = `${NumberUtils.intFormat(end - start)}ms`;
-    return Response.json({ success: `${rowsToDelete.length} ${t(entity.titlePlural)} deleted (${tenant.name}) in ${formattedTime}` });
-  } else {
     return Response.json({ error: "Unknown action" }, { status: 400 });
+  } catch (e: any) {
+    return Response.json({ error: e.message }, { status: 400 });
   }
 };
 

@@ -15,7 +15,7 @@ export async function getAppDashboardStats({
 }: {
   t: TFunction;
   tenant: TenantSimple | null;
-  gte: Date | undefined | undefined;
+  gte: Date | undefined;
   entities?: EntitySimple[];
 }): Promise<Stat[]> {
   if (!tenant) {

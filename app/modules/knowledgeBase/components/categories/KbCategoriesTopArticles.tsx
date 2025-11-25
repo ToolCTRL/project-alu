@@ -16,7 +16,7 @@ export default function KbCategoriesTopArticles({ kb, items }: { kb: KnowledgeBa
           <div key={item.slug} className="space-y-4">
             <div className="flex items-baseline justify-between space-x-2">
               <div className="flex items-center space-x-4">
-                {item.icon.startsWith("<svg") ? (
+                {item.icon.startsWith("<svg") && (
                   <div
                     dangerouslySetInnerHTML={{
                       __html:
@@ -26,9 +26,8 @@ export default function KbCategoriesTopArticles({ kb, items }: { kb: KnowledgeBa
                         ) ?? "",
                     }}
                   />
-                ) : item.icon.includes("http") ? (
-                  <img className="h-6 w-6" src={item.icon} alt={item.title} />
-                ) : null}
+                )}
+                {!item.icon.startsWith("<svg") && item.icon.includes("http") && <img className="h-6 w-6" src={item.icon} alt={item.title} />}
                 <Link to={item.href} className="hover:underline">
                   <h2 className="text-2xl font-bold">{item.title}</h2>
                 </Link>

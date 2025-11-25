@@ -30,6 +30,68 @@ type ActionData = {
   error?: string;
   success?: string;
 };
+async function handleEdit(request: Request, params: any, form: FormData, item: KnowledgeBaseDto) {
+  let basePath = form.get("basePath")?.toString() ?? "";
+  let slug = form.get("slug")?.toString() ?? "";
+  const title = form.get("title")?.toString() ?? "";
+  const description = form.get("description")?.toString() ?? "";
+  const defaultLanguage = form.get("defaultLanguage")?.toString() ?? "";
+  const layout = form.get("layout")?.toString() ?? "";
+  const color = Number(form.get("color")?.toString() ?? "");
+  const enabled = Boolean(form.get("enabled"));
+  const languages = form.getAll("languages[]").map((l) => l.toString());
+  const links: KbNavLinkDto[] = form.getAll("links[]").map((l) => JSON.parse(l.toString()));
+  const logo = form.get("logo")?.toString() ?? "";
+  const seoImage = form.get("seoImage")?.toString() ?? "";
+
+  if (languages.length === 0) {
+    return Response.json({ error: "At least one language is required" }, { status: 400 });
+  }
+
+  if (!basePath.startsWith("/")) {
+    basePath = "/" + basePath;
+  }
+  if (slug.startsWith("/")) {
+    slug = slug.substring(1);
+  }
+
+  const existing = await getKnowledgeBaseBySlug(slug);
+  if (existing && existing.id !== item.id) {
+    return Response.json({ error: "Slug already exists" }, { status: 400 });
+  }
+
+  try {
+    await updateKnowledgeBase(item.id, {
+      basePath,
+      slug,
+      title,
+      description,
+      defaultLanguage,
+      layout,
+      color,
+      enabled,
+      languages: JSON.stringify(languages),
+      links: JSON.stringify(links),
+      logo,
+      seoImage,
+    });
+  } catch (e: any) {
+    return Response.json({ error: e.message }, { status: 400 });
+  }
+
+  return redirect("/admin/knowledge-base/bases");
+}
+
+async function handleDelete(request: Request, item: KnowledgeBaseDto) {
+  await verifyUserHasPermission(request, "admin.kb.delete");
+  try {
+    await KnowledgeBaseService.del(item);
+    return redirect("/admin/knowledge-base/bases");
+  } catch (e: any) {
+    return Response.json({ error: e.message }, { status: 400 });
+  }
+}
+
 export const action = async ({ request, params }: ActionFunctionArgs) => {
   await verifyUserHasPermission(request, "admin.kb.update");
   const form = await request.formData();
@@ -41,63 +103,9 @@ export const action = async ({ request, params }: ActionFunctionArgs) => {
   }
 
   if (action === "edit") {
-    let basePath = form.get("basePath")?.toString() ?? "";
-    let slug = form.get("slug")?.toString() ?? "";
-    const title = form.get("title")?.toString() ?? "";
-    const description = form.get("description")?.toString() ?? "";
-    const defaultLanguage = form.get("defaultLanguage")?.toString() ?? "";
-    const layout = form.get("layout")?.toString() ?? "";
-    const color = Number(form.get("color")?.toString() ?? "");
-    const enabled = Boolean(form.get("enabled"));
-    const languages = form.getAll("languages[]").map((l) => l.toString());
-    const links: KbNavLinkDto[] = form.getAll("links[]").map((l) => JSON.parse(l.toString()));
-    const logo = form.get("logo")?.toString() ?? "";
-    const seoImage = form.get("seoImage")?.toString() ?? "";
-
-    if (languages.length === 0) {
-      return Response.json({ error: "At least one language is required" }, { status: 400 });
-    }
-
-    if (!basePath.startsWith("/")) {
-      basePath = "/" + basePath;
-    }
-    if (slug.startsWith("/")) {
-      slug = slug.substring(1);
-    }
-
-    const existing = await getKnowledgeBaseBySlug(slug);
-    if (existing && existing.id !== item.id) {
-      return Response.json({ error: "Slug already exists" }, { status: 400 });
-    }
-
-    try {
-      await updateKnowledgeBase(item.id, {
-        basePath,
-        slug,
-        title,
-        description,
-        defaultLanguage,
-        layout,
-        color,
-        enabled,
-        languages: JSON.stringify(languages),
-        links: JSON.stringify(links),
-        logo,
-        seoImage,
-      });
-    } catch (e: any) {
-      return Response.json({ error: e.message }, { status: 400 });
-    }
-
-    return redirect("/admin/knowledge-base/bases");
+    return handleEdit(request, params, form, item);
   } else if (action === "delete") {
-    await verifyUserHasPermission(request, "admin.kb.delete");
-    try {
-      await KnowledgeBaseService.del(item);
-      return redirect("/admin/knowledge-base/bases");
-    } catch (e: any) {
-      return Response.json({ error: e.message }, { status: 400 });
-    }
+    return handleDelete(request, item);
   } else {
     return Response.json({ error: "Invalid form" }, { status: 400 });
   }

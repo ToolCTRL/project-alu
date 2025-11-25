@@ -57,69 +57,86 @@ export default function RowsList(props: Props & { entity: EntityWithDetails | st
   const [columns, setColumns] = useState<ColumnDto[]>([]);
   const [groupBy, setGroupBy] = useState<{ property?: PropertyWithDetails } | undefined>();
 
-  useEffect(() => {
-    let entity: EntityWithDetails | undefined = undefined;
-    let columns: ColumnDto[] = [];
-    let groupBy: { property?: PropertyWithDetails } | undefined = undefined;
-
+  const resolveEntity = (): EntityWithDetails | undefined => {
     if (typeof props.entity === "string") {
-      entity = appOrAdminData.entities.find((e) => e.name === props.entity);
-    } else {
-      entity = props.entity;
+      return appOrAdminData.entities.find((e) => e.name === props.entity);
+    }
+    return props.entity;
+  };
+
+  const filterColumnsByIgnoreList = (columns: ColumnDto[]): ColumnDto[] => {
+    if (props.ignoreColumns) {
+      return columns.filter((f) => !props.ignoreColumns?.includes(f.name));
+    }
+    return columns;
+  };
+
+  const getDefaultBoardGroupBy = (entity: EntityWithDetails): { property?: PropertyWithDetails } | undefined => {
+    const property = entity.properties.find((f) => f.type === PropertyType.SELECT && !f.isHidden);
+    return property ? { property } : undefined;
+  };
+
+  const processDefaultView = (entity: EntityWithDetails, groupBy: { property?: PropertyWithDetails } | undefined) => {
+    let columns = RowColumnsHelper.getDefaultEntityColumns(entity);
+
+    if (props.view === "board") {
+      columns = columns.filter((f) => f.name !== groupBy?.property?.name);
     }
 
-    if (entity) {
-      const systemView = entity.views.find((f) => f.isSystem);
-      let view = props.currentView ?? systemView;
-      if (!view) {
-        columns = RowColumnsHelper.getDefaultEntityColumns(entity);
-        if (props.view === "board") {
-          columns = columns.filter((f) => f.name !== groupBy?.property?.name);
-        }
-        if (props.ignoreColumns) {
-          columns = columns.filter((f) => !props.ignoreColumns?.includes(f.name));
-        }
+    columns = filterColumnsByIgnoreList(columns);
 
-        if (props.view === "board") {
-          const property = entity.properties.find((f) => f.type === PropertyType.SELECT && !f.isHidden);
-          if (property) {
-            groupBy = { property };
-          }
-        }
-      } else {
-        columns = view.properties
-          .sort((a, b) => a.order - b.order)
-          .map((f) => {
-            return { name: f.name ?? "", title: "", visible: true };
-          });
-        if (props.ignoreColumns) {
-          columns = columns.filter((f) => !props.ignoreColumns?.includes(f.name));
-        }
+    if (props.view === "board") {
+      groupBy = getDefaultBoardGroupBy(entity);
+    }
 
-        if (view.layout === "board") {
-          columns = columns.filter((f) => f.name !== groupBy?.property?.name);
-        }
+    return { columns, groupBy };
+  };
 
-        if (view.groupByPropertyId) {
-          const property = entity.properties.find((f) => f.id === view?.groupByPropertyId);
-          if (property) {
-            groupBy = { property };
-          }
-        }
+  const processViewWithLayout = (entity: EntityWithDetails, view: any, groupBy: { property?: PropertyWithDetails } | undefined) => {
+    let columns = view.properties
+      .sort((a: any, b: any) => a.order - b.order)
+      .map((f: any) => ({ name: f.name ?? "", title: "", visible: true }));
+
+    columns = filterColumnsByIgnoreList(columns);
+
+    if (view.layout === "board") {
+      columns = columns.filter((f) => f.name !== groupBy?.property?.name);
+    }
+
+    if (view.groupByPropertyId) {
+      const property = entity.properties.find((f) => f.id === view?.groupByPropertyId);
+      if (property) {
+        groupBy = { property };
       }
     }
 
-    // if (props.readOnly) {
-    //   columns = columns.filter((f) => ![RowDisplayDefaultProperty.FOLIO.toString()].includes(f.name));
-    // }
+    return { columns, groupBy };
+  };
 
-    if (props.columns !== undefined) {
-      columns = props.columns;
+  useEffect(() => {
+    const entity = resolveEntity();
+    if (!entity) {
+      setEntity(undefined);
+      setColumns([]);
+      setGroupBy(undefined);
+      return;
     }
 
+    const systemView = entity.views.find((f) => f.isSystem);
+    const view = props.currentView ?? systemView;
+
+    let result;
+    if (!view) {
+      result = processDefaultView(entity, undefined);
+    } else {
+      result = processViewWithLayout(entity, view, undefined);
+    }
+
+    let finalColumns = props.columns !== undefined ? props.columns : result.columns;
+
     setEntity(entity);
-    setColumns(columns);
-    setGroupBy(groupBy);
+    setColumns(finalColumns);
+    setGroupBy(result.groupBy);
   }, [appOrAdminData.entities, props]);
 
   if (!entity) {
@@ -686,65 +703,25 @@ function AdvancedBoard({
                   .map((colId) => {
                     const rows = columnItems[colId] ?? [];
                     return (
-                      <Droppable droppableId={colId} key={colId}>
-                        {(provided) => (
-                          <div
-                            ref={provided.innerRef}
-                            {...provided.droppableProps}
-                            style={{ minWidth: columnWidth, maxWidth: columnWidth }}
-                        className="bg-white/5 border-white/10 flex flex-col gap-2 rounded-lg border px-2 py-3"
-                          >
-                            {rows.length === 0 && (
-                              <div className="text-muted-foreground border-border rounded-md border border-dashed px-3 py-6 text-center text-xs">
-                                {t("shared.noRecords")}
-                              </div>
-                            )}
-                            {rows.map((row, idx) => (
-                              <Draggable draggableId={row.id} index={idx} key={row.id}>
-                                {(dragProvided, snapshot) => {
-                                  const card = (
-                                    <div
-                                      ref={dragProvided.innerRef}
-                                      {...dragProvided.draggableProps}
-                                      {...dragProvided.dragHandleProps}
-                                      className={clsx(
-                                      "bg-white/10 border-white/20 group relative rounded-md border p-2 shadow-2xs transition text-white",
-                                      snapshot.isDragging && "border-theme-400 shadow-md",
-                                      pendingMove === row.id && "opacity-70",
-                                      errorRow === row.id && "border-red-500"
-                                      )}
-                                    >
-                                      {compactCards ? (
-                                        <MinimalCard row={row} />
-                                      ) : (
-                                        <RenderCard
-                                          layout="board"
-                                          item={row}
-                                          entity={entity}
-                                          columns={columnsDef}
-                                          allEntities={allEntities}
-                                          routes={routes}
-                                          actions={actions}
-                                        />
-                                      )}
-                                    </div>
-                                  );
-                                  return snapshot.isDragging && portal ? createPortal(card, portal) : card;
-                                }}
-                              </Draggable>
-                            ))}
-                            {provided.placeholder}
-                            {!readOnly && routes && (
-                              <Link
-                                className="text-muted-foreground hover:text-foreground border-border flex items-center justify-center rounded-md border border-dashed px-2 py-2 text-xs font-medium"
-                                to={(EntityHelper.getRoutes({ routes, entity })?.new ?? "") + (colId !== "__undefined" ? `?${groupBy?.name}=${colId}` : "")}
-                              >
-                                {t("shared.add")}
-                              </Link>
-                            )}
-                          </div>
-                        )}
-                      </Droppable>
+                      <BoardColumn
+                        key={colId}
+                        colId={colId}
+                        rows={rows}
+                        columnWidth={columnWidth}
+                        entity={entity}
+                        columnsDef={columnsDef}
+                        allEntities={allEntities}
+                        routes={routes}
+                        actions={actions}
+                        compactCards={compactCards}
+                        pendingMove={pendingMove}
+                        errorRow={errorRow}
+                        portal={portal}
+                        readOnly={readOnly}
+                        groupBy={groupBy}
+                        t={t}
+                        MinimalCard={MinimalCard}
+                      />
                     );
                   })}
               </div>
@@ -753,6 +730,108 @@ function AdvancedBoard({
         </div>
       </div>
     </div>
+  );
+}
+
+function BoardColumn({
+  colId,
+  rows,
+  columnWidth,
+  entity,
+  columnsDef,
+  allEntities,
+  routes,
+  actions,
+  compactCards,
+  pendingMove,
+  errorRow,
+  portal,
+  readOnly,
+  groupBy,
+  t,
+  MinimalCard,
+}: {
+  colId: string;
+  rows: RowWithDetails[];
+  columnWidth: number;
+  entity: EntityWithDetails;
+  columnsDef: ColumnDto[];
+  allEntities: EntityWithDetails[];
+  routes?: EntitiesApi.Routes;
+  actions?: (row: RowWithDetails) => any[];
+  compactCards: boolean;
+  pendingMove: string | null;
+  errorRow: string | null;
+  portal: HTMLElement | null;
+  readOnly?: boolean;
+  groupBy?: PropertyWithDetails;
+  t: any;
+  MinimalCard: ({ row }: { row: RowWithDetails }) => JSX.Element;
+}) {
+  const renderDraggableCard = (row: RowWithDetails, idx: number) => {
+    return (
+      <Draggable draggableId={row.id} index={idx} key={row.id}>
+        {(dragProvided, snapshot) => {
+          const card = (
+            <div
+              ref={dragProvided.innerRef}
+              {...dragProvided.draggableProps}
+              {...dragProvided.dragHandleProps}
+              className={clsx(
+                "bg-white/10 border-white/20 group relative rounded-md border p-2 shadow-2xs transition text-white",
+                snapshot.isDragging && "border-theme-400 shadow-md",
+                pendingMove === row.id && "opacity-70",
+                errorRow === row.id && "border-red-500"
+              )}
+            >
+              {compactCards ? (
+                <MinimalCard row={row} />
+              ) : (
+                <RenderCard
+                  layout="board"
+                  item={row}
+                  entity={entity}
+                  columns={columnsDef}
+                  allEntities={allEntities}
+                  routes={routes}
+                  actions={actions}
+                />
+              )}
+            </div>
+          );
+          return snapshot.isDragging && portal ? createPortal(card, portal) : card;
+        }}
+      </Draggable>
+    );
+  };
+
+  return (
+    <Droppable droppableId={colId}>
+      {(provided) => (
+        <div
+          ref={provided.innerRef}
+          {...provided.droppableProps}
+          style={{ minWidth: columnWidth, maxWidth: columnWidth }}
+          className="bg-white/5 border-white/10 flex flex-col gap-2 rounded-lg border px-2 py-3"
+        >
+          {rows.length === 0 && (
+            <div className="text-muted-foreground border-border rounded-md border border-dashed px-3 py-6 text-center text-xs">
+              {t("shared.noRecords")}
+            </div>
+          )}
+          {rows.map((row, idx) => renderDraggableCard(row, idx))}
+          {provided.placeholder}
+          {!readOnly && routes && (
+            <Link
+              className="text-muted-foreground hover:text-foreground border-border flex items-center justify-center rounded-md border border-dashed px-2 py-2 text-xs font-medium"
+              to={(EntityHelper.getRoutes({ routes, entity })?.new ?? "") + (colId !== "__undefined" ? `?${groupBy?.name}=${colId}` : "")}
+            >
+              {t("shared.add")}
+            </Link>
+          )}
+        </div>
+      )}
+    </Droppable>
   );
 }
 

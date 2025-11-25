@@ -15,7 +15,7 @@ export const meta: MetaFunction<typeof loader> = ({ data }) => (data && "metatag
 type LoaderData = {
   metatags: MetaTagsDto;
 };
-export let loader = async ({ request }: LoaderFunctionArgs) => {
+export const loader = async ({ request }: LoaderFunctionArgs) => {
   const { t } = await getTranslations(request);
   const data: LoaderData = {
     metatags: [{ title: `${t("front.brand.title")} | ${getDefaultSiteTags().title}` }, { description: t("affiliates.description") }, ...getLinkTags(request)],

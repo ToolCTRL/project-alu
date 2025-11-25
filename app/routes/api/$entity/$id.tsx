@@ -76,6 +76,35 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
   }
 };
 
+async function handleDelete(params: { id?: string }, entity: any, tenantId: string | null, userId: string, time: any) {
+  await time(
+    RowsApi.del(params.id!, {
+      entity,
+      tenantId,
+      time,
+      userId,
+    }),
+    "RowsApi.del"
+  );
+  return "{}";
+}
+
+async function handlePut(request: Request, params: { id?: string }, entity: any, tenant: any, userId: string, existing: any, t: any, time: any) {
+  const jsonBody = await time(request.json(), "request.json");
+  const rowValues = ApiHelper.getRowPropertiesFromJson(t, entity, jsonBody, existing);
+  await time(
+    RowsApi.update(params.id!, {
+      entity,
+      tenantId: tenant?.id ?? null,
+      userId,
+      rowValues,
+      time,
+    }),
+    "RowsApi.update"
+  );
+  return jsonBody;
+}
+
 // PUT OR DELETE
 export const action: ActionFunction = async ({ request, params }) => {
   const { time, getServerTimingHeader } = await createMetrics({ request, params }, `[Rows_API_${request.method}] ${params.entity}`);
@@ -104,28 +133,9 @@ export const action: ActionFunction = async ({ request, params }) => {
     const existing = data.item;
     let jsonBody = "{}";
     if (request.method === "DELETE") {
-      await time(
-        RowsApi.del(params.id!, {
-          entity,
-          tenantId,
-          time,
-          userId,
-        }),
-        "RowsApi.del"
-      );
+      jsonBody = await handleDelete(params, entity, tenantId, userId, time);
     } else if (request.method === "PUT") {
-      jsonBody = await time(request.json(), "request.json");
-      const rowValues = ApiHelper.getRowPropertiesFromJson(t, entity, jsonBody, existing);
-      await time(
-        RowsApi.update(params.id!, {
-          entity,
-          tenantId: tenant?.id ?? null,
-          userId,
-          rowValues,
-          time,
-        }),
-        "RowsApi.update"
-      );
+      jsonBody = await handlePut(request, params, entity, tenant, userId, existing, t, time);
     } else {
       throw Error("Method not allowed");
     }

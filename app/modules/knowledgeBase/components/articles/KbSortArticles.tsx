@@ -19,7 +19,7 @@ export default function KbSortArticles({
           {
             name: "order",
             title: "",
-            value: (i, idx) => <OrderListButtons index={idx} items={items} editable={true} />,
+            value: (_i, idx) => <OrderListButtons index={idx} items={items} editable={true} />,
           },
           {
             name: "title",

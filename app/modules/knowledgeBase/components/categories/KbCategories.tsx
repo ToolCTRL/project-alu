@@ -18,18 +18,15 @@ export default function KbCategories({ items, kb }: { items: KbCategoryDto[]; kb
         </div>
       ) : (
         <Fragment>
-          {kb.layout === "list" ? (
-            <KbCategoriesList kb={kb} items={items} />
-          ) : kb.layout === "articles" ? (
-            <KbCategoriesTopArticles kb={kb} items={items} />
-          ) : kb.layout === "grid" ? (
-            <KbCategoriesGrid kb={kb} items={items} columns={3} />
-          ) : kb.layout === "docs" ? (
+          {kb.layout === "list" && <KbCategoriesList kb={kb} items={items} />}
+          {kb.layout === "articles" && <KbCategoriesTopArticles kb={kb} items={items} />}
+          {kb.layout === "grid" && <KbCategoriesGrid kb={kb} items={items} columns={3} />}
+          {kb.layout === "docs" && (
             <div className="space-y-4">
               <h2 className="text-2xl font-bold">{t("knowledgeBase.category.plural")}</h2>
               <KbCategoriesGrid kb={kb} items={items} columns={3} />
             </div>
-          ) : null}
+          )}
         </Fragment>
       )}
     </div>

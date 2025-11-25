@@ -20,7 +20,13 @@ export default function EntityRelationshipForm({ entity, entities, item }: Props
 
   const navigation = useNavigation();
 
-  const [type, setType] = useState<string>(!item ? "child" : item.parentId === entity?.id ? "parent" : "child");
+  const getInitialType = () => {
+    if (!item) {
+      return "child";
+    }
+    return item.parentId === entity?.id ? "parent" : "child";
+  };
+  const [type, setType] = useState<string>(getInitialType());
   const [parentId, setParentId] = useState<string | undefined>(item?.parentId);
   const [childId, setChildId] = useState<string | undefined>(item?.childId);
   const [child, setChild] = useState<EntityWithDetails>();

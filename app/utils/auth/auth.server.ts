@@ -6,7 +6,7 @@ import { getBaseURL } from "../url.server";
 
 // Create an instance of the authenticator, pass a generic with what
 // strategies will return and will store in the session
-export let getAuthenticator = (request: Request) => {
+export const getAuthenticator = (request: Request) => {
   const authenticator = new Authenticator(storage);
   let googleStrategy = new GoogleStrategy(
     {

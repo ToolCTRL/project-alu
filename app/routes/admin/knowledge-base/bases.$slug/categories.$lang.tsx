@@ -243,6 +243,15 @@ export default function () {
   const confirmDeleteSection = useRef<RefConfirmModal>(null);
   const confirmDeleteArticle = useRef<RefConfirmModal>(null);
 
+  function toggleCategory(categoryId: string) {
+    setToggledCategories((prev) => {
+      if (prev.includes(categoryId)) {
+        return prev.filter((f) => f !== categoryId);
+      }
+      return [...prev, categoryId];
+    });
+  }
+
   function onDelete(item: KnowledgeBaseCategoryWithDetails) {
     confirmDeleteCategory.current?.setValue(item);
     confirmDeleteCategory.current?.show("Delete category?", "Delete", "Cancel", `Are you sure you want to delete the category "${item.title}"?`);
@@ -400,14 +409,7 @@ export default function () {
                         <DeleteButton onDelete={() => onDelete(item)} canDelete={item.articles.length === 0} />
                         <button
                           type="button"
-                          onClick={() => {
-                            setToggledCategories((prev) => {
-                              if (prev.includes(item.id)) {
-                                return prev.filter((f) => f !== item.id);
-                              }
-                              return [...prev, item.id];
-                            });
-                          }}
+                          onClick={() => toggleCategory(item.id)}
                           className="hover:bg-secondary/90 focus:bg-secondary/90 group flex items-center rounded-md border border-transparent p-2 focus:outline-hidden focus:ring-2 focus:ring-gray-400 focus:ring-offset-1"
                         >
                           <FolderIconFilled className="hover:text-muted-foreground h-4 w-4 text-gray-300" />
@@ -560,12 +562,11 @@ function CategorySections({
                         <button
                           type="button"
                           onClick={() => {
-                            setToggledSections((prev) => {
-                              if (prev.includes(item.id)) {
-                                return prev.filter((f) => f !== item.id);
-                              }
-                              return [...prev, item.id];
-                            });
+                            setToggledSections((prev) =>
+                              prev.includes(item.id)
+                                ? prev.filter((f) => f !== item.id)
+                                : [...prev, item.id]
+                            );
                           }}
                           className="hover:bg-secondary/90 focus:bg-secondary/90 group flex items-center rounded-md border border-transparent p-2 focus:outline-hidden focus:ring-2 focus:ring-gray-400 focus:ring-offset-1"
                         >

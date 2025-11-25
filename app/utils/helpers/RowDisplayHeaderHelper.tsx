@@ -106,29 +106,16 @@ function displayCreatedBy(): RowHeaderDisplayDto<RowWithDetails> {
   };
 }
 
-function getDisplayedHeaders({
-  entity,
-  columns,
-  layout,
-  allEntities,
-  routes,
-  onFolioClick,
-  onEditClick,
-  onRelatedRowClick,
-  t,
-}: {
-  entity: EntityWithDetails;
-  columns?: ColumnDto[];
-  layout?: string;
-  allEntities: EntityWithDetails[];
-  routes?: EntitiesApi.Routes;
-  onFolioClick?: (item: RowWithDetails) => void;
-  onEditClick?: (item: RowWithDetails) => void;
-  onRelatedRowClick?: (item: RowWithDetails) => void;
-  t: TFunction;
-}): RowHeaderDisplayDto<RowWithDetails>[] {
-  let headers: RowHeaderDisplayDto<RowWithDetails>[] = [];
-
+function addDefaultHeaders(
+  headers: RowHeaderDisplayDto<RowWithDetails>[],
+  columns: ColumnDto[] | undefined,
+  entity: EntityWithDetails,
+  layout: string | undefined,
+  routes: EntitiesApi.Routes | undefined,
+  onFolioClick: ((item: RowWithDetails) => void) | undefined,
+  onEditClick: ((item: RowWithDetails) => void) | undefined,
+  t: TFunction
+) {
   if (columns && isColumnVisible(columns, RowDisplayDefaultProperty.ID)) {
     headers.push({
       name: RowDisplayDefaultProperty.ID,
@@ -168,13 +155,30 @@ function getDisplayedHeaders({
   if (isColumnVisible(columns, RowDisplayDefaultProperty.FOLIO)) {
     headers.push(displayFolio(entity, routes, onFolioClick));
   }
+}
 
+function addPropertyHeaders(
+  headers: RowHeaderDisplayDto<RowWithDetails>[],
+  entity: EntityWithDetails,
+  columns: ColumnDto[] | undefined,
+  layout: string | undefined
+) {
   entity.properties
     .filter((f) => !f.isHidden && isColumnVisible(columns, f.name))
     .forEach((property) => {
       headers.push(displayProperty(entity, property, layout));
     });
+}
 
+function addRelationshipHeaders(
+  headers: RowHeaderDisplayDto<RowWithDetails>[],
+  entity: EntityWithDetails,
+  columns: ColumnDto[] | undefined,
+  allEntities: EntityWithDetails[],
+  routes: EntitiesApi.Routes | undefined,
+  onRelatedRowClick: ((item: RowWithDetails) => void) | undefined,
+  t: TFunction
+) {
   entity.parentEntities
     .filter((f) => !f.hiddenIfEmpty)
     .forEach((relationship) => {
@@ -256,7 +260,16 @@ function getDisplayedHeaders({
         });
       }
     });
+}
 
+function addHiddenRelationshipHeaders(
+  headers: RowHeaderDisplayDto<RowWithDetails>[],
+  columns: ColumnDto[] | undefined,
+  entity: EntityWithDetails,
+  allEntities: EntityWithDetails[],
+  routes: EntitiesApi.Routes | undefined,
+  onRelatedRowClick: ((item: RowWithDetails) => void) | undefined
+) {
   if (isColumnVisible(columns, RowDisplayDefaultProperty.HIDDEN_PARENTS)) {
     headers.push({
       name: RowDisplayDefaultProperty.HIDDEN_PARENTS,
@@ -289,7 +302,9 @@ function getDisplayedHeaders({
       ),
     });
   }
+}
 
+function addMetadataHeaders(headers: RowHeaderDisplayDto<RowWithDetails>[], columns: ColumnDto[] | undefined, entity: EntityWithDetails) {
   if (isColumnVisible(columns, RowDisplayDefaultProperty.CREATED_AT)) {
     headers.push(displayCreatedAt());
   }
@@ -320,6 +335,36 @@ function getDisplayedHeaders({
       value: () => <div>TODO</div>,
     });
   }
+}
+
+function getDisplayedHeaders({
+  entity,
+  columns,
+  layout,
+  allEntities,
+  routes,
+  onFolioClick,
+  onEditClick,
+  onRelatedRowClick,
+  t,
+}: {
+  entity: EntityWithDetails;
+  columns?: ColumnDto[];
+  layout?: string;
+  allEntities: EntityWithDetails[];
+  routes?: EntitiesApi.Routes;
+  onFolioClick?: (item: RowWithDetails) => void;
+  onEditClick?: (item: RowWithDetails) => void;
+  onRelatedRowClick?: (item: RowWithDetails) => void;
+  t: TFunction;
+}): RowHeaderDisplayDto<RowWithDetails>[] {
+  let headers: RowHeaderDisplayDto<RowWithDetails>[] = [];
+
+  addDefaultHeaders(headers, columns, entity, layout, routes, onFolioClick, onEditClick, t);
+  addPropertyHeaders(headers, entity, columns, layout);
+  addRelationshipHeaders(headers, entity, columns, allEntities, routes, onRelatedRowClick, t);
+  addHiddenRelationshipHeaders(headers, columns, entity, allEntities, routes, onRelatedRowClick);
+  addMetadataHeaders(headers, columns, entity);
 
   if (columns && columns.length > 0) {
     const newOrder: RowHeaderDisplayDto<RowWithDetails>[] = [];

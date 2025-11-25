@@ -106,25 +106,36 @@ export default function EntityViewForm({
     }
   }, [entity, isSystem, item, t]);
 
-  useEffect(() => {
-    const items: RowWithDetails[] = Array.from({ length: 10 }).map((_, idx) => {
-      let nonDefaultProperties = properties.filter((p) => !defaultDisplayProperties.find((dp) => dp.name === p.name));
-      const item: RowWithDetails = {
-        values: nonDefaultProperties.map(({ name }) => {
-          const property = entity.properties.find((p) => p.name === name);
-          if (!property) return null;
-          return RowHelper.getFakePropertyValue({ property, t, idx: idx + 1 });
-        }),
-        folio: idx + 1,
-        createdAt: new Date(),
-        createdByUser: {
-          email: "john.doe@email.com",
-          firstName: "John",
-          lastName: "Doe",
-        },
-      } as RowWithDetails;
-      return item;
+  const createFakePropertyValue = (name: string, idx: number) => {
+    const property = entity.properties.find((p) => p.name === name);
+    if (!property) return null;
+    return RowHelper.getFakePropertyValue({ property, t, idx: idx + 1 });
+  };
+
+  const createFakeRow = (idx: number): RowWithDetails => {
+    const nonDefaultProperties = properties.filter((p) => !defaultDisplayProperties.find((dp) => dp.name === p.name));
+    return {
+      values: nonDefaultProperties.map(({ name }) => createFakePropertyValue(name, idx)),
+      folio: idx + 1,
+      createdAt: new Date(),
+      createdByUser: {
+        email: "john.doe@email.com",
+        firstName: "John",
+        lastName: "Doe",
+      },
+    } as RowWithDetails;
+  };
+
+  const handleOrderChange = (newOrders: { order: number; idx: number }[]) => {
+    const updatedProperties = properties.map((item, itemIdx) => {
+      const newOrder = newOrders.find((f) => f.idx === itemIdx);
+      return newOrder ? { ...item, order: newOrder.order } : item;
     });
+    setProperties(updatedProperties);
+  };
+
+  useEffect(() => {
+    const items: RowWithDetails[] = Array.from({ length: 10 }).map((_, idx) => createFakeRow(idx));
     setFakeItems(items);
   }, [entity.properties, properties, t]);
 
@@ -459,27 +470,11 @@ export default function EntityViewForm({
                       <div className="shrink-0">
                         <OrderIndexButtons
                           idx={idx}
-                          items={properties.map((item, itemIdx) => {
-                            return {
-                              order: item.order,
-                              idx: itemIdx,
-                            };
-                          })}
-                          onChange={(newOrders) => {
-                            setProperties(
-                              properties.map((item, itemIdx) => {
-                                const newOrder = newOrders.find((f) => f.idx === itemIdx);
-                                if (newOrder) {
-                                  return {
-                                    ...item,
-                                    order: newOrder.order,
-                                  };
-                                } else {
-                                  return item;
-                                }
-                              })
-                            );
-                          }}
+                          items={properties.map((item, itemIdx) => ({
+                            order: item.order,
+                            idx: itemIdx,
+                          }))}
+                          onChange={handleOrderChange}
                         />
                       </div>
                       <div className={clsx("truncate", item.name?.includes(".") ? "text-muted-foreground" : "text-foreground font-medium")}>

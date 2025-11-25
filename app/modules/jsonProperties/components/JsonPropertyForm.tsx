@@ -9,7 +9,6 @@ import InputSelect from "~/components/ui/input/InputSelect";
 import { Form, useFetcher } from "react-router";
 import { JsonPropertyDto, JsonPropertyType, JsonPropertyTypes } from "~/modules/jsonProperties/dtos/JsonPropertyTypeDto";
 import InputCheckbox from "~/components/ui/input/InputCheckbox";
-// import {toast} from "sonner";
 import toast from "react-hot-toast";
 import SlideOverWideEmpty from "~/components/ui/slideOvers/SlideOverWideEmpty";
 import { Button } from "~/components/ui/button";
@@ -19,8 +18,6 @@ import ConfirmModal, { RefConfirmModal } from "~/components/ui/modals/ConfirmMod
 
 interface Props {
   item: JsonPropertyDto | null;
-  // onUpdate?: (item: JsonPropertyDto) => void;
-  // onAdd?: (item: JsonPropertyDto) => void;
   onClose: () => void;
 }
 export default function JsonPropertyForm({ item, onClose }: Props) {
@@ -82,15 +79,6 @@ export default function JsonPropertyForm({ item, onClose }: Props) {
       fetcher.submit(form, {
         method: "post",
       });
-      // if (onAdd) {
-      //   onAdd({
-      //     name,
-      //     title,
-      //     type,
-      //     required: isRequired,
-      //     options: type === "select" || type === "multiselect" ? options : null,
-      //   });
-      // }
     } else {
       const form = new FormData();
       form.append("action", "properties-edit");
@@ -109,17 +97,6 @@ export default function JsonPropertyForm({ item, onClose }: Props) {
       fetcher.submit(form, {
         method: "post",
       });
-
-      // if (onUpdate) {
-      //   onUpdate({
-      //     ...item,
-      //     name,
-      //     title,
-      //     type,
-      //     options: type === "select" || type === "multiselect" ? options : null,
-      //     required: isRequired,
-      //   });
-      // }
     }
   }
   function onSubmit(e: React.FormEvent) {
@@ -226,7 +203,7 @@ export default function JsonPropertyForm({ item, onClose }: Props) {
         </div>
       </Form>
       <SlideOverWideEmpty
-        title={selectedOption === null ? t("shared.new") : selectedOption ? t("shared.edit") : ""}
+        title={selectedOption === null ? t("shared.new") : selectedOption !== undefined ? t("shared.edit") : ""}
         open={selectedOption !== undefined}
         onClose={() => setSelectedOption(undefined)}
         size="sm"
@@ -237,7 +214,6 @@ export default function JsonPropertyForm({ item, onClose }: Props) {
             onClose={() => setSelectedOption(undefined)}
             onUpdate={(option) => {
               if (selectedOption) {
-                // onChange(items.map((item) => (item === selectedProperty ? property : item)));
                 setOptions(options.map((o) => (o === selectedOption ? option : o)));
               } else {
                 setOptions([...options, option]);

@@ -1,0 +1,33 @@
+{
+  "batch": 12,
+  "date": "2025-11-25",
+  "fixedIssues": 26,
+  "fixesByRule": {
+    "S125": 15,
+    "S1854": 2,
+    "S4043": 1,
+    "S6478": 0,
+    "S6479": 0,
+    "S3358": 0,
+    "S7721": 0,
+    "S6853": 0,
+    "S6772": 0,
+    "S6819": 0
+  },
+  "fixedFiles": [
+    "app/routes/admin/metrics/settings.tsx",
+    "app/routes/admin/metrics/summary.tsx",
+    "app/routes/admin/notifications/channels.tsx",
+    "app/routes/admin/onboarding/onboardings.$id.tsx",
+    "app/routes/admin/onboarding/onboardings.$id/sessions.tsx",
+    "app/routes/admin/onboarding/onboardings.$id/settings.tsx",
+    "app/routes/admin/pages/index.tsx",
+    "app/routes/admin/playground/ai/openai/chatgpt.tsx",
+    "app/routes/admin/playground/long-running-tasks/index.tsx",
+    "app/routes/admin/settings/internationalization.tsx",
+    "app/routes/admin/settings/cookies.tsx",
+    "app/routes/admin/settings/pricing.features.tsx"
+  ],
+  "status": "IN_PROGRESS",
+  "note": "Fixed commented code (S125), useless assignments (S1854), and toSorted (S4043). Remaining: S6478, S6479, S3358, S7721, S6853, S6772, S6819 require more complex refactoring."
+}

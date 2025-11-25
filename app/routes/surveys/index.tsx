@@ -20,7 +20,7 @@ type LoaderData = {
   metatags: MetaTagsDto;
   items: SurveyWithDetails[];
 };
-export let loader = async ({ request }: LoaderFunctionArgs) => {
+export const loader = async ({ request }: LoaderFunctionArgs) => {
   const appConfiguration = await getAppConfiguration({ request });
   if (!appConfiguration.app.features.surveys) {
     throw Response.json({}, { status: 404 });

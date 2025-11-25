@@ -38,6 +38,52 @@ type SitemapHandle = {
   getSitemapEntries?: (request: Request) => Promise<Array<SitemapEntry | null> | null> | Array<SitemapEntry | null> | null;
 };
 
+function shouldSkipRoute(id: string): boolean {
+  return id === "root" || id.startsWith("routes/_") || id.startsWith("__test_routes__");
+}
+
+function buildRoutePath(manifestEntry: any, manifest: any): string | null {
+  let path;
+  if (manifestEntry.path) {
+    path = removeTrailingSlash(manifestEntry.path);
+  } else if (manifestEntry.index) {
+    path = "";
+  } else {
+    return null;
+  }
+
+  let parentId = manifestEntry.parentId;
+  let parent = parentId ? manifest.routes[parentId] : null;
+
+  while (parent) {
+    const parentPath = parent.path ? removeTrailingSlash(parent.path) : "";
+    path = `${parentPath}/${path}`;
+    parentId = parent.parentId;
+    parent = parentId ? manifest.routes[parentId] : null;
+  }
+
+  return path;
+}
+
+function getExcludedRoutes(appConfiguration: any): string[] {
+  const excludeRoutes = ["/*", "/app", "/admin", "/debug", "/404", "/401", "/new-account", "/reset", "/iframe", "/components"];
+  if (!appConfiguration.subscription.allowSignUpBeforeSubscribe) {
+    excludeRoutes.push("/register");
+  }
+  if (!appConfiguration.affiliates || !appConfiguration.affiliates.provider.rewardfulApiKey) {
+    excludeRoutes.push("/affiliate-program");
+  }
+  return excludeRoutes;
+}
+
+function shouldExcludeEntry(entry: SitemapEntry, excludeRoutes: string[], sitemapEntries: SitemapEntry[]): boolean {
+  if (excludeRoutes.find((r) => entry.route.startsWith(r))) {
+    return true;
+  }
+  const existingEntry = sitemapEntries.find((e) => e.route === entry.route);
+  return !!existingEntry;
+}
+
 async function getSitemapXml(request: Request, remixContext: EntryContext) {
   const appConfiguration = await getAppConfiguration({ request });
   const domainUrl = getDomainUrl(request);
@@ -56,9 +102,7 @@ async function getSitemapXml(request: Request, remixContext: EntryContext) {
   const rawSitemapEntries = (
     await Promise.all(
       Object.entries(remixContext.routeModules).map(async ([id, mod]) => {
-        if (id === "root") return;
-        if (id.startsWith("routes/_")) return;
-        if (id.startsWith("__test_routes__")) return;
+        if (shouldSkipRoute(id)) return;
 
         const handle = mod?.handle as SitemapHandle | undefined;
         if (handle?.getSitemapEntries) {
@@ -66,39 +110,16 @@ async function getSitemapXml(request: Request, remixContext: EntryContext) {
         }
 
         // exclude resource routes from the sitemap
-        // (these are an opt-in via the getSitemapEntries method)
         if (!mod || !("default" in mod)) return;
 
         const manifestEntry = remixContext.manifest.routes[id];
         if (!manifestEntry) {
-          // eslint-disable-next-line no-console
           console.warn(`Could not find a manifest entry for ${id}`);
           return;
         }
-        let parentId = manifestEntry.parentId;
-        let parent = parentId ? remixContext.manifest.routes[parentId] : null;
 
-        let path;
-        if (manifestEntry.path) {
-          path = removeTrailingSlash(manifestEntry.path);
-        } else if (manifestEntry.index) {
-          path = "";
-        } else {
-          return;
-        }
-
-        while (parent) {
-          // the root path is '/', so it messes things up if we add another '/'
-          const parentPath = parent.path ? removeTrailingSlash(parent.path) : "";
-          path = `${parentPath}/${path}`;
-          parentId = parent.parentId;
-          parent = parentId ? remixContext.manifest.routes[parentId] : null;
-        }
-
-        // we can't handle dynamic routes, so if the handle doesn't have a
-        // getSitemapEntries function, we just
-        if (path.includes(":")) return;
-        if (id === "root") return;
+        const path = buildRoutePath(manifestEntry, remixContext.manifest);
+        if (!path || path.includes(":")) return;
 
         const entry: SitemapEntry = { route: removeTrailingSlash(path) };
         return entry;
@@ -109,24 +130,10 @@ async function getSitemapXml(request: Request, remixContext: EntryContext) {
     .filter(typedBoolean);
 
   const sitemapEntries: Array<SitemapEntry> = [];
+  const excludeRoutes = getExcludedRoutes(appConfiguration);
+
   for (const entry of rawSitemapEntries) {
-    const existingEntryForRoute = sitemapEntries.find((e) => e.route === entry.route);
-    const excludeRoutes = ["/*", "/app", "/admin", "/debug", "/404", "/401", "/new-account", "/reset", "/iframe", "/components"];
-    if (!appConfiguration.subscription.allowSignUpBeforeSubscribe) {
-      excludeRoutes.push("/register");
-    }
-    if (!appConfiguration.affiliates || !appConfiguration.affiliates.provider.rewardfulApiKey) {
-      excludeRoutes.push("/affiliate-program");
-    }
-    if (excludeRoutes.find((r) => entry.route.startsWith(r))) {
-      // eslint-disable-next-line no-console
-      // console.log(`Skipping sitemap entry for ${entry.route}`);
-    } else if (existingEntryForRoute) {
-      // if (!lodash.isEqual(existingEntryForRoute, entry)) {
-      //   // eslint-disable-next-line no-console
-      //   console.warn(`Duplicate route for ${entry.route} with different sitemap data`, { entry, existingEntryForRoute });
-      // }
-    } else {
+    if (!shouldExcludeEntry(entry, excludeRoutes, sitemapEntries)) {
       sitemapEntries.push(entry);
     }
   }
@@ -148,7 +155,6 @@ async function getSitemapXml(request: Request, remixContext: EntryContext) {
   });
 
   const pages = (await getPages()).filter((f) => !f.slug.includes(":") && f.isPublished && f.isPublic && !defaultPages.includes(f.slug));
-  // eslint-disable-next-line no-console
   if (pages.length > 0) {
     console.log("[sitemap.xml] custom pages: " + pages.map((f) => f.slug).join(", "));
   }
@@ -168,7 +174,6 @@ async function getSitemapXml(request: Request, remixContext: EntryContext) {
         const newEntry = { ...entry };
         const url = new URL(`${domainUrl}${newEntry.route}`);
         if (url.searchParams.get("lng") || entry.route === "/docs") return;
-        // if it's a blog entry don't add the language
         if (entry.route.startsWith("/blog/")) return;
         if (entry.route.startsWith("/api/")) return;
         if (entry.route.startsWith("/components/")) return;
@@ -182,10 +187,6 @@ async function getSitemapXml(request: Request, remixContext: EntryContext) {
     request,
   });
   for (const kb of knowledgeBases) {
-    // let languages: (string | undefined)[] = kb.languages ?? [kb.defaultLanguage];
-    // languages.push(undefined);
-
-    // for (const lang of languages) {
     const kbUrl = KnowledgeBaseUtils.getKbUrl({ kb, params: {} });
     addSitemapEntry(sitemapEntries, {
       route: kbUrl,

@@ -122,29 +122,46 @@ export const defaultProperties: {
   // },
 ];
 
+function validateTextMax(value: any, max: number, property: PropertyWithDetails, t?: TFunction) {
+  if (value.length > max) {
+    throwError({ t, property, error: `must have less than ${max} characters (${value})` });
+  }
+}
+
+function validateNumberMax(value: any, max: number, property: PropertyWithDetails, t?: TFunction) {
+  if (!!value && Number(value) > max) {
+    throwError({ t, property, error: `must be less than ${max} (${value})` });
+  }
+}
+
+function validateTextMin(value: any, min: number, property: PropertyWithDetails, t?: TFunction) {
+  if (value.length < min) {
+    throwError({ t, property, error: `must have less than ${min} characters (${value})` });
+  }
+}
+
+function validateNumberMin(value: any, min: number, property: PropertyWithDetails, t?: TFunction) {
+  if (!!value && Number(value) < min) {
+    throwError({ t, property, error: `must be greater than ${min} (${value})` });
+  }
+}
+
 export function validatePropertyValue({ t, property, value }: { t?: TFunction; property: PropertyWithDetails; value: any }) {
   const max = PropertyAttributeHelper.getPropertyAttributeValue_Number(property, PropertyAttributeName.Max);
   const min = PropertyAttributeHelper.getPropertyAttributeValue_Number(property, PropertyAttributeName.Min);
+
   if (max) {
     if (property.type === PropertyType.TEXT) {
-      if (value.length > max) {
-        throwError({ t, property, error: `must have less than ${max} characters (${value})` });
-      }
+      validateTextMax(value, max, property, t);
     } else if (property.type === PropertyType.NUMBER) {
-      if (!!value && Number(value) > max) {
-        throwError({ t, property, error: `must be less than ${max} (${value})` });
-      }
+      validateNumberMax(value, max, property, t);
     }
   }
   if (min) {
     if (property.type === PropertyType.TEXT) {
-      if (value.length < min) {
-        throwError({ t, property, error: `must have less than ${min} characters (${value})` });
-      }
+      validateTextMin(value, min, property, t);
     } else if (property.type === PropertyType.NUMBER) {
-      if (!!value && Number(value) < min) {
-        throwError({ t, property, error: `must be greater than ${min} (${value})` });
-      }
+      validateNumberMin(value, min, property, t);
     }
   }
   return true;

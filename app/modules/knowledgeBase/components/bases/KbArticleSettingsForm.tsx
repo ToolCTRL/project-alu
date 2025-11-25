@@ -142,8 +142,8 @@ export default function KbArticleSettingsForm({
             description={"Displayed on the homepage."}
           />
           <div>
-            {relatedArticles?.map((item, idx) => {
-              return <input key={idx} type="hidden" name={`relatedArticles[]`} value={item} />;
+            {relatedArticles?.map((item) => {
+              return <input key={item} type="hidden" name={`relatedArticles[]`} value={item} />;
             })}
             <InputCombobox
               name="relatedArticles"

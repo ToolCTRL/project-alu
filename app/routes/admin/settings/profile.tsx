@@ -64,6 +64,101 @@ type ActionData = {
 };
 
 const badRequest = (data: ActionData) => Response.json(data, { status: 400 });
+
+async function handleProfileUpdate(request: Request, user: any, userInfo: any, form: FormData) {
+  const firstName = form.get("firstName")?.toString();
+  const lastName = form.get("lastName")?.toString();
+  const avatar = form.get("avatar")?.toString();
+
+  const fields = { action: "profile", firstName, lastName, avatar, passwordCurrent: undefined, passwordNew: undefined, passwordNewConfirm: undefined };
+  const fieldErrors = {
+    firstName: (firstName ?? "").length < 2 ? "First name required" : "",
+    lastName: (lastName ?? "").length < 2 ? "Last name required" : "",
+  };
+  if (Object.values(fieldErrors).some(Boolean)) return badRequest({ fieldErrors, fields });
+
+  if (typeof firstName !== "string" || typeof lastName !== "string") {
+    return badRequest({ profileError: `Form not submitted correctly.` });
+  }
+
+  if (user?.admin && user.id !== userInfo?.userId) {
+    return badRequest({ profileError: `Cannot update admin user.` });
+  }
+
+  const avatarStored = avatar ? await storeSupabaseFile({ bucket: "users-icons", content: avatar, id: userInfo?.userId }) : avatar;
+  const profile = await updateUserProfile({ firstName, lastName, avatar: avatarStored }, userInfo?.userId);
+
+  if (!profile) {
+    return badRequest({ fields, profileError: `Could not update profile` });
+  }
+
+  await EventsService.create({
+    request,
+    event: "user.profile.updated",
+    tenantId: null,
+    userId: user.id,
+    data: {
+      email: user.email,
+      new: { firstName, lastName },
+      old: { firstName: user.firstName, lastName: user.lastName },
+      userId: userInfo?.userId,
+    } satisfies UserProfileUpdatedDto,
+  });
+
+  return Response.json({ profileSuccess: "Profile updated" });
+}
+
+async function handlePasswordUpdate(t: any, user: any, userInfo: any, form: FormData) {
+  const passwordCurrent = form.get("passwordCurrent")?.toString();
+  const passwordNew = form.get("passwordNew")?.toString();
+  const passwordNewConfirm = form.get("passwordNewConfirm")?.toString();
+
+  if (typeof passwordCurrent !== "string" || typeof passwordNew !== "string" || typeof passwordNewConfirm !== "string") {
+    return badRequest({ passwordError: `Form not submitted correctly.` });
+  }
+
+  if (passwordNew !== passwordNewConfirm) {
+    return badRequest({ passwordError: t("account.shared.passwordMismatch") });
+  }
+
+  if (passwordNew.length < 6) {
+    return badRequest({ passwordError: `Passwords must have least 6 characters.` });
+  }
+
+  if (!user) return null;
+
+  if (user.admin && user.id !== userInfo?.userId) {
+    return badRequest({ passwordError: `Cannot change an admin password` });
+  }
+
+  const isCorrectPassword = await bcrypt.compare(passwordCurrent, user.passwordHash);
+  if (!isCorrectPassword) {
+    return badRequest({ passwordError: `Invalid password.` });
+  }
+
+  const passwordHash = await bcrypt.hash(passwordNew, 10);
+  await updateUserPassword({ passwordHash }, userInfo?.userId);
+
+  return Response.json({ success: "Password updated" });
+}
+
+async function handleDeleteAccount(user: any) {
+  if (!user) {
+    return null;
+  }
+  if (user.admin !== null) {
+    return badRequest({ deleteError: "Cannot delete an admin" });
+  }
+
+  try {
+    await deleteUserWithItsTenants(user.id);
+  } catch (e: any) {
+    return badRequest({ deleteError: e });
+  }
+
+  return null;
+}
+
 export const action: ActionFunction = async ({ request, params }) => {
   await requireAuth({ request, params });
   const { t } = await getTranslations(request);
@@ -72,18 +167,8 @@ export const action: ActionFunction = async ({ request, params }) => {
   const form = await request.formData();
   const action = form.get("action");
 
-  const firstName = form.get("firstName")?.toString();
-  const lastName = form.get("lastName")?.toString();
-  const avatar = form.get("avatar")?.toString();
-
-  const passwordCurrent = form.get("passwordCurrent")?.toString();
-  const passwordNew = form.get("passwordNew")?.toString();
-  const passwordNewConfirm = form.get("passwordNewConfirm")?.toString();
-
   if (typeof action !== "string") {
-    return badRequest({
-      profileError: `Form not submitted correctly.`,
-    });
+    return badRequest({ profileError: `Form not submitted correctly.` });
   }
 
   const user = await db.user.findUnique({
@@ -94,114 +179,15 @@ export const action: ActionFunction = async ({ request, params }) => {
     return badRequest({ profileError: `User not found.` });
   }
 
-  switch (action) {
-    case "profile": {
-      const fields = { action, firstName, lastName, avatar, passwordCurrent, passwordNew, passwordNewConfirm };
-      const fieldErrors = {
-        firstName: action === "profile" && (fields.firstName ?? "").length < 2 ? "First name required" : "",
-        lastName: action === "profile" && (fields.lastName ?? "").length < 2 ? "Last name required" : "",
-      };
-      if (Object.values(fieldErrors).some(Boolean)) return badRequest({ fieldErrors, fields });
-
-      if (typeof firstName !== "string" || typeof lastName !== "string") {
-        return badRequest({
-          profileError: `Form not submitted correctly.`,
-        });
-      }
-
-      if (user?.admin && user.id !== userInfo?.userId) {
-        return badRequest({
-          profileError: `Cannot update admin user.`,
-        });
-      }
-
-      const avatarStored = avatar ? await storeSupabaseFile({ bucket: "users-icons", content: avatar, id: userInfo?.userId }) : avatar;
-      const profile = await updateUserProfile({ firstName, lastName, avatar: avatarStored }, userInfo?.userId);
-
-      if (!profile) {
-        return badRequest({
-          fields,
-          profileError: `Could not update profile`,
-        });
-      }
-      await EventsService.create({
-        request,
-        event: "user.profile.updated",
-        tenantId: null,
-        userId: user.id,
-        data: {
-          email: user.email,
-          new: { firstName, lastName },
-          old: { firstName: user.firstName, lastName: user.lastName },
-          userId: userInfo?.userId,
-        } satisfies UserProfileUpdatedDto,
-      });
-      return Response.json({
-        profileSuccess: "Profile updated",
-      });
-    }
-    case "password": {
-      if (typeof passwordCurrent !== "string" || typeof passwordNew !== "string" || typeof passwordNewConfirm !== "string") {
-        return badRequest({
-          passwordError: `Form not submitted correctly.`,
-        });
-      }
-
-      if (passwordNew !== passwordNewConfirm) {
-        return badRequest({
-          passwordError: t("account.shared.passwordMismatch"),
-        });
-      }
-
-      if (passwordNew.length < 6) {
-        return badRequest({
-          passwordError: `Passwords must have least 6 characters.`,
-        });
-      }
-
-      if (!user) return null;
-
-      if (user.admin && user.id !== userInfo?.userId) {
-        return badRequest({
-          passwordError: `Cannot change an admin password`,
-        });
-      }
-
-      const isCorrectPassword = await bcrypt.compare(passwordCurrent, user.passwordHash);
-      if (!isCorrectPassword) {
-        return badRequest({
-          passwordError: `Invalid password.`,
-        });
-      }
-
-      const passwordHash = await bcrypt.hash(passwordNew, 10);
-      await updateUserPassword({ passwordHash }, userInfo?.userId);
-
-      return Response.json({
-        success: "Password updated",
-      });
-    }
-    case "deleteAccount": {
-      if (!user) {
-        return null;
-      }
-      if (user.admin !== null) {
-        return badRequest({
-          deleteError: "Cannot delete an admin",
-        });
-      }
-
-      try {
-        await deleteUserWithItsTenants(user.id);
-      } catch (e: any) {
-        return badRequest({
-          deleteError: e,
-        });
-      }
-
-      // return redirect("/login");
-    }
+  if (action === "profile") {
+    return handleProfileUpdate(request, user, userInfo, form);
+  } else if (action === "password") {
+    return handlePasswordUpdate(t, user, userInfo, form);
+  } else if (action === "deleteAccount") {
+    return handleDeleteAccount(user);
   }
+
+  return badRequest({ profileError: "Invalid action" });
 };
 
 export default function ProfileRoute() {

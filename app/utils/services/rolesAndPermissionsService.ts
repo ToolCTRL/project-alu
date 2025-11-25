@@ -447,16 +447,19 @@ export async function seedRolesAndPermissions(adminEmail?: string): Promise<void
   const entities = await getAllEntities({ tenantId: null, active: true });
   await Promise.all(
     entities.map(async (entity) => {
-      return (await getEntityPermissions(entity)).map(async (permission) => {
-        const entityPermission = {
-          inRoles: [DefaultAdminRoles.SuperAdmin, DefaultAppRoles.SuperUser, DefaultAppRoles.Admin, DefaultAppRoles.User].map((f) => f.toString()),
-          name: permission.name as DefaultPermission,
-          description: permission.description,
-          type: entity.type,
-        };
-        appPermissions.push(entityPermission);
-        return await createPermissions([entityPermission], appPermissions.length + 1);
-      });
+      const permissions = await getEntityPermissions(entity);
+      return Promise.all(
+        permissions.map(async (permission) => {
+          const entityPermission = {
+            inRoles: [DefaultAdminRoles.SuperAdmin, DefaultAppRoles.SuperUser, DefaultAppRoles.Admin, DefaultAppRoles.User].map((f) => f.toString()),
+            name: permission.name as DefaultPermission,
+            description: permission.description,
+            type: entity.type,
+          };
+          appPermissions.push(entityPermission);
+          return await createPermissions([entityPermission], appPermissions.length + 1);
+        })
+      );
     })
   );
 

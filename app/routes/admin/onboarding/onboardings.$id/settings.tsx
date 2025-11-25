@@ -108,20 +108,7 @@ export default function () {
     })
   );
 
-  // const modalConfirm = useRef<RefConfirmModal>(null);
   const modalConfirmDelete = useRef<RefConfirmModal>(null);
-
-  // function activate() {
-  //   modalConfirm.current?.show(t("onboarding.prompts.activate.title"), t("shared.confirm"), t("shared.back"), t("onboarding.prompts.activate.description"));
-  // }
-
-  // function onConfirmActivate() {
-  //   const form = new FormData();
-  //   form.set("action", "activate");
-  //   submit(form, {
-  //     method: "post",
-  //   });
-  // }
 
   function onDelete() {
     modalConfirmDelete.current?.show(

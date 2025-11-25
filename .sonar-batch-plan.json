@@ -1,0 +1,113 @@
+{
+  "batch": 12,
+  "totalIssues": 99,
+  "issuesByFile": {
+    "app/routes/admin/metrics/logs.tsx": {
+      "S6478": [165, 170, 176, 182, 187, 192, 197, 202, 209, 216]
+    },
+    "app/routes/admin/metrics/settings.tsx": {
+      "S1854": [26],
+      "S125": [108]
+    },
+    "app/routes/admin/metrics/summary.tsx": {
+      "S6478": [164, 171, 178, 185, 192, 204, 211, 217, 226, 231],
+      "S125": [233]
+    },
+    "app/routes/admin/navigation.tsx": {
+      "S6479": [110, 123]
+    },
+    "app/routes/admin/notifications/channels.tsx": {
+      "S125": [53, 56, 113]
+    },
+    "app/routes/admin/onboarding/onboardings.$id.tsx": {
+      "S125": [26]
+    },
+    "app/routes/admin/onboarding/onboardings.$id/filters.tsx": {
+      "S6479": [197, 281],
+      "S6478": [266, 271, 276],
+      "S3358": [371, 383, 400, 412, 428]
+    },
+    "app/routes/admin/onboarding/onboardings.$id/index.tsx": {
+      "S7721": [127],
+      "S6479": [175, 207]
+    },
+    "app/routes/admin/onboarding/onboardings.$id/sessions.tsx": {
+      "S125": [70]
+    },
+    "app/routes/admin/onboarding/onboardings.$id/settings.tsx": {
+      "S125": [111, 114, 118],
+      "S6479": [189, 198]
+    },
+    "app/routes/admin/onboarding/onboardings.$id/steps.tsx": {
+      "S3358": [122]
+    },
+    "app/routes/admin/pages/index.tsx": {
+      "S125": [76],
+      "S6478": [184, 190, 205, 216]
+    },
+    "app/routes/admin/playground/ai/openai/chatgpt.tsx": {
+      "S125": [29, 59],
+      "S3358": [167, 177],
+      "S6819": [180]
+    },
+    "app/routes/admin/playground/crud.projects/index.tsx": {
+      "S6478": [128, 142, 147, 156]
+    },
+    "app/routes/admin/playground/crud.tsx": {
+      "S6479": [95],
+      "S6478": [108, 128]
+    },
+    "app/routes/admin/playground/long-running-tasks/index.tsx": {
+      "S3358": [179],
+      "S125": [183],
+      "S6478": [194, 204, 209]
+    },
+    "app/routes/admin/playground/monaco-editor.tsx": {
+      "S125": [32]
+    },
+    "app/routes/admin/playground/repositories-and-models/row-model.tsx": {
+      "S6478": [83, 91]
+    },
+    "app/routes/admin/playground/supabase/storage/buckets.$id.tsx": {
+      "S6478": [169, 178, 183, 188]
+    },
+    "app/routes/admin/playground/supabase/storage/buckets.tsx": {
+      "S6478": [150, 155, 160]
+    },
+    "app/routes/admin/portals.tsx": {
+      "S6478": [165, 171, 188, 193]
+    },
+    "app/routes/admin/prompts.tsx": {
+      "S6772": [69]
+    },
+    "app/routes/admin/settings/accounts.types.tsx": {
+      "S6478": [113, 130, 143, 148]
+    },
+    "app/routes/admin/settings/cache.tsx": {
+      "S7721": [239],
+      "S6853": [327],
+      "S6478": [346, 358, 367, 374]
+    },
+    "app/routes/admin/settings/cookies.tsx": {
+      "S1854": [46]
+    },
+    "app/routes/admin/settings/internationalization.tsx": {
+      "S125": [39, 41]
+    },
+    "app/routes/admin/settings/pricing.features.tsx": {
+      "S4043": [78]
+    }
+  },
+  "rulesExplanation": {
+    "S6478": "Extract React component definitions outside parent (performance)",
+    "S6479": "Don't use array index as React keys",
+    "S3358": "Extract nested ternary operations",
+    "S4043": "Use toSorted() instead of sort() chaining",
+    "S125": "Remove commented code",
+    "S1854": "Remove useless variable assignments",
+    "S7721": "Move function to outer scope",
+    "S6853": "Form label must be associated with control",
+    "S6772": "Ambiguous spacing in JSX",
+    "S6819": "Use proper semantic HTML"
+  }
+}

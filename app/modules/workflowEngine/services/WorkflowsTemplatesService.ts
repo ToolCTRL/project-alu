@@ -7,6 +7,33 @@ import { WorkflowVariable } from "@prisma/client";
 import { createWorkflowVariable } from "../db/workflowVariable.db.server";
 import { getAllEntities } from "~/utils/db/entities/entities.db.server";
 
+function createConditionGroupMapping(
+  conditionGroup: any,
+  blockType: string
+): {
+  type: string;
+  case?: string;
+  conditions: Array<{ variable: string; operator: string; value: string }>;
+} {
+  return {
+    type: conditionGroup.type,
+    case: blockType === "switch" ? `case${conditionGroup.index + 1}` : undefined,
+    conditions: conditionGroup.conditions.map((condition: any) => ({
+      variable: condition.variable,
+      operator: condition.operator,
+      value: condition.value,
+    })),
+  };
+}
+
+function findWorkflowBlock(blocks: any[], toBlockId: string, currentId: string) {
+  const toBlock = blocks.find((f) => f.id === toBlockId);
+  if (!toBlock) {
+    throw new Error(`Block ${currentId} not found`);
+  }
+  return toBlock;
+}
+
 async function importWorkflows(template: WorkflowsTemplateDto, session: { tenantId: string | null; userId: string | null }) {
   const allWorkflowVariables = await db.workflowVariable.findMany({
     where: { tenantId: session.tenantId },
@@ -166,15 +193,9 @@ async function getTemplate(items: WorkflowDto[], variables: WorkflowVariable[]):
           type: block.type,
           description: block.description || undefined,
           input: block.input,
-          conditionGroups: block.conditionGroups?.map((conditionGroup) => ({
-            type: conditionGroup.type,
-            case: block.type === "switch" ? `case${conditionGroup.index + 1}` : undefined,
-            conditions: conditionGroup.conditions.map((condition) => ({
-              variable: condition.variable,
-              operator: condition.operator,
-              value: condition.value,
-            })),
-          })),
+          conditionGroups: block.conditionGroups?.map((conditionGroup) =>
+            createConditionGroupMapping(conditionGroup, block.type)
+          ),
         };
       }),
       toBlocks,
@@ -185,10 +206,7 @@ async function getTemplate(items: WorkflowDto[], variables: WorkflowVariable[]):
     };
     workflow.blocks.forEach((block) => {
       block.toBlocks.forEach(({ id, toBlockId, condition }) => {
-        const toBlock = workflow.blocks.find((f) => f.id === toBlockId);
-        if (!toBlock) {
-          throw new Error(`Block ${id} not found`);
-        }
+        const toBlock = findWorkflowBlock(workflow.blocks, toBlockId, id);
         toBlocks.push({
           fromBlockId: block.variableName,
           toBlockId: toBlock.variableName,

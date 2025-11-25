@@ -246,32 +246,43 @@ function uiFormOtherTypes(code: string[], imports: string[], property: PropertyW
   const min = PropertyAttributeHelper.getPropertyAttributeValue_Number(property, PropertyAttributeName.Min) ?? 0;
   const max = PropertyAttributeHelper.getPropertyAttributeValue_Number(property, PropertyAttributeName.Max) ?? 0;
 
-  if (property.type === PropertyType.NUMBER) {
-    imports.push(`import InputNumber from "~/components/ui/input/InputNumber";`);
-    const defaultValue = PropertyAttributeHelper.getPropertyAttributeValue_Number(property, PropertyAttributeName.DefaultValue);
-    const value = defaultValue ? `item?.${property.name} ?? (!item ? ${defaultValue} : undefined)` : `item?.${property.name}`;
-    props.push(`defaultValue={${value}}`);
-    if (min > 0) props.push(`min={${min}}`);
-    if (max > 0) props.push(`max={${max}}`);
-    const step = PropertyAttributeHelper.getPropertyAttributeValue_Number(property, PropertyAttributeName.Step);
-    if (step) props.push(`step="${step}"`);
-    code.push(`<InputNumber name="${property.name}" title={t("${property.title}")} ${props.join(" ")} />`);
-  } else if (property.type === PropertyType.DATE) {
-    imports.push(`import InputDate from "~/components/ui/input/InputDate";`);
-    code.push(`<InputDate name="${property.name}" title={t("${property.title}")} defaultValue={item?.${property.name}} ${props.join(" ")} />`);
-  } else if (property.type === PropertyType.SELECT) {
-    uiFormSelect(code, imports, property, props);
-  } else if (property.type === PropertyType.BOOLEAN) {
-    uiFormBoolean(code, imports, property, props);
-  } else if (property.type === PropertyType.MEDIA) {
-    uiFormMedia(code, imports, property, props, min, max);
-  } else if (property.type === PropertyType.MULTI_SELECT || property.type === PropertyType.MULTI_TEXT) {
-    uiFormMultiType(code, imports, property, props);
-  } else if (property.type === PropertyType.RANGE_NUMBER || property.type === PropertyType.RANGE_DATE) {
-    uiFormRange(code, imports, property, props);
+  const typeHandlers: Record<PropertyType, () => void> = {
+    [PropertyType.NUMBER]: () => uiFormNumber(code, imports, property, props, min, max),
+    [PropertyType.DATE]: () => uiFormDate(code, imports, property, props),
+    [PropertyType.SELECT]: () => uiFormSelect(code, imports, property, props),
+    [PropertyType.BOOLEAN]: () => uiFormBoolean(code, imports, property, props),
+    [PropertyType.MEDIA]: () => uiFormMedia(code, imports, property, props, min, max),
+    [PropertyType.MULTI_SELECT]: () => uiFormMultiType(code, imports, property, props),
+    [PropertyType.MULTI_TEXT]: () => uiFormMultiType(code, imports, property, props),
+    [PropertyType.RANGE_NUMBER]: () => uiFormRange(code, imports, property, props),
+    [PropertyType.RANGE_DATE]: () => uiFormRange(code, imports, property, props),
+  } as Record<PropertyType, () => void>;
+
+  const handler = typeHandlers[property.type];
+  if (handler) {
+    handler();
   } else {
     code.push(`/* TODO: ${property.name} (${PropertyType[property.type]}) */`);
   }
+}
+
+// Helper: Handle NUMBER type
+function uiFormNumber(code: string[], imports: string[], property: PropertyWithDetails, props: string[], min: number, max: number) {
+  imports.push(`import InputNumber from "~/components/ui/input/InputNumber";`);
+  const defaultValue = PropertyAttributeHelper.getPropertyAttributeValue_Number(property, PropertyAttributeName.DefaultValue);
+  const value = defaultValue ? `item?.${property.name} ?? (!item ? ${defaultValue} : undefined)` : `item?.${property.name}`;
+  props.push(`defaultValue={${value}}`);
+  if (min > 0) props.push(`min={${min}}`);
+  if (max > 0) props.push(`max={${max}}`);
+  const step = PropertyAttributeHelper.getPropertyAttributeValue_Number(property, PropertyAttributeName.Step);
+  if (step) props.push(`step="${step}"`);
+  code.push(`<InputNumber name="${property.name}" title={t("${property.title}")} ${props.join(" ")} />`);
+}
+
+// Helper: Handle DATE type
+function uiFormDate(code: string[], imports: string[], property: PropertyWithDetails, props: string[]) {
+  imports.push(`import InputDate from "~/components/ui/input/InputDate";`);
+  code.push(`<InputDate name="${property.name}" title={t("${property.title}")} defaultValue={item?.${property.name}} ${props.join(" ")} />`);
 }
 
 // Separate handlers for complex types
@@ -376,15 +387,16 @@ function uiForm({ code, imports, property, index }: { code: string[]; imports: s
   }
 }
 
-function uiCell({ code, imports, property }: { code: string[]; imports: string[]; property: PropertyWithDetails }) {
-  const props: string[] = [];
-  if (property.type === PropertyType.TEXT) {
+// Cell renderers for different property types
+const cellRenderers: Record<PropertyType, (code: string[], imports: string[], property: PropertyWithDetails, props: string[]) => void> = {
+  [PropertyType.TEXT]: (code, imports, property, props) => {
     code.push(`{
             name: "${property.name}",
             title: t("${property.title}"),
             value: (item) => <div className="max-w-sm truncate">{item.${property.name}}</div>,
           },`);
-  } else if (property.type === PropertyType.NUMBER) {
+  },
+  [PropertyType.NUMBER]: (code, imports, property, props) => {
     imports.push(`import RowNumberCell from "~/components/entities/rows/cells/RowNumberCell";`);
     let format = PropertyAttributeHelper.getPropertyAttributeValue_String(property, PropertyAttributeName.FormatNumber);
     if (format) {

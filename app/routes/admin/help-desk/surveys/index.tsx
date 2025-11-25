@@ -20,7 +20,7 @@ type LoaderData = {
   items: SurveyWithDetails[];
 };
 
-export let loader = async ({ request, params }: LoaderFunctionArgs) => {
+export const loader = async ({ request, params }: LoaderFunctionArgs) => {
   const appConfiguration = await getAppConfiguration({ request });
   if (!appConfiguration.app.features.surveys) {
     throw Response.json({ error: "Surveys are not enabled" }, { status: 400 });

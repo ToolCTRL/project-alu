@@ -230,11 +230,6 @@ export default function () {
       title: "Avg. duration",
       value: (item) => <div>{NumberUtils.custom(Number(item._avg.duration), "0,0.001")} ms</div>,
     });
-    // headers.push({
-    //   name: "all",
-    //   title: "All",
-    //   value: (item) => <div>{JSON.stringify(item)}</div>,
-    // });
 
     setHeaders(headers);
   }, [data, groupBy]);

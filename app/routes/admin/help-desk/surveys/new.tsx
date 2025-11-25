@@ -11,7 +11,7 @@ import { getTenantIdOrNull } from "~/utils/services/.server/urlService";
 
 type LoaderData = {};
 
-export let loader = async ({ request, params }: LoaderFunctionArgs) => {
+export const loader = async ({ request, params }: LoaderFunctionArgs) => {
   await requireAuth({ request, params });
   await verifyUserHasPermission(request, "admin.surveys");
   // let item = { title: "Survey 1" };
@@ -24,7 +24,7 @@ export let loader = async ({ request, params }: LoaderFunctionArgs) => {
   return data;
 };
 
-export let action = async ({ request, params }: ActionFunctionArgs) => {
+export const action = async ({ request, params }: ActionFunctionArgs) => {
   await requireAuth({ request, params });
   await verifyUserHasPermission(request, "admin.surveys");
   const tenantId = await getTenantIdOrNull({ request, params });

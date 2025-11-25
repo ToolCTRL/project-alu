@@ -12,11 +12,6 @@ const dateAgo = (value: Date | string | null | undefined): string => {
   const today = moment(new Date());
   const at = moment(value);
   const days = Math.abs(today.diff(at, "days"));
-  // if (unitOfTime) {
-  //   return moment(at)
-  //     .startOf(unitOfTime)
-  //     .fromNow();
-  // }
   if (days <= 1) {
     return moment(at).startOf("minute").fromNow();
   } else if (days <= 7) {

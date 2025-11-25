@@ -128,19 +128,6 @@ const RowForm = (
     }
   }, [headers, onChange]);
 
-  // useEffect(() => {
-  //   if (headers.length > 0) {
-  //     rowValueInput.current?.focus();
-  //   }
-  // }, [headers])
-
-  // useEffect(() => {
-  //   if (actionData?.newRow && onCreated) {
-  //     onCreated(actionData.newRow);
-  //   }
-  //   // eslint-disable-next-line react-hooks/exhaustive-deps
-  // }, [actionData]);
-
   useEffect(() => {
     if (searchingRelationshipRows?.parentId === entity.id) {
       setSelectedRelatedEntity({
@@ -307,15 +294,15 @@ const RowForm = (
   }
 
   function isPropertyVisible(f: PropertyWithDetails) {
-    if (f.isHidden || (!item && !f.showInCreate) || (!item && f.isReadOnly) || (item && editing && f.isReadOnly)) {
-      return false;
-    } else if (hiddenProperties?.includes(f.name)) {
+    if (f.isHidden || (!item && !f.showInCreate) || (!item && f.isReadOnly)) {
       return false;
     }
-    if (item && editing && !f.canUpdate) {
+    if (hiddenProperties?.includes(f.name)) {
       return false;
     }
-
+    if (item && editing && (f.isReadOnly || !f.canUpdate)) {
+      return false;
+    }
     return true;
   }
 
@@ -359,32 +346,6 @@ const RowForm = (
 
   function onSaveIfAllSet() {
     return;
-    // if (item) {
-    //   return;
-    // }
-    // const missingValues = headers
-    //   .filter((f) => isPropertyVisible(f.property))
-    //   .map((header) => {
-    //     if ([PropertyType.TEXT, PropertyType.SELECT].includes(header.property.type) && !header.textValue) {
-    //       return header;
-    //     } else if ([PropertyType.NUMBER].includes(header.property.type) && !header.numberValue) {
-    //       return header;
-    //     } else if ([PropertyType.DATE].includes(header.property.type) && !header.dateValue) {
-    //       return header;
-    //     }
-    //     // else if ([PropertyType.MEDIA].includes(header.property.type) && (!header.media || header.media.length === 0)) {
-    //     //   return header;
-    //     // }
-    //     else if ([PropertyType.MULTI_SELECT].includes(header.property.type) && (!header.multiple || header.multiple.length === 0)) {
-    //       return header;
-    //     }
-    //     return null;
-    //   });
-    // const rowValues = missingValues.filter((f) => f !== null);
-
-    // if (rowValues.length === 0) {
-    //   formGroup.current?.submitForm();
-    // }
   }
 
   return (
@@ -456,8 +417,9 @@ const RowForm = (
             },
           }}
           promptFlows={promptFlows}
-          onSaveIfAllSet={onSaveIfAllSet}
-        />
+        >
+          {children}
+        </RowGroups>
 
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-12">
           {childrenEntities.visible.map((relationship) => (
@@ -729,7 +691,6 @@ function RowGroups({
   isAddingOrEditing,
   parentEntities,
   promptFlows,
-  onSaveIfAllSet,
 }: {
   item?: RowWithDetails | null;
   entity: EntityWithDetails;
@@ -756,10 +717,8 @@ function RowGroups({
     onAddParentEntity: (item: EntityRelationshipWithDetails) => void;
   };
   promptFlows?: PromptFlowWithDetails[];
-  onSaveIfAllSet: () => void;
 }) {
   const { t } = useTranslation();
-  const rowValueInput = useRef<RefRowValueInput>(null);
 
   const groups = useMemo(() => {
     const groups: { group?: string; headers: RowValueDto[] }[] = [];
@@ -784,7 +743,81 @@ function RowGroups({
     return groups;
   }, [rowValues]);
 
-  function getPropertyColumnSpan(property: PropertyWithDetails) {
+  return (
+    <>
+      {groups.map(({ group, headers }, idx) => {
+        return (
+          <InputGroup key={idx} title={group ? t(group) : t("shared.details")}>
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-12">
+              {headers.map((detailValue) => {
+                return (
+                  <RowPropertyInput
+                    key={detailValue.propertyId}
+                    entity={entity}
+                    detailValue={detailValue}
+                    editing={editing}
+                    canUpdate={canUpdate}
+                    item={item}
+                    canSubmit={canSubmit}
+                    promptFlows={promptFlows}
+                    onChange={(rowValue) => {
+                      setHeaders((prev) => {
+                        return prev.map((f) => {
+                          if (f.propertyId === rowValue.propertyId) {
+                            return rowValue;
+                          }
+                          return f;
+                        });
+                      });
+                    }}
+                  />
+                );
+              })}
+              {!group && (
+                <>
+                  {parentEntities.visible.map((relationship) => (
+                    <div key={relationship.id} className="col-span-12">
+                      <label htmlFor={relationship.id} className="text-muted-foreground flex justify-between space-x-2 text-xs font-medium">
+                        <div className="flex items-center space-x-1">
+                          <div className="truncate">
+                            {t(RelationshipHelper.getTitle({ fromEntityId: entity.id, relationship }))}
+                            {relationship.required && <span className="ml-1 text-red-500">*</span>}
+                          </div>
+                        </div>
+                      </label>
+                      <RelationshipSelector
+                        fromEntity={entity}
+                        className="mt-1"
+                        type="parent"
+                        relationship={relationship}
+                        relatedRows={relatedRows}
+                        onFindEntityRows={onFindEntityRows}
+                        allEntities={allEntities}
+                        onRemoveRelatedRow={onRemoveRelatedRow}
+                        readOnly={item?.id !== undefined && (!editing || !canUpdate)}
+                        routes={routes}
+                        relationshipRows={relationshipRows}
+                        addRelationshipRow={addRelationshipRow}
+                        setRelationshipRows={setRelationshipRows}
+                      />
+                    </div>
+                  ))}
+
+                  {isAddingOrEditing && (
+                    <AddHiddenRelationshipEntities items={parentEntities.hidden} onClick={parentEntities.onAddParentEntity} type="parent" />
+                  )}
+                </>
+              )}
+              {!group && <>{children}</>}
+            </div>
+          </InputGroup>
+        );
+      })}
+    </>
+  );
+}
+
+function getPropertyColumnSpan(property: PropertyWithDetails) {
     const columns = PropertyAttributeHelper.getPropertyAttributeValue_Number(property, PropertyAttributeName.Columns);
     if (columns === undefined || isNaN(columns) || (columns < 1 && columns > 12)) {
       return "col-span-12";
@@ -801,6 +834,46 @@ function RowGroups({
       });
     });
   }
+
+  const createOnChangeHandler = (detailValue: RowValueDto) => (e: any) => {
+    onChange({
+      ...detailValue,
+      ...RowHelper.updateFieldValueTypeArray(detailValue, e),
+    });
+  };
+
+  const createOnChangeOptionHandler = (detailValue: RowValueDto) => (e: any) => {
+    onChange({
+      ...detailValue,
+      selectedOption: e,
+      textValue: e,
+    });
+  };
+
+  const createOnChangeMediaHandler = (detailValue: RowValueDto) => (media: any) => {
+    onChange({
+      ...detailValue,
+      media: media as any,
+    });
+    if (media.filter((f: any) => f.type).length > 0) {
+      onSaveIfAllSet();
+    }
+  };
+
+  const createOnChangeMultipleHandler = (detailValue: RowValueDto) => (e: any) => {
+    onChange({
+      ...detailValue,
+      multiple: e as any[],
+    });
+  };
+
+  const createOnChangeRangeHandler = (detailValue: RowValueDto) => (e: any) => {
+    onChange({
+      ...detailValue,
+      range: e as any,
+    });
+  };
+
   return (
     <>
       {groups.map(({ group, headers }, idx) => {
@@ -822,40 +895,11 @@ function RowGroups({
                       initialOption={detailValue.selectedOption}
                       selected={detailValue.property}
                       initialMedia={detailValue.media}
-                      onChange={(e) => {
-                        onChange({
-                          ...detailValue,
-                          ...RowHelper.updateFieldValueTypeArray(detailValue, e),
-                        });
-                      }}
-                      onChangeOption={(e) => {
-                        onChange({
-                          ...detailValue,
-                          selectedOption: e,
-                          textValue: e,
-                        });
-                      }}
-                      onChangeMedia={(media) => {
-                        onChange({
-                          ...detailValue,
-                          media: media as any,
-                        });
-                        if (media.filter((f) => f.type).length > 0) {
-                          onSaveIfAllSet();
-                        }
-                      }}
-                      onChangeMultiple={(e) => {
-                        onChange({
-                          ...detailValue,
-                          multiple: e as any[],
-                        });
-                      }}
-                      onChangeRange={(e) => {
-                        onChange({
-                          ...detailValue,
-                          range: e as any,
-                        });
-                      }}
+                      onChange={createOnChangeHandler(detailValue)}
+                      onChangeOption={createOnChangeOptionHandler(detailValue)}
+                      onChangeMedia={createOnChangeMediaHandler(detailValue)}
+                      onChangeMultiple={createOnChangeMultipleHandler(detailValue)}
+                      onChangeRange={createOnChangeRangeHandler(detailValue)}
                       readOnly={
                         (editing && !detailValue.property.canUpdate) || (item?.id !== undefined && (!editing || !canUpdate)) || detailValue.property?.isReadOnly
                       }
@@ -908,6 +952,88 @@ function RowGroups({
         );
       })}
     </>
+  );
+}
+
+function getPropertyColumnSpan(property: PropertyWithDetails) {
+  const columns = PropertyAttributeHelper.getPropertyAttributeValue_Number(property, PropertyAttributeName.Columns);
+  if (columns === undefined || isNaN(columns) || (columns < 1 && columns > 12)) {
+    return "col-span-12";
+  }
+  return `col-span-${columns}`;
+}
+
+function RowPropertyInput({
+  entity,
+  detailValue,
+  editing,
+  canUpdate,
+  item,
+  canSubmit,
+  promptFlows,
+  onChangeValue,
+}: {
+  entity: EntityWithDetails;
+  detailValue: RowValueDto;
+  editing?: boolean;
+  canUpdate?: boolean;
+  item?: RowWithDetails | null;
+  canSubmit?: boolean;
+  promptFlows?: PromptFlowWithDetails[];
+  onChangeValue: (rowValue: RowValueDto) => void;
+}) {
+  const rowValueInput = useRef<RefRowValueInput>(null);
+
+  return (
+    <div className={clsx("w-full", getPropertyColumnSpan(detailValue.property))}>
+      <RowValueInput
+        ref={rowValueInput}
+        entity={entity}
+        textValue={detailValue.textValue}
+        numberValue={detailValue.numberValue}
+        dateValue={detailValue.dateValue}
+        booleanValue={detailValue.booleanValue}
+        multiple={detailValue.multiple}
+        range={detailValue.range}
+        initialOption={detailValue.selectedOption}
+        selected={detailValue.property}
+        initialMedia={detailValue.media}
+        onChange={(e) => {
+          onChangeValue({
+            ...detailValue,
+            ...RowHelper.updateFieldValueTypeArray(detailValue, e),
+          });
+        }}
+        onChangeOption={(e) => {
+          onChangeValue({
+            ...detailValue,
+            selectedOption: e,
+            textValue: e,
+          });
+        }}
+        onChangeMedia={(media) => {
+          onChangeValue({
+            ...detailValue,
+            media: media as any,
+          });
+        }}
+        onChangeMultiple={(e) => {
+          onChangeValue({
+            ...detailValue,
+            multiple: e as any[],
+          });
+        }}
+        onChangeRange={(e) => {
+          onChangeValue({
+            ...detailValue,
+            range: e as any,
+          });
+        }}
+        readOnly={(editing && !detailValue.property.canUpdate) || (item?.id !== undefined && (!editing || !canUpdate)) || detailValue.property?.isReadOnly}
+        autoFocus={canSubmit}
+        promptFlows={promptFlows ? { prompts: promptFlows, rowId: item?.id } : undefined}
+      />
+    </div>
   );
 }
 

@@ -12,6 +12,53 @@ import { defaultDisplayProperties } from "~/utils/helpers/PropertyHelper";
 import NumberUtils from "~/utils/shared/NumberUtils";
 import EntityViewLayoutBadge from "./EntityViewLayoutBadge";
 
+function renderViewScope(view: EntityViewWithTenantAndUser) {
+  const scopeRenders: Record<string, () => JSX.Element> = {
+    system: () => <div className="font-medium italic">System view</div>,
+    default: () => (
+      <div className="flex flex-col">
+        <div className="font-medium italic">
+          Default <span className="text-muted-foreground text-xs font-normal">(all accounts)</span>
+        </div>
+      </div>
+    ),
+    tenantAndUser: () => (
+      <div className="flex items-center space-x-1">
+        <div>
+          <TenantBadge item={view.tenant!} />
+        </div>
+        <div>&rarr;</div>
+        <UserBadge item={view.user!} />
+      </div>
+    ),
+    tenantOnly: () => (
+      <div>
+        <TenantBadge item={view.tenant!} />
+      </div>
+    ),
+    userOnly: () => (
+      <div>
+        <UserBadge item={view.user!} />
+      </div>
+    ),
+  };
+
+  const scopeKey = view.isSystem
+    ? "system"
+    : !view.tenant && !view.user
+    ? "default"
+    : view.tenant && view.user
+    ? "tenantAndUser"
+    : view.tenant
+    ? "tenantOnly"
+    : view.user
+    ? "userOnly"
+    : "invalid";
+
+  const renderer = scopeRenders[scopeKey];
+  return renderer ? renderer() : <div className="italic text-red-500">Invalid view</div>;
+}
+
 export default function EntityViewsTable({
   items,
   onClickRoute,
@@ -76,35 +123,7 @@ export default function EntityViewsTable({
           title: t("models.view.appliesTo"),
           value: (i) => (
             <div className="flex items-center space-x-1">
-              <div>
-                {i.isSystem ? (
-                  <div className="font-medium italic">System view</div>
-                ) : !i.tenant && !i.user ? (
-                  <div className="flex flex-col">
-                    <div className="font-medium italic">
-                      Default <span className="text-muted-foreground text-xs font-normal">(all accounts)</span>
-                    </div>
-                  </div>
-                ) : i.tenant && i.user ? (
-                  <div className="flex items-center space-x-1">
-                    <div>
-                      <TenantBadge item={i.tenant} />
-                    </div>
-                    <div>&rarr;</div>
-                    <UserBadge item={i.user} />
-                  </div>
-                ) : i.tenant ? (
-                  <div>
-                    <TenantBadge item={i.tenant} />
-                  </div>
-                ) : i.user ? (
-                  <div>
-                    <UserBadge item={i.user} />
-                  </div>
-                ) : (
-                  <div className="italic text-red-500">Invalid view</div>
-                )}
-              </div>
+              <div>{renderViewScope(i)}</div>
             </div>
           ),
         },

@@ -7,6 +7,10 @@ interface Props {
   items: LogWithDetails[];
 }
 
+function dateDM(value: Date | undefined) {
+  return DateUtils.dateDM(value);
+}
+
 export default function RowLogs({ items }: Props) {
   const { t } = useTranslation();
 
@@ -18,10 +22,6 @@ export default function RowLogs({ items }: Props) {
       return -1;
     });
   };
-
-  function dateDM(value: Date | undefined) {
-    return DateUtils.dateDM(value);
-  }
 
   return (
     <div>
@@ -37,11 +37,11 @@ export default function RowLogs({ items }: Props) {
           <div className="flow-root">
             <ul className="-mb-8">
               {sortedItems().length === 0 && <div className=" text-muted-foreground mb-6 flex justify-center text-sm italic">No events</div>}
-              {sortedItems().map((activity, idxActivity) => {
+              {sortedItems().map((activity) => {
                 return (
-                  <li key={idxActivity}>
+                  <li key={activity.id}>
                     <div className="relative pb-8">
-                      {items.length > 0 && idxActivity + 1 < items.length && (
+                      {items.length > 0 && sortedItems().indexOf(activity) + 1 < sortedItems().length && (
                         <span className="absolute left-4 top-4 -ml-px h-full w-0.5 bg-gray-200" aria-hidden="true"></span>
                       )}
 

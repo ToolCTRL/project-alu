@@ -14,21 +14,21 @@ const numberFormat = (value: number): string => {
   try {
     return numeral(value).format("0,0");
   } catch (e) {
-    return value?.toString();
+    return value?.toString() ?? "";
   }
 };
 const decimalFormat = (value: number, decimalPlaces: number = 2): string => {
   try {
     return numeral(value).format(`0,0.${"0".repeat(decimalPlaces)}`);
   } catch (e) {
-    return value?.toString();
+    return value?.toString() ?? "";
   }
 };
 const intFormat = (value: number | string): string => {
   try {
     return numeral(value).format("0,0");
   } catch (e) {
-    return value?.toString();
+    return value?.toString() ?? "";
   }
 };
 const pad = (num: number, size: number) => {

@@ -67,9 +67,6 @@ export const action: ActionFunction = async ({ request, params }) => {
       return Response.json({ error: "Session ID is required" }, { status: 400 });
     }
     const session = await getOnboardingSession(id);
-    // if (session?.status !== "active") {
-    //   return Response.json({ error: "Sessions can only be deleted when they are active" }, { status: 400 });
-    // }
     await deleteOnboardingSessionSteps(session!.sessionSteps.map((s) => s.id));
     await deleteOnboardingSession(id);
     return Response.json({ success: "Onboarding session deleted" });

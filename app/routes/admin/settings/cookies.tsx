@@ -43,7 +43,7 @@ export const action: ActionFunction = async ({ request }) => {
   const action = form.get("action");
   if (action === "update") {
     await getOrCreateAppConfiguration({ request });
-    const settings = await updateAppConfiguration({
+    await updateAppConfiguration({
       cookiesEnabled: form.get("enabled") === "on" || form.get("enabled") === "true",
     });
     return Response.json({ success: t("shared.updated") });

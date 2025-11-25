@@ -48,6 +48,108 @@ type ActionData = {
   success?: string;
   error?: string;
 };
+async function handleEdit(request: Request, form: FormData, item: any, t: any) {
+  const subdomain = UrlUtils.slugify(form.get("subdomain")?.toString() ?? "");
+  const title = form.get("title")?.toString();
+
+  if (subdomain && subdomain !== item.subdomain) {
+    const isValidSubdomainSyntax = /^[a-z0-9-]+$/i.test(subdomain);
+    if (!isValidSubdomainSyntax) {
+      return Response.json({ error: "Invalid subdomain" }, { status: 400 });
+    }
+    const existingSubdomain = await getPortalBySubdomain(subdomain);
+    if (existingSubdomain) {
+      return Response.json({ error: "Subdomain taken" }, { status: 400 });
+    }
+  }
+
+  const appConfiguration = await getAppConfiguration({ request });
+  const metadata = JsonPropertiesUtils.getValuesFromForm({
+    form,
+    properties: appConfiguration.portals?.metadata || [],
+    prefix: "metadata",
+  });
+
+  await updatePortal(item, {
+    subdomain,
+    title,
+    metadata,
+  });
+
+  return Response.json({ success: t("shared.saved") });
+}
+
+async function handleEditSeo(form: FormData, item: any, t: any) {
+  const seoTitle = form.get("seoTitle")?.toString();
+  const seoDescription = form.get("seoDescription")?.toString();
+  const seoTwitterCreator = form.get("seoTwitterCreator")?.toString();
+  const seoTwitterSite = form.get("seoTwitterSite")?.toString();
+  const seoKeywords = form.get("seoKeywords")?.toString();
+  const seoImage = form.get("seoImage")?.toString();
+  const seoThumbnail = form.get("seoThumbnail")?.toString();
+
+  const { storedSeoImage, storedSeoThumbnail } = await promiseHash({
+    storedSeoImage: seoImage ? storeSupabaseFile({ bucket: "seo", content: seoImage, id: `${item.id}-seo-image.png` }) : Promise.resolve(""),
+    storedSeoThumbnail: seoThumbnail ? storeSupabaseFile({ bucket: "seo", content: seoThumbnail, id: `${item.id}-thumbnail.png` }) : Promise.resolve(""),
+  });
+
+  await updatePortal(item, {
+    seoTitle,
+    seoDescription,
+    seoImage: storedSeoImage,
+    seoThumbnail: storedSeoThumbnail,
+    seoTwitterCreator,
+    seoTwitterSite,
+    seoKeywords,
+  });
+
+  return Response.json({ success: t("shared.saved") });
+}
+
+async function handleEditBranding(form: FormData, item: any, t: any) {
+  const themeColor = form.get("themeColor")?.toString();
+  const themeScheme = form.get("themeScheme")?.toString();
+  const logo = form.get("logo")?.toString();
+  const logoDarkMode = form.get("logoDarkMode")?.toString();
+  const icon = form.get("icon")?.toString();
+  const iconDarkMode = form.get("iconDarkMode")?.toString();
+  const favicon = form.get("favicon")?.toString();
+
+  const { storedLogo, storedLogoDarkMode, storedIcon, storedIconDarkMode, storedFavicon } = await promiseHash({
+    storedLogo: logo ? storeSupabaseFile({ bucket: "branding", content: logo, id: `${item.id}-logo.png` }) : Promise.resolve(""),
+    storedLogoDarkMode: logoDarkMode ? storeSupabaseFile({ bucket: "branding", content: logoDarkMode, id: `${item.id}-logo-dark-mode.png` }) : Promise.resolve(""),
+    storedIcon: icon ? storeSupabaseFile({ bucket: "branding", content: icon, id: `${item.id}-icon.png` }) : Promise.resolve(""),
+    storedIconDarkMode: iconDarkMode ? storeSupabaseFile({ bucket: "branding", content: iconDarkMode, id: `${item.id}-icon-dark-mode.png` }) : Promise.resolve(""),
+    storedFavicon: favicon ? storeSupabaseFile({ bucket: "branding", content: favicon, id: `${item.id}-favicon.ico` }) : Promise.resolve(""),
+  });
+
+  await updatePortal(item, {
+    themeColor,
+    themeScheme,
+    brandingLogo: storedLogo,
+    brandingLogoDarkMode: storedLogoDarkMode,
+    brandingIcon: storedIcon,
+    brandingIconDarkMode: storedIconDarkMode,
+    brandingFavicon: storedFavicon,
+  });
+
+  return Response.json({ success: t("shared.saved") });
+}
+
+async function handleEditAnalytics(form: FormData, item: any, t: any) {
+  const simpleAnalytics = FormHelper.getBoolean(form, "simpleAnalytics");
+  const plausibleAnalytics = FormHelper.getBoolean(form, "plausibleAnalytics");
+  const googleAnalyticsTrackingId = form.get("googleAnalyticsTrackingId")?.toString();
+
+  await updatePortal(item, {
+    analyticsSimpleAnalytics: simpleAnalytics,
+    analyticsPlausibleAnalytics: plausibleAnalytics,
+    analyticsGoogleAnalyticsTrackingId: googleAnalyticsTrackingId,
+  });
+
+  return Response.json({ success: t("shared.saved") });
+}
+
 export const action = async ({ request, params }: ActionFunctionArgs) => {
   await requireAuth({ request, params });
   const { t } = await getTranslations(request);
@@ -60,108 +162,20 @@ export const action = async ({ request, params }: ActionFunctionArgs) => {
 
   const form = await request.formData();
   const action = form.get("action");
+
   if (action === "edit") {
-    const subdomain = UrlUtils.slugify(form.get("subdomain")?.toString() ?? "");
-    const title = form.get("title")?.toString();
-    // const isPublished = FormHelper.getBoolean(form, "isPublished");
-
-    if (subdomain && subdomain !== item.subdomain) {
-      let isValidSubdomainSyntax = /^[a-z0-9-]+$/i.test(subdomain);
-      if (!isValidSubdomainSyntax) {
-        return Response.json({ error: "Invalid subdomain" }, { status: 400 });
-      }
-      const existingSubdomain = await getPortalBySubdomain(subdomain);
-      if (existingSubdomain) {
-        return Response.json({ error: "Subdomain taken" }, { status: 400 });
-      }
-    }
-
-    const appConfiguration = await getAppConfiguration({ request });
-    const metadata = JsonPropertiesUtils.getValuesFromForm({
-      form,
-      properties: appConfiguration.portals?.metadata || [],
-      prefix: "metadata",
-    });
-
-    await updatePortal(item, {
-      subdomain,
-      title,
-      metadata,
-      // isPublished: true,
-    });
-
-    return Response.json({ success: t("shared.saved") });
-  } else if (action === "edit-seo") {
-    const seoTitle = form.get("seoTitle")?.toString();
-    const seoDescription = form.get("seoDescription")?.toString();
-    const seoTwitterCreator = form.get("seoTwitterCreator")?.toString();
-    const seoTwitterSite = form.get("seoTwitterSite")?.toString();
-    const seoKeywords = form.get("seoKeywords")?.toString();
-
-    const seoImage = form.get("seoImage")?.toString();
-    const seoThumbnail = form.get("seoThumbnail")?.toString();
-
-    const { storedSeoImage, storedSeoThumbnail } = await promiseHash({
-      storedSeoImage: seoImage ? storeSupabaseFile({ bucket: "seo", content: seoImage, id: `${item.id}-seo-image.png` }) : Promise.resolve(""),
-      storedSeoThumbnail: seoThumbnail ? storeSupabaseFile({ bucket: "seo", content: seoThumbnail, id: `${item.id}-thumbnail.png` }) : Promise.resolve(""),
-    });
-
-    await updatePortal(item, {
-      seoTitle,
-      seoDescription,
-      seoImage: storedSeoImage,
-      seoThumbnail: storedSeoThumbnail,
-      seoTwitterCreator,
-      seoTwitterSite,
-      seoKeywords,
-    });
-
-    return Response.json({ success: t("shared.saved") });
-  } else if (action === "edit-branding") {
-    const themeColor = form.get("themeColor")?.toString();
-    const themeScheme = form.get("themeScheme")?.toString();
-    let logo = form.get("logo")?.toString();
-    let logoDarkMode = form.get("logoDarkMode")?.toString();
-    let icon = form.get("icon")?.toString();
-    let iconDarkMode = form.get("iconDarkMode")?.toString();
-    let favicon = form.get("favicon")?.toString();
-
-    const { storedLogo, storedLogoDarkMode, storedIcon, storedIconDarkMode, storedFavicon } = await promiseHash({
-      storedLogo: logo ? storeSupabaseFile({ bucket: "branding", content: logo, id: `${item.id}-logo.png` }) : Promise.resolve(""),
-      storedLogoDarkMode: logoDarkMode
-        ? storeSupabaseFile({ bucket: "branding", content: logoDarkMode, id: `${item.id}-logo-dark-mode.png` })
-        : Promise.resolve(""),
-      storedIcon: icon ? storeSupabaseFile({ bucket: "branding", content: icon, id: `${item.id}-icon.png` }) : Promise.resolve(""),
-      storedIconDarkMode: iconDarkMode
-        ? storeSupabaseFile({ bucket: "branding", content: iconDarkMode, id: `${item.id}-icon-dark-mode.png` })
-        : Promise.resolve(""),
-      storedFavicon: favicon ? storeSupabaseFile({ bucket: "branding", content: favicon, id: `${item.id}-favicon.ico` }) : Promise.resolve(""),
-    });
-
-    await updatePortal(item, {
-      themeColor,
-      themeScheme,
-      brandingLogo: storedLogo,
-      brandingLogoDarkMode: storedLogoDarkMode,
-      brandingIcon: storedIcon,
-      brandingIconDarkMode: storedIconDarkMode,
-      brandingFavicon: storedFavicon,
-    });
-
-    return Response.json({ success: t("shared.saved") });
-  } else if (action === "edit-analytics") {
-    const simpleAnalytics = FormHelper.getBoolean(form, "simpleAnalytics");
-    const plausibleAnalytics = FormHelper.getBoolean(form, "plausibleAnalytics");
-    const googleAnalyticsTrackingId = form.get("googleAnalyticsTrackingId")?.toString();
-
-    await updatePortal(item, {
-      analyticsSimpleAnalytics: simpleAnalytics,
-      analyticsPlausibleAnalytics: plausibleAnalytics,
-      analyticsGoogleAnalyticsTrackingId: googleAnalyticsTrackingId,
-    });
-
-    return Response.json({ success: t("shared.saved") });
+    return handleEdit(request, form, item, t);
   }
+  if (action === "edit-seo") {
+    return handleEditSeo(form, item, t);
+  }
+  if (action === "edit-branding") {
+    return handleEditBranding(form, item, t);
+  }
+  if (action === "edit-analytics") {
+    return handleEditAnalytics(form, item, t);
+  }
+  return Response.json({ error: t("shared.invalidForm") }, { status: 400 });
 };
 
 export default function () {

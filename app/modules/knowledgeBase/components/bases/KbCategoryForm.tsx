@@ -23,8 +23,6 @@ export default function KbCategoryForm({
   const navigation = useNavigation();
   const navigate = useNavigate();
 
-  // const [showFilterModal, setShowFilterModal] = useState<{ item?: { type: FeatureFlagsFilterType; value: string | null }; idx?: number }>();
-
   const mainInput = useRef<RefInputText>(null);
   useEffect(() => {
     setTimeout(() => {
@@ -35,11 +33,7 @@ export default function KbCategoryForm({
   const [slug, setSlug] = useState(item?.slug || "");
   const [title, setTitle] = useState(item?.title || "");
   const [description, setDescription] = useState(item?.description || "");
-  const [icon, setIcon] = useState(
-    item?.icon || ""
-    // `<svg stroke="currentColor" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5">   <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" /> </svg>`
-  );
-  // const [language, setLanguage] = useState(item?.language || "");
+  const [icon, setIcon] = useState(item?.icon || "");
   const [seoImage, setSeoImage] = useState(item?.seoImage || "");
 
   useEffect(() => {
@@ -56,18 +50,6 @@ export default function KbCategoryForm({
           <InputText ref={mainInput} autoFocus name="title" title={"Title"} value={title} setValue={setTitle} required />
           <InputText name="slug" title={"Slug"} value={slug} setValue={setSlug} required />
           <InputText name="description" title={"Description"} value={description} setValue={setDescription} />
-          {/* <InputSelect
-              name="language"
-              title={"Language"}
-              value={language}
-              setValue={(e) => setLanguage((e?.toString() as any) || "")}
-              options={KnowledgeBaseUtils.supportedLanguages.map((item) => {
-                return {
-                  value: item.value,
-                  name: item.name,
-                };
-              })}
-            /> */}
 
           <InputText
             name="icon"

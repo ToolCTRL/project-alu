@@ -2,14 +2,6 @@ import { Action } from "kbar";
 import { DocsSidebar } from "~/application/sidebar/DocsSidebar";
 import { SideBarItem } from "~/application/sidebar/SidebarItem";
 
-// export async function getDoc(fileName: string): Promise<string> {
-//   const items: Doc[] = [];
-//   const dir = path.join("./", "./app/routes/docs/" + fileName);
-//   const filePath = "./app/routes/docs/" + fileName;
-//   const content = fs.readFileSync(path.join(dir, filePath), "utf8");
-//   return ``;
-// }
-
 export function getDocCommands(): Action[] {
   const commands: Action[] = [];
   DocsSidebar().forEach((item) => {

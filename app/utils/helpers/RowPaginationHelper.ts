@@ -42,7 +42,7 @@ export function getEntityFiltersFromCurrentUrl(
   customRow: boolean,
   entity: EntityWithDetails,
   urlSearchParams: URLSearchParams,
-  entityView?: EntityViewWithDetails | null | null
+  entityView?: EntityViewWithDetails | null
 ): RowFiltersDto {
   const tags: string[] = [];
   const properties: {
@@ -89,7 +89,6 @@ export function getEntityFiltersFromCurrentUrl(
 
   const query = urlSearchParams.get("q");
 
-  // console.log({ tags });
   return { customRow, entity, properties, query, tags };
 }
 
@@ -143,7 +142,6 @@ export function getNewPaginationUrl(request: Request, page: number, sortedBy?: {
   const url = new URL(request.url);
   const params = new URLSearchParams(url.search);
 
-  //Add a second foo parameter.
   if (params.get("page")) {
     params.set("page", page.toString());
   } else {
@@ -162,31 +160,3 @@ export function getNewPaginationUrl(request: Request, page: number, sortedBy?: {
   const newUrl = url + "?" + params;
   return newUrl;
 }
-
-// export async function getPageFromCurrentUrl(request: Request): PaginationDto {
-//   const params = new URL(request.url).searchParams;
-//   const pageSize = Constants.DEFAULT_PAGE_SIZE;
-
-//   let page = 1;
-//   const paramsPage = params.get("page");
-//   if (paramsPage) {
-//     page = Number(paramsPage);
-//   }
-
-//   // const paramsSort = search.get("sort");
-//   // if (!paramsPage) {
-//   //   throw redirect(request.url + "?page=1");
-//   // }
-//   // let orderBy: any = { createdAt: "desc" };
-//   // if (paramsSort) {
-//   //   const column = paramsSort.replace("-", "").trim();
-//   //   if (column === "createdAt" || column === "folio") {
-//   //     orderBy = { [column]: paramsSort.startsWith("-") ? "desc" : "asc" };
-//   //   }
-//   // }
-//   const pagination: PaginationDto = {
-//     page,
-//     pageSize,
-//   };
-//   return pagination;
-// }

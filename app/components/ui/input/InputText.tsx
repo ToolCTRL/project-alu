@@ -152,108 +152,119 @@ const InputText = (props: InputTextProps, ref: Ref<RefInputText>) => {
   }, [actualValue]);
 
 
-  function renderEditor() {
-    if (editor === "monaco" && editorLanguage) {
-      return (
-        <>
-          <textarea hidden readOnly name={name} value={actualValue} />
-          {typeof window !== "undefined" && (
-            <Editor
-              theme={editorTheme}
-              className={clsx(
-                "focus:border-border focus:ring-ring border-border block w-full min-w-0 flex-1 rounded-md sm:text-sm",
-                actualEditorSize === "sm" && "h-32",
-                actualEditorSize === "md" && "h-64",
-                actualEditorSize === "lg" && "h-96",
-                actualEditorSize === "auto" && "h-auto",
-                actualEditorSize === "full" && "h-full",
-                actualEditorSize === "screen" && "h-screen",
-                className,
-                classNameBg,
-                editorHideLineNumbers && "-ml-10",
-                borderless && "border-transparent"
-              )}
-              defaultLanguage={editorLanguage}
-              language={editorLanguage}
-              options={{
-                fontSize: editorFontSize,
-                renderValidationDecorations: "off",
-                wordWrap: "on",
-                readOnly: disabled || readOnly,
-                ...editorOptions,
-              }}
-              value={value}
-              defaultValue={defaultValue}
-              onChange={(e) => handleValueChange(e ?? "", setActualValue, setValue)}
-            />
-          )}
-        </>
-      );
-    }
+  function getEditorSizeClasses() {
+    const sizeMap: Record<string, string> = {
+      sm: "h-32",
+      md: "h-64",
+      lg: "h-96",
+      auto: "h-auto",
+      full: "h-full",
+      screen: "h-screen"
+    };
+    return sizeMap[actualEditorSize] || "";
+  }
 
-    if (editor === "wysiwyg") {
-      return (
-        <>
-          <textarea hidden readOnly name={name} value={actualValue} />
-          <NovelEditor
-            autoFocus={autoFocus}
-            key={promptFlows?.rowId ?? name ?? "novel-editor"}
-            readOnly={readOnly || disabled}
-            disabled={disabled}
-            darkMode={darkMode}
+  function getWysiwygSizeClasses() {
+    const sizeMap: Record<string, string> = {
+      sm: "min-h-[100px]",
+      md: "min-h-[300px]",
+      lg: "min-h-[500px]",
+      auto: "h-auto",
+      full: "h-full",
+      screen: "h-screen"
+    };
+    return clsx(sizeMap[actualEditorSize], borderless && "border-transparent");
+  }
+
+  function renderMonacoEditor() {
+    return (
+      <>
+        <textarea hidden readOnly name={name} value={actualValue} />
+        {typeof window !== "undefined" && (
+          <Editor
+            theme={editorTheme}
             className={clsx(
-              actualEditorSize === "sm" && "min-h-[100px]",
-              actualEditorSize === "md" && "min-h-[300px]",
-              actualEditorSize === "lg" && "min-h-[500px]",
-              actualEditorSize === "auto" && "h-auto",
-              actualEditorSize === "full" && "h-full",
-              actualEditorSize === "screen" && "h-screen",
+              "focus:border-border focus:ring-ring border-border block w-full min-w-0 flex-1 rounded-md sm:text-sm",
+              getEditorSizeClasses(),
+              className,
+              classNameBg,
+              editorHideLineNumbers && "-ml-10",
               borderless && "border-transparent"
             )}
-            content={value || defaultValue}
-            onChange={(e) => handleValueChange(e?.html ?? "", setActualValue, setValue)}
-            promptFlows={promptFlows}
-          />
-        </>
-      );
-    }
-
-    if (!rows) {
-      return (
-        <>
-          {icon && (
-            <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
-              <EntityIcon className="text-muted-foreground h-5 w-5" icon={icon} />
-            </div>
-          )}
-          <Input
-            ref={input}
-            type={type}
-            style={hideChars ? ({ WebkitTextSecurity: "disc" } as any) : {}}
-            id={id ?? name}
-            name={name}
-            autoComplete={autoComplete}
-            required={required}
-            minLength={minLength}
-            maxLength={maxLength}
-            defaultValue={defaultValue}
+            defaultLanguage={editorLanguage}
+            language={editorLanguage}
+            options={{
+              fontSize: editorFontSize,
+              renderValidationDecorations: "off",
+              wordWrap: "on",
+              readOnly: disabled || readOnly,
+              ...editorOptions,
+            }}
             value={value}
-            onChange={(e) => handleValueChange(e.currentTarget.value, setActualValue, setValue)}
-            onBlur={onBlur}
-            onFocus={onFocus}
-            disabled={disabled}
-            readOnly={readOnly}
-            placeholder={placeholder}
-            pattern={pattern !== "" && pattern !== undefined ? pattern : undefined}
-            autoFocus={autoFocus}
-            className={clsx(className)}
-            onPaste={onPaste}
+            defaultValue={defaultValue}
+            onChange={(e) => handleValueChange(e ?? "", setActualValue, setValue)}
           />
-          {button}
-        </>
-      );
-    }
+        )}
+      </>
+    );
+  }
 
+  function renderWysiwygEditor() {
+    return (
+      <>
+        <textarea hidden readOnly name={name} value={actualValue} />
+        <NovelEditor
+          autoFocus={autoFocus}
+          key={promptFlows?.rowId ?? name ?? "novel-editor"}
+          readOnly={readOnly || disabled}
+          disabled={disabled}
+          darkMode={darkMode}
+          className={getWysiwygSizeClasses()}
+          content={value || defaultValue}
+          onChange={(e) => handleValueChange(e?.html ?? "", setActualValue, setValue)}
+          promptFlows={promptFlows}
+        />
+      </>
+    );
+  }
+
+  function renderInputField() {
+    return (
+      <>
+        {icon && (
+          <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+            <EntityIcon className="text-muted-foreground h-5 w-5" icon={icon} />
+          </div>
+        )}
+        <Input
+          ref={input}
+          type={type}
+          style={hideChars ? ({ WebkitTextSecurity: "disc" } as any) : {}}
+          id={id ?? name}
+          name={name}
+          autoComplete={autoComplete}
+          required={required}
+          minLength={minLength}
+          maxLength={maxLength}
+          defaultValue={defaultValue}
+          value={value}
+          onChange={(e) => handleValueChange(e.currentTarget.value, setActualValue, setValue)}
+          onBlur={onBlur}
+          onFocus={onFocus}
+          disabled={disabled}
+          readOnly={readOnly}
+          placeholder={placeholder}
+          pattern={pattern !== "" && pattern !== undefined ? pattern : undefined}
+          autoFocus={autoFocus}
+          className={clsx(className)}
+          onPaste={onPaste}
+        />
+        {button}
+      </>
+    );
+  }
+
+  function renderTextarea() {
     return (
       <Textarea
         rows={rows}
@@ -276,6 +287,22 @@ const InputText = (props: InputTextProps, ref: Ref<RefInputText>) => {
         autoFocus={autoFocus}
       />
     );
+  }
+
+  function renderEditor() {
+    if (editor === "monaco" && editorLanguage) {
+      return renderMonacoEditor();
+    }
+
+    if (editor === "wysiwyg") {
+      return renderWysiwygEditor();
+    }
+
+    if (!rows) {
+      return renderInputField();
+    }
+
+    return renderTextarea();
   }
 
   return (

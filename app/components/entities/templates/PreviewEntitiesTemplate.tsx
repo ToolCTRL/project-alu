@@ -10,7 +10,7 @@ function findChildRelationships(template: EntitiesTemplateDto, item: TemplateEnt
   return template.relationships.filter((f) => f.child === item.name) ?? [];
 }
 
-function NameCell(item: TemplateEntityDto) {
+function NameCell({ item }: Readonly<{ item: TemplateEntityDto }>) {
   return (
     <div className="flex items-baseline space-x-1">
       <div>{item.name}</div>
@@ -19,7 +19,7 @@ function NameCell(item: TemplateEntityDto) {
   );
 }
 
-function TitleCell({ item, t }: { item: TemplateEntityDto; t: (key: string) => string }) {
+function TitleCell({ item, t }: Readonly<{ item: TemplateEntityDto; t: (key: string) => string }>) {
   return (
     <div className="flex items-baseline space-x-1">
       <div>{t(item.title)}</div>
@@ -28,7 +28,7 @@ function TitleCell({ item, t }: { item: TemplateEntityDto; t: (key: string) => s
   );
 }
 
-function ViewsCell(item: TemplateEntityDto) {
+function ViewsCell({ item }: Readonly<{ item: TemplateEntityDto }>) {
   return <div>{item.views?.map((i) => i.title + (i.isDefault ? " (default)" : "")).join(", ")}</div>;
 }
 
@@ -42,7 +42,7 @@ export default function PreviewEntitiesTemplate({ template }: Readonly<{ templat
         {
           name: "name",
           title: "Name",
-          value: (i) => <NameCell {...i} />,
+          value: (i) => <NameCell item={i} />,
         },
         {
           name: "title",
@@ -76,7 +76,7 @@ export default function PreviewEntitiesTemplate({ template }: Readonly<{ templat
         {
           name: "views",
           title: "Views",
-          value: (item) => <ViewsCell {...item} />,
+          value: (item) => <ViewsCell item={item} />,
         },
       ]}
     />

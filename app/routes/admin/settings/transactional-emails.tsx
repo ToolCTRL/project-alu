@@ -75,6 +75,96 @@ type ActionData = {
   error?: string;
   success?: string;
 };
+async function handleCreatePostmarkTemplates(request: Request) {
+  await verifyUserHasPermission(request, "admin.emails.create");
+  try {
+    await createPostmarkEmailTemplates();
+    return { success: "All templates created" };
+  } catch (e: any) {
+    return { error: e?.toString() };
+  }
+}
+
+async function handleCreateEmailTemplate(request: Request, form: FormData) {
+  await verifyUserHasPermission(request, "admin.emails.create");
+  try {
+    const alias = form.get("alias")?.toString();
+    if (!alias) {
+      return { error: `Alias ${alias} not found` };
+    }
+    await createPostmarkEmailTemplates(alias);
+    await createAdminLog(request, "Created email template", alias);
+    return { success: "Template created" };
+  } catch (e: any) {
+    return { error: e?.toString() };
+  }
+}
+
+async function handleDeleteEmailTemplate(request: Request, form: FormData) {
+  await verifyUserHasPermission(request, "admin.emails.delete");
+  try {
+    const alias = form.get("alias")?.toString();
+    if (!alias) {
+      return { error: `Alias ${alias} not found` };
+    }
+    await deleteEmailTemplate(alias);
+    await createAdminLog(request, "Deleted email template", alias);
+    return { success: "Template deleted" };
+  } catch (e: any) {
+    return { error: e?.toString() };
+  }
+}
+
+async function handleSendTest(request: Request, form: FormData, user: Awaited<ReturnType<typeof requireUser>>) {
+  const email = form.get("email")?.toString();
+  const templateName = form.get("template")?.toString();
+  if (!email) {
+    return { error: "Invalid email" };
+  }
+  const template = EmailTemplates.allTemplates.find((f) => f.name === templateName);
+  if (!template) {
+    return { error: "Invalid template" };
+  }
+  const appConfiguration = await getAppConfiguration({ request });
+  try {
+    await sendEmail({
+      request,
+      to: email,
+      alias: template.name,
+      ...template.parse({
+        appConfiguration,
+        data: {
+          name: user?.firstName,
+          invite_sender_name: user?.firstName,
+          invite_sender_organization: "{Account Name}",
+        },
+      }),
+    });
+    return { success: "Test email sent" };
+  } catch (e: any) {
+    return { error: e?.toString() };
+  }
+}
+
+async function handleUpdateAppConfiguration(request: Request, form: FormData, t: Awaited<ReturnType<typeof getTranslations>>["t"]) {
+  const data = {
+    emailProvider: form.get("emailProvider")?.toString(),
+    emailFromEmail: form.get("emailFromEmail")?.toString(),
+    emailFromName: form.get("emailFromName")?.toString(),
+    emailSupportEmail: form.get("emailSupportEmail")?.toString(),
+  };
+  await updateAppConfiguration(data);
+  const apiKey = form.get("apiKey")?.toString();
+  if (data.emailProvider && apiKey !== undefined) {
+    await db.credential.upsert({
+      where: { name: data.emailProvider },
+      update: { value: apiKey },
+      create: { name: data.emailProvider, value: apiKey },
+    });
+  }
+  return { success: t("shared.updated") };
+}
+
 export const action: ActionFunction = async ({ request, params }) => {
   await requireAuth({ request, params });
   await verifyUserHasPermission(request, "admin.emails.update");
@@ -83,92 +173,21 @@ export const action: ActionFunction = async ({ request, params }) => {
 
   const form = await request.formData();
   const action = form.get("action")?.toString();
+
   if (action === "create-postmark-email-templates") {
-    await verifyUserHasPermission(request, "admin.emails.create");
-    try {
-      await createPostmarkEmailTemplates();
-      // await createAdminLog(request, "Created email templates", templates.map((f) => f.alias).join(", "));
-
-      return { success: "All templates created" };
-    } catch (e: any) {
-      return { error: e?.toString() };
-    }
-  } else if (action === "create-email-template") {
-    await verifyUserHasPermission(request, "admin.emails.create");
-    try {
-      const alias = form.get("alias")?.toString();
-      if (!alias) {
-        return { error: `Alias ${alias} not found` };
-      }
-
-      await createPostmarkEmailTemplates(alias);
-      await createAdminLog(request, "Created email template", alias);
-
-      return { success: "Template created" };
-    } catch (e: any) {
-      return { error: e?.toString() };
-    }
-  } else if (action === "delete-postmark-email") {
-    await verifyUserHasPermission(request, "admin.emails.delete");
-    try {
-      const alias = form.get("alias")?.toString();
-      if (!alias) {
-        return { error: `Alias ${alias} not found` };
-      }
-      await deleteEmailTemplate(alias);
-      await createAdminLog(request, "Deleted email template", alias);
-
-      return { success: "Template deleted" };
-    } catch (e: any) {
-      return { error: e?.toString() };
-    }
-  } else if (action === "send-test") {
-    const email = form.get("email")?.toString();
-    const templateName = form.get("template")?.toString();
-    if (!email) {
-      return { error: "Invalid email" };
-    }
-    const template = EmailTemplates.allTemplates.find((f) => f.name === templateName);
-    if (!template) {
-      return { error: "Invalid template" };
-    }
-    // await sendEmail({ request, to: email, alias: template, data: {} });
-    const appConfiguration = await getAppConfiguration({ request });
-    try {
-      await sendEmail({
-        request,
-        to: email,
-        alias: template.name,
-        ...template.parse({
-          appConfiguration,
-          data: {
-            name: user?.firstName,
-            invite_sender_name: user?.firstName,
-            invite_sender_organization: "{Account Name}",
-          },
-        }),
-      });
-      return { success: "Test email sent" };
-    } catch (e: any) {
-      return { error: e?.toString() };
-    }
-  } else if (action === "update-app-configuration") {
-    const data = {
-      emailProvider: form.get("emailProvider")?.toString(),
-      emailFromEmail: form.get("emailFromEmail")?.toString(),
-      emailFromName: form.get("emailFromName")?.toString(),
-      emailSupportEmail: form.get("emailSupportEmail")?.toString(),
-    };
-    await updateAppConfiguration(data);
-    const apiKey = form.get("apiKey")?.toString();
-    if (data.emailProvider && apiKey !== undefined) {
-      await db.credential.upsert({
-        where: { name: data.emailProvider },
-        update: { value: apiKey },
-        create: { name: data.emailProvider, value: apiKey },
-      });
-    }
-    return { success: t("shared.updated") };
+    return handleCreatePostmarkTemplates(request);
+  }
+  if (action === "create-email-template") {
+    return handleCreateEmailTemplate(request, form);
+  }
+  if (action === "delete-postmark-email") {
+    return handleDeleteEmailTemplate(request, form);
+  }
+  if (action === "send-test") {
+    return handleSendTest(request, form, user);
+  }
+  if (action === "update-app-configuration") {
+    return handleUpdateAppConfiguration(request, form, t);
   }
   return { error: t("shared.invalidForm") };
 };

@@ -32,12 +32,14 @@ export default function AdminNavigationRoute() {
   const [searchInput, setSearchInput] = useState("");
 
   useEffect(() => {
-    setItems([]);
+    const allItems: SideBarItem[] = [];
+
     AdminSidebar({ t, appConfiguration: rootData.appConfiguration }).forEach((admin) => {
       admin.items?.forEach((item) => {
-        setItems((items) => [...items, item]);
+        allItems.push(item);
       });
     });
+
     AppSidebar({
       t,
       tenantId: params.tenant || "",
@@ -46,9 +48,12 @@ export default function AdminNavigationRoute() {
       appConfiguration: rootData.appConfiguration,
     }).forEach((app) => {
       app.items?.forEach((item) => {
-        setItems((items) => [...items, item]);
+        allItems.push(item);
       });
     });
+
+    setItems(allItems);
+
     const roleKeys = Object.keys(TenantUserType).filter((key) => !isNaN(Number(key)));
     setTenantUserTypes(roleKeys.map((f) => Number(f)));
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -143,32 +148,27 @@ export default function AdminNavigationRoute() {
                                 </td>
 
                                 {tenantUserTypes.map((role) => {
+                                  const hasAccess = tenantUserTypeHasAccess(item, role);
                                   return (
                                     <td className="border-border text-muted-foreground whitespace-nowrap border px-4 text-center text-sm" key={role}>
                                       <div className="flex justify-center">
-                                        {(() => {
-                                          if (tenantUserTypeHasAccess(item, role)) {
-                                            return (
-                                              <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-teal-400" viewBox="0 0 20 20" fill="currentColor">
-                                                <path
-                                                  fillRule="evenodd"
-                                                  d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                                                  clipRule="evenodd"
-                                                />
-                                              </svg>
-                                            );
-                                          } else {
-                                            return (
-                                              <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-red-400" viewBox="0 0 20 20" fill="currentColor">
-                                                <path
-                                                  fillRule="evenodd"
-                                                  d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-                                                  clipRule="evenodd"
-                                                />
-                                              </svg>
-                                            );
-                                          }
-                                        })()}
+                                        {hasAccess ? (
+                                          <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-teal-400" viewBox="0 0 20 20" fill="currentColor">
+                                            <path
+                                              fillRule="evenodd"
+                                              d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                                              clipRule="evenodd"
+                                            />
+                                          </svg>
+                                        ) : (
+                                          <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-red-400" viewBox="0 0 20 20" fill="currentColor">
+                                            <path
+                                              fillRule="evenodd"
+                                              d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                                              clipRule="evenodd"
+                                            />
+                                          </svg>
+                                        )}
                                       </div>
                                     </td>
                                   );

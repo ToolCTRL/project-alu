@@ -212,7 +212,6 @@ const PropertyTitle = ({ item }: { readonly item: PropertyWithDetails }) => {
             {[PropertyType.FORMULA].includes(item.type) && ` (formula)`}
           </div>
         </div>
-        {/* {item.type === PropertyType.FORMULA && <div className="truncate italic text-muted-foreground">({item.formula})</div>} */}
         {[PropertyType.SELECT, PropertyType.MULTI_SELECT].includes(item.type) && (
           <div className="text-muted-foreground truncate text-xs">
             [{item.options.length === 0 ? "No options" : "Options: " + item.options?.map((f) => f.value).join(", ")}]

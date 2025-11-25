@@ -57,11 +57,11 @@ async function main() {
   console.log("Updated ticket status options:", updated?.options);
 }
 
-main()
-  .catch((e) => {
-    console.error(e);
-    process.exit(1);
-  })
-  .finally(async () => {
-    await db.$disconnect();
-  });
+try {
+  await main();
+} catch (e) {
+  console.error(e);
+  process.exit(1);
+} finally {
+  await db.$disconnect();
+}

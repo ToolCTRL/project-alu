@@ -35,19 +35,19 @@ export default function RowCard({ entity, item, columns, layout, allEntities, ro
 
   return (
     <div className="text-muted-foreground flex flex-col space-y-2 whitespace-nowrap text-sm">
-      {headers.map((header, idx) => {
+      {headers.map((header) => {
         return (
-          <div key={idx} className={clsx("flex flex-col", header.className)}>
+          <div key={header.name} className={clsx("flex flex-col", header.className)}>
             <div className="text-muted-foreground text-xs font-medium">{t(header.title)}</div>
-            <div>{RowDisplayValueHelper.displayRowValue(t, header, item, idx)}</div>
+            <div>{RowDisplayValueHelper.displayRowValue(t, header, item)}</div>
           </div>
         );
       })}
       {actions && (
         <div className="flex flex-col space-y-2">
-          {actions(item).map((action, idx) => {
+          {actions(item).map((action) => {
             return (
-              <Fragment key={idx}>
+              <Fragment key={action.title ?? action.href}>
                 {action.render ?? (
                   <ButtonSecondary
                     className="w-full"

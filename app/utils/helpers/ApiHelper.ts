@@ -48,72 +48,93 @@ const getRowPropertiesFromJson = (t: TFunction | undefined, entity: EntityWithDe
   };
 };
 
+function parseRangeNumber(object: any, name: string, propertyName: string): RowValueRangeDto {
+  try {
+    return {
+      numberMin: object[name]?.min ?? null,
+      numberMax: object[name]?.max ?? null,
+      dateMin: null,
+      dateMax: null,
+    };
+  } catch (e: any) {
+    throw Error(`Invalid number range (${propertyName}): ${e.message}`);
+  }
+}
+
+function parseRangeDate(object: any, name: string, propertyName: string): RowValueRangeDto {
+  try {
+    const min = object[name]?.min;
+    const max = object[name]?.max;
+    return {
+      numberMin: null,
+      numberMax: null,
+      dateMin: min ? new Date(min?.toString()) : null,
+      dateMax: max ? new Date(max?.toString()) : null,
+    };
+  } catch (e: any) {
+    throw Error(`Invalid date range (${propertyName}): ${e.message}`);
+  }
+}
+
+function parseMultipleValues(object: any, name: string, property: PropertyWithDetails, t: TFunction | undefined): RowValueMultipleDto[] {
+  const multiple = object[name]?.map((f: string, idx: number) => ({
+    order: idx + 1,
+    value: f,
+  })) ?? [];
+  validatePropertyValue_Multiple({ t, property, multiple });
+  return multiple;
+}
+
+function parseMediaValues(object: any, name: string, property: PropertyWithDetails, t: TFunction | undefined): MediaDto[] {
+  const media = object[name]?.map((f: MediaDto) => f) ?? [];
+  validatePropertyValue_Media({ t, property, media });
+  return media;
+}
+
+function parseSimpleValue(
+  object: any,
+  name: string,
+  property: PropertyWithDetails,
+  existing: RowWithDetails | undefined,
+  t: TFunction | undefined
+): any {
+  let jsonValue = object[name];
+  if (property.isRequired && !property.isRequired && (jsonValue === null || jsonValue === undefined || jsonValue === "")) {
+    const defaultValue = PropertyAttributeHelper.getPropertyAttributeValue_String(property, PropertyAttributeName.DefaultValue);
+    if (defaultValue) {
+      jsonValue = defaultValue;
+    } else {
+      if (existing && !object.hasOwnProperty(name)) {
+        return null;
+      }
+      const errorMessage = t ? `${t(property.title)}: required` : `${property.name}: required`;
+      throw Error(errorMessage);
+    }
+  }
+  validatePropertyValue({ t, property, value: jsonValue });
+  return jsonValue;
+}
+
 function getPropertyValueFromJson(t: TFunction | undefined, property: PropertyWithDetails, object: any, existing?: RowWithDetails) {
   let jsonValue: any | null = null;
   let media: MediaDto[] = [];
   let multiple: RowValueMultipleDto[] = [];
   let range: RowValueRangeDto | null = null;
 
-  let name = property.name;
+  const name = property.name;
+
   if (property.type === PropertyType.RANGE_NUMBER) {
-    try {
-      range = {
-        numberMin: object[name]?.min ?? null,
-        numberMax: object[name]?.min ?? null,
-        dateMin: null,
-        dateMax: null,
-      };
-    } catch (e: any) {
-      throw Error(`Invalid number range (${property.name}): ${e.message}`);
-    }
+    range = parseRangeNumber(object, name, property.name);
   } else if (property.type === PropertyType.RANGE_DATE) {
-    try {
-      const min = object[name]?.min;
-      const max = object[name]?.max;
-      range = {
-        numberMin: null,
-        numberMax: null,
-        dateMin: min ? new Date(min?.toString()) : null,
-        dateMax: max ? new Date(max?.toString()) : null,
-      };
-    } catch (e: any) {
-      throw Error(`Invalid date range (${property.name}): ${e.message}`);
-    }
+    range = parseRangeDate(object, name, property.name);
   } else if ([PropertyType.MULTI_SELECT, PropertyType.MULTI_TEXT].includes(property.type)) {
-    multiple =
-      object[name]?.map((f: string, idx: number) => {
-        const value: RowValueMultipleDto = {
-          order: idx + 1,
-          value: f,
-        };
-        return value;
-      }) ?? [];
-    validatePropertyValue_Multiple({ t, property, multiple });
+    multiple = parseMultipleValues(object, name, property, t);
   } else if (property.type === PropertyType.MEDIA) {
-    media =
-      object[name]?.map((f: MediaDto) => {
-        return f;
-      }) ?? [];
-    validatePropertyValue_Media({ t, property, media });
+    media = parseMediaValues(object, name, property, t);
   } else {
-    jsonValue = object[name];
-    if (property.isRequired && !property.isRequired && (jsonValue === null || jsonValue === undefined || jsonValue === "")) {
-      const defaultValue = PropertyAttributeHelper.getPropertyAttributeValue_String(property, PropertyAttributeName.DefaultValue);
-      if (defaultValue) {
-        jsonValue = defaultValue;
-      } else {
-        if (existing && !object.hasOwnProperty(name)) {
-          return null;
-        }
-        if (t) {
-          throw Error(`${t(property.title)}: required`);
-        } else {
-          throw Error(`${property.name}: required`);
-        }
-      }
-    }
-    validatePropertyValue({ t, property, value: jsonValue });
+    jsonValue = parseSimpleValue(object, name, property, existing, t);
   }
+
   const value = RowHelper.getValueFromType(property.type, jsonValue);
   value.media = media;
   value.multiple = multiple;

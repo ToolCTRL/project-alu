@@ -22,7 +22,7 @@ export default function RenderCard({
   allEntities: EntityWithDetails[];
   routes: EntitiesApi.Routes | undefined;
   actions?: (row: RowWithDetails) => { title?: string; href?: string; onClick?: () => void; isLoading?: boolean; render?: React.ReactNode }[];
-  href?: string | undefined;
+  href: string | undefined;
 }) {
   return (
     <div className={clsx("border-border bg-background rounded-md border p-3 shadow-2xs", href && "hover:border-border hover:shadow-md")}>

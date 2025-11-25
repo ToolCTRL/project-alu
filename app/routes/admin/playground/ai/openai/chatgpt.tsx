@@ -26,7 +26,6 @@ export const action = async ({ request, params }: ActionFunctionArgs) => {
         n: 1,
         size: "512x512",
       });
-      // const data = await PromptService.fakeData({ numberOfResults });
       const data: ActionData = {
         images,
       };
@@ -56,7 +55,6 @@ export default function Index() {
   useEffect(() => {
     const isPrompting = isLoading || navigation.state === "submitting";
     if (!isPrompting) {
-      // formRef.current?.reset();
       formRef.current?.focus();
       setPrompt("");
     }

@@ -23,7 +23,6 @@ type LoaderData = {
   appConfiguration: AppConfiguration;
 };
 export const loader = async ({ request }: LoaderFunctionArgs) => {
-  const { t } = await getTranslations(request);
   await verifyUserHasPermission(request, "admin.metrics.view");
   await getOrCreateAppConfiguration({ request });
   const data: LoaderData = {
@@ -105,7 +104,6 @@ export default function () {
     submit(form, {
       method: "post",
     });
-    // setBlocks(data.page.blocks);
   }
   return (
     <EditPageLayout

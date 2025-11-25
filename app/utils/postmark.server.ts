@@ -77,7 +77,7 @@ export async function sendEmail({
     // eslint-disable-next-line no-console
     console.log("[SENDING EMAIL]", data);
   }
-  var client = getClient();
+  const client = getClient();
   if (!client) {
     return;
   }
@@ -121,7 +121,6 @@ export async function getPostmarkTemplates(): Promise<EmailTemplate[]> {
 export async function createPostmarkTemplate(template: EmailTemplate, layoutTemplate?: string | undefined) {
   const client = getClient();
   if (!client) {
-    // throw Error("Undefined Postmark client");
     return;
   }
   return client.createTemplate({
@@ -138,7 +137,6 @@ export async function deletePostmarkTemplate(alias: string) {
   const client = getClient();
   if (!client) {
     return;
-    // throw Error("Undefined Postmark client");
   }
   return client.deleteTemplate(alias);
 }

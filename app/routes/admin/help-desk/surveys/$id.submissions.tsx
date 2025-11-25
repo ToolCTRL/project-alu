@@ -23,6 +23,27 @@ type LoaderData = {
   submissions: SurveySubmissionWithDetails[];
 };
 
+function renderSubmissionResult(submission: SurveySubmissionWithDetails, itemTitle: string) {
+  const result = submission.results.find((r) => r.surveItemTitle === itemTitle);
+  if (!result) {
+    return <div>-</div>;
+  }
+  if (result.other) {
+    return (
+      <div>
+        {result.value?.toString()}: {result.other}
+      </div>
+    );
+  }
+  if (typeof result.value === "string") {
+    return <div>{result.value}</div>;
+  }
+  if (Array.isArray(result.value)) {
+    return <div>{result.value.join(", ")}</div>;
+  }
+  return <div>{JSON.stringify(result.value)}</div>;
+}
+
 export const loader = async ({ request, params }: LoaderFunctionArgs) => {
   await requireAuth({ request, params });
   await verifyUserHasPermission(request, "admin.surveys");
@@ -102,25 +123,7 @@ export default function () {
         name: item.title,
         title: item.title,
         // className: idx === data.item.items.length - 1 ? "w-full" : "",
-        value: (submission) => {
-          const result = submission.results.find((r) => r.surveItemTitle === item.title);
-          if (!result) {
-            return <div>-</div>;
-          }
-          if (result.other) {
-            return (
-              <div>
-                {result.value?.toString()}: {result.other}
-              </div>
-            );
-          } else if (typeof result.value === "string") {
-            return <div>{result.value}</div>;
-          } else if (Array.isArray(result.value)) {
-            return <div>{result.value.join(", ")}</div>;
-          } else {
-            return <div>{JSON.stringify(result.value)}</div>;
-          }
-        },
+        value: (submission) => renderSubmissionResult(submission, item.title),
       });
     });
     headers.push(

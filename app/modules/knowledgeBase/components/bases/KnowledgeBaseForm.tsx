@@ -24,8 +24,6 @@ export default function KnowledgeBaseForm({ item, onDelete }: { item?: Knowledge
   const navigation = useNavigation();
   const navigate = useNavigate();
 
-  // const [showFilterModal, setShowFilterModal] = useState<{ item?: { type: FeatureFlagsFilterType; value: string | null }; idx?: number }>();
-
   const mainInput = useRef<RefInputText>(null);
   useEffect(() => {
     setTimeout(() => {
@@ -57,8 +55,8 @@ export default function KnowledgeBaseForm({ item, onDelete }: { item?: Knowledge
     <div>
       <Form method="post" className="inline-block w-full overflow-hidden p-1 text-left align-bottom sm:align-middle">
         <input type="hidden" name="action" value={item ? "edit" : "new"} hidden readOnly />
-        {links.map((item, index) => {
-          return <input type="hidden" name="links[]" value={JSON.stringify(item)} key={index} hidden readOnly />;
+        {links.map((linkItem, index) => {
+          return <input type="hidden" name="links[]" value={JSON.stringify(linkItem)} key={`link-${index}`} hidden readOnly />;
         })}
 
         <div className="space-y-2">
@@ -66,8 +64,8 @@ export default function KnowledgeBaseForm({ item, onDelete }: { item?: Knowledge
           <InputSlug slug={slug} basePath={basePath?.toString() ?? ""} setSlug={setSlug} setBasePath={setBasePath} />
           <InputText name="description" title={"Description"} value={description} setValue={setDescription} />
           <div>
-            {languages?.map((item, idx) => {
-              return <input key={idx} type="hidden" name={`languages[]`} value={item} />;
+            {languages?.map((langItem) => {
+              return <input key={langItem} type="hidden" name={`languages[]`} value={langItem} />;
             })}
             <InputCombobox
               name="languages"
@@ -144,15 +142,10 @@ export default function KnowledgeBaseForm({ item, onDelete }: { item?: Knowledge
                     ColorBackgroundUtils.getBg700(color)
                   )}
                 >
-                  {logo === "light" ? (
-                    <img className="h-7 w-auto" src={LogoLight} alt="Logo" />
-                  ) : logo === "dark" ? (
-                    <img className="h-7 w-auto" src={LogoDark} alt="Logo" />
-                  ) : logo.startsWith("http") ? (
-                    <img className="h-7 w-auto" src={logo} alt="Logo" />
-                  ) : (
-                    <div className="italic text-white">Invalid</div>
-                  )}
+                  {logo === "light" && <img className="h-7 w-auto" src={LogoLight} alt="Logo" />}
+                  {logo === "dark" && <img className="h-7 w-auto" src={LogoDark} alt="Logo" />}
+                  {logo !== "light" && logo !== "dark" && logo.startsWith("http") && <img className="h-7 w-auto" src={logo} alt="Logo" />}
+                  {logo !== "light" && logo !== "dark" && !logo.startsWith("http") && <div className="italic text-white">Invalid</div>}
                 </kbd>
               </div>
             }
@@ -211,10 +204,8 @@ function InputSlug({
   useEffect(() => {
     if (type === "docs") {
       setBasePath("/");
-      // setSlug("docs");
     } else {
       setBasePath("/help");
-      // setSlug(slug);
     }
   }, [setBasePath, slug, type]);
   return (

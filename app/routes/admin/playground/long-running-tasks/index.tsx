@@ -180,10 +180,6 @@ export default function () {
           <ErrorBanner title="Error" text={actionData.error} />
         ) : null}
 
-        {/* {items.map((item, idx) => {
-          return <input key={idx} type="hidden" readOnly hidden name="items[]" value={JSON.stringify(item)} />;
-        })} */}
-
         <TableSimple
           items={items}
           headers={[

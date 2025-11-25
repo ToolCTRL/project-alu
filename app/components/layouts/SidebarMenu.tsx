@@ -96,8 +96,8 @@ function MobileMenuItem({ menuItem, onSelected, cssStates, isCurrent, getPath, m
       </div>
       {menuItemIsExpanded(menuItem.path) && (
         <div className="mt-1">
-          {menuItem.items.map((subItem, index) => (
-            <MobileSubMenuItem key={index} subItem={subItem} menuItem={menuItem} onSelected={onSelected} cssStates={cssStates} isCurrent={isCurrent} getPath={getPath} t={t} />
+          {menuItem.items.map((subItem, idx) => (
+            <MobileSubMenuItem key={`${subItem.path}-${idx}`} subItem={subItem} menuItem={menuItem} onSelected={onSelected} cssStates={cssStates} isCurrent={isCurrent} getPath={getPath} t={t} />
           ))}
         </div>
       )}
@@ -221,8 +221,8 @@ function DesktopMenuItem({ menuItem, onSelected, cssStates, isCurrent, getPath, 
       </button>
       {menuItemIsExpanded(menuItem.path) && (
         <div className="mt-1">
-          {menuItem.items.map((subItem, index) => (
-            <DesktopSubMenuItem key={index} subItem={subItem} menuItem={menuItem} onSelected={onSelected} cssStates={cssStates} isCurrent={isCurrent} getPath={getPath} t={t} />
+          {menuItem.items.map((subItem, idx) => (
+            <DesktopSubMenuItem key={`${subItem.path}-${idx}`} subItem={subItem} menuItem={menuItem} onSelected={onSelected} cssStates={cssStates} isCurrent={isCurrent} getPath={getPath} t={t} />
           ))}
         </div>
       )}

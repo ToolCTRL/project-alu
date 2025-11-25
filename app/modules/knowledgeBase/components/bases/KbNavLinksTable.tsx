@@ -28,12 +28,12 @@ export default function KbNavLinksTable({
 
       <div className="">
         <TableSimple
-          items={items.sort((a, b) => a.order - b.order)}
+          items={items.toSorted((a, b) => a.order - b.order)}
           headers={[
             {
               name: "order",
               title: "",
-              value: (item, idx) => (
+              value: (_item, idx) => (
                 <OrderIndexButtons
                   idx={idx}
                   items={items.map((f, idx) => {

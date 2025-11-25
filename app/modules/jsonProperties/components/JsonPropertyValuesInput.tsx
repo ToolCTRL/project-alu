@@ -37,9 +37,9 @@ export default function JsonPropertyValuesInput({
   });
   return (
     <Fragment>
-      {groups.map((group, idx) => {
+      {groups.map((group) => {
         return (
-          <Fragment key={idx}>
+          <Fragment key={group.name || "default"}>
             {group.name ? (
               <InputGroup title={group.name} className="space-y-2">
                 <GroupInputs prefix={prefix} properties={group.properties} attributes={attributes} />
@@ -74,7 +74,7 @@ function JsonPropertyInput({ prefix, property, attributes }: { prefix: string; p
   let value: JsonValue | undefined = attributes ? attributes[property.name] : undefined;
 
   switch (property.type) {
-    case "string":
+    case "string": {
       let stringValue = value === undefined ? undefined : (value as string);
       const defaultStringValue = property.defaultValue === undefined ? undefined : (property.defaultValue as string);
       if (stringValue === undefined && defaultStringValue !== undefined) {
@@ -85,6 +85,7 @@ function JsonPropertyInput({ prefix, property, attributes }: { prefix: string; p
           <InputText name={`${prefix}[${property.name}]`} title={t(property.title)} defaultValue={stringValue} required={property.required} />
         </div>
       );
+    }
     case "number": {
       let numberValue = value === undefined ? undefined : (value as number);
       const defaultNumberValue = property.defaultValue === undefined ? undefined : (property.defaultValue as number);
@@ -220,8 +221,8 @@ function JsonMultiSelectInput({ prefix, property, initial }: { prefix: string; p
   const [actualValue, setActualValue] = useState<(string | number)[]>(initial);
   return (
     <div>
-      {actualValue?.map((item, idx) => {
-        return <input key={idx} type="hidden" name={`${prefix}[${property.name}][]`} value={item} />;
+      {actualValue?.map((item) => {
+        return <input key={item} type="hidden" name={`${prefix}[${property.name}][]`} value={item} />;
       })}
       <InputCombobox
         title={t(property.title)}
@@ -244,7 +245,6 @@ function ContentForm({ prefix, property, value }: { prefix: string; property: Js
       <div className="grid gap-3">
         <div className="space-y-2">
           <div className="flex justify-between space-x-2">
-            {/* <label className="text-sm font-medium text-muted-foreground">Article</label> */}
             <div className="flex items-center space-x-1">
               <button type="button" onClick={() => setContentType("wysiwyg")} className="text-muted-foreground text-xs hover:underline">
                 <div className={clsx(contentType === "wysiwyg" ? "font-bold" : "")}>WYSIWYG</div>
@@ -256,12 +256,13 @@ function ContentForm({ prefix, property, value }: { prefix: string; property: Js
             </div>
           </div>
           <input name="contentType" value={contentType} readOnly hidden />
-          {contentType === "wysiwyg" ? (
+          {contentType === "wysiwyg" && (
             <div className="h-[calc(100vh-320px)] overflow-y-auto">
               <input type="hidden" name="content" value={content} hidden readOnly />
               <NovelEditor content={content} onChange={(e) => setContent(e.html ?? "")} usingLocalStorage={false} />
             </div>
-          ) : contentType === "markdown" ? (
+          )}
+          {contentType === "markdown" && (
             <InputText
               className="col-span-12 h-[calc(100vh-320px)] overflow-y-auto"
               rows={6}
@@ -273,7 +274,7 @@ function ContentForm({ prefix, property, value }: { prefix: string; property: Js
               value={content}
               setValue={(e) => setContent(e.toString())}
             />
-          ) : null}
+          )}
         </div>
       </div>
     </div>

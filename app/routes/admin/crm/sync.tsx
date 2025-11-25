@@ -34,6 +34,68 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
   return data;
 };
 
+async function syncUsers(emails: string[]): Promise<{ updated: number; created: number }> {
+  const usersInCrm = await CrmService.getUsersInCrm({ invalidateCache: false });
+  const progress: { updated: number; created: number } = { updated: 0, created: 0 };
+  const filteredUsers = usersInCrm.filter((x) => emails.includes(x.email));
+
+  for (const userInCrm of filteredUsers) {
+    if (userInCrm.status === "to-update" && userInCrm.contact?.id) {
+      await updateExistingContact(userInCrm, progress);
+    } else if (userInCrm.status === "to-create") {
+      await createNewContact(userInCrm, progress);
+    }
+  }
+
+  return progress;
+}
+
+async function updateExistingContact(userInCrm: UserInCrmDto, progress: { updated: number; created: number }) {
+  const changes = await CrmService.updateContact(userInCrm.contact!.id, {
+    firstName: userInCrm.firstName ?? "",
+    lastName: userInCrm.lastName ?? "",
+    marketingSubscriber: true,
+  });
+  if (changes && changes.length > 0) {
+    progress.updated++;
+  }
+}
+
+async function createNewContact(userInCrm: UserInCrmDto, progress: { updated: number; created: number }) {
+  const created = await CrmService.createContact({
+    tenantId: null,
+    firstName: userInCrm.firstName ?? "",
+    lastName: userInCrm.lastName ?? "",
+    email: userInCrm.email,
+    jobTitle: "",
+    status: ContactStatus.Customer,
+    marketingSubscriber: true,
+    options: {
+      createEvent: false,
+      checkUsage: false,
+      createLog: false,
+      storeMedia: false,
+      reportUsage: false,
+    },
+  });
+  if (created) {
+    progress.created++;
+  }
+}
+
+function getSyncResultMessage(progress: { updated: number; created: number }) {
+  if (progress.created === 0 && progress.updated === 0) {
+    return { error: "No users to sync" };
+  }
+  if (progress.created > 0 && progress.updated === 0) {
+    return { success: `Created ${progress.created} contacts.` };
+  }
+  if (progress.created === 0 && progress.updated > 0) {
+    return { success: `Updated ${progress.updated} contacts.` };
+  }
+  return { success: `Created ${progress.created} contacts, updated ${progress.updated}.` };
+}
+
 export const action = async ({ request, params }: ActionFunctionArgs) => {
   await requireAuth({ request, params });
   await getTenantIdOrNull({ request, params });
@@ -41,51 +103,9 @@ export const action = async ({ request, params }: ActionFunctionArgs) => {
   const action = form.get("action");
   if (action === "sync") {
     const emails = form.getAll("emails[]").map((x) => x.toString());
-    const usersInCrm = await CrmService.getUsersInCrm({ invalidateCache: false });
-    const progress: { updated: number; created: number } = { updated: 0, created: 0 };
-    const filteredUsers = usersInCrm.filter((x) => emails.includes(x.email));
-    for (const userInCrm of filteredUsers) {
-      if (userInCrm.status === "to-update" && userInCrm.contact?.id) {
-        const changes = await CrmService.updateContact(userInCrm.contact?.id, {
-          firstName: userInCrm.firstName ?? "",
-          lastName: userInCrm.lastName ?? "",
-          marketingSubscriber: true,
-        });
-        if (changes && changes.length > 0) {
-          progress.updated++;
-        }
-      } else if (userInCrm.status === "to-create") {
-        const created = await CrmService.createContact({
-          tenantId: null,
-          firstName: userInCrm.firstName ?? "",
-          lastName: userInCrm.lastName ?? "",
-          email: userInCrm.email,
-          jobTitle: "",
-          status: ContactStatus.Customer,
-          marketingSubscriber: true,
-          options: {
-            createEvent: false,
-            checkUsage: false,
-            createLog: false,
-            storeMedia: false,
-            reportUsage: false,
-          },
-        });
-        if (created) {
-          progress.created++;
-        }
-      }
-    }
-    if (progress.created === 0 && progress.updated === 0) {
-      return Response.json({ error: "No users to sync" }, { status: 400 });
-    } else if (progress.created > 0 && progress.updated === 0) {
-      return Response.json({ success: `Created ${progress.created} contacts.` });
-    } else if (progress.created === 0 && progress.updated > 0) {
-      return Response.json({ success: `Updated ${progress.updated} contacts.` });
-    }
-    return Response.json({
-      success: `Created ${progress.created} contacts, updated ${progress.updated}.`,
-    });
+    const progress = await syncUsers(emails);
+    const result = getSyncResultMessage(progress);
+    return Response.json(result, result.error ? { status: 400 } : undefined);
   }
 };
 

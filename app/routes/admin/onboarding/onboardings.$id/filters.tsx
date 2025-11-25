@@ -303,6 +303,109 @@ export default function () {
   );
 }
 
+function getFilterValueInput(
+  filter: OnboardingFilterDto | undefined,
+  setFilter: (filter: OnboardingFilterDto) => void,
+  metadata: OnboardingFilterMetadataDto,
+  appOrAdminData: any,
+  t: any
+) {
+  if (!filter) return <></>;
+
+  if (filter.type === "tenant.is") {
+    return (
+      <InputSelector
+        name="value"
+        title={t("onboarding.filter.value")}
+        value={filter.value ?? undefined}
+        withSearch={true}
+        setValue={(e) => setFilter({ ...filter, value: e?.toString() ?? null })}
+        options={metadata.tenants.map((t) => ({ value: t.id, name: t.name }))}
+        required
+      />
+    );
+  }
+
+  if (filter.type === "user.is") {
+    return (
+      <InputSelector
+        name="value"
+        title={t("onboarding.filter.value")}
+        value={filter.value ?? undefined}
+        withSearch={true}
+        setValue={(e) => setFilter({ ...filter, value: e?.toString() ?? null })}
+        options={metadata.users.map((t) => ({ value: t.id, name: t.email }))}
+        required
+      />
+    );
+  }
+
+  if (filter.type === "user.roles.contains" || filter.type === "user.roles.notContains") {
+    return (
+      <InputSelector
+        name="value"
+        title={t("onboarding.filter.value")}
+        value={filter.value ?? undefined}
+        withSearch={true}
+        withColors={true}
+        setValue={(e) => setFilter({ ...filter, value: e?.toString() ?? null })}
+        options={metadata.roles.map((t) => ({
+          value: t.name,
+          name: t.type === "admin" ? `[admin] ${t.name}` : t.name,
+          color: t.type === "admin" ? Colors.RED : Colors.INDIGO,
+        }))}
+        required
+      />
+    );
+  }
+
+  if (filter.type === "tenant.subscription.products.has") {
+    return (
+      <InputSelector
+        name="value"
+        title={t("onboarding.filter.value")}
+        value={filter.value ?? undefined}
+        withSearch={true}
+        setValue={(e) => setFilter({ ...filter, value: e?.toString() ?? null })}
+        options={metadata.subscriptionProducts.map((f) => ({ value: f.id, name: t(f.title) }))}
+        required
+      />
+    );
+  }
+
+  if (filter.type.startsWith("tenant.user.entity")) {
+    return (
+      <InputSelector
+        name="value"
+        title={t("onboarding.filter.value")}
+        value={filter.value ?? undefined}
+        withSearch={true}
+        withColors={true}
+        setValue={(e) => setFilter({ ...filter, value: e?.toString() ?? null })}
+        options={appOrAdminData.entities.map((f) => ({ value: f.id, name: t(f.titlePlural) }))}
+        required
+      />
+    );
+  }
+
+  if (filter.type === "user.language") {
+    return (
+      <InputSelector
+        name="value"
+        title={t("onboarding.filter.value")}
+        value={filter.value ?? undefined}
+        withSearch={true}
+        withColors={true}
+        setValue={(e) => setFilter({ ...filter, value: e?.toString() ?? null })}
+        options={i18nConfig.supportedLngs.map((f) => ({ value: f, name: t("shared.locales." + f) }))}
+        required
+      />
+    );
+  }
+
+  return <></>;
+}
+
 function OnboardingFilterModal({
   item,
   idx,
@@ -351,106 +454,10 @@ function OnboardingFilterModal({
             value={filter?.type}
             withSearch={true}
             setValue={(e) => setFilter({ ...filter, type: e as OnboardingFilterType, value: null })}
-            options={OnboardingFilterTypes.map((f) => {
-              return { value: f, name: f };
-            })}
+            options={OnboardingFilterTypes.map((f) => ({ value: f, name: f }))}
             required
           />
-          {filter?.type === "tenant.is" ? (
-            <InputSelector
-              name="value"
-              title={t("onboarding.filter.value")}
-              value={filter.value ?? undefined}
-              withSearch={true}
-              setValue={(e) => setFilter({ ...filter, value: e?.toString() ?? null })}
-              options={metadata.tenants.map((t) => {
-                return { value: t.id, name: t.name };
-              })}
-              required
-            />
-          ) : filter?.type === "user.is" ? (
-            <InputSelector
-              name="value"
-              title={t("onboarding.filter.value")}
-              value={filter.value ?? undefined}
-              withSearch={true}
-              setValue={(e) => setFilter({ ...filter, value: e?.toString() ?? null })}
-              options={metadata.users.map((t) => {
-                return { value: t.id, name: t.email };
-              })}
-              required
-            />
-          ) : filter?.type === "user.roles.contains" || filter?.type === "user.roles.notContains" ? (
-            <InputSelector
-              name="value"
-              title={t("onboarding.filter.value")}
-              value={filter.value ?? undefined}
-              withSearch={true}
-              withColors={true}
-              setValue={(e) => setFilter({ ...filter, value: e?.toString() ?? null })}
-              options={metadata.roles.map((t) => {
-                return {
-                  value: t.name,
-                  name: t.type === "admin" ? `[admin] ${t.name}` : t.name,
-                  color: t.type === "admin" ? Colors.RED : Colors.INDIGO,
-                };
-              })}
-              required
-            />
-          ) : filter?.type === "tenant.subscription.products.has" ? (
-            <InputSelector
-              name="value"
-              title={t("onboarding.filter.value")}
-              value={filter.value ?? undefined}
-              withSearch={true}
-              setValue={(e) => setFilter({ ...filter, value: e?.toString() ?? null })}
-              options={metadata.subscriptionProducts.map((f) => {
-                return { value: f.id, name: t(f.title) };
-              })}
-              required
-            />
-          ) : filter?.type.startsWith("tenant.user.entity") ? (
-            <InputSelector
-              name="value"
-              title={t("onboarding.filter.value")}
-              value={filter.value ?? undefined}
-              withSearch={true}
-              withColors={true}
-              setValue={(e) => setFilter({ ...filter, value: e?.toString() ?? null })}
-              options={appOrAdminData.entities.map((f) => {
-                return {
-                  value: f.id,
-                  name: t(f.titlePlural),
-                };
-              })}
-              required
-            />
-          ) : filter?.type === "user.language" ? (
-            <InputSelector
-              name="value"
-              title={t("onboarding.filter.value")}
-              value={filter.value ?? undefined}
-              withSearch={true}
-              withColors={true}
-              setValue={(e) => setFilter({ ...filter, value: e?.toString() ?? null })}
-              options={i18nConfig.supportedLngs.map((f) => {
-                return {
-                  value: f,
-                  name: t("shared.locales." + f),
-                };
-              })}
-              required
-            />
-          ) : (
-            <></>
-            // <InputText
-            //   name="value"
-            //   title={t("onboarding.filter.value")}
-            //   value={filter.value ?? undefined}
-            //   setValue={(e) => setFilter({ ...filter, value: e.toString() ?? null })}
-            //   required
-            // />
-          )}
+          {getFilterValueInput(filter, setFilter as any, metadata, appOrAdminData, t)}
         </div>
         <div className="border-border mt-3 flex justify-between border-t pt-3">
           <div>

@@ -43,7 +43,7 @@ type LoaderData = {
   alreadyVoted: boolean;
   canShowResults: boolean;
 };
-export let loader = async ({ request, params }: LoaderFunctionArgs) => {
+export const loader = async ({ request, params }: LoaderFunctionArgs) => {
   const appConfiguration = await getAppConfiguration({ request });
   if (!appConfiguration.app.features.surveys) {
     throw Response.json({}, { status: 404 });
@@ -153,7 +153,7 @@ async function getAlreadyVoted({ item, request }: { item: SurveyWithDetails; req
   return false;
 }
 
-export let action: ActionFunction = async ({ request, params }) => {
+export const action: ActionFunction = async ({ request, params }) => {
   const item = await getSurveyBySlug({ tenantId: null, slug: params.slug! });
   if (!item) {
     return Response.json({ error: "Survey not found" }, { status: 404 });
@@ -365,6 +365,15 @@ function SurveyGroup({
             item: item.title,
             values: [],
           };
+          const handleChange = (newValue: SurveryItemResultDto) => {
+            setResults((prev) => {
+              const idx = prev.findIndex((r) => r.item === newValue.item);
+              if (idx === -1) {
+                return [...prev, newValue];
+              }
+              return [...prev.slice(0, idx), newValue, ...prev.slice(idx + 1)];
+            });
+          };
           return (
             <SurveyItem
               key={idx}
@@ -372,15 +381,7 @@ function SurveyGroup({
               item={item}
               value={value}
               disabled={disabled}
-              onChange={(value) => {
-                setResults((prev) => {
-                  const idx = prev.findIndex((r) => r.item === value.item);
-                  if (idx === -1) {
-                    return [...prev, value];
-                  }
-                  return [...prev.slice(0, idx), value, ...prev.slice(idx + 1)];
-                });
-              }}
+              onChange={handleChange}
             />
           );
         })}

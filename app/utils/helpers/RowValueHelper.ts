@@ -126,16 +126,12 @@ function getNumberRange({
   name: string;
 }): RowValueRangeDto {
   const value = RowHelper.getPropertyValue({ entity, item: row, propertyName: name });
-  let range = value as RowValueRangeDto;
-  if (!range) {
-    range = {
-      numberMin: null,
-      numberMax: null,
-      dateMin: null,
-      dateMax: null,
-    };
-  }
-  return range;
+  return (value as RowValueRangeDto) ?? {
+    numberMin: null,
+    numberMax: null,
+    dateMin: null,
+    dateMax: null,
+  };
 }
 function getDateRange({
   entity,
@@ -147,16 +143,12 @@ function getDateRange({
   name: string;
 }): RowValueRangeDto {
   const value = RowHelper.getPropertyValue({ entity, item: row, propertyName: name });
-  let range = value as RowValueRangeDto;
-  if (!range) {
-    range = {
-      numberMin: null,
-      numberMax: null,
-      dateMin: null,
-      dateMax: null,
-    };
-  }
-  return range;
+  return (value as RowValueRangeDto) ?? {
+    numberMin: null,
+    numberMax: null,
+    dateMin: null,
+    dateMax: null,
+  };
 }
 
 export default {

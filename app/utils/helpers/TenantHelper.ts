@@ -56,39 +56,43 @@ function apiFormat({
               endsAt: f.endsAt ?? undefined,
               stripeId: f.stripeSubscriptionId,
               prices: f.prices.map((p) => {
+                let priceDetails;
+                if (p.subscriptionPrice) {
+                  priceDetails = {
+                    stripeId: p.subscriptionPrice.stripeId,
+                    type: SubscriptionPriceType[p.subscriptionPrice.type],
+                    billingPeriod: SubscriptionBillingPeriod[p.subscriptionPrice.billingPeriod],
+                    price: Number(p.subscriptionPrice.price),
+                    currency: p.subscriptionPrice.currency,
+                  };
+                } else if (p.subscriptionUsageBasedPrice) {
+                  priceDetails = {
+                    stripeId: p.subscriptionUsageBasedPrice.stripeId,
+                    billingPeriod: SubscriptionBillingPeriod[p.subscriptionUsageBasedPrice.billingPeriod],
+                    currency: p.subscriptionUsageBasedPrice.currency,
+                    unit: p.subscriptionUsageBasedPrice.unit,
+                    unitTitle: t(p.subscriptionUsageBasedPrice.unitTitle),
+                    unitTitlePlural: t(p.subscriptionUsageBasedPrice.unitTitlePlural),
+                    usageType: p.subscriptionUsageBasedPrice.usageType,
+                    aggregateUsage: p.subscriptionUsageBasedPrice.aggregateUsage,
+                    tiersMode: p.subscriptionUsageBasedPrice.tiersMode,
+                    billingScheme: p.subscriptionUsageBasedPrice.billingScheme,
+                    tiers: p.subscriptionUsageBasedPrice.tiers.map((t) => {
+                      return {
+                        id: t.id,
+                        from: Number(t.from),
+                        to: t.to ? Number(t.to) : null,
+                        perUnitPrice: t.perUnitPrice ? Number(t.perUnitPrice) : undefined,
+                        flatFeePrice: t.flatFeePrice ? Number(t.flatFeePrice) : undefined,
+                      };
+                    }),
+                  };
+                } else {
+                  priceDetails = undefined;
+                }
                 return {
                   id: p.id,
-                  ...(p.subscriptionPrice
-                    ? {
-                        stripeId: p.subscriptionPrice.stripeId,
-                        type: SubscriptionPriceType[p.subscriptionPrice.type],
-                        billingPeriod: SubscriptionBillingPeriod[p.subscriptionPrice.billingPeriod],
-                        price: Number(p.subscriptionPrice.price),
-                        currency: p.subscriptionPrice.currency,
-                      }
-                    : p.subscriptionUsageBasedPrice
-                    ? {
-                        stripeId: p.subscriptionUsageBasedPrice.stripeId,
-                        billingPeriod: SubscriptionBillingPeriod[p.subscriptionUsageBasedPrice.billingPeriod],
-                        currency: p.subscriptionUsageBasedPrice.currency,
-                        unit: p.subscriptionUsageBasedPrice.unit,
-                        unitTitle: t(p.subscriptionUsageBasedPrice.unitTitle),
-                        unitTitlePlural: t(p.subscriptionUsageBasedPrice.unitTitlePlural),
-                        usageType: p.subscriptionUsageBasedPrice.usageType,
-                        aggregateUsage: p.subscriptionUsageBasedPrice.aggregateUsage,
-                        tiersMode: p.subscriptionUsageBasedPrice.tiersMode,
-                        billingScheme: p.subscriptionUsageBasedPrice.billingScheme,
-                        tiers: p.subscriptionUsageBasedPrice.tiers.map((t) => {
-                          return {
-                            id: t.id,
-                            from: Number(t.from),
-                            to: t.to ? Number(t.to) : null,
-                            perUnitPrice: t.perUnitPrice ? Number(t.perUnitPrice) : undefined,
-                            flatFeePrice: t.flatFeePrice ? Number(t.flatFeePrice) : undefined,
-                          };
-                        }),
-                      }
-                    : undefined),
+                  ...priceDetails,
                 };
               }),
             };

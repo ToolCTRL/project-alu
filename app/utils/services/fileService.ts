@@ -1,4 +1,3 @@
-// var AdmZip = require("adm-zip");
 import fs from "fs";
 
 export async function saveZip(path: string, data: { type: string; content: string }) {
@@ -10,7 +9,7 @@ export async function saveZip(path: string, data: { type: string; content: strin
       }
     }
     const utf = _decodeBase64ToUtf8(data.content);
-    var blob = new Blob([utf], { type: data.type });
+    const blob = new Blob([utf], { type: data.type });
     const buffer = Buffer.from(await blob.arrayBuffer());
     fs.writeFileSync(path, buffer);
     // eslint-disable-next-line no-console
@@ -53,29 +52,6 @@ export function deleteFolder(path: string, options: { recursive: boolean; force:
   }
 }
 
-// export async function extractZip(source: string, target?: string) {
-//   try {
-//     if (target) {
-//       const dir = target?.replace(/\/\w+\.\w+$/, "");
-//       if (dir) {
-//         if (!fs.existsSync(dir)) {
-//           fs.mkdirSync(dir, { recursive: true });
-//         }
-//       }
-//     }
-//     var zip = new AdmZip(source);
-//     const entries = zip.getEntries();
-//     // eslint-disable-next-line no-console
-//     console.log("[extractZip] success", source, target);
-//     return entries;
-//   } catch (e: any) {
-//     // handle any errors
-//     // eslint-disable-next-line no-console
-//     console.log("[extractZip] error", { target, error: e.message });
-//     throw new Error("Error extracting zip file: " + e.message);
-//   }
-// }
-
 export async function createBlobFromBase64(type: string, content: string) {
   const response = await fetch(`data:${type};base64,${content}`);
   return await response.blob();
@@ -87,7 +63,7 @@ export async function getBase64FromBlob(blob: Blob) {
 }
 
 function _decodeBase64ToUtf8(base64: string) {
-  var buffer;
+  let buffer;
   if (typeof Buffer.from === "function") {
     // Node 5.10+
     buffer = Buffer.from(base64, "base64");

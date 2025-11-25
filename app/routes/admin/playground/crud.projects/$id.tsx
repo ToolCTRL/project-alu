@@ -31,58 +31,60 @@ type ActionData = {
   success?: string;
   error?: string;
 };
+async function handleEdit(params: any, form: FormData) {
+  const name = form.get("name")?.toString() ?? "";
+  const description = form.get("description")?.toString();
+  const tasks: Partial<FakeTaskDto>[] = form.getAll("tasks[]").map((f: FormDataEntryValue) => {
+    return JSON.parse(f.toString());
+  });
+  const isActive = form.get("isActive");
+  const active = isActive ? isActive.toString() === "on" || isActive.toString() === "true" : false;
+
+  if (!name) {
+    throw Error("Please fill all fields");
+  }
+
+  if (tasks.length === 0) {
+    throw Error("Please add at least one task");
+  }
+
+  await FakeProjectService.update(params.id!, {
+    name,
+    description,
+    active,
+    tasks,
+  });
+  return Response.json({ success: "Project updated" });
+}
+
+async function handleCompleteTask(form: FormData) {
+  const projectId = form.get("project-id")?.toString() ?? "";
+  const taskId = form.get("task-id")?.toString() ?? "";
+  await FakeProjectService.completeTask(projectId, taskId);
+  return Response.json({ success: "Task completed" });
+}
+
+async function handleDelete(params: any) {
+  await FakeProjectService.del(params.id!);
+  return redirect("/admin/playground/crud/projects");
+}
+
 export const action: ActionFunction = async ({ request, params }) => {
   const form = await request.formData();
   const action = form.get("action")?.toString() ?? "";
-  if (action === "edit") {
-    try {
-      const name = form.get("name")?.toString() ?? "";
-      const description = form.get("description")?.toString();
-      const tasks: Partial<FakeTaskDto>[] = form.getAll("tasks[]").map((f: FormDataEntryValue) => {
-        return JSON.parse(f.toString());
-      });
-      const isActive = form.get("isActive");
-      const active = isActive ? isActive.toString() === "on" || isActive.toString() === "true" : false;
 
-      if (!name) {
-        throw Error("Please fill all fields");
-      }
-
-      if (tasks.length === 0) {
-        throw Error("Please add at least one task");
-      }
-      try {
-        await FakeProjectService.update(params.id!, {
-          name,
-          description,
-          active,
-          tasks,
-        });
-        return Response.json({ success: "Project updated" });
-      } catch (e: any) {
-        return Response.json({ error: e.message }, { status: 400 });
-      }
-    } catch (e: any) {
-      return Response.json({ error: e.message }, { status: 400 });
+  try {
+    if (action === "edit") {
+      return await handleEdit(params, form);
+    } else if (action === "complete-task") {
+      return await handleCompleteTask(form);
+    } else if (action === "delete") {
+      return await handleDelete(params);
+    } else {
+      return Response.json({ error: "Invalid action" }, { status: 400 });
     }
-  } else if (action === "complete-task") {
-    try {
-      const projectId = form.get("project-id")?.toString() ?? "";
-      const taskId = form.get("task-id")?.toString() ?? "";
-      await FakeProjectService.completeTask(projectId, taskId);
-      return Response.json({ success: "Task completed" });
-    } catch (e: any) {
-      return Response.json({ error: e.message }, { status: 400 });
-    }
-  } else if (action === "delete") {
-    try {
-      await FakeProjectService.del(params.id!);
-      return redirect("/admin/playground/crud/projects");
-    } catch (e: any) {
-      return Response.json({ error: e.message }, { status: 400 });
-    }
-  } else {
-    return Response.json({ error: "Invalid action" }, { status: 400 });
+  } catch (e: any) {
+    return Response.json({ error: e.message }, { status: 400 });
   }
 };
 

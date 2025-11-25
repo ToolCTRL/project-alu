@@ -6,7 +6,7 @@ import NumberUtils from "../shared/NumberUtils";
 import { getMrr } from "./.server/subscriptionService";
 import { promiseHash } from "../promises/promiseHash";
 
-export async function getAdminDashboardStats({ gte }: { gte: Date | undefined | undefined }): Promise<Stat[]> {
+export async function getAdminDashboardStats({ gte }: { gte: Date | undefined }): Promise<Stat[]> {
   const { tenantStat, mrrStat, activeUsersStat } = await promiseHash({
     tenantStat: getTenantStat(gte),
     mrrStat: getMMRStat(),

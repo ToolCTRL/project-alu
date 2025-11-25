@@ -65,11 +65,11 @@ export default function PropertyTypeSelector({ className, selected, onSelected }
                         {({ selected, active }) => (
                           <>
                             <div className="flex items-center space-x-2">
-                              <PropertyBadge type={item} className={clsx(active ? "" : "", "h-4 w-4")} />
+                              <PropertyBadge type={item} className="h-4 w-4" />
                               <div className="truncate">{t("entities.fields." + PropertyType[item])}</div>
                             </div>
                             {selected ? (
-                              <span className={clsx(active ? "" : "", "absolute inset-y-0 right-0 flex items-center pr-4")}>
+                              <span className="absolute inset-y-0 right-0 flex items-center pr-4">
                                 <CheckIcon className="h-5 w-5" aria-hidden="true" />
                               </span>
                             ) : null}

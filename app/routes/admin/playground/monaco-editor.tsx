@@ -26,50 +26,45 @@ export default function PlaygroundMonacoEditorRoute() {
 
   useEffect(() => {
     const autocompletions: MonacoAutoCompletion[] = [];
-    data.allEntities
-      .sort((a, b) => a.order - b.order)
-      .forEach((entity) => {
-        // autocompletions.push({
-        //   label: `row.${entity.name}`,
-        //   kind: monaco.languages.CompletionItemKind.Text,
-        //   documentation: t(entity.titlePlural),
-        //   insertText: `"${entity.name}": "*"`,
-        //   range: range,
-        // });
+    const sortedEntities = data.allEntities.sort((a, b) => a.order - b.order);
 
-        entity.properties
-          .filter((f) => !f.isDefault)
-          .sort((a, b) => a.order - b.order)
-          .forEach((property) => {
-            const label = `row.${entity.name}.${property.name}`;
-            autocompletions.push({
-              label,
-              kind: "Value",
-              documentation: t(property.title),
-              insertText: `{{${label}}}`,
-            });
-          });
+    sortedEntities.forEach((entity) => {
+      const sortedProperties = entity.properties
+        .filter((f) => !f.isDefault)
+        .sort((a, b) => a.order - b.order);
 
-        entity.childEntities.forEach((child) => {
-          const childEntity = data.allEntities.find((f) => f.id === child.childId);
-          if (!childEntity) {
-            return;
-          }
-          childEntity.properties
-            .filter((f) => !f.isDefault)
-            .sort((a, b) => a.order - b.order)
-            .forEach((property) => {
-              const label = `row.${entity.name}.${childEntity.name}.${property.name}`;
-              autocompletions.push({
-                label,
-                kind: "Value",
-                documentation: t(property.title),
-                insertText: `{{${label}}}`,
-                // range: range,
-              });
-            });
+      sortedProperties.forEach((property) => {
+        const label = `row.${entity.name}.${property.name}`;
+        autocompletions.push({
+          label,
+          kind: "Value",
+          documentation: t(property.title),
+          insertText: `{{${label}}}`,
         });
       });
+
+      entity.childEntities.forEach((child) => {
+        const childEntity = data.allEntities.find((f) => f.id === child.childId);
+        if (!childEntity) {
+          return;
+        }
+
+        const sortedChildProperties = childEntity.properties
+          .filter((f) => !f.isDefault)
+          .sort((a, b) => a.order - b.order);
+
+        sortedChildProperties.forEach((property) => {
+          const label = `row.${entity.name}.${childEntity.name}.${property.name}`;
+          autocompletions.push({
+            label,
+            kind: "Value",
+            documentation: t(property.title),
+            insertText: `{{${label}}}`,
+          });
+        });
+      });
+    });
+
     setAutocompletions(autocompletions);
   }, [data.allEntities, t]);
 

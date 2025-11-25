@@ -33,7 +33,7 @@ export default function KbCategory({ kb, item, allCategories }: { kb: KnowledgeB
             <div className="flex items-center space-x-3">
               {item.icon && (
                 <div className="shrink-0">
-                  {item.icon.startsWith("<svg") ? (
+                  {item.icon.startsWith("<svg") && (
                     <div
                       dangerouslySetInnerHTML={{
                         __html:
@@ -43,24 +43,13 @@ export default function KbCategory({ kb, item, allCategories }: { kb: KnowledgeB
                           ) ?? "",
                       }}
                     />
-                  ) : item.icon.includes("http") ? (
-                    <img className="h-7 w-7" src={item.icon} alt={item.title} />
-                  ) : (
-                    <></>
                   )}
+                  {!item.icon.startsWith("<svg") && item.icon.includes("http") && <img className="h-7 w-7" src={item.icon} alt={item.title} />}
                 </div>
               )}
               <div className="text-xl font-bold md:text-2xl">{item.title}</div>
             </div>
             <div className="text-muted-foreground mt-2 font-normal">{item.description}</div>
-            {/* <div className="mt-6 flex items-center space-x-2 justify-between">
-              <div className="flex items-center space-x-2">
-                <div className="text-sm">
-                  {item.articles.length} <span>{item.articles.length === 1 ? "article" : "articles"}</span>
-                </div>
-              </div>
-              <div className="text-sm text-muted-foreground">{item.version}</div>
-            </div> */}
           </div>
         </div>
       </div>

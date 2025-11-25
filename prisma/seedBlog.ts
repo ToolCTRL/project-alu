@@ -38,24 +38,6 @@ export async function seedBlogPosts() {
   );
 }
 
-// async function seedTags(tags: { name: string; color: Colors }[]) {
-//   return await Promise.all(
-//     tags.map(async (data) => {
-//       const existing = await db.blogTag.findFirst({
-//         where: { tenantId: null, name: data.name },
-//       });
-//       if (!existing) {
-//         return await db.blogTag.create({
-//           data: {
-//             ...data,
-//             tenantId: null,
-//           },
-//         });
-//       }
-//     })
-//   );
-// }
-
 async function seedCategories({ tenantId, items }: { tenantId: string | null; items: { name: string; color: Colors }[] }) {
   return await Promise.all(
     items.map(async (data) => {

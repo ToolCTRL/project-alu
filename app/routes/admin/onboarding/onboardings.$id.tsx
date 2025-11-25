@@ -23,13 +23,6 @@ export default function () {
   const data = useLoaderData<LoaderData>();
   const params = useParams();
 
-  // useEffect(() => {
-  //   if (UrlUtils.stripTrailingSlash(location.pathname) === `/admin/accounts/users/pages/edit/${params.id}`) {
-  //     navigate(`/admin/accounts/users/pages/edit/${params.id}/blocks`);
-  //   }
-  //   // eslint-disable-next-line react-hooks/exhaustive-deps
-  // }, [location.pathname]);
-
   return (
     <div>
       <EditPageLayout
