@@ -30,12 +30,12 @@ function classNames(...classes: (string | boolean | undefined)[]) {
 }
 
 interface Props {
-  layout: "app" | "admin" | "docs";
-  children: React.ReactNode;
-  onOpenCommandPalette: () => void;
-  menuItems?: SideBarItem[];
+  readonly layout: "app" | "admin" | "docs";
+  readonly children: React.ReactNode;
+  readonly onOpenCommandPalette: () => void;
+  readonly menuItems?: SideBarItem[];
 }
-export default function NewSidebarMenu({ layout, children, onOpenCommandPalette, menuItems }: Props) {
+export default function NewSidebarMenu({ layout, children, onOpenCommandPalette, menuItems }: Readonly<Props>) {
   const { t } = useTranslation();
   const rootData = useRootData();
   const appData = useAppData();
@@ -91,7 +91,6 @@ export default function NewSidebarMenu({ layout, children, onOpenCommandPalette,
         }
       });
     });
-    // setMenu(layout === "admin" ? AdminSidebar : );
     menu.forEach((group) => {
       group.items?.forEach((element) => {
         if (element.open || isCurrent(element) || currentIsChild(element)) {
@@ -248,16 +247,16 @@ export default function NewSidebarMenu({ layout, children, onOpenCommandPalette,
                 <nav className="flex flex-1 flex-col">
                   {layout === "app" && <div>{appData?.currentTenant && <NewTenantSelector key={params.tenant} />}</div>}
 
-                  {getMenu().map((group, index) => {
+                  {getMenu().map((group) => {
                     return (
-                      <div key={index} className="space-y-1">
+                      <div key={group.title} className="space-y-1">
                         <div id={group.title} className="mt-1">
                           <h3 className="text-muted-foreground px-1 text-xs font-medium uppercase leading-4 tracking-wider">{t(group.title || "")}</h3>
                         </div>
-                        {group.items.map((menuItem, index) => {
+                        {group.items.map((menuItem) => {
                           return (
                             <Link
-                              key={index}
+                              key={menuItem.path}
                               prefetch="intent"
                               id={UrlUtils.slugify(getPath(menuItem))}
                               to={menuItem.redirectTo ?? getPath(menuItem)}
@@ -365,17 +364,17 @@ export default function NewSidebarMenu({ layout, children, onOpenCommandPalette,
                   <ul role="list" className="-mx-2 space-y-1">
                     {layout === "app" && <div>{appData?.currentTenant && <NewTenantSelector key={params.tenant} />}</div>}
 
-                    {getMenu().map((group, index) => {
+                    {getMenu().map((group) => {
                       return (
-                        <div key={index} className="select-none">
+                        <div key={group.title} className="select-none">
                           <div className="mt-2">
                             <h3 id="Group-headline" className="text-muted-foreground px-1 text-xs font-medium uppercase leading-4 tracking-wider">
                               {t(group.title || "")}
                             </h3>
                           </div>
-                          {group.items.map((menuItem, index) => {
+                          {group.items.map((menuItem) => {
                             return (
-                              <div key={index}>
+                              <div key={menuItem.path}>
                                 {(() => {
                                   if (!menuItem.items || menuItem.items.length === 0) {
                                     return (
@@ -456,23 +455,6 @@ export default function NewSidebarMenu({ layout, children, onOpenCommandPalette,
                         </div>
                       );
                     })}
-                    {/* {navigation.map((item) => (
-                      <li key={item.name}>
-                        <a
-                          href={item.href}
-                          className={classNames(
-                            item.current ? " bg-secondary text-primary dark:text-secondary-foreground" : "hover:text-primary text-muted-foreground hover:bg-secondary",
-                            "group flex gap-x-3 rounded-md p-2 text-sm leading-5"
-                          )}
-                        >
-                          <item.icon
-                            aria-hidden="true"
-                            className={classNames(item.current ? "text-primary" : "group-hover:text-primary text-muted-foreground", "h-6 w-6 shrink-0")}
-                          />
-                          {item.name}
-                        </a>
-                      </li>
-                    ))} */}
                   </ul>
                 </li>
                 {/* <li>

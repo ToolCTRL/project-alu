@@ -32,13 +32,13 @@ type ActionData = {
   error?: string;
 };
 async function handleEdit(params: any, form: FormData) {
-  const name = form.get("name")?.toString() ?? "";
-  const description = form.get("description")?.toString();
+  const name = form.get("name") as string;
+  const description = form.get("description");
   const tasks: Partial<FakeTaskDto>[] = form.getAll("tasks[]").map((f: FormDataEntryValue) => {
     return JSON.parse(f.toString());
   });
   const isActive = form.get("isActive");
-  const active = isActive ? isActive.toString() === "on" || isActive.toString() === "true" : false;
+  const active = isActive ? isActive === "on" || isActive === "true" : false;
 
   if (!name) {
     throw Error("Please fill all fields");
@@ -58,8 +58,8 @@ async function handleEdit(params: any, form: FormData) {
 }
 
 async function handleCompleteTask(form: FormData) {
-  const projectId = form.get("project-id")?.toString() ?? "";
-  const taskId = form.get("task-id")?.toString() ?? "";
+  const projectId = form.get("project-id") as string;
+  const taskId = form.get("task-id") as string;
   await FakeProjectService.completeTask(projectId, taskId);
   return Response.json({ success: "Task completed" });
 }

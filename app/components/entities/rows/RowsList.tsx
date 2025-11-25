@@ -750,7 +750,7 @@ function BoardColumn({
   groupBy,
   t,
   MinimalCard,
-}: {
+}: Readonly<{
   colId: string;
   rows: RowWithDetails[];
   columnWidth: number;
@@ -767,7 +767,7 @@ function BoardColumn({
   groupBy?: PropertyWithDetails;
   t: any;
   MinimalCard: ({ row }: { row: RowWithDetails }) => JSX.Element;
-}) {
+}>) {
   const renderDraggableCard = (row: RowWithDetails, idx: number) => {
     return (
       <Draggable draggableId={row.id} index={idx} key={row.id}>

@@ -11,9 +11,8 @@ export default function ChatSupportButton() {
         setIsOpen(false);
       } else {
         // @ts-ignore
-        $crisp?.push(["do", "chat:open"]);
-        // @ts-ignore
-        $crisp?.push(["do", "chat:show"]);
+        const commands = [["do", "chat:open"], ["do", "chat:show"]];
+        commands.forEach((cmd) => $crisp?.push(cmd));
         setIsOpen(true);
       }
     } catch {

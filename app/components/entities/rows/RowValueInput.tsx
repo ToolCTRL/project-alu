@@ -28,26 +28,28 @@ export interface RefRowValueInput {
   focus: () => void;
 }
 
+type ChangeValue = string | number | Date | boolean | undefined | null;
+
 interface Props {
-  selected: PropertyWithDetails | undefined;
-  entity: EntityWithDetails;
-  textValue: string | undefined;
-  numberValue: number | undefined;
-  dateValue: Date | undefined;
-  booleanValue: boolean | undefined;
-  multiple: RowValueMultiple[] | undefined;
-  range: RowValueRange | undefined;
-  initialMedia?: RowMedia[];
-  initialOption?: string;
-  onChange?: (value: string | number | Date | boolean | undefined | null) => void;
-  onChangeOption?: (option: string | undefined) => void;
-  onChangeMedia?: (option: MediaDto[]) => void;
-  onChangeMultiple?: (option: RowValueMultipleDto[]) => void;
-  onChangeRange?: (option: RowValueRangeDto | undefined) => void;
-  readOnly: boolean;
-  className?: string;
-  autoFocus?: boolean;
-  promptFlows?: { rowId: string | undefined; prompts: PromptFlowWithDetails[] };
+  readonly selected: PropertyWithDetails | undefined;
+  readonly entity: EntityWithDetails;
+  readonly textValue: string | undefined;
+  readonly numberValue: number | undefined;
+  readonly dateValue: Date | undefined;
+  readonly booleanValue: boolean | undefined;
+  readonly multiple: RowValueMultiple[] | undefined;
+  readonly range: RowValueRange | undefined;
+  readonly initialMedia?: RowMedia[];
+  readonly initialOption?: string;
+  readonly onChange?: (value: ChangeValue) => void;
+  readonly onChangeOption?: (option: string | undefined) => void;
+  readonly onChangeMedia?: (option: MediaDto[]) => void;
+  readonly onChangeMultiple?: (option: RowValueMultipleDto[]) => void;
+  readonly onChangeRange?: (option: RowValueRangeDto | undefined) => void;
+  readonly readOnly: boolean;
+  readonly className?: string;
+  readonly autoFocus?: boolean;
+  readonly promptFlows?: { rowId: string | undefined; prompts: PromptFlowWithDetails[] };
 }
 
 function useFocusHandlers(selected: PropertyWithDetails | undefined) {

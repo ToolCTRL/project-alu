@@ -66,9 +66,9 @@ type ActionData = {
 const badRequest = (data: ActionData) => Response.json(data, { status: 400 });
 
 async function handleProfileUpdate(request: Request, user: any, userInfo: any, form: FormData) {
-  const firstName = form.get("firstName")?.toString();
-  const lastName = form.get("lastName")?.toString();
-  const avatar = form.get("avatar")?.toString();
+  const firstName = form.get("firstName") as string;
+  const lastName = form.get("lastName") as string;
+  const avatar = form.get("avatar") as string;
 
   const fields = { action: "profile", firstName, lastName, avatar, passwordCurrent: undefined, passwordNew: undefined, passwordNewConfirm: undefined };
   const fieldErrors = {
@@ -109,9 +109,9 @@ async function handleProfileUpdate(request: Request, user: any, userInfo: any, f
 }
 
 async function handlePasswordUpdate(t: any, user: any, userInfo: any, form: FormData) {
-  const passwordCurrent = form.get("passwordCurrent")?.toString();
-  const passwordNew = form.get("passwordNew")?.toString();
-  const passwordNewConfirm = form.get("passwordNewConfirm")?.toString();
+  const passwordCurrent = form.get("passwordCurrent") as string;
+  const passwordNew = form.get("passwordNew") as string;
+  const passwordNewConfirm = form.get("passwordNewConfirm") as string;
 
   if (typeof passwordCurrent !== "string" || typeof passwordNew !== "string" || typeof passwordNewConfirm !== "string") {
     return badRequest({ passwordError: `Form not submitted correctly.` });

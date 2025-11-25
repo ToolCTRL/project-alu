@@ -203,7 +203,7 @@ export default function JsonPropertyForm({ item, onClose }: Props) {
         </div>
       </Form>
       <SlideOverWideEmpty
-        title={selectedOption === null ? t("shared.new") : selectedOption !== undefined ? t("shared.edit") : ""}
+        title={selectedOption === null ? t("shared.new") : selectedOption === undefined ? "" : t("shared.edit")}
         open={selectedOption !== undefined}
         onClose={() => setSelectedOption(undefined)}
         size="sm"

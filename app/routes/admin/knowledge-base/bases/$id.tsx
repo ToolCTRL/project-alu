@@ -31,18 +31,18 @@ type ActionData = {
   success?: string;
 };
 async function handleEdit(request: Request, params: any, form: FormData, item: KnowledgeBaseDto) {
-  let basePath = form.get("basePath")?.toString() ?? "";
-  let slug = form.get("slug")?.toString() ?? "";
-  const title = form.get("title")?.toString() ?? "";
-  const description = form.get("description")?.toString() ?? "";
-  const defaultLanguage = form.get("defaultLanguage")?.toString() ?? "";
-  const layout = form.get("layout")?.toString() ?? "";
-  const color = Number(form.get("color")?.toString() ?? "");
+  let basePath = form.get("basePath") as string;
+  let slug = form.get("slug") as string;
+  const title = form.get("title") as string;
+  const description = form.get("description") as string;
+  const defaultLanguage = form.get("defaultLanguage") as string;
+  const layout = form.get("layout") as string;
+  const color = Number(form.get("color") ?? "");
   const enabled = Boolean(form.get("enabled"));
   const languages = form.getAll("languages[]").map((l) => l.toString());
   const links: KbNavLinkDto[] = form.getAll("links[]").map((l) => JSON.parse(l.toString()));
-  const logo = form.get("logo")?.toString() ?? "";
-  const seoImage = form.get("seoImage")?.toString() ?? "";
+  const logo = form.get("logo") as string;
+  const seoImage = form.get("seoImage") as string;
 
   if (languages.length === 0) {
     return Response.json({ error: "At least one language is required" }, { status: 400 });

@@ -176,15 +176,17 @@ export default function () {
   }, [selectedPlans]);
 
   // Helper functions extracted to reduce nesting depth
+  type ChangeValue = string | number | undefined;
+
   const createHandleTitleChange = (setItems: (items: SubscriptionFeatureInPlansDto[]) => void, items: SubscriptionFeatureInPlansDto[]) => {
-    return (existing: any, e: string | number | undefined) => {
+    return (existing: any, e: ChangeValue) => {
       existing.title = e?.toString() ?? "";
       setItems([...items]);
     };
   };
 
   const createHandleTypeChange = (setItems: (items: SubscriptionFeatureInPlansDto[]) => void, items: SubscriptionFeatureInPlansDto[]) => {
-    return (existing: any, item: any, planId: string, e: string | number | undefined) => {
+    return (existing: any, item: any, planId: string, e: ChangeValue) => {
       const type = Number(e) as SubscriptionFeatureLimitType;
       if (existing) {
         existing.type = type;
@@ -204,7 +206,7 @@ export default function () {
   };
 
   const createHandleValueChange = (setItems: (items: SubscriptionFeatureInPlansDto[]) => void, items: SubscriptionFeatureInPlansDto[]) => {
-    return (existing: any, item: any, planId: string, e: string | number | undefined) => {
+    return (existing: any, item: any, planId: string, e: ChangeValue) => {
       const value = e as number;
       if (existing) {
         existing.value = value;

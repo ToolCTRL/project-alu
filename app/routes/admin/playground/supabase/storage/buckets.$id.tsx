@@ -52,7 +52,7 @@ type ActionData = {
   publicUrl?: string;
 };
 async function handleFileSave(supabaseBucketId: string, form: FormData) {
-  const name = form.get("name")?.toString();
+  const name = form.get("name") as string;
   if (!name) {
     return Response.json({ error: "Missing name" }, { status: 400 });
   }
@@ -76,7 +76,7 @@ async function handleFileSave(supabaseBucketId: string, form: FormData) {
 }
 
 async function handleFileDelete(supabaseBucketId: string, form: FormData) {
-  const name = form.get("name")?.toString();
+  const name = form.get("name") as string;
   if (!name) {
     return Response.json({ error: "Missing id" }, { status: 400 });
   }
@@ -85,7 +85,7 @@ async function handleFileDelete(supabaseBucketId: string, form: FormData) {
 }
 
 async function handleFileDownload(supabaseBucketId: string, form: FormData) {
-  const name = form.get("name")?.toString();
+  const name = form.get("name") as string;
   if (!name) {
     return Response.json({ error: "Missing name" }, { status: 400 });
   }
