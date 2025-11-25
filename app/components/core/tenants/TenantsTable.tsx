@@ -20,6 +20,62 @@ interface Props {
   tenantInvoices?: Stripe.Invoice[];
   isStripeTest?: boolean;
 }
+function formatProductPrice(price: any, t: any): string {
+  return `$${NumberUtils.decimalFormat(Number(price.subscriptionPrice?.price ?? 0))} - ${SubscriptionUtils.getBillingPeriodDescription(
+    t,
+    price.subscriptionPrice?.billingPeriod ?? 0
+  )}`;
+}
+
+function renderProductEndDate(product: any, t: any) {
+  if (!product.endsAt) {
+    return null;
+  }
+
+  const isActive = new Date() < new Date(product.endsAt);
+  const labelKey = isActive ? "settings.subscription.ends" : "settings.subscription.endedAt";
+
+  return (
+    <div className="text-red-500">
+      {t(labelKey)} {DateUtils.dateMonthDayYear(product.endsAt)}
+    </div>
+  );
+}
+
+function renderSubscriptionProduct(product: any, t: any) {
+  return (
+    <div key={product.id}>
+      <div>
+        {t(product.subscriptionProduct.title)}{" "}
+        {product.prices
+          .map((f: any) => formatProductPrice(f, t))
+          .join(", ")}
+      </div>
+      {renderProductEndDate(product, t)}
+    </div>
+  );
+}
+
+function renderTenantCell(i: TenantWithUsage, t: any) {
+  return (
+    <div className="max-w-sm truncate">
+      <div className="text-foreground flex items-center space-x-1 truncate font-medium">
+        <Link to={`/admin/accounts/${i.id}`} className="hover:underline">
+          {i.name}
+        </Link>
+        {i.deactivatedReason && <SimpleBadge title={t("shared.deactivated") + ": " + i.deactivatedReason} color={Colors.RED} />}
+      </div>
+
+      <Link
+        to={"/app/" + i.slug}
+        className="text-muted-foreground focus:bg-secondary/90 hover:border-border rounded-md border-b border-dashed text-xs hover:border-dashed"
+      >
+        <span>/{i.slug}</span>
+      </Link>
+    </div>
+  );
+}
+
 export default function TenantsTable({ items, pagination, actions = [], tenantInvoices, isStripeTest }: Props) {
   const { t } = useTranslation();
 
@@ -30,23 +86,7 @@ export default function TenantsTable({ items, pagination, actions = [], tenantIn
     headers.push({
       name: "tenant",
       title: t("models.tenant.object"),
-      value: (i) => (
-        <div className="max-w-sm truncate">
-          <div className="text-foreground flex items-center space-x-1 truncate font-medium">
-            <Link to={`/admin/accounts/${i.id}`} className="hover:underline">
-              {i.name}
-            </Link>
-            {i.deactivatedReason && <SimpleBadge title={t("shared.deactivated") + ": " + i.deactivatedReason} color={Colors.RED} />}
-          </div>
-
-          <Link
-            to={"/app/" + i.slug}
-            className="text-muted-foreground focus:bg-secondary/90 hover:border-border rounded-md border-b border-dashed text-xs hover:border-dashed"
-          >
-            <span>/{i.slug}</span>
-          </Link>
-        </div>
-      ),
+      value: (i) => renderTenantCell(i, t),
     });
     headers.push({
       name: "subscription",
@@ -55,41 +95,9 @@ export default function TenantsTable({ items, pagination, actions = [], tenantIn
       formattedValue: (item) => (
         <span>
           {item.subscription?.products ? (
-            <>
-              <div>
-                {item.subscription.products.map((product) => {
-                  return (
-                    <div key={product.id}>
-                      <div>
-                        {t(product.subscriptionProduct.title)}{" "}
-                        {product.prices
-                          .map(
-                            (f) =>
-                              `$${NumberUtils.decimalFormat(Number(f.subscriptionPrice?.price ?? 0))} - ${SubscriptionUtils.getBillingPeriodDescription(
-                                t,
-                                f.subscriptionPrice?.billingPeriod ?? 0
-                              )}`
-                          )
-                          .join(", ")}
-                      </div>
-                      {product.endsAt && (
-                        <>
-                          {new Date() < new Date(product.endsAt) ? (
-                            <div className="text-red-500">
-                              {t("settings.subscription.ends")} {DateUtils.dateMonthDayYear(product.endsAt)}
-                            </div>
-                          ) : (
-                            <div className="text-red-500">
-                              {t("settings.subscription.endedAt")} {DateUtils.dateMonthDayYear(product.endsAt)}
-                            </div>
-                          )}
-                        </>
-                      )}
-                    </div>
-                  );
-                })}
-              </div>
-            </>
+            <div>
+              {item.subscription.products.map((product) => renderSubscriptionProduct(product, t))}
+            </div>
           ) : (
             <span className="text-muted-foreground text-sm italic">{t("settings.subscription.noSubscription")}</span>
           )}
@@ -99,8 +107,7 @@ export default function TenantsTable({ items, pagination, actions = [], tenantIn
     if (tenantInvoices !== undefined) {
       const getTenantInvoices = (tenant: TenantWithUsage) => {
         const items = tenantInvoices?.filter((f) => f.customer?.toString() === tenant.subscription?.stripeCustomerId) ?? [];
-        const sortedByCreatedDesc = items.sort((a, b) => (a.created > b.created ? 1 : -1));
-        return sortedByCreatedDesc;
+        return items.toSorted((a, b) => (a.created > b.created ? 1 : -1));
       };
 
       const lastTenantInvoice = (tenant: TenantWithUsage): Stripe.Invoice | undefined => {

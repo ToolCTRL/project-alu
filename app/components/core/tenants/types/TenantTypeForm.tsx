@@ -47,8 +47,8 @@ export function TenantTypeForm({ item, allSubscriptionProducts }: { item?: Tenan
           description="All new tenants will be created with this type."
         />
         <Fragment>
-          {subscriptionProducts?.map((item, idx) => {
-            return <input key={idx} type="hidden" name={`subscriptionProducts[]`} value={item} />;
+          {subscriptionProducts?.map((item) => {
+            return <input key={item} type="hidden" name={`subscriptionProducts[]`} value={item} />;
           })}
           <InputCheckboxCards
             columns={1}

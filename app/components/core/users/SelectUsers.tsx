@@ -173,9 +173,9 @@ const SelectUsers = ({ items, allowSearch, onClosed, onSelected }: Props, ref: R
                           return (
                             <div>
                               <ul className="border-border divide-border mt-4 divide-y border-b border-t">
-                                {filteredItems(items).map((item, idx) => {
+                                {filteredItems(items).map((item) => {
                                   return (
-                                    <li className="flex items-center justify-between space-x-3 py-2" key={idx}>
+                                    <li className="flex items-center justify-between space-x-3 py-2" key={item.id}>
                                       <div className="flex min-w-0 flex-1 items-center space-x-3">
                                         <div className="min-w-0 flex-1">
                                           <p className="text-foreground truncate text-sm font-medium">{item.email}</p>

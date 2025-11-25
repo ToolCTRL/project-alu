@@ -39,13 +39,63 @@ export default function UsersTable({ items, canImpersonate, canChangePassword, c
         }
       });
 
-    const sorted = roles.sort((a, b) => {
+    return roles.toSorted((a, b) => {
       if (a.type === b.type) {
         return a.order - b.order;
       }
       return a.type.localeCompare(b.type);
     });
-    return sorted;
+  };
+
+  const renderTenantRoles = (user: UserWithDetails, tenantItem: any, t: any) => {
+    const roles = getUserRoles(user, tenantItem.tenantId);
+    const roleNames = roles.map((x) => x.name).join(", ");
+
+    if (roles.length > 0) {
+      return (
+        <span
+          className="text-muted-foreground truncate text-xs italic"
+          title={roleNames}
+        >
+          ({roleNames})
+        </span>
+      );
+    }
+
+    return <span className="truncate text-xs italic text-red-500">({t("app.users.undefinedRoles")})</span>;
+  };
+
+  const renderTenantItem = (user: UserWithDetails, tenantItem: any, t: any) => {
+    return (
+      <div key={tenantItem.id} className="truncate">
+        <Link
+          to={"/app/" + tenantItem.tenant.slug}
+          className="focus:bg-secondary/90 hover:border-border border-b border-dashed border-transparent hover:border-dashed"
+        >
+          <span>{tenantItem.tenant.name}</span>
+        </Link>{" "}
+        {renderTenantRoles(user, tenantItem, t)}
+      </div>
+    );
+  };
+
+  const renderUserBadgeCell = (item: UserWithDetails) => {
+    return <UserBadge item={item} admin={item.admin} withAvatar={true} withSignUpMethod={true} />;
+  };
+
+  const renderTenantsCell = (i: UserWithDetails, t: any) => {
+    const rolesDisplay = getUserRoles(i, null)
+      .map((x) => x.name)
+      .join(", ");
+
+    return (
+      <div className="max-w-sm truncate">
+        <div className="text-muted-foreground truncate italic" title={rolesDisplay}>
+          {rolesDisplay}
+        </div>
+        {i.tenants.map((f) => renderTenantItem(i, f, t))}
+      </div>
+    );
   };
 
   useEffect(() => {
@@ -54,54 +104,13 @@ export default function UsersTable({ items, canImpersonate, canChangePassword, c
         name: "user",
         title: t("models.user.object"),
         value: (i) => i.email,
-        formattedValue: (item) => <UserBadge item={item} admin={item.admin} withAvatar={true} withSignUpMethod={true} />,
+        formattedValue: renderUserBadgeCell,
         sortBy: "email",
       },
       {
         name: "tenants",
         title: t("app.users.accountsAndRoles"),
-        value: (i) => (
-          <div className="max-w-sm truncate">
-            <div
-              className="text-muted-foreground truncate italic"
-              title={getUserRoles(i, null)
-                .map((x) => x.name)
-                .join(", ")}
-            >
-              {getUserRoles(i, null)
-                .map((x) => x.name)
-                .join(", ")}
-            </div>
-            {i.tenants.map((f) => {
-              return (
-                <div key={f.id} className="truncate">
-                  <Link
-                    to={"/app/" + f.tenant.slug}
-                    className="focus:bg-secondary/90 hover:border-border border-b border-dashed border-transparent hover:border-dashed"
-                  >
-                    <span>{f.tenant.name}</span>
-                  </Link>{" "}
-                  {getUserRoles(i, f.tenantId).length > 0 ? (
-                    <span
-                      className="text-muted-foreground truncate text-xs italic"
-                      title={getUserRoles(i, f.tenantId)
-                        .map((x) => x.name)
-                        .join(", ")}
-                    >
-                      (
-                      {getUserRoles(i, f.tenantId)
-                        .map((x) => x.name)
-                        .join(", ")}
-                      )
-                    </span>
-                  ) : (
-                    <span className="truncate text-xs italic text-red-500">({t("app.users.undefinedRoles")})</span>
-                  )}
-                </div>
-              );
-            })}
-          </div>
-        ),
+        value: (i) => renderTenantsCell(i, t),
       },
       {
         name: "lastActivity",
@@ -126,14 +135,12 @@ export default function UsersTable({ items, canImpersonate, canChangePassword, c
       actions.push({
         title: t("models.user.impersonate"),
         onClick: (_, item) => impersonate(item),
-        disabled: (_) => !canImpersonate,
       });
     }
     if (canChangePassword) {
       actions.push({
         title: t("settings.profile.changePassword"),
         onClick: (_, item) => changePassword(item),
-        disabled: (_) => !canChangePassword,
       });
     }
     if (canSetUserRoles) {

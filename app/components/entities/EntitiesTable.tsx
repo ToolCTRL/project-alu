@@ -26,12 +26,19 @@ export default function EntitiesTable({ items, selected, onSelected }: Props) {
       {
         name: "type",
         title: t("models.entity.type"),
-        value: (item) => (
-          <SimpleBadge
-            title={item.type === "all" ? "App & Admin" : item.type === "app" ? "App" : "Admin"}
-            color={item.type === "app" ? Colors.BLUE : item.type === "admin" ? Colors.GRAY : Colors.EMERALD}
-          />
-        ),
+        value: (item) => {
+          const getTypeTitle = () => {
+            if (item.type === "all") return "App & Admin";
+            if (item.type === "app") return "App";
+            return "Admin";
+          };
+          const getTypeColor = () => {
+            if (item.type === "app") return Colors.BLUE;
+            if (item.type === "admin") return Colors.GRAY;
+            return Colors.EMERALD;
+          };
+          return <SimpleBadge title={getTypeTitle()} color={getTypeColor()} />;
+        },
       },
       {
         title: t("shared.order"),

@@ -14,7 +14,7 @@ export default function EntitySummaries({ items, routes }: { items: EntitySummar
   return (
     <Fragment>
       {items
-        .sort((a, b) => a.order - b.order)
+        .toSorted((a, b) => a.order - b.order)
         .map(({ rowsData }, idx) => {
           return <LatestRows key={idx} rowsData={rowsData} routes={routes} />;
         })}

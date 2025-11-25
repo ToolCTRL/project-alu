@@ -46,9 +46,9 @@ export default function PlansGrouped({ items, tenantSubscription, canSubmit, str
   return (
     <Fragment>
       <div className="space-y-10">
-        {groups().map((group, idx) => {
+        {groups().map((group) => {
           return (
-            <Fragment key={idx}>
+            <Fragment key={`${group.group.title}-${group.group.description}`}>
               <div>
                 {group.group.title && (
                   <div className="py-4">
@@ -59,7 +59,6 @@ export default function PlansGrouped({ items, tenantSubscription, canSubmit, str
                   </div>
                 )}
                 <Plans
-                  key={idx}
                   items={group.items}
                   tenantSubscription={tenantSubscription}
                   canSubmit={canSubmit}

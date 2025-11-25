@@ -208,15 +208,13 @@ export default function ProfileButton({ user, layout, items }: Readonly<Props>) 
             {layout === "/" && (
               <RootLayoutMenu user={user} closeDropdownUser={closeDropdownUser} t={t} />
             )}
-            {items && items.map((item) => (
+            {items?.map((item) => (
               <Link
                 key={item.path}
                 className="hover:bg-secondary block px-4 py-2 text-sm transition duration-150 ease-in-out"
                 role="menuitem"
                 onClick={() => {
-                  if (item.onClick) {
-                    item.onClick();
-                  }
+                  item.onClick?.();
                   closeDropdownUser();
                 }}
                 to={item.path}

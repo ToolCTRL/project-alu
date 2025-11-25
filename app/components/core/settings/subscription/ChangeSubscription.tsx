@@ -53,7 +53,7 @@ export default function ChangeSubscription({ items, current, billingPeriod, curr
 
   function selectPrice(product: SubscriptionProductDto) {
     const price = getPrice(product);
-    if (!price || !price.id) {
+    if (!price?.id) {
       return;
     }
     setSelectedPlan(product);
@@ -78,7 +78,7 @@ export default function ChangeSubscription({ items, current, billingPeriod, curr
       return;
     }
     const price = getPrice(selectedPlan);
-    if (!price || !price.id) {
+    if (!price?.id) {
       return;
     }
     const form = new FormData();
@@ -102,25 +102,8 @@ export default function ChangeSubscription({ items, current, billingPeriod, curr
       const billingPeriodDescription = billingPeriod === 3 ? t("pricing.MONTHLYShort") : t("pricing.YEARLYShort");
       return t("pricing.subscribe") + " " + t(plan.title) + " $" + Number(subscriptionPrice.price) * quantity + "/" + billingPeriodDescription;
     }
-    // if (current?.subscriptionPrice) {
-    //   return isUpgrade(plan) ? t("shared.upgrade") : t("shared.downgrade");
-    // }
     return t("pricing.subscribe");
   }
-
-  // function isDowngrade(plan: SubscriptionProductDto) {
-  //   if (current) {
-  //     return plan.order < (current.subscriptionPrice?.subscriptionProduct.order ?? 0);
-  //   }
-  //   return false;
-  // }
-
-  // function isUpgrade(plan: SubscriptionProductDto) {
-  //   if (!current) {
-  //     return true;
-  //   }
-  //   return plan.order > (current.subscriptionPrice?.subscriptionProduct.order ?? 0);
-  // }
 
   function cancel() {
     confirmModal.current?.show(t("settings.subscription.confirmCancel"));
@@ -234,8 +217,6 @@ export default function ChangeSubscription({ items, current, billingPeriod, curr
                                 loading || isCurrent(plan) || !getPrice(plan)?.stripeId || !canSubscribe
                                   ? "cursor-not-allowed opacity-80"
                                   : "hover:bg-secondary/90 border-slate-800"
-                                // isUpgrade(plan) && canSubscribe && "hover:text-teal-600",
-                                // isDowngrade(plan) && canSubscribe && "hover:text-red-600"
                               )}
                             >
                               {getButtonTitle(plan)}

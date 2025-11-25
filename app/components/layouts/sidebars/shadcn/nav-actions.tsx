@@ -52,8 +52,8 @@ export function NavActions({
 
   return (
     <div className="flex items-center gap-2 text-sm">
-      {!!false && (
-        <NavBar
+      {/* Temporarily disabled NavBar */}
+      {/* <NavBar
           layout={layout}
           // title={title}
           buttons={{
@@ -68,8 +68,7 @@ export function NavActions({
           }}
           onOpenCommandPalette={onOpenCommandPalette}
           onOpenOnboardingModal={() => setOnboardingModalOpen(true)}
-        ></NavBar>
-      )}
+        ></NavBar> */}
 
       <div className="flex items-center space-x-2">
         {/* NavBar Button: My Subscription */}

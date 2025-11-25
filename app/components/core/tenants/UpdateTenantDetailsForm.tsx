@@ -58,8 +58,8 @@ export default function UpdateTenantDetailsForm({ tenant, disabled, tenantSettin
             </div>
             {tenantTypes !== undefined && tenantTypes.length > 0 && (
               <div className="col-span-6 sm:col-span-6">
-                {types?.map((item, idx) => {
-                  return <input key={idx} type="hidden" name={`typeIds[]`} value={item} hidden readOnly />;
+                {types?.map((item) => {
+                  return <input key={item} type="hidden" name={`typeIds[]`} value={item} hidden readOnly />;
                 })}
                 <InputCombobox
                   withSearch={false}

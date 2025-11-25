@@ -85,15 +85,19 @@ function Item({ item, admin, withEmail = true, withAvatar, withSignUpMethod, sho
             <div className="flex items-center space-x-1 truncate truncate opacity-80">
               {withSignUpMethod && (
                 <>
-                  {item.githubId ? (
-                    <a href={"https://api.github.com/user/" + item.githubId} target="_blank" rel="noreferrer" title="GitHub profile">
-                      <GitHubIcon className="text-muted-foreground h-4 w-4" />
-                    </a>
-                  ) : item.googleId ? (
-                    <GoogleIcon className="text-muted-foreground h-4 w-4" />
-                  ) : (
-                    <AtSymbolIcon className="text-muted-foreground h-4 w-4" />
-                  )}
+                  {(() => {
+                    if (item.githubId) {
+                      return (
+                        <a href={"https://api.github.com/user/" + item.githubId} target="_blank" rel="noreferrer" title="GitHub profile">
+                          <GitHubIcon className="text-muted-foreground h-4 w-4" />
+                        </a>
+                      );
+                    }
+                    if (item.googleId) {
+                      return <GoogleIcon className="text-muted-foreground h-4 w-4" />;
+                    }
+                    return <AtSymbolIcon className="text-muted-foreground h-4 w-4" />;
+                  })()}
                 </>
               )}
               <div className="truncate">{item.email}</div>

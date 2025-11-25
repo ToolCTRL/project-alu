@@ -58,10 +58,10 @@ export default function MemberInvitationsListAndTable({ items, canDelete }: Prop
               <table className="divide-border min-w-full divide-y">
                 <thead className="bg-secondary">
                   <tr>
-                    {headers.map((header, idx) => {
+                    {headers.map((header) => {
                       return (
                         <th
-                          key={idx}
+                          key={header.name}
                           onClick={() => sortBy(header.name)}
                           scope="col"
                           className={clsx(
@@ -103,9 +103,9 @@ export default function MemberInvitationsListAndTable({ items, canDelete }: Prop
                   </tr>
                 </thead>
                 <tbody className="divide-border bg-background divide-y">
-                  {items.map((item, idx) => {
+                  {items.map((item) => {
                     return (
-                      <tr key={idx}>
+                      <tr key={item.id}>
                         {/* <td className="whitespace-nowrap px-2 py-1 text-sm text-muted-foreground">
                           <span
                             className={clsx("inline-flex w-28 items-center justify-center rounded-sm px-1 py-1 text-xs font-medium", getUserRoleClass(item))}
