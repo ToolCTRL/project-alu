@@ -25,7 +25,6 @@ export default function ShadcnSidebarLayout({
   const params = useParams();
   const title = useTitleData() ?? "";
 
-  const mainElement = useRef<HTMLElement>(null);
   const location = useLocation();
 
   const { query } = useKBar();
@@ -33,7 +32,7 @@ export default function ShadcnSidebarLayout({
   const refreshNavigation = useFeatureFlag(UI_REFRESH_FLAG_GROUPS.navigation) ?? true;
   const navModern = true;
 
-  const [onboardingModalOpen, setOnboardingModalOpen] = useState(false);
+  const [, setOnboardingModalOpen] = useState(false);
 
   function onOpenCommandPalette() {
     query.toggle();
@@ -58,7 +57,7 @@ export default function ShadcnSidebarLayout({
             <NavActions layout={layout} onOpenCommandPalette={onOpenCommandPalette} setOnboardingModalOpen={setOnboardingModalOpen} />
           </div>
         </header>
-        <main ref={mainElement} className="flex-1 focus:outline-hidden" tabIndex={0}>
+        <main className="flex-1 focus:outline-hidden">
           <div key={params.tenant} className="relative z-10 pb-20 sm:pb-0">
             <AnimatePresence mode="wait" initial={false}>
               <motion.div
