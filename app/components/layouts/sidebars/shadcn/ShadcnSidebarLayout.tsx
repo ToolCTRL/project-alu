@@ -32,7 +32,7 @@ export default function ShadcnSidebarLayout({
   const refreshNavigation = useFeatureFlag(UI_REFRESH_FLAG_GROUPS.navigation) ?? true;
   const navModern = true;
 
-  const [, setOnboardingModalOpen] = useState(false);
+  const [_onboardingModalOpen, setOnboardingModalOpen] = useState(false);
 
   function onOpenCommandPalette() {
     query.toggle();

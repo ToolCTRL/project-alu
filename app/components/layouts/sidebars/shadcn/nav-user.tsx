@@ -2,7 +2,7 @@
 
 import { BadgeCheck, ChevronsUpDown, CreditCard, LogOut } from "lucide-react";
 import { useTranslation } from "react-i18next";
-import { Link, useFetcher, useLocation, useMatches, useParams, useSearchParams } from "react-router";
+import { Link, useParams } from "react-router";
 
 import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar";
 import {
@@ -29,14 +29,9 @@ export function NavUser({
 }>) {
   const { t } = useTranslation();
   const { isMobile } = useSidebar();
-  const { userSession } = useRootData();
+  useRootData();
 
   const params = useParams();
-  const fetcher = useFetcher();
-  let location = useLocation();
-  const [searchParams] = useSearchParams();
-  const rootData = useRootData();
-  const matches = useMatches();
 
 
   return (

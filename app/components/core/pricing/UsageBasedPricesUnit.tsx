@@ -71,14 +71,6 @@ function CurrencyPricePerUnitColumn({ currency, idx, allTiers, prices, setPerUni
   readonly prices: Array<{ currency: string; from: number; to?: number; perUnitPrice?: number; flatFeePrice?: number }>;
   readonly setPerUnitPrice: (idx: number, currency: string, price: number) => void;
 }) {
-  const getCurrencyPrice = (tierIdx: number, cur: string) => {
-    if (allTiers.length > tierIdx) {
-      const { from, to } = allTiers[tierIdx];
-      const existingPrice = prices.find((f) => f.currency === cur && f.from === from && f.to === to);
-      return existingPrice;
-    }
-  };
-
   // Return nothing, the column is handled by the parent
   return null;
 }

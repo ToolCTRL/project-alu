@@ -31,7 +31,7 @@ export namespace BlogRoutesEditApi {
     }
     await verifyUserHasPermission(request, "admin.blog.view");
     const item = await getBlogPost({ tenantId, idOrSlug: params.id ?? "" });
-    if (!item) {
+    if (item == null) {
       throw redirect(UrlUtils.getModulePath(params, "blog"));
     }
 
@@ -55,39 +55,32 @@ export namespace BlogRoutesEditApi {
     }
 
     const blogPost = await getBlogPost({ tenantId, idOrSlug: params.id ?? "" });
-    if (!blogPost) {
+    if (blogPost == null) {
       return redirect(UrlUtils.getModulePath(params, "blog"));
     }
 
-    const value = form.get("new-category");
-    const newCategoryValue = value != null ? String(value) : "";
-    const addingCategoryName = newCategoryValue;
+    const toText = (v: FormDataEntryValue | null) => (typeof v === "string" ? v : "");
+    const addingCategoryName = toText(form.get("new-category"));
     let category: BlogCategory | null = null;
     if (addingCategoryName) {
       category = await BlogApi.getCategory({ tenantId, idOrName: { name: addingCategoryName } });
-      if (!category) {
+      if (category == null) {
         category = await BlogApi.createCategory({ tenantId, name: addingCategoryName });
       }
     }
 
     const authorId = blogPost.authorId ?? userInfo.userId;
-    const categoryFormValue = form.get("category");
-    const categoryValue = categoryFormValue != null ? String(categoryFormValue) : "";
-    const categoryId = categoryValue;
-    const slugFormValue = form.get("slug");
-    const slugValue = slugFormValue != null ? String(slugFormValue) : "";
-    const slug = slugValue;
-    const tagsFormValue = form.get("tags");
-    const tagsValue = tagsFormValue != null ? String(tagsFormValue) : "";
-    const tags = tagsValue;
+    const categoryId = toText(form.get("category"));
+    const slug = toText(form.get("slug"));
+    const tags = toText(form.get("tags"));
 
-    const titleValue = form.get("title") ?? "";
-    const descriptionValue = form.get("description") ?? "";
-    const dateValue = form.get("date") ?? "";
-    const imageValue = form.get("image") ?? "";
-    const contentValue = form.get("content") ?? "";
-    const readingTimeValue = form.get("reading-time") ?? "";
-    const contentTypeValue = form.get("contentType") ?? "";
+    const titleValue = toText(form.get("title"));
+    const descriptionValue = toText(form.get("description"));
+    const dateValue = toText(form.get("date"));
+    const imageValue = toText(form.get("image"));
+    const contentValue = toText(form.get("content"));
+    const readingTimeValue = toText(form.get("reading-time"));
+    const contentTypeValue = toText(form.get("contentType"));
 
     const updated = await updateBlogPost(blogPost.id, {
       slug,
