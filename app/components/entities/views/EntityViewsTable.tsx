@@ -12,51 +12,48 @@ import { defaultDisplayProperties } from "~/utils/helpers/PropertyHelper";
 import NumberUtils from "~/utils/shared/NumberUtils";
 import EntityViewLayoutBadge from "./EntityViewLayoutBadge";
 
-function renderViewScope(view: EntityViewWithTenantAndUser) {
-  const scopeRenders: Record<string, () => JSX.Element> = {
-    system: () => <div className="font-medium italic">System view</div>,
-    default: () => (
-      <div className="flex flex-col">
-        <div className="font-medium italic">
-          Default <span className="text-muted-foreground text-xs font-normal">(all accounts)</span>
-        </div>
+const scopeRenders: Record<string, (view: EntityViewWithTenantAndUser) => JSX.Element> = {
+  system: () => <div className="font-medium italic">System view</div>,
+  default: () => (
+    <div className="flex flex-col">
+      <div className="font-medium italic">
+        Default <span className="text-muted-foreground text-xs font-normal">(all accounts)</span>
       </div>
-    ),
-    tenantAndUser: () => (
-      <div className="flex items-center space-x-1">
-        <div>
-          <TenantBadge item={view.tenant} />
-        </div>
-        <div>&rarr;</div>
-        <UserBadge item={view.user} />
-      </div>
-    ),
-    tenantOnly: () => (
+    </div>
+  ),
+  tenantAndUser: (view) => (
+    <div className="flex items-center space-x-1">
       <div>
         <TenantBadge item={view.tenant} />
       </div>
-    ),
-    userOnly: () => (
-      <div>
-        <UserBadge item={view.user} />
-      </div>
-    ),
-  };
+      <div>&rarr;</div>
+      <UserBadge item={view.user} />
+    </div>
+  ),
+  tenantOnly: (view) => (
+    <div>
+      <TenantBadge item={view.tenant} />
+    </div>
+  ),
+  userOnly: (view) => (
+    <div>
+      <UserBadge item={view.user} />
+    </div>
+  ),
+};
 
-  const scopeKey = view.isSystem
-    ? "system"
-    : !view.tenant && !view.user
-    ? "default"
-    : view.tenant && view.user
-    ? "tenantAndUser"
-    : view.tenant
-    ? "tenantOnly"
-    : view.user
-    ? "userOnly"
-    : "invalid";
+function getViewScopeKey(view: EntityViewWithTenantAndUser) {
+  if (view.isSystem) return "system";
+  if (!view.tenant && !view.user) return "default";
+  if (view.tenant && view.user) return "tenantAndUser";
+  if (view.tenant) return "tenantOnly";
+  if (view.user) return "userOnly";
+  return "invalid";
+}
 
-  const renderer = scopeRenders[scopeKey];
-  return renderer ? renderer() : <div className="italic text-red-500">Invalid view</div>;
+function renderViewScope(view: EntityViewWithTenantAndUser) {
+  const renderer = scopeRenders[getViewScopeKey(view)];
+  return renderer ? renderer(view) : <div className="italic text-red-500">Invalid view</div>;
 }
 
 export default function EntityViewsTable({

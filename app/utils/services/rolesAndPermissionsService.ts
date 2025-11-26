@@ -447,7 +447,7 @@ export async function seedRolesAndPermissions(adminEmail?: string): Promise<void
   const entities = await getAllEntities({ tenantId: null, active: true });
   await Promise.all(
     entities.map(async (entity) => {
-      const permissions = await getEntityPermissions(entity);
+      const permissions = getEntityPermissions(entity);
       return Promise.all(
         permissions.map(async (permission) => {
           const entityPermission = {

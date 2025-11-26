@@ -8,6 +8,42 @@ import { verifyUserHasPermission } from "~/utils/helpers/.server/PermissionsServ
 type LoaderData = {
   allEntities: EntityWithDetails[];
 };
+
+function getPropertyAutocompletions(entity: EntityWithDetails, t: (key: string) => string) {
+  const sortedProperties = entity.properties.filter((f) => !f.isDefault).sort((a, b) => a.order - b.order);
+  return sortedProperties.map<MonacoAutoCompletion>((property) => {
+    const label = `row.${entity.name}.${property.name}`;
+    return {
+      label,
+      kind: "Value",
+      documentation: t(property.title),
+      insertText: `{{${label}}}`,
+    };
+  });
+}
+
+function getChildAutocompletions(entity: EntityWithDetails, allEntities: EntityWithDetails[], t: (key: string) => string) {
+  const completions: MonacoAutoCompletion[] = [];
+  entity.childEntities.forEach((child) => {
+    const childEntity = allEntities.find((f) => f.id === child.childId);
+    if (!childEntity) {
+      return;
+    }
+
+    const sortedChildProperties = childEntity.properties.filter((f) => !f.isDefault).sort((a, b) => a.order - b.order);
+    sortedChildProperties.forEach((property) => {
+      const label = `row.${entity.name}.${childEntity.name}.${property.name}`;
+      completions.push({
+        label,
+        kind: "Value",
+        documentation: t(property.title),
+        insertText: `{{${label}}}`,
+      });
+    });
+  });
+  return completions;
+}
+
 export const loader = async ({ request }: LoaderFunctionArgs) => {
   await verifyUserHasPermission(request, "admin.entities.view");
   const allEntities = await getAllEntities({ tenantId: null, active: true });
@@ -25,47 +61,13 @@ export default function PlaygroundMonacoEditorRoute() {
   const [autocompletions, setAutocompletions] = useState<MonacoAutoCompletion[]>([]);
 
   useEffect(() => {
-    const autocompletions: MonacoAutoCompletion[] = [];
-    const sortedEntities = data.allEntities.sort((a, b) => a.order - b.order);
+    const sortedEntities = [...data.allEntities].sort((a, b) => a.order - b.order);
+    const completions = sortedEntities.flatMap((entity) => [
+      ...getPropertyAutocompletions(entity, t),
+      ...getChildAutocompletions(entity, data.allEntities, t),
+    ]);
 
-    sortedEntities.forEach((entity) => {
-      const sortedProperties = entity.properties
-        .filter((f) => !f.isDefault)
-        .sort((a, b) => a.order - b.order);
-
-      sortedProperties.forEach((property) => {
-        const label = `row.${entity.name}.${property.name}`;
-        autocompletions.push({
-          label,
-          kind: "Value",
-          documentation: t(property.title),
-          insertText: `{{${label}}}`,
-        });
-      });
-
-      entity.childEntities.forEach((child) => {
-        const childEntity = data.allEntities.find((f) => f.id === child.childId);
-        if (!childEntity) {
-          return;
-        }
-
-        const sortedChildProperties = childEntity.properties
-          .filter((f) => !f.isDefault)
-          .sort((a, b) => a.order - b.order);
-
-        sortedChildProperties.forEach((property) => {
-          const label = `row.${entity.name}.${childEntity.name}.${property.name}`;
-          autocompletions.push({
-            label,
-            kind: "Value",
-            documentation: t(property.title),
-            insertText: `{{${label}}}`,
-          });
-        });
-      });
-    });
-
-    setAutocompletions(autocompletions);
+    setAutocompletions(completions);
   }, [data.allEntities, t]);
 
   return (

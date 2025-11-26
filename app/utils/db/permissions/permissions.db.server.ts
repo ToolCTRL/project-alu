@@ -213,7 +213,7 @@ export async function deletePermission(id: string) {
 }
 
 export async function deleteEntityPermissions(entity: Entity) {
-  const entityPermissions = await getEntityPermissions(entity);
+  const entityPermissions = getEntityPermissions(entity);
   const names = entityPermissions.map((p) => p.name);
   if (names.length > 0) {
     return await db.permission.deleteMany({
@@ -229,7 +229,7 @@ export async function deleteEntityPermissions(entity: Entity) {
 export async function createEntityPermissions(entity: Entity) {
   const allUserRoles = await getAllRolesNames();
   // const assignToAllUserRoles = allUserRoles.filter((f) => f.assignToNewUsers);
-  const entityPermissions = await getEntityPermissions(entity);
+  const entityPermissions = getEntityPermissions(entity);
   await Promise.all(
     entityPermissions.map(async (permission, idx) => {
       const entityPermission = {
