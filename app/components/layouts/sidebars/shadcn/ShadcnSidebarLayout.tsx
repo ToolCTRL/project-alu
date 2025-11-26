@@ -4,7 +4,7 @@ import { Breadcrumb, BreadcrumbItem, BreadcrumbList, BreadcrumbPage } from "~/co
 import { SideBarItem } from "~/application/sidebar/SidebarItem";
 import { useLocation, useParams } from "react-router";
 import { useTitleData } from "~/utils/data/useTitleData";
-import { useRef, useState } from "react";
+import { useState } from "react";
 import { NavActions } from "./nav-actions";
 import { useKBar } from "kbar";
 import { useFeatureFlag } from "~/hooks/useFeatureFlag";
@@ -32,7 +32,7 @@ export default function ShadcnSidebarLayout({
   const refreshNavigation = useFeatureFlag(UI_REFRESH_FLAG_GROUPS.navigation) ?? true;
   const navModern = true;
 
-  const [, setOnboardingModalOpen] = useState(false);
+  const [onboardingModalOpen, setOnboardingModalOpen] = useState(false);
 
   function onOpenCommandPalette() {
     query.toggle();

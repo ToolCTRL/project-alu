@@ -39,8 +39,8 @@ async function handleEdit(request: Request, params: any, form: FormData, item: K
   const layout = form.get("layout") as string;
   const color = Number(form.get("color") ?? "");
   const enabled = Boolean(form.get("enabled"));
-  const languages = form.getAll("languages[]").map((l) => l.toString());
-  const links: KbNavLinkDto[] = form.getAll("links[]").map((l) => JSON.parse(l.toString()));
+  const languages = form.getAll("languages[]").map(String);
+  const links: KbNavLinkDto[] = form.getAll("links[]").map((l) => JSON.parse(String(l)));
   const logo = form.get("logo") as string;
   const seoImage = form.get("seoImage") as string;
 

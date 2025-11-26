@@ -75,16 +75,24 @@ async function calculateFeaturedOrder(item: KnowledgeBaseArticleWithDetails, isF
 }
 
 async function handleEditAction(request: Request, params: any, form: FormData, item: KnowledgeBaseArticleWithDetails) {
-  const knowledgeBaseId = String(form.get("knowledgeBaseId") ?? "");
-  const categoryId = String(form.get("categoryId") ?? "");
-  const sectionId = String(form.get("sectionId") ?? "");
-  const language = String(form.get("language") ?? "");
-  const slug = String(form.get("slug") ?? "");
-  const title = String(form.get("title") ?? "");
-  const description = String(form.get("description") ?? "");
-  const seoImage = String(form.get("seoImage") ?? "");
+  const knowledgeBaseIdValue = form.get("knowledgeBaseId");
+  const knowledgeBaseId = knowledgeBaseIdValue != null ? String(knowledgeBaseIdValue) : "";
+  const categoryIdValue = form.get("categoryId");
+  const categoryId = categoryIdValue != null ? String(categoryIdValue) : "";
+  const sectionIdValue = form.get("sectionId");
+  const sectionId = sectionIdValue != null ? String(sectionIdValue) : "";
+  const languageValue = form.get("language");
+  const language = languageValue != null ? String(languageValue) : "";
+  const slugValue = form.get("slug");
+  const slug = slugValue != null ? String(slugValue) : "";
+  const titleValue = form.get("title");
+  const title = titleValue != null ? String(titleValue) : "";
+  const descriptionValue = form.get("description");
+  const description = descriptionValue != null ? String(descriptionValue) : "";
+  const seoImageValue = form.get("seoImage");
+  const seoImage = seoImageValue != null ? String(seoImageValue) : "";
   const isFeatured = Boolean(form.get("isFeatured"));
-  const relatedArticles = form.getAll("relatedArticles[]").map((l) => String(l));
+  const relatedArticles = form.getAll("relatedArticles[]").map(String);
 
   const knowledgeBase = await KnowledgeBaseService.getById({ id: knowledgeBaseId, request });
   if (!knowledgeBase) {

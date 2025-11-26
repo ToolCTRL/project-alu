@@ -3,7 +3,6 @@
 import { BadgeCheck, ChevronsUpDown, CreditCard, LogOut } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { Link, useFetcher, useLocation, useMatches, useParams, useSearchParams } from "react-router";
-import { Fragment } from "react";
 
 import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar";
 import {
@@ -20,7 +19,6 @@ import { SidebarMenu, SidebarMenuButton, SidebarMenuItem, useSidebar } from "~/c
 import UrlUtils from "~/utils/app/UrlUtils";
 import UserUtils from "~/utils/app/UserUtils";
 import { useRootData } from "~/utils/data/useRootData";
-import AnalyticsHelper from "~/utils/helpers/AnalyticsHelper";
 
 export function NavUser({
   user,

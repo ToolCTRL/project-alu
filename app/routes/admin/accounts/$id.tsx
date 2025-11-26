@@ -115,10 +115,13 @@ async function validateTenantEdit(name: string, slug: string, typeIds: string[])
 
 async function handleEditAction(form: FormData, params: any) {
   const { t } = await getTranslations({ request: {} as Request });
-  const name = String(form.get("name") ?? "");
-  const slug = String(form.get("slug") ?? "").toLowerCase();
-  const icon = String(form.get("icon") ?? "");
-  const typeIds = form.getAll("typeIds[]").map((t) => String(t));
+  const nameValue = form.get("name");
+  const name = nameValue != null ? String(nameValue) : "";
+  const slugValue = form.get("slug");
+  const slug = (slugValue != null ? String(slugValue) : "").toLowerCase();
+  const iconValue = form.get("icon");
+  const icon = iconValue != null ? String(iconValue) : "";
+  const typeIds = form.getAll("typeIds[]").map(String);
 
   const validationError = await validateTenantEdit(name, slug, typeIds);
   if (validationError) {

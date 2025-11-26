@@ -59,7 +59,8 @@ export namespace BlogRoutesEditApi {
       return redirect(UrlUtils.getModulePath(params, "blog"));
     }
 
-    const newCategoryValue = String(form.get("new-category") ?? "");
+    const value = form.get("new-category");
+    const newCategoryValue = value != null ? String(value) : "";
     const addingCategoryName = newCategoryValue;
     let category: BlogCategory | null = null;
     if (addingCategoryName) {
@@ -70,11 +71,14 @@ export namespace BlogRoutesEditApi {
     }
 
     const authorId = blogPost.authorId ?? userInfo.userId;
-    const categoryValue = String(form.get("category") ?? "");
+    const categoryFormValue = form.get("category");
+    const categoryValue = categoryFormValue != null ? String(categoryFormValue) : "";
     const categoryId = categoryValue;
-    const slugValue = String(form.get("slug") ?? "");
+    const slugFormValue = form.get("slug");
+    const slugValue = slugFormValue != null ? String(slugFormValue) : "";
     const slug = slugValue;
-    const tagsValue = String(form.get("tags") ?? "");
+    const tagsFormValue = form.get("tags");
+    const tagsValue = tagsFormValue != null ? String(tagsFormValue) : "";
     const tags = tagsValue;
 
     const titleValue = form.get("title") ?? "";

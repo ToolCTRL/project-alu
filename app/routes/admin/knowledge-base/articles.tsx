@@ -101,7 +101,8 @@ type ActionData = {
 };
 async function handleNewArticle(request: Request, form: FormData, userInfo: any) {
   await verifyUserHasPermission(request, "admin.kb.create");
-  const kbId = form.get("kbId")?.toString() ?? "";
+  const kbIdValue = form.get("kbId");
+  const kbId = kbIdValue != null ? String(kbIdValue) : "";
   const kb = await KnowledgeBaseService.getById({ id: kbId, request });
   if (!kb) {
     return Response.json({ error: "Knowledge base not found" }, { status: 404 });

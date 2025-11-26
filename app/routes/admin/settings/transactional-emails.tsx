@@ -88,7 +88,8 @@ async function handleCreatePostmarkTemplates(request: Request) {
 async function handleCreateEmailTemplate(request: Request, form: FormData) {
   await verifyUserHasPermission(request, "admin.emails.create");
   try {
-    const alias = form.get("alias")?.toString();
+    const aliasValue = form.get("alias");
+    const alias = aliasValue != null ? String(aliasValue) : undefined;
     if (!alias) {
       return { error: `Alias ${alias} not found` };
     }
@@ -103,7 +104,8 @@ async function handleCreateEmailTemplate(request: Request, form: FormData) {
 async function handleDeleteEmailTemplate(request: Request, form: FormData) {
   await verifyUserHasPermission(request, "admin.emails.delete");
   try {
-    const alias = form.get("alias")?.toString();
+    const aliasValue = form.get("alias");
+    const alias = aliasValue != null ? String(aliasValue) : undefined;
     if (!alias) {
       return { error: `Alias ${alias} not found` };
     }
@@ -116,7 +118,8 @@ async function handleDeleteEmailTemplate(request: Request, form: FormData) {
 }
 
 async function handleSendTest(request: Request, form: FormData, user: Awaited<ReturnType<typeof requireUser>>) {
-  const email = form.get("email")?.toString();
+  const emailValue = form.get("email");
+  const email = emailValue != null ? String(emailValue) : undefined;
   const templateName = form.get("template")?.toString();
   if (!email) {
     return { error: "Invalid email" };

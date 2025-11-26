@@ -2,7 +2,6 @@ import LogoLight from "~/assets/img/logo-light.png";
 import clsx from "clsx";
 import { Link } from "react-router";
 import { useRootData } from "~/utils/data/useRootData";
-import { Fragment } from "react";
 
 interface Props {
   className?: string;

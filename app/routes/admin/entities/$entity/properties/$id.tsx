@@ -54,7 +54,8 @@ function validatePropertyName(name: string) {
 
 function processFormData(form: FormData, type: PropertyType) {
   let isRequired = Boolean(form.get("is-required"));
-  let formulaId = String(form.get("formula-id") ?? "");
+  const formulaIdValue = form.get("formula-id");
+  let formulaId = formulaIdValue != null ? String(formulaIdValue) : "";
 
   if (type !== PropertyType.FORMULA) {
     formulaId = "";
@@ -79,7 +80,8 @@ async function handleEdit(
     return badRequest({ error: nameError });
   }
 
-  const subtype = String(form.get("subtype") ?? "");
+  const subtypeValue = form.get("subtype");
+  const subtype = subtypeValue != null ? String(subtypeValue) : "";
   const order = Number(form.get("order"));
   const isHidden = Boolean(form.get("is-hidden"));
   const isDisplay = Boolean(form.get("is-display"));
@@ -127,7 +129,8 @@ async function handleEdit(
 
 async function handleDelete(params: any, form: FormData, t: any) {
   await verifyUserHasPermission(request, "admin.entities.delete");
-  const id = String(form.get("id") ?? "");
+  const idValue = form.get("id");
+  const id = idValue != null ? String(idValue) : "";
   const existingProperty = await getProperty(id);
   if (!existingProperty) {
     return badRequest({ error: t("shared.notFound") });
