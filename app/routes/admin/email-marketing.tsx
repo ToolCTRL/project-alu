@@ -1,5 +1,4 @@
-import { LoaderFunctionArgs, MetaFunction } from "react-router";
-import { Outlet, useParams } from "react-router";
+import { LoaderFunctionArgs, MetaFunction, Outlet, useParams } from "react-router";
 import { useTranslation } from "react-i18next";
 import ServerError from "~/components/ui/errors/ServerError";
 import IncreaseIcon from "~/components/ui/icons/crm/IncreaseIcon";
@@ -31,7 +30,7 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
 
 export const meta: MetaFunction<typeof loader> = ({ data }) => [{ title: data?.title }];
 
-export default () => {
+export default function EmailMarketingRoute() {
   const { t } = useTranslation();
   const params = useParams();
   return (

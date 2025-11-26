@@ -1,5 +1,4 @@
-import { LoaderFunction } from "react-router";
-import { Link, useLoaderData } from "react-router";
+import { LoaderFunction, Link, useLoaderData } from "react-router";
 import { useTranslation } from "react-i18next";
 import { EntityWithDetails, getAllEntities } from "~/utils/db/entities/entities.db.server";
 import { verifyUserHasPermission } from "~/utils/helpers/.server/PermissionsService";
@@ -15,7 +14,7 @@ export const loader: LoaderFunction = async ({ request }) => {
   return data;
 };
 
-export default () => {
+export default function CodeGeneratorIndex() {
   const { t } = useTranslation();
   const data = useLoaderData<LoaderData>();
   return (

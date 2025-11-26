@@ -177,7 +177,6 @@ const CommandList = ({ items, command, editor, range }: { items: CommandItemProp
     onResponse: (response) => {
       if (response.status === 429) {
         toast.error("You have reached your request limit for the day.");
-        // va.track("Rate Limit Reached");
         return;
       }
       editor.chain().focus().deleteRange(range).run();
@@ -197,9 +196,6 @@ const CommandList = ({ items, command, editor, range }: { items: CommandItemProp
   const selectItem = useCallback(
     (index: number) => {
       const item = items[index];
-      // va.track("Slash Command Used", {
-      //   command: item.title,
-      // });
       if (item) {
         if (item.title === "Continue writing") {
           const text = editor.getText();
@@ -219,9 +215,9 @@ const CommandList = ({ items, command, editor, range }: { items: CommandItemProp
   );
 
   useEffect(() => {
-    const navigationKeys = ["ArrowUp", "ArrowDown", "Enter"];
+    const navigationKeys = new Set(["ArrowUp", "ArrowDown", "Enter"]);
     const onKeyDown = (e: KeyboardEvent) => {
-      if (navigationKeys.includes(e.key)) {
+      if (navigationKeys.has(e.key)) {
         e.preventDefault();
         if (e.key === "ArrowUp") {
           setSelectedIndex((selectedIndex + items.length - 1) % items.length);
@@ -271,7 +267,7 @@ const CommandList = ({ items, command, editor, range }: { items: CommandItemProp
             className={`flex w-full items-center space-x-2 rounded-md px-2 py-1 text-left text-sm text-stone-900 hover:bg-stone-100 ${
               index === selectedIndex ? "bg-stone-100 text-stone-900" : ""
             }`}
-            key={index}
+            key={item.title}
             onClick={() => selectItem(index)}
           >
             <div className="bg-background flex h-10 w-10 items-center justify-center rounded-md border border-stone-200">
@@ -290,7 +286,7 @@ const CommandList = ({ items, command, editor, range }: { items: CommandItemProp
 
 const renderItems = () => {
   let component: ReactRenderer | null = null;
-  let popup: any | null = null;
+  let popup: ReturnType<typeof tippy> | null = null;
 
   return {
     onStart: (props: { editor: Editor; clientRect: DOMRect }) => {
@@ -313,10 +309,9 @@ const renderItems = () => {
     onUpdate: (props: { editor: Editor; clientRect: DOMRect }) => {
       component?.updateProps(props);
 
-      popup &&
-        popup[0].setProps({
-          getReferenceClientRect: props.clientRect,
-        });
+      popup?.[0]?.setProps({
+        getReferenceClientRect: props.clientRect,
+      });
     },
     onKeyDown: (props: { event: KeyboardEvent }) => {
       if (props.event.key === "Escape") {

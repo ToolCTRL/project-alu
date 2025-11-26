@@ -35,11 +35,9 @@ export default function TermsAndConditionsRoute() {
                 <p>
                   These Terms will be applied fully and affect to your use of this Website. By using this Website, you agreed to accept all terms and conditions
                   written in here. You must not use this Website if you disagree with any of these Website Standard Terms and Conditions. These Terms and
-                  Conditions have been generated with the help of the{" "}
-                  <a className="text-black dark:text-white" href="https://www.termsandcondiitionssample.com">
+                  Conditions have been generated with the help of the <a className="text-black dark:text-white" href="https://www.termsandcondiitionssample.com">
                     Terms And Conditiions Sample Generator
-                  </a>
-                  .
+                  </a>.
                 </p>
 
                 <p>Minors or people below 18 years old are not allowed to use this Website.</p>

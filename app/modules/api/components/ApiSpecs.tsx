@@ -9,9 +9,9 @@ export default function ApiSpecs({
   className = "h-96 overflow-auto",
   withLinkToDocs = true,
 }: {
-  item: ApiSpecsDto;
-  className?: string;
-  withLinkToDocs?: boolean;
+  readonly item: ApiSpecsDto;
+  readonly className?: string;
+  readonly withLinkToDocs?: boolean;
 }) {
   return (
     <div className={clsx("grid gap-4", item.postmanCollection ? "grid-cols-2" : "grid-cols-1")}>

@@ -5,7 +5,7 @@ import SocialsBlockForm from "../../../shared/socials/SocialsBlockForm";
 import BlockVariableForm from "../../../shared/variables/BlockVariableForm";
 import { defaultBlogPostBlock, BlogPostBlockDto, BlogPostBlockStyle, BlogPostBlockStyles } from "./BlogPostBlockUtils";
 
-export default function BlogPostBlockForm({ item, onUpdate }: { item?: BlogPostBlockDto; onUpdate: (item: BlogPostBlockDto) => void }) {
+export default function BlogPostBlockForm({ item, onUpdate }: readonly { readonly item?: BlogPostBlockDto; readonly onUpdate: (item: BlogPostBlockDto) => void }) {
   const [state, setState] = useState<BlogPostBlockDto>(item || defaultBlogPostBlock);
   useEffect(() => {
     onUpdate(state);

@@ -94,11 +94,7 @@ const InputImage = (props: Props, ref: Ref<RefInputImage>) => {
         button={
           <div className="absolute inset-y-0 right-0 flex py-1.5 pr-1.5 ">
             <div className="border-border text-muted-foreground bg-background inline-flex items-center rounded border px-2 font-sans text-sm font-medium">
-              {!image ? (
-                <button type="button" onClick={() => setShowUploadImage(true)}>
-                  {t("shared.upload")}
-                </button>
-              ) : (
+              {image ? (
                 <button
                   type="button"
                   disabled={props.disabled}
@@ -108,6 +104,10 @@ const InputImage = (props: Props, ref: Ref<RefInputImage>) => {
                   }}
                 >
                   {t("shared.remove")}
+                </button>
+              ) : (
+                <button type="button" onClick={() => setShowUploadImage(true)}>
+                  {t("shared.upload")}
                 </button>
               )}
             </div>

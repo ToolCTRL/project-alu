@@ -4,7 +4,7 @@ import { EntityWithDetails } from "~/utils/db/entities/entities.db.server";
 import { RowWithValues } from "~/utils/db/entities/rows.db.server";
 import RowHelper from "~/utils/helpers/RowHelper";
 
-export default function RowTitle({ entity, item }: { entity: EntityWithDetails; item: RowWithValues }) {
+export default function RowTitle({ entity, item }: readonly { readonly entity: EntityWithDetails; readonly item: RowWithValues }) {
   const { t } = useTranslation();
   const [folio, setFolio] = useState<string | undefined>(undefined);
   const [description, setDescription] = useState<string | undefined>(undefined);

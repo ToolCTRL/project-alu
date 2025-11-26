@@ -1,7 +1,7 @@
 import clsx from "clsx";
 import DateUtils, { DateDisplay } from "~/utils/shared/DateUtils";
 
-export default function DateCell({ date, displays = ["ymd", "ago"] }: { date: Date | null; displays?: DateDisplay[] }) {
+export default function DateCell({ date, displays = ["ymd", "ago"] }: Readonly<{ date: Date | null; displays?: DateDisplay[] }>) {
   return (
     <>
       {date && (

@@ -31,9 +31,7 @@ export async function cancelAllTenantPlans({ tenantId, userId, t }: { tenantId: 
 }
 
 export async function getAvailableTenantSlug({ name, slug }: { name: string; slug?: string }) {
-  if (slug === undefined) {
-    slug = UrlUtils.slugify(name);
-  }
+  slug ??= UrlUtils.slugify(name);
   let tries = 1;
   do {
     const existingSlug = await getExistingSlug(slug);

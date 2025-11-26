@@ -4,7 +4,7 @@ import { LogWithDetails } from "~/utils/db/logs.db.server";
 import DateUtils from "~/utils/shared/DateUtils";
 
 interface Props {
-  items: LogWithDetails[];
+  readonly items: LogWithDetails[];
 }
 
 function dateDM(value: Date | undefined) {

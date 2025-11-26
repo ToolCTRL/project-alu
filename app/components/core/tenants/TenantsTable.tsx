@@ -20,6 +20,22 @@ interface Props {
   readonly tenantInvoices?: Stripe.Invoice[];
   readonly isStripeTest?: boolean;
 }
+function TenantInvoice({ item }: Readonly<{ item: Stripe.Invoice }>) {
+  const { t } = useTranslation();
+  return (
+    <div className="flex flex-col">
+      <div title={DateUtils.dateYMD(new Date(item.created * 1000))} className="flex items-center space-x-1">
+        <div className="flex items-baseline space-x-1">
+          <div>${NumberUtils.decimalFormat(item.total / 100)}</div>
+          <div className="text-muted-foreground text-xs uppercase">{item.currency}</div>
+        </div>
+        <SimpleBadge title={t("app.subscription.invoices.status." + item.status)} color={item.status === "paid" ? Colors.GREEN : Colors.YELLOW} />
+      </div>
+      <div className="text-muted-foreground text-xs">{item.created ? DateUtils.dateAgo(new Date(item.created * 1000)) : ""}</div>
+    </div>
+  );
+}
+
 function formatProductPrice(price: any, t: any): string {
   return `$${NumberUtils.decimalFormat(Number(price.subscriptionPrice?.price ?? 0))} - ${SubscriptionUtils.getBillingPeriodDescription(
     t,
@@ -147,7 +163,7 @@ export default function TenantsTable({ items, pagination, actions = [], tenantIn
                   href={`https://dashboard.stripe.com${isStripeTest ? "/test" : ""}/customers/${i.subscription?.stripeCustomerId ?? ""}`}
                 >
                   <div className="flex flex-col space-y-1">
-                    {!lastTenantInvoice(i) ? <span>-</span> : <TenantInvoice item={lastTenantInvoice(i)!} />}
+                    {lastTenantInvoice(i) ? <TenantInvoice item={lastTenantInvoice(i)} /> : <span>-</span>}
                   </div>
                 </a>
               ),
@@ -230,22 +246,6 @@ export default function TenantsTable({ items, pagination, actions = [], tenantIn
         ]}
         pagination={pagination}
       />
-    </div>
-  );
-}
-
-function TenantInvoice({ item }: { item: Stripe.Invoice }) {
-  const { t } = useTranslation();
-  return (
-    <div className="flex flex-col">
-      <div title={DateUtils.dateYMD(new Date(item.created * 1000))} className="flex items-center space-x-1">
-        <div className="flex items-baseline space-x-1">
-          <div>${NumberUtils.decimalFormat(item.total / 100)}</div>
-          <div className="text-muted-foreground text-xs uppercase">{item.currency}</div>
-        </div>
-        <SimpleBadge title={t("app.subscription.invoices.status." + item.status)} color={item.status === "paid" ? Colors.GREEN : Colors.YELLOW} />
-      </div>
-      <div className="text-muted-foreground text-xs">{item.created ? DateUtils.dateAgo(new Date(item.created * 1000)) : ""}</div>
     </div>
   );
 }

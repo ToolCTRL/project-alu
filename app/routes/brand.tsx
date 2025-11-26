@@ -23,7 +23,7 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
   return data;
 };
 
-export default function () {
+export default function BrandRoute() {
   const { t } = useTranslation();
   return (
     <div>

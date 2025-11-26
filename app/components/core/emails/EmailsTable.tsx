@@ -16,21 +16,21 @@ interface Props {
 }
 
 // Extracted component definitions
-const FromCell = ({ item }: { item: EmailWithSimpleDetails }) => (
+const FromCell = ({ item }: Readonly<{ item: EmailWithSimpleDetails }>) => (
   <div className="flex w-40 flex-col truncate">
     <div className={clsx("truncate", item._count.reads === 0 && "text-foreground font-medium")}>{item.fromName}</div>
     <div className="truncate">{item.fromEmail}</div>
   </div>
 );
 
-const ToCell = ({ item }: { item: EmailWithSimpleDetails }) => (
+const ToCell = ({ item }: Readonly<{ item: EmailWithSimpleDetails }>) => (
   <div className="flex w-40 flex-col truncate">
     <div className={clsx("truncate", item._count.reads === 0 && "text-foreground font-medium")}>{item.toName}</div>
     <div className="truncate">{item.toEmail}</div>
   </div>
 );
 
-const SubjectCell = ({ item }: { item: EmailWithSimpleDetails }) => (
+const SubjectCell = ({ item }: Readonly<{ item: EmailWithSimpleDetails }>) => (
   <div className="flex max-w-sm items-center space-x-1 truncate">
     <div className={clsx(item._count.reads === 0 && "text-foreground font-medium")}>{item.subject}</div>
     <div className="text-muted-foreground">-</div>
@@ -38,7 +38,7 @@ const SubjectCell = ({ item }: { item: EmailWithSimpleDetails }) => (
   </div>
 );
 
-const AttachmentsCell = ({ item }: { item: EmailWithSimpleDetails }) => (
+const AttachmentsCell = ({ item }: Readonly<{ item: EmailWithSimpleDetails }>) => (
   <div>{item._count.attachments > 0 && <PaperClipIcon className="text-muted-foreground h-4 w-4" />}</div>
 );
 
@@ -60,26 +60,26 @@ export default function EmailsTable({ items, withTenant, pagination }: Readonly<
       name: "from",
       title: t("models.email.from"),
       value: (i) => i.fromEmail,
-      formattedValue: (i) => <FromCell item={i} />,
+      formattedValue: FromCell,
     };
     const toHeader: RowHeaderDisplayDto<EmailWithSimpleDetails> = {
       name: "to",
       title: t("models.email.to"),
       value: (i) => i.toEmail,
-      formattedValue: (i) => <ToCell item={i} />,
+      formattedValue: ToCell,
     };
     const subjectHeader: RowHeaderDisplayDto<EmailWithSimpleDetails> = {
       name: "subject",
       title: t("models.email.subject"),
       value: (i) => i.subject,
-      formattedValue: (i) => <SubjectCell item={i} />,
+      formattedValue: SubjectCell,
       href: (i) => i.id,
     };
     const attachmentsHeader: RowHeaderDisplayDto<EmailWithSimpleDetails> = {
       name: "attachments",
       title: "",
       value: (i) => i._count.attachments,
-      formattedValue: (i) => <AttachmentsCell item={i} />,
+      formattedValue: AttachmentsCell,
     };
     const dateHeader: RowHeaderDisplayDto<EmailWithSimpleDetails> = {
       name: "date",

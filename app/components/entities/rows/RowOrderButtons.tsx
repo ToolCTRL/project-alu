@@ -2,9 +2,9 @@ import clsx from "clsx";
 import { useSubmit, useNavigation } from "react-router";
 
 interface Props {
-  id: string;
-  order: number;
-  editable?: boolean;
+  readonly id: string;
+  readonly order: number;
+  readonly editable?: boolean;
 }
 export default function RowOrderButtons({ id, order, editable = true }: Props) {
   const submit = useSubmit();

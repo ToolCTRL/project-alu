@@ -160,19 +160,52 @@ export default function WorkflowsIdRunManualView() {
   );
 }
 
-function BlockRun({ workflow, blockRun }: { workflow: WorkflowDto; blockRun: WorkflowBlockExecutionDto }) {
+function BlockRun({ workflow, blockRun }: Readonly<{ workflow: WorkflowDto; blockRun: WorkflowBlockExecutionDto }>) {
   const [isExpanded, setIsExpanded] = useState(false);
   const block = workflow.blocks.find((x) => x.id === blockRun.workflowBlockId);
   const workflowBlock = WorkflowBlockTypes.find((x) => x.value === block?.type);
   if (!block || !workflowBlock) {
     return null;
   }
+  const getErrorOrOutput = () => {
+    if (blockRun.error) {
+      return <div className="truncate text-xs text-red-600">{blockRun.error}</div>;
+    }
+    if (blockRun.output) {
+      return <div className="text-muted-foreground truncate text-xs">{JSON.stringify({ output: blockRun.output })}</div>;
+    }
+    return null;
+  };
+
+  const getStatusBadge = () => {
+    if (block.type === "if") {
+      return blockRun.output?.condition ? <SimpleBadge title="True" color={Colors.BLUE} /> : <SimpleBadge title="False" color={Colors.ORANGE} />;
+    }
+    if (block.type === "switch") {
+      return <SimpleBadge title={blockRun.output?.condition?.toString()} color={Colors.BLUE} />;
+    }
+    const statusMap = {
+      running: { title: "Running", color: Colors.YELLOW },
+      error: { title: "Error", color: Colors.RED },
+      success: { title: "Success", color: Colors.GREEN },
+    };
+    const status = statusMap[blockRun.status as keyof typeof statusMap];
+    return status ? <SimpleBadge title={status.title} color={status.color} /> : <SimpleBadge title="Unknown Status" color={Colors.GRAY} />;
+  };
+
   return (
     <div className="space-y-0">
-      <div
+      <button
+        type="button"
         onClick={() => setIsExpanded(!isExpanded)}
+        onKeyDown={(e) => {
+          if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            setIsExpanded(!isExpanded);
+          }
+        }}
         className={clsx(
-          "hover:bg-secondary border-border bg-background cursor-pointer select-none overflow-hidden rounded-md border p-2",
+          "hover:bg-secondary border-border bg-background cursor-pointer select-none overflow-hidden rounded-md border p-2 w-full text-left",
           isExpanded ? "rounded-b-none" : "rounded-md"
         )}
       >
@@ -181,47 +214,30 @@ function BlockRun({ workflow, blockRun }: { workflow: WorkflowDto; blockRun: Wor
             <div className="flex items-center space-x-2 truncate">
               <workflowBlock.icon className="text-muted-foreground h-4 w-4 shrink-0" />
               <div className="text-foreground/80 shrink-0 truncate text-xs font-medium">[{workflowBlock.name}]</div>
-              {blockRun.error ? (
-                <div className="truncate text-xs text-red-600">{blockRun.error}</div>
-              ) : blockRun.output ? (
-                <div className="text-muted-foreground truncate text-xs">{JSON.stringify({ output: blockRun.output })}</div>
-              ) : null}
+              {getErrorOrOutput()}
             </div>
             <div className="text-muted-foreground text-sm">{block.description || ""}</div>
           </div>
 
-          <div className="shrink-0">
-            {block.type === "if" ? (
-              <div>{blockRun.output?.condition ? <SimpleBadge title="True" color={Colors.BLUE} /> : <SimpleBadge title="False" color={Colors.ORANGE} />}</div>
-            ) : block.type === "switch" ? (
-              <SimpleBadge title={blockRun.output?.condition?.toString()} color={Colors.BLUE} />
-            ) : (
-              <div>
-                {blockRun.status === "running" ? (
-                  <SimpleBadge title="Running" color={Colors.YELLOW} />
-                ) : blockRun.status === "error" ? (
-                  <SimpleBadge title="Error" color={Colors.RED} />
-                ) : blockRun.status === "success" ? (
-                  <SimpleBadge title="Success" color={Colors.GREEN} />
-                ) : (
-                  <SimpleBadge title="Unknown Status" color={Colors.GRAY} />
-                )}
-              </div>
-            )}
-          </div>
+          <div className="shrink-0">{getStatusBadge()}</div>
         </div>
-      </div>
+      </button>
       {isExpanded && (
-        <div onClick={(e) => e.preventDefault()} className="border-border bg-secondary/90 overflow-hidden rounded-md rounded-t-none border p-2">
+        <button
+          type="button"
+          onClick={(e) => e.preventDefault()}
+          onKeyDown={(e) => e.preventDefault()}
+          className="border-border bg-secondary/90 overflow-hidden rounded-md rounded-t-none border p-2 w-full text-left"
+        >
           {blockRun.error && <ErrorBanner title="Error" text={blockRun.error} />}
           <InputOutput input={blockRun.input} output={blockRun.output} />
-        </div>
+        </button>
       )}
     </div>
   );
 }
 
-function WorkflowRun({ workflow }: { workflow: WorkflowExecutionDto }) {
+function WorkflowRun({ workflow }: Readonly<{ workflow: WorkflowExecutionDto }>) {
   const [isExpanded, setIsExpanded] = useState(false);
   return (
     <div className=" space-y-2">

@@ -28,7 +28,7 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
 
 export const meta: MetaFunction<typeof loader> = ({ data }) => [{ title: data?.title }];
 
-export default () => {
+export default function PromptsList() {
   return (
     <SidebarIconsLayout
       label={{ align: "right" }}
@@ -62,7 +62,7 @@ export default () => {
       ]}
     >
       <IndexPageLayout>
-        <ErrorBanner title="Pro feature 🚀" text="">
+        <ErrorBanner title="Pro feature" text="">
           Prompt Flow Builder is only available in SaasRock Pro. You can see how it works by clicking{" "}
           <a href="https://www.loom.com/share/64e4f6092acd4f11a37d2695e63b1c42" target="_blank" rel="noreferrer" className="underline">
             here

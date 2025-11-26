@@ -10,12 +10,12 @@ export default function DeactivateTenantModal({
   open,
   onClose,
   onConfirm,
-}: {
+}: Readonly<{
   item?: TenantSimple;
   open: boolean;
   onClose: () => void;
   onConfirm: (item: TenantSimple, reason: string) => void;
-}) {
+}>) {
   const { t } = useTranslation();
   const navigation = useNavigation();
 
@@ -30,9 +30,7 @@ export default function DeactivateTenantModal({
   }
   return (
     <Modal open={open} setOpen={onClose} size="md">
-      {!item ? (
-        <div></div>
-      ) : (
+      {item ? (
         <Form onSubmit={onSubmit} className="bg-background inline-block w-full overflow-hidden p-1 text-left align-bottom sm:align-middle">
           <div className="mt-3 text-center sm:mt-5">
             <div className="flex items-baseline space-x-1">
@@ -77,6 +75,8 @@ export default function DeactivateTenantModal({
             </button>
           </div>
         </Form>
+      ) : (
+        <div></div>
       )}
     </Modal>
   );

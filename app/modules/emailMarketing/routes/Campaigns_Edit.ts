@@ -17,7 +17,7 @@ export namespace Campaigns_Edit {
   export const loader = async ({ request, params }: LoaderFunctionArgs) => {
     await requireAuth({ request, params });
     const tenantId = await getTenantIdOrNull({ request, params });
-    const item = await getCampaign(params.id!, tenantId);
+    const item = await getCampaign(params.id, tenantId);
     if (!item) {
       return redirect(params.tenant ? `/app/${params.tenant}/email-marketing/campaigns` : "/admin/email-marketing/campaigns");
     }
@@ -41,20 +41,20 @@ export namespace Campaigns_Edit {
     const tenantId = await getTenantIdOrNull({ request, params });
     const form = await request.formData();
     const action = form.get("action")?.toString() ?? "";
-    const item = await getCampaign(params.id!, tenantId);
+    const item = await getCampaign(params.id, tenantId);
     if (!item) {
       return Response.json({ error: t("shared.notFound") }, { status: 404 });
     }
     if (action === "delete") {
       try {
-        await deleteCampaign(params.id!, tenantId);
+        await deleteCampaign(params.id, tenantId);
         return redirect(params.tenant ? `/app/${params.tenant}/email-marketing/campaigns` : "/admin/email-marketing/campaigns");
       } catch (e: any) {
         return Response.json({ error: e.message }, { status: 400 });
       }
     } else if (action === "update") {
       try {
-        await updateCampaign(params.id!, {
+        await updateCampaign(params.id, {
           name: form.get("name")?.toString(),
           subject: form.get("subject")?.toString(),
           htmlBody: form.get("htmlBody")?.toString(),

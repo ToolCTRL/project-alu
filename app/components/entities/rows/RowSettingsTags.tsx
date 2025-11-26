@@ -15,7 +15,7 @@ import ConfirmModal, { RefConfirmModal } from "~/components/ui/modals/ConfirmMod
 import { RowWithDetails } from "~/utils/db/entities/rows.db.server";
 import { getColors } from "~/utils/shared/ColorUtils";
 
-export default function RowSettingsTags({ item, tags }: { item: RowWithDetails; tags: EntityTag[] }) {
+export default function RowSettingsTags({ item, tags }: readonly { readonly item: RowWithDetails; readonly tags: EntityTag[] }) {
   const { t } = useTranslation();
   const submit = useSubmit();
   const navigation = useNavigation();
@@ -159,8 +159,8 @@ export default function RowSettingsTags({ item, tags }: { item: RowWithDetails; 
                   value={data.item.tags.find((f) => f.tagId === tag.id) !== undefined}
                   setValue={(e) => onSetRowTag(tag.id, e)}
                 /> */}
-            <button type="button" onClick={() => onSetRowTag(tag.id, item.tags.filter((f) => f.tagId === tag.id).length === 0)} className="focus:outline-hidden">
-              {item.tags.filter((f) => f.tagId === tag.id).length > 0 ? (
+            <button type="button" onClick={() => onSetRowTag(tag.id, !item.tags.some((f) => f.tagId === tag.id))} className="focus:outline-hidden">
+              {item.tags.some((f) => f.tagId === tag.id) ? (
                 <CheckFilledCircleIcon className="h-4 w-4 text-teal-500 hover:text-teal-600" />
               ) : (
                 <CheckEmptyCircle className="text-muted-foreground hover:text-muted-foreground h-4 w-4" />

@@ -93,8 +93,7 @@ export default function WorkflowBlockEditor({
                 placeholder="Add a description..."
                 // on click select all text
                 onClick={(e: React.MouseEvent<HTMLInputElement>) => {
-                  // @ts-ignore
-                  e.target.select();
+                  e.currentTarget.select();
                 }}
                 // onBlur or onEnter save
                 onKeyDown={(e) => {

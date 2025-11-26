@@ -1,13 +1,9 @@
-import { LoaderFunctionArgs, MetaFunction } from "react-router";
-import { Outlet } from "react-router";
+import { LoaderFunctionArgs, MetaFunction, Outlet } from "react-router";
 import { useTranslation } from "react-i18next";
 import ServerError from "~/components/ui/errors/ServerError";
 import SidebarIconsLayout from "~/components/ui/layouts/SidebarIconsLayout";
-import UserIcon from "~/components/ui/icons/UserIcon";
 import CustomerIcon from "~/components/ui/icons/settings/CustomerIcon";
-import CustomerIconFilled from "~/components/ui/icons/settings/CustomerIconFilled";
 import CompanyIcon from "~/components/ui/icons/crm/CompanyIcon";
-import CompanyIconFilled from "~/components/ui/icons/crm/CompanyIconFilled";
 import { LinkIcon, LockIcon } from "lucide-react";
 import { useRootData } from "~/utils/data/useRootData";
 import { NoSymbolIcon, ServerStackIcon } from "@heroicons/react/24/outline";
@@ -25,10 +21,9 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
 
 export const meta: MetaFunction<typeof loader> = ({ data }) => [{ title: data?.title }];
 
-export default () => {
+export default function AccountsLayout() {
   const { t } = useTranslation();
   const { appConfiguration } = useRootData();
-  return <Outlet />;
   return (
     <SidebarIconsLayout
       label={{ align: "right" }}

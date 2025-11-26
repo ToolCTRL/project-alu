@@ -14,7 +14,7 @@ export interface RefFormGroup {
 }
 
 interface Props {
-  id?: string | undefined;
+  id?: string;
   onCancel?: () => void;
   children: ReactNode;
   className?: string;
@@ -81,7 +81,7 @@ const FormGroup = (
     submitForm,
   }));
   function submitForm() {
-    const formData = new FormData(formRef.current!);
+    const formData = new FormData(formRef.current);
     submit(formData, {
       method: "post",
     });
@@ -139,25 +139,23 @@ const FormGroup = (
     if (confirmationPrompt) {
       setFormData(formData);
       confirmSubmit.current?.show(confirmationPrompt.title, confirmationPrompt.yesTitle, confirmationPrompt.noTitle, confirmationPrompt.description);
+    } else if (onSubmit !== undefined) {
+      onSubmit(formData);
     } else {
-      if (onSubmit !== undefined) {
-        onSubmit(formData);
-      } else {
-        submit(formData, {
-          method: "post",
-        });
-      }
+      submit(formData, {
+        method: "post",
+      });
     }
   }
 
   function yesSubmit() {
     if (formData) {
-      if (onSubmit !== undefined) {
-        onSubmit(formData);
-      } else {
+      if (onSubmit === undefined) {
         submit(formData, {
           method: "post",
         });
+      } else {
+        onSubmit(formData);
       }
     }
   }

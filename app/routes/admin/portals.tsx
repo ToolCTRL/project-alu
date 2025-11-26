@@ -1,4 +1,4 @@
-import { LoaderFunctionArgs, useActionData, useLoaderData } from "react-router";
+import { LoaderFunctionArgs, useActionData, useLoaderData, Link, useSubmit } from "react-router";
 import { FilterablePropertyDto } from "~/application/dtos/data/FilterablePropertyDto";
 import { PaginationDto } from "~/application/dtos/data/PaginationDto";
 import EditPageLayout from "~/components/ui/layouts/EditPageLayout";
@@ -16,7 +16,6 @@ import WarningBanner from "~/components/ui/banners/WarningBanner";
 import { getAppConfiguration } from "~/utils/db/appConfiguration.db.server";
 import ServerError from "~/components/ui/errors/ServerError";
 import { FilterableValueLink } from "~/components/ui/links/FilterableValueLink";
-import { Link, useSubmit } from "react-router";
 import { getTranslations } from "~/locale/i18next.server";
 import { useEffect } from "react";
 import toast from "react-hot-toast";
@@ -102,7 +101,7 @@ export const action = async ({ request, params }: LoaderFunctionArgs) => {
   }
 };
 
-export default function () {
+export default function PortalsList() {
   const { t } = useTranslation();
   const rootData = useRootData();
   const data = useLoaderData<LoaderData>();

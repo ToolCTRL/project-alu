@@ -635,47 +635,59 @@ function SurveyItem({
                   className={clsx("flex flex-wrap items-center gap-3", item.style === "grid" && "bg-background border-border rounded-md border px-5 py-3")}
                 >
                   <label key={idx} className={clsx("flex select-none items-center space-x-2", disabled ? " cursor-not-allowed " : "cursor-pointer")}>
-                    {item.type === "multi-select" ? (
-                      <Checkbox
-                        name={item.title}
-                        checked={value.values.includes(option.title)}
-                        className={clsx(disabled && "opacity-50")}
-                        onCheckedChange={(e) => {
-                          onChange({
-                            ...value,
-                            values: e ? [...value.values, option.title] : value.values.filter((v) => v !== option.title),
-                          });
-                          if (e && option.isOther) {
-                            focusOtherInput();
-                          }
-                        }}
-                        disabled={disabled}
-                      />
-                    ) : item.type === "single-select" ? (
-                      <input
-                        type="radio"
-                        name={item.title}
-                        value={option.title}
-                        checked={value.values.includes(option.title)}
-                        required
-                        className={clsx(disabled && "opacity-50")}
-                        disabled={disabled}
-                        onChange={(e) => {
-                          onChange({ ...value, values: [option.title] });
-                          if (option.isOther) {
-                            focusOtherInput();
-                          }
-                        }}
-                      />
-                    ) : null}
+                    {(() => {
+                      if (item.type === "multi-select") {
+                        return (
+                          <Checkbox
+                            name={item.title}
+                            checked={value.values.includes(option.title)}
+                            className={clsx(disabled && "opacity-50")}
+                            onCheckedChange={(e) => {
+                              onChange({
+                                ...value,
+                                values: e ? [...value.values, option.title] : value.values.filter((v) => v !== option.title),
+                              });
+                              if (e && option.isOther) {
+                                focusOtherInput();
+                              }
+                            }}
+                            disabled={disabled}
+                          />
+                        );
+                      }
+                      if (item.type === "single-select") {
+                        return (
+                          <input
+                            type="radio"
+                            name={item.title}
+                            value={option.title}
+                            checked={value.values.includes(option.title)}
+                            required
+                            className={clsx(disabled && "opacity-50")}
+                            disabled={disabled}
+                            onChange={(e) => {
+                              onChange({ ...value, values: [option.title] });
+                              if (option.isOther) {
+                                focusOtherInput();
+                              }
+                            }}
+                          />
+                        );
+                      }
+                      return null;
+                    })()}
                     <div
                       className={clsx(
                         "flex h-9 items-center space-x-2 rounded-md px-4",
-                        disabled
-                          ? ""
-                          : value.values.includes(option.title)
-                          ? "bg-secondary hover:bg-secondary/90 text-secondary-foreground"
-                          : "bg-background text-foreground",
+                        (() => {
+                          if (disabled) {
+                            return "";
+                          }
+                          if (value.values.includes(option.title)) {
+                            return "bg-secondary hover:bg-secondary/90 text-secondary-foreground";
+                          }
+                          return "bg-background text-foreground";
+                        })(),
                         disabled && "cursor-not-allowed opacity-50"
                       )}
                     >

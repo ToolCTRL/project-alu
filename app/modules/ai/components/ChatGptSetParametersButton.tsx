@@ -7,10 +7,10 @@ import { PageConfiguration } from "~/modules/pageBlocks/dtos/PageConfiguration";
 import PageBlockPromptUtils from "../prompts/PageBlockPromptUtils";
 
 interface Props {
-  page: PageConfiguration | undefined;
-  className: string;
-  onGenerate: (value: string) => void;
-  children: React.ReactNode;
+  readonly page: PageConfiguration | undefined;
+  readonly className: string;
+  readonly onGenerate: (value: string) => void;
+  readonly children: React.ReactNode;
 }
 export default function ChatGptSetParametersButton({ page, className, onGenerate, children }: Props) {
   const [open, setOpen] = useState<boolean>(false);

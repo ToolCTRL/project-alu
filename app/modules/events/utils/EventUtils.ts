@@ -17,6 +17,7 @@ function parseDescription(event: Event) {
     const data = JSON.parse(event.data);
     return getDescription(event.name as ApplicationEvent, data);
   } catch (e) {
+    console.error("Failed to parse event data:", e);
     return "Unknown event: " + event.name;
   }
 }
@@ -39,7 +40,6 @@ function getDescription(event: ApplicationEvent, data: any) {
       case "member.invitation.created": {
         const payload = data as MemberInvitationCreatedDto;
         return `${payload.fromUser.email} invited ${payload.user.email} to ${payload.tenant.name}`;
-        break;
       }
       case "member.invitation.accepted": {
         const payload = data as MemberInvitationAcceptedDto;
@@ -72,13 +72,10 @@ function getDescription(event: ApplicationEvent, data: any) {
       //   return assertNever(event);
     }
   } catch (e) {
+    console.error("Failed to get event description:", e);
     return eventDescription;
   }
 }
-
-// function assertNever(x: never): never {
-//   throw new Error("Unexpected event: " + x);
-// }
 
 export default {
   parseDescription,

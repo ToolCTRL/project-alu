@@ -6,7 +6,7 @@ import { useRootData } from "~/utils/data/useRootData";
 import GridBlockUtils from "../../shared/grid/GridBlockUtils";
 import { CommunityBlockDto } from "./CommunityBlockUtils";
 
-export default function CommunityVariantSimple({ item }: { item: CommunityBlockDto }) {
+export default function CommunityVariantSimple({ item }: { readonly item: CommunityBlockDto }) {
   const { debug } = useRootData();
   const { t } = useTranslation();
   return (

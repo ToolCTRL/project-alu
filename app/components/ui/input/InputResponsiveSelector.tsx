@@ -3,25 +3,27 @@ import { Colors } from "~/application/enums/shared/Colors";
 import InputRadioGroup from "./InputRadioGroup";
 import InputSelector from "./InputSelector";
 
+type OptionValue = string | number | undefined;
+
 interface Props {
-  name?: string;
-  title?: string;
-  value?: string | number | undefined;
-  disabled?: boolean;
-  options: { name: string | ReactNode; value: string | number | undefined; color?: Colors; disabled?: boolean }[];
-  setValue?: React.Dispatch<React.SetStateAction<string | number | undefined>>;
-  className?: string;
-  withSearch?: boolean;
-  withLabel?: boolean;
-  withColors?: boolean;
-  selectPlaceholder?: string;
-  onNew?: () => void;
-  onNewRoute?: string;
-  required?: boolean;
-  help?: string;
-  hint?: ReactNode;
-  icon?: string;
-  borderless?: boolean;
+  readonly name?: string;
+  readonly title?: string;
+  readonly value?: OptionValue;
+  readonly disabled?: boolean;
+  readonly options: { name: string | ReactNode; value: OptionValue; color?: Colors; disabled?: boolean }[];
+  readonly setValue?: React.Dispatch<React.SetStateAction<OptionValue>>;
+  readonly className?: string;
+  readonly withSearch?: boolean;
+  readonly withLabel?: boolean;
+  readonly withColors?: boolean;
+  readonly selectPlaceholder?: string;
+  readonly onNew?: () => void;
+  readonly onNewRoute?: string;
+  readonly required?: boolean;
+  readonly help?: string;
+  readonly hint?: ReactNode;
+  readonly icon?: string;
+  readonly borderless?: boolean;
 }
 export default function InputResponsiveSelector(props: Props) {
   return (

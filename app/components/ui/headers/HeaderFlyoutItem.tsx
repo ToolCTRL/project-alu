@@ -12,7 +12,7 @@ interface Props {
   className?: string;
 }
 
-function FlyoutPanel({ items, onClose, t }: { items?: NavbarItemDto[]; onClose: () => void; t: (key: string) => string }) {
+function FlyoutPanel({ items, onClose, t }: Readonly<{ items?: NavbarItemDto[]; onClose: () => void; t: (key: string) => string }>) {
   return (
     <div className="border-border bg-background overflow-hidden rounded-lg border shadow-lg ring-opacity-5">
       <div className="relative grid gap-6 px-5 py-6 sm:gap-8 sm:p-8">

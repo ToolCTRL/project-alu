@@ -13,7 +13,7 @@ export default function KbArticleContent({
   content,
   actions,
   userState,
-}: {
+}: Readonly<{
   item: KbArticleDto;
   content: string;
   userState?: {
@@ -24,7 +24,7 @@ export default function KbArticleContent({
     onThumbsUp: () => void;
     onThumbsDown: () => void;
   };
-}) {
+}>) {
   const { t } = useTranslation();
   return (
     <div>

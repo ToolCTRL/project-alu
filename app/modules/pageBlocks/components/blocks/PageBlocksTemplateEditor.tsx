@@ -11,7 +11,7 @@ type TemplateDto = {
   title: string;
   blocks: PageBlockDto[];
 };
-export default function PageBlocksTemplateEditor({ items, onSelected }: { items: PageBlockDto[]; onSelected: (items: PageBlockDto[]) => void }) {
+export default function PageBlocksTemplateEditor({ items, onSelected }: readonly { readonly items: PageBlockDto[]; readonly onSelected: (items: PageBlockDto[]) => void }) {
   const { t } = useTranslation();
   const [templates, setTemplates] = useState<TemplateDto[]>([]);
   const [currentJson, setCurrentJson] = useState("");
@@ -28,7 +28,6 @@ export default function PageBlocksTemplateEditor({ items, onSelected }: { items:
   }, [items, t]);
 
   function onSave() {
-    // const jsonBlocks = PageBlockUtils.downloadBlocks(currentBlocks);
     try {
       const blocks = JSON.parse(currentJson) as PageBlockDto[];
       onSelected(blocks);

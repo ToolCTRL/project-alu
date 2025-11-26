@@ -2,9 +2,9 @@ import { ApiKey } from "@prisma/client";
 import { useTranslation } from "react-i18next";
 
 interface Props {
-  item: ApiKey;
+  readonly item: ApiKey;
 }
-export default function ApiKeyBadge({ item }: Props) {
+export default function ApiKeyBadge({ item }: Readonly<Props>) {
   const { t } = useTranslation();
   return (
     <div>

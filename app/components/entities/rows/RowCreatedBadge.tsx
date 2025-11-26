@@ -4,9 +4,9 @@ import { DateDisplay } from "~/utils/shared/DateUtils";
 import RowCreatedByBadge from "./RowCreatedByBadge";
 
 interface Props {
-  row: RowWithCreatedBy;
-  by?: { withEmail?: boolean };
-  date?: { displays?: DateDisplay[] };
+  readonly row: RowWithCreatedBy;
+  readonly by?: { withEmail?: boolean };
+  readonly date?: { displays?: DateDisplay[] };
 }
 export default function RowCreatedBadge({ row, by = { withEmail: true }, date = { displays: ["ymd"] } }: Props) {
   return (

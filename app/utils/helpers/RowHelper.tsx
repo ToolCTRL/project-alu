@@ -476,8 +476,8 @@ function parseRangeFromForm(
     return {
       numberMin: null,
       numberMax: null,
-      dateMin: min ? new Date(min?.toString()) : null,
-      dateMax: max ? new Date(max?.toString()) : null,
+      dateMin: min ? new Date(String(min)) : null,
+      dateMax: max ? new Date(String(max)) : null,
     };
   }
   return null;
@@ -497,7 +497,7 @@ function parseMediaFromForm(
     media = propertyValue.media;
   } else {
     media = getFormDataEntryValues({ name, form, values }).map((f: FormDataEntryValue) => {
-      return JSON.parse(f.toString());
+      return JSON.parse(String(f));
     });
   }
   if (!skipValidation) {
@@ -520,7 +520,7 @@ function parseMultipleFromForm(
     multiple = propertyValue.multiple;
   } else {
     multiple = getFormDataEntryValues({ name, form, values }).map((f: FormDataEntryValue) => {
-      return JSON.parse(f.toString());
+      return JSON.parse(String(f));
     });
   }
   if (!skipValidation) {
@@ -660,17 +660,14 @@ const getRowPropertiesFromForm = ({
     if (form?.has(name)) {
       parentRows = parentRows ?? [];
     }
-    const rowIds = getFormDataEntryValues({ name, form, values }).map((f) => f.toString());
+    const rowIds = getFormDataEntryValues({ name, form, values }).map((f) => String(f));
     const parentRowIds = rowIds.map((parentId) => {
       return { relationshipId: relationship.id, parentId };
     });
     if (relationship.required && parentRowIds.length === 0) {
-      throw Error(`${t ? t(relationship.parent.title) : relationship.parent.name}: required`);
+      throw new Error(`${t ? t(relationship.parent.title) : relationship.parent.name}: required`);
     }
     parentRows = parentRows?.concat(parentRowIds);
-    // if (relationship.required && parentRowIds.length === 0) {
-    //   throw Error(`${t ? t(RelationshipHelper.getTitle({ fromEntityId: entity.id, relationship })) : relationship.parent.name}: required`);
-    // }
   });
 
   entity.childEntities.forEach((relationship) => {
@@ -678,7 +675,7 @@ const getRowPropertiesFromForm = ({
     if (form?.has(name)) {
       childRows = childRows ?? [];
     }
-    const rowIds = getFormDataEntryValues({ name, form, values }).map((f) => f.toString());
+    const rowIds = getFormDataEntryValues({ name, form, values }).map((f) => String(f));
     const childRowIds = rowIds.map((childId) => {
       return { relationshipId: relationship.id, childId };
     });
@@ -815,7 +812,7 @@ const getFakePropertyValue = ({ property, idx, t }: { property: PropertyWithDeta
     case PropertyType.BOOLEAN:
       rowValue.booleanValue = true;
       break;
-    case PropertyType.MEDIA:
+    case PropertyType.MEDIA: {
       const media: RowMedia[] = [
         {
           id: "1",
@@ -831,6 +828,7 @@ const getFakePropertyValue = ({ property, idx, t }: { property: PropertyWithDeta
       ];
       rowValue.media = media;
       break;
+    }
     case PropertyType.MULTI_TEXT: {
       let multiple: RowValueMultiple[] = [
         { id: "1", rowValueId: "", order: 1, value: sampleText },
@@ -852,7 +850,7 @@ const getFakePropertyValue = ({ property, idx, t }: { property: PropertyWithDeta
       rowValue.multiple = multiple;
       break;
     }
-    case PropertyType.RANGE_NUMBER:
+    case PropertyType.RANGE_NUMBER: {
       const rangeNumber = {
         rowValueId: "",
         numberMin: new Decimal(100),
@@ -862,7 +860,8 @@ const getFakePropertyValue = ({ property, idx, t }: { property: PropertyWithDeta
       };
       rowValue.range = rangeNumber;
       break;
-    case PropertyType.RANGE_DATE:
+    }
+    case PropertyType.RANGE_DATE: {
       const rangeDate = {
         rowValueId: "",
         numberMin: null,
@@ -872,6 +871,7 @@ const getFakePropertyValue = ({ property, idx, t }: { property: PropertyWithDeta
       };
       rowValue.range = rangeDate;
       break;
+    }
   }
   return rowValue;
 };

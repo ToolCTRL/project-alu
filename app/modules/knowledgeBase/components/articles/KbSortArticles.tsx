@@ -3,13 +3,13 @@ import TableSimple from "~/components/ui/tables/TableSimple";
 
 export default function KbSortArticles({
   items,
-}: {
+}: Readonly<{
   items: {
     id: string;
     order: number;
     title: string;
   }[];
-}) {
+}>) {
   return (
     <div className="space-y-1">
       <label className="text-muted-foreground block text-xs font-medium">{"Articles"}</label>

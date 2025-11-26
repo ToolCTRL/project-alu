@@ -5,14 +5,14 @@ import { Input } from "../input";
 import { cn } from "~/lib/utils";
 
 interface Props {
-  value: string;
-  setValue: React.Dispatch<React.SetStateAction<string>>;
-  onNew?: () => void;
-  onNewRoute?: string;
-  placeholder?: string;
-  className?: string;
-  disabled?: boolean;
-  size?: "xs" | "sm" | "md";
+  readonly value: string;
+  readonly setValue: React.Dispatch<React.SetStateAction<string>>;
+  readonly onNew?: () => void;
+  readonly onNewRoute?: string;
+  readonly placeholder?: string;
+  readonly className?: string;
+  readonly disabled?: boolean;
+  readonly size?: "xs" | "sm" | "md";
 }
 
 export default function InputSearch({ value, setValue, onNew, onNewRoute, placeholder, className, disabled, size = "md" }: Props) {

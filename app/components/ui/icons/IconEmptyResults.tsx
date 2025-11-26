@@ -1,4 +1,4 @@
-export default function IconEmptyResults({ className }: { className: string }) {
+export default function IconEmptyResults({ className }: Readonly<{ className: string }>) {
   return (
     <svg
       className={className}

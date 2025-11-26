@@ -8,18 +8,18 @@ import OpenCloseArrowIcon from "../icons/OpenCloseArrowIcon";
 export interface RefSimpleRow {}
 
 interface Props {
-  value: ReactNode;
-  title: ReactNode;
-  children: ReactNode;
-  onRemove?: () => void;
-  initial?: boolean;
-  className?: string;
-  disabled?: boolean;
-  draggable?: boolean;
-  opened?: boolean;
+  readonly value: ReactNode;
+  readonly title: ReactNode;
+  readonly children: ReactNode;
+  readonly onRemove?: () => void;
+  readonly initial?: boolean;
+  readonly className?: string;
+  readonly disabled?: boolean;
+  readonly draggable?: boolean;
+  readonly opened?: boolean;
 }
 
-export default function CollapsibleRow({ value, title, children, onRemove, initial = false, className, disabled, draggable, opened }: Props) {
+export default function CollapsibleRow({ value, title, children, onRemove, initial = false, className, disabled, draggable, opened }: Readonly<Props>) {
   const { t } = useTranslation();
 
   const [open, setOpen] = useState(initial);
@@ -40,7 +40,7 @@ export default function CollapsibleRow({ value, title, children, onRemove, initi
     >
       <div className="flex items-center justify-between space-x-2">
         <button type="button" onClick={() => setOpen(!open)} className={clsx("w-full truncate text-left text-sm", draggable && "hover:cursor-move")}>
-          {!open ? <span className=" text-muted-foreground">{value ?? "Empty"}</span> : <span className=" text-foreground font-medium">{title}</span>}
+          {open ? <span className=" text-foreground font-medium">{title}</span> : <span className=" text-muted-foreground">{value ?? "Empty"}</span>}
         </button>
         <div className=" flex shrink-0 items-center space-x-2">
           {onRemove && (

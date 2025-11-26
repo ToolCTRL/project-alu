@@ -22,13 +22,13 @@ interface Props {
 }
 
 // Extracted component definitions
-const CurrencyCell = ({ currency }: { currency?: string }) => (
+const CurrencyCell = ({ currency }: Readonly<{ currency?: string }>) => (
   <div>
     {currency?.toUpperCase()}
   </div>
 );
 
-const DiscountCell = ({ discount }: { discount?: string }) => (
+const DiscountCell = ({ discount }: Readonly<{ discount?: string }>) => (
   <div className="flex justify-center">
     {discount ? (
       <span className="ml-1 inline-flex items-center rounded-md bg-teal-100 px-2.5 py-0.5 text-sm font-medium text-teal-800">
@@ -137,7 +137,7 @@ export default function FlatPrices({ model, prices, setPrices, disabled, isPorta
       name: "currency",
       title: "Currency",
       value: (e) => e.currency?.toUpperCase(),
-      formattedValue: (e) => <CurrencyCell currency={e.currency} />,
+      formattedValue: CurrencyCell,
     };
     let headers: RowHeaderDisplayDto<FlatPriceDto>[] = [currencyHeader];
 
@@ -203,7 +203,7 @@ export default function FlatPrices({ model, prices, setPrices, disabled, isPorta
         title: "Yearly Discount",
         className: "text-center",
         value: (e) => getYearlyDiscount(e),
-        formattedValue: (e) => <DiscountCell discount={getYearlyDiscount(e)} />,
+        formattedValue: DiscountCell,
         hidden:
           !selectedBillingPeriods.includes(SubscriptionBillingPeriod.YEARLY) ||
           !selectedBillingPeriods.includes(SubscriptionBillingPeriod.MONTHLY),

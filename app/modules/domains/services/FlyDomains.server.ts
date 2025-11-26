@@ -102,57 +102,11 @@ async function getCert({ appId, hostname, apiToken }: { appId: string; hostname:
     body: JSON.stringify({ query, variables }),
   });
   const data = await response.json();
-  if (data.errors && data.errors.length) {
+  if (data.errors?.length) {
     throw new Error(data.errors[0].message);
   }
   return data;
 }
-
-// async function checkCert({ appId, hostname, apiToken }: { appId: string; hostname: string; apiToken: string }) {
-//   const query = `
-//     query($appName: String!, $hostname: String!) {
-//         app(name: $appName) {
-//             certificate(hostname: $hostname) {
-//                 check
-//                 configured
-//                 acmeDnsConfigured
-//                 acmeAlpnConfigured
-//                 certificateAuthority
-//                 createdAt
-//                 dnsProvider
-//                 dnsValidationInstructions
-//                 dnsValidationHostname
-//                 dnsValidationTarget
-//                 hostname
-//                 id
-//                 source
-//                 clientStatus
-//                 issued {
-//                     nodes {
-//                         type
-//                         expiresAt
-//                     }
-//                 }
-//             }
-//         }
-//     }`;
-
-//   const variables = { appName: appId, hostname };
-
-//   const response = await fetch(endpoint, {
-//     method: "POST",
-//     headers: {
-//       "Content-Type": "application/json",
-//       Authorization: `Bearer ${apiToken}`,
-//     },
-//     body: JSON.stringify({ query, variables }),
-//   });
-//   if (response.status !== 200) {
-//     return null;
-//   }
-//   const data = await response.json();
-//   return data;
-// }
 
 async function delCert({ appId, hostname, apiToken }: { appId: string; hostname: string; apiToken: string }) {
   const query = `

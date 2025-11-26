@@ -6,12 +6,10 @@ import { StatChange } from "~/application/dtos/stats/StatChange";
 import { Fragment } from "react";
 
 interface Props {
-  items: Stat[];
+  readonly items: Stat[];
 }
 
-export function DashboardStats({ items }: Props) {
-  const navigation = useNavigation();
-  // const loading = navigation.state === "loading" && navigation.location.pathname === "/admin/dashboard";
+export function DashboardStats({ items }: Readonly<Props>) {
   return (
     <div>
       <div
@@ -25,8 +23,8 @@ export function DashboardStats({ items }: Props) {
           items.length === 6 && "md:grid-cols-4 lg:grid-cols-6"
         )}
       >
-        {items.map((item, idx) => (
-          <Fragment key={idx}>
+        {items.map((item) => (
+          <Fragment key={item.name}>
             {item.path ? (
               <Link to={item.path}>
                 <DashboardStat
@@ -44,7 +42,7 @@ export function DashboardStats({ items }: Props) {
   );
 }
 
-function DashboardStat({ item, loading = false, className }: { item: Stat; loading?: boolean; className?: string }) {
+function DashboardStat({ item, loading = false, className }: Readonly<{ readonly item: Stat; readonly loading?: boolean; readonly className?: string }>) {
   const { t } = useTranslation();
   return (
     <div key={item.name} className={className}>
@@ -61,42 +59,53 @@ function DashboardStat({ item, loading = false, className }: { item: Stat; loadi
           )}
         </div>
       </div>
-      {item.changeType === StatChange.Increase ? (
-        <div className="mt-1 flex shrink-0 gap-1 truncate text-green-600">
-          {loading ? (
-            "..."
-          ) : (
-            <>
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
-              </svg>
-              <div className="flex gap-2 text-xs">
-                <span className="font-medium">
-                  <div>{item.change}</div>
-                </span>
-              </div>
-            </>
-          )}
-        </div>
-      ) : item.changeType === StatChange.Decrease ? (
-        <div className="mt-1 flex gap-1 text-red-600">
-          {loading ? (
-            "..."
-          ) : (
-            <>
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 17h8m0 0V9m0 8l-8-8-4 4-6-6" />
-              </svg>
-
-              <p className="flex gap-2 text-xs">
-                <span className="font-medium">
-                  <div>{item.change}</div>
-                </span>
-              </p>
-            </>
-          )}
-        </div>
-      ) : null}
+      {renderChangeIndicator(item.changeType, item.change, loading)}
     </div>
   );
+}
+
+function renderChangeIndicator(changeType: StatChange | undefined, change: string | undefined, loading: boolean) {
+  if (changeType === StatChange.Increase) {
+    return (
+      <div className="mt-1 flex shrink-0 gap-1 truncate text-green-600">
+        {loading ? (
+          "..."
+        ) : (
+          <>
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+            </svg>
+            <div className="flex gap-2 text-xs">
+              <span className="font-medium">
+                <div>{change}</div>
+              </span>
+            </div>
+          </>
+        )}
+      </div>
+    );
+  }
+
+  if (changeType === StatChange.Decrease) {
+    return (
+      <div className="mt-1 flex gap-1 text-red-600">
+        {loading ? (
+          "..."
+        ) : (
+          <>
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 17h8m0 0V9m0 8l-8-8-4 4-6-6" />
+            </svg>
+            <p className="flex gap-2 text-xs">
+              <span className="font-medium">
+                <div>{change}</div>
+              </span>
+            </p>
+          </>
+        )}
+      </div>
+    );
+  }
+
+  return null;
 }

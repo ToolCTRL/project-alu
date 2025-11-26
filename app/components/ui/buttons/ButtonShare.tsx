@@ -9,7 +9,7 @@ interface Props {
   disabled?: boolean;
   children: ReactNode;
 }
-export default function ButtonFlyout({ className, disabled, children }: Props) {
+export default function ButtonFlyout({ className, disabled, children }: Readonly<Props>) {
   const { t } = useTranslation();
   return (
     <Popover className="relative">

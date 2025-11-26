@@ -9,7 +9,7 @@ interface Props {
   onClose: () => void;
 }
 
-export default function UploadImage({ title = "", initialImage, onLoaded, onClose }: Props) {
+export default function UploadImage({ title = "", initialImage, onLoaded, onClose }: Readonly<Props>) {
   const [image, setImage] = useState(initialImage);
 
   function onChange(base64: string, file: File) {

@@ -7,7 +7,7 @@ import type { KnowledgeBaseDto } from "../../dtos/KnowledgeBaseDto";
 export default function KbArticles({
   kb,
   items,
-}: {
+}: Readonly<{
   kb: KnowledgeBaseDto;
   items: {
     order: number;
@@ -16,7 +16,7 @@ export default function KbArticles({
     href: string;
     sectionId: string | null;
   }[];
-}) {
+}>) {
   return (
     <div className="rounded-md border border-border bg-background py-3">
       {items.map((item) => {

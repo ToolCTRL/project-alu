@@ -4,8 +4,6 @@ import { RowWithDetails } from "../db/entities/rows.db.server";
 import { RowValueDto } from "~/application/dtos/entities/RowValueDto";
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import RowHelper from "../helpers/RowHelper";
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-import { PropertyType } from "~/application/enums/entities/PropertyType";
 
 export namespace RowHooks {
   type OnBeforeGetAllParams = {

@@ -215,13 +215,6 @@ export async function getMyTenants(userId: string): Promise<TenantSimple[]> {
     orderBy: { name: "asc" },
   });
 
-  // await Promise.all(tenantsAsMember.map(async(tenant) => {
-  //   const relatedTenants = await db.tenantRelationship.findFirst({
-  //     where: { fromTenantId: tenant.id },
-  //     include: { toTenant: true },
-  //   });
-  // }));
-
   return [...tenantsAsMember];
 }
 

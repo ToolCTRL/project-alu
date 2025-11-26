@@ -1,6 +1,4 @@
-import { LoaderFunctionArgs, useLoaderData } from "react-router";
-import { Link } from "react-router";
-import { Fragment } from "react";
+import { LoaderFunctionArgs, useLoaderData, Link } from "react-router";
 import { useTranslation } from "react-i18next";
 import { FilterablePropertyDto } from "~/application/dtos/data/FilterablePropertyDto";
 import ErrorBanner from "~/components/ui/banners/ErrorBanner";
@@ -45,9 +43,7 @@ export default function () {
           </Link>
         </ErrorBanner>
       ) : (
-        <Fragment>
-          <ApiKeyLogsSummary data={data} />
-        </Fragment>
+        <ApiKeyLogsSummary data={data} />
       )}
     </EditPageLayout>
   );

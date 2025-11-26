@@ -187,8 +187,10 @@ function getValueAsString(value: FormulaValueType) {
     valueStr = `${value}`;
   } else if (value instanceof Date) {
     valueStr = `"${value.toISOString()}"`;
+  } else if (typeof value === "object") {
+    valueStr = `"${JSON.stringify(value)}"`;
   } else {
-    valueStr = `"${value.toString()}"`;
+    valueStr = `"${String(value)}"`;
   }
   return valueStr;
 }

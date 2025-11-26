@@ -1,9 +1,8 @@
 import { ReactNode } from "react";
-// import { Dialog, DialogBackdrop, DialogPanel, DialogTitle } from "@headlessui/react";
 import XIcon from "../icons/XIcon";
 import clsx from "clsx";
 import { cn } from "~/lib/utils";
-import { Sheet, SheetClose, SheetContent, SheetDescription, SheetFooter, SheetHeader, SheetTitle, SheetTrigger } from "~/components/ui/sheet";
+import { Sheet, SheetClose, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "~/components/ui/sheet";
 
 // Extracted class mappings to reduce complexity
 const SIZE_CLASSES: Record<string, string> = {
@@ -38,20 +37,20 @@ export default function SlideOverWideEmpty({
   overflowYScroll,
   position = 5,
   size = "2xl",
-}: {
-  title?: string | ReactNode;
-  description?: string;
-  open: boolean;
-  children: ReactNode;
-  onClose: () => void;
-  className?: string;
-  buttons?: ReactNode;
-  withTitle?: boolean;
-  withClose?: boolean;
-  overflowYScroll?: boolean;
-  position?: 0 | 1 | 2 | 3 | 4 | 5 | 99;
-  size?: "sm" | "md" | "lg" | "xl" | "2xl" | "3xl" | "4xl" | "5xl" | "6xl" | "7xl" | "full";
-}) {
+}: Readonly<{
+  readonly title?: string | ReactNode;
+  readonly description?: string;
+  readonly open: boolean;
+  readonly children: ReactNode;
+  readonly onClose: () => void;
+  readonly className?: string;
+  readonly buttons?: ReactNode;
+  readonly withTitle?: boolean;
+  readonly withClose?: boolean;
+  readonly overflowYScroll?: boolean;
+  readonly position?: 0 | 1 | 2 | 3 | 4 | 5 | 99;
+  readonly size?: "sm" | "md" | "lg" | "xl" | "2xl" | "3xl" | "4xl" | "5xl" | "6xl" | "7xl" | "full";
+}>) {
   return (
     <Sheet
       open={open}

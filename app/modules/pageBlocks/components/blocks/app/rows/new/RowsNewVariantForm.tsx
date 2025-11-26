@@ -9,41 +9,39 @@ import { RowWithDetails } from "~/utils/db/entities/rows.db.server";
 import RowHelper from "~/utils/helpers/RowHelper";
 import { RowsNewBlockDto } from "./RowsNewBlockUtils";
 
-export default function RowsNewVariantForm({ item }: { item: RowsNewBlockDto }) {
+export default function RowsNewVariantForm({ item }: readonly { readonly item: RowsNewBlockDto }) {
   const actionData = useLoaderData<{ saveAndAdd?: boolean; newRow?: RowWithDetails }>();
   return (
     <>
       {item.data && (
-        <>
-          <NewPageLayout title={""}>
-            {actionData?.newRow ? (
-              <RowCreated entityData={item.data.entityData} newRow={actionData?.newRow} />
-            ) : (
-              <CheckPlanFeatureLimit item={item.data.entityData.featureUsageEntity}>
-                <RowForm
-                  entity={item.data.entityData.entity}
-                  routes={undefined}
-                  onCreatedRedirect={item.data.entityData.entity.onCreated ?? undefined}
-                  allEntities={item.data.allEntities}
-                  hiddenFields={{
-                    "rows-action": "create",
-                    "rows-entity": item.variables.entityName.value,
-                    "rows-tenant": item.variables.tenantId.value,
-                    "rows-redirectTo": item.variables.redirectTo.value,
-                  }}
-                  relationshipRows={item.data.relationshipRows}
-                  hiddenProperties={item.hiddenProperties}
-                />
-              </CheckPlanFeatureLimit>
-            )}
-          </NewPageLayout>
-        </>
+        <NewPageLayout title={""}>
+          {actionData?.newRow ? (
+            <RowCreated entityData={item.data.entityData} newRow={actionData?.newRow} />
+          ) : (
+            <CheckPlanFeatureLimit item={item.data.entityData.featureUsageEntity}>
+              <RowForm
+                entity={item.data.entityData.entity}
+                routes={undefined}
+                onCreatedRedirect={item.data.entityData.entity.onCreated ?? undefined}
+                allEntities={item.data.allEntities}
+                hiddenFields={{
+                  "rows-action": "create",
+                  "rows-entity": item.variables.entityName.value,
+                  "rows-tenant": item.variables.tenantId.value,
+                  "rows-redirectTo": item.variables.redirectTo.value,
+                }}
+                relationshipRows={item.data.relationshipRows}
+                hiddenProperties={item.hiddenProperties}
+              />
+            </CheckPlanFeatureLimit>
+          )}
+        </NewPageLayout>
       )}
     </>
   );
 }
 
-function RowCreated({ entityData, newRow }: { entityData: EntitiesApi.GetEntityData; newRow: RowWithDetails }) {
+function RowCreated({ entityData, newRow }: readonly { readonly entityData: EntitiesApi.GetEntityData; readonly newRow: RowWithDetails }) {
   const { t } = useTranslation();
   return (
     <div className="mx-auto max-w-2xl space-y-3 px-4 pb-6 pt-3 sm:px-6 lg:px-8">

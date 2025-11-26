@@ -10,7 +10,6 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "~/components/ui/alert-dialog";
-import ButtonPrimary from "../buttons/ButtonPrimary";
 import { cn } from "~/lib/utils";
 
 export interface RefConfirmModal {
@@ -37,9 +36,13 @@ const ConfirmModal = (props: Props, ref: Ref<RefConfirmModal>) => {
   const [inputString, setInputString] = useState<string | undefined>("");
   const [yesTitle, setYesTitle] = useState<string>("");
   const [noTitle, setNoTitle] = useState<string>("");
-  const [isDestructive, setDestructive] = useState<boolean>(props.destructive || false);
+  const [isDestructive, setDestructiveState] = useState<boolean>(props.destructive || false);
 
   const inputValue = useRef<HTMLInputElement>(null);
+
+  const setDestructive = (destructive: boolean) => {
+    setDestructiveState(destructive);
+  };
 
   useEffect(() => {
     setTitle(t("shared.confirm").toString());
@@ -100,7 +103,7 @@ const ConfirmModal = (props: Props, ref: Ref<RefConfirmModal>) => {
         <div>
           {props.inputType === "email" && (
             <div className="mt-4">
-              <label htmlFor="value" className="text-foreground/80 block text-sm font-medium"></label>
+              <label htmlFor="email" className="text-foreground/80 block text-sm font-medium">Email</label>
               <div className="relative mt-1 rounded-md shadow-2xs">
                 <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
                   <svg className="text-muted-foreground h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
@@ -123,7 +126,7 @@ const ConfirmModal = (props: Props, ref: Ref<RefConfirmModal>) => {
           )}
           {props.inputType === "string" && (
             <div className="mt-4">
-              <label htmlFor="value" className="text-foreground/80 block text-sm font-medium"></label>
+              <label htmlFor="value" className="text-foreground/80 block text-sm font-medium">Value</label>
               <div className="relative mt-1 rounded-md shadow-2xs">
                 <input
                   value={inputString}
@@ -140,15 +143,15 @@ const ConfirmModal = (props: Props, ref: Ref<RefConfirmModal>) => {
           )}
           {props.inputType === "slug" && (
             <div className="mt-4">
-              <label htmlFor="value" className="text-foreground/80 block text-sm font-medium"></label>
+              <label htmlFor="slug-value" className="text-foreground/80 block text-sm font-medium">Slug</label>
               <div className="relative mt-1 rounded-md shadow-2xs">
                 <input
                   value={inputString}
                   onChange={(e) => setInputString(e.target.value.toLowerCase())}
                   ref={inputValue}
                   type="text"
-                  name="value"
-                  id="value"
+                  name="slug-value"
+                  id="slug-value"
                   className="border-border focus:border-border block w-full rounded-md focus:ring-gray-500 sm:text-sm"
                   placeholder={props.placeholder}
                 />

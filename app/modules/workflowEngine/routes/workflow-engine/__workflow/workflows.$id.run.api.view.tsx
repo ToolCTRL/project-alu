@@ -74,8 +74,8 @@ export default function WorkflowsIdRunApiApiView() {
           <div className="text-lg font-semibold">Run Workflow using the API</div>
         </div>
 
-        {!execution ? (
-          <div>
+        {execution ? (
+          <div className="space-y-4">
             <div className="space-y-1">
               <div className="flex items-center justify-between space-x-2">
                 <div className="text-sm font-medium">{selectedTemplate || "Body"}</div>
@@ -104,18 +104,16 @@ export default function WorkflowsIdRunApiApiView() {
             </div>
           </div>
         ) : (
-          <div className="space-y-4">
+          <div>
             <div className="grid grid-cols-2 gap-4">
               <Link
                 target="_blank"
                 to={UrlUtils.getModulePath(params, `workflow-engine/workflows/${data.workflow.id}/executions?executionId=${execution.id}`)}
                 className="border-border bg-background flex w-full flex-col items-center rounded-lg border-2 border-dotted p-3 text-sm font-medium hover:border-dashed hover:border-gray-800"
               >
-                <>
-                  <div className="flex justify-center">
-                    <div className=" ">View execution flow</div>
-                  </div>
-                </>
+                <div className="flex justify-center">
+                  <div className=" ">View execution flow</div>
+                </div>
               </Link>
               <button
                 type="button"

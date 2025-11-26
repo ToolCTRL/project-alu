@@ -29,6 +29,7 @@ export interface RefRowValueInput {
 }
 
 type ChangeValue = string | number | Date | boolean | undefined | null;
+type RowIdWithPrompts = { readonly rowId: string | undefined; readonly prompts: PromptFlowWithDetails[] };
 
 interface Props {
   readonly selected: PropertyWithDetails | undefined;
@@ -49,7 +50,7 @@ interface Props {
   readonly readOnly: boolean;
   readonly className?: string;
   readonly autoFocus?: boolean;
-  readonly promptFlows?: { rowId: string | undefined; prompts: PromptFlowWithDetails[] };
+  readonly promptFlows?: RowIdWithPrompts;
 }
 
 function useFocusHandlers(selected: PropertyWithDetails | undefined) {
@@ -86,28 +87,28 @@ function useMediaChangeEffect(selected: PropertyWithDetails | undefined, onChang
 function renderPropertyInput(
   selected: PropertyWithDetails,
   props: {
-    textValue?: string;
-    numberValue?: number;
-    dateValue?: Date;
-    booleanValue?: boolean;
-    multiple?: RowValueMultiple[];
-    range?: RowValueRange;
-    initialMedia?: RowMedia[];
-    initialOption?: string;
-    onChange?: (value: string | number | Date | boolean | undefined | null) => void;
-    onChangeOption?: (option: string | undefined) => void;
-    onChangeMultiple?: (option: RowValueMultipleDto[]) => void;
-    onChangeRange?: (option: RowValueRangeDto | undefined) => void;
-    readOnly: boolean;
-    className?: string;
-    autoFocus?: boolean;
-    promptFlows?: { rowId?: string; prompts: PromptFlowWithDetails[] };
-    t: any;
-    setMedia: (media: MediaDto[]) => void;
-    numberInput: Ref<RefInputNumber>;
-    textInput: Ref<RefInputText>;
-    dateInput: Ref<RefInputDate>;
-    multipleInput: Ref<RefInputMultiText>;
+    readonly textValue?: string;
+    readonly numberValue?: number;
+    readonly dateValue?: Date;
+    readonly booleanValue?: boolean;
+    readonly multiple?: RowValueMultiple[];
+    readonly range?: RowValueRange;
+    readonly initialMedia?: RowMedia[];
+    readonly initialOption?: string;
+    readonly onChange?: (value: string | number | Date | boolean | undefined | null) => void;
+    readonly onChangeOption?: (option: string | undefined) => void;
+    readonly onChangeMultiple?: (option: RowValueMultipleDto[]) => void;
+    readonly onChangeRange?: (option: RowValueRangeDto | undefined) => void;
+    readonly readOnly: boolean;
+    readonly className?: string;
+    readonly autoFocus?: boolean;
+    readonly promptFlows?: RowIdWithPrompts;
+    readonly t: any;
+    readonly setMedia: (media: MediaDto[]) => void;
+    readonly numberInput: Ref<RefInputNumber>;
+    readonly textInput: Ref<RefInputText>;
+    readonly dateInput: Ref<RefInputDate>;
+    readonly multipleInput: Ref<RefInputMultiText>;
   }
 ) {
   const {
@@ -339,14 +340,14 @@ function TextPropertyInput({
   promptFlows,
   t,
 }: readonly {
-  selected: PropertyWithDetails;
-  textValue?: string;
-  readOnly: boolean;
-  className?: string;
-  onChange?: (value: string | number | Date | boolean | undefined | null) => void;
-  autoFocus?: boolean;
-  promptFlows?: { rowId: string | undefined; prompts: PromptFlowWithDetails[] };
-  t: any;
+  readonly selected: PropertyWithDetails;
+  readonly textValue?: string;
+  readonly readOnly: boolean;
+  readonly className?: string;
+  readonly onChange?: (value: string | number | Date | boolean | undefined | null) => void;
+  readonly autoFocus?: boolean;
+  readonly promptFlows?: RowIdWithPrompts;
+  readonly t: any;
 }) {
   const editor = PropertyAttributeHelper.getPropertyAttributeValue_String(selected, PropertyAttributeName.Editor) ?? "";
   const isSpecialEditor = ["monaco", "wysiwyg", "iframe"].includes(editor);
@@ -407,13 +408,13 @@ function TextPropertyInput({
 const NumberPropertyInput = forwardRef<
   RefInputNumber,
   {
-    selected: PropertyWithDetails;
-    numberValue?: number;
-    readOnly: boolean;
-    className?: string;
-    onChange?: (value: string | number | Date | boolean | undefined | null) => void;
-    autoFocus?: boolean;
-    t: any;
+    readonly selected: PropertyWithDetails;
+    readonly numberValue?: number;
+    readonly readOnly: boolean;
+    readonly className?: string;
+    readonly onChange?: (value: string | number | Date | boolean | undefined | null) => void;
+    readonly autoFocus?: boolean;
+    readonly t: any;
   }
 >(({ selected, numberValue, readOnly, className, onChange, autoFocus, t }, ref) => {
   return (
@@ -443,13 +444,13 @@ const NumberPropertyInput = forwardRef<
 const DatePropertyInput = forwardRef<
   RefInputDate,
   {
-    selected: PropertyWithDetails;
-    dateValue?: Date;
-    readOnly: boolean;
-    className?: string;
-    onChange?: (value: string | number | Date | boolean | undefined | null) => void;
-    autoFocus?: boolean;
-    t: any;
+    readonly selected: PropertyWithDetails;
+    readonly dateValue?: Date;
+    readonly readOnly: boolean;
+    readonly className?: string;
+    readonly onChange?: (value: string | number | Date | boolean | undefined | null) => void;
+    readonly autoFocus?: boolean;
+    readonly t: any;
   }
 >(({ selected, dateValue, readOnly, className, onChange, autoFocus, t }, ref) => {
   return (
@@ -481,15 +482,15 @@ function SelectPropertyInput({
   autoFocus,
   t,
 }: readonly {
-  selected: PropertyWithDetails;
-  initialOption?: string;
-  textValue?: string;
-  readOnly: boolean;
-  className?: string;
-  onChange?: (value: string | number | Date | boolean | undefined | null) => void;
-  onChangeOption?: (option: string | undefined) => void;
-  autoFocus?: boolean;
-  t: any;
+  readonly selected: PropertyWithDetails;
+  readonly initialOption?: string;
+  readonly textValue?: string;
+  readonly readOnly: boolean;
+  readonly className?: string;
+  readonly onChange?: (value: string | number | Date | boolean | undefined | null) => void;
+  readonly onChangeOption?: (option: string | undefined) => void;
+  readonly autoFocus?: boolean;
+  readonly t: any;
 }) {
   const handleSelectChange = (e: string | undefined) => {
     if (onChange) {
@@ -559,13 +560,13 @@ function BooleanPropertyInput({
   autoFocus,
   t,
 }: readonly {
-  selected: PropertyWithDetails;
-  booleanValue?: boolean;
-  readOnly: boolean;
-  className?: string;
-  onChange?: (value: string | number | Date | boolean | undefined | null) => void;
-  autoFocus?: boolean;
-  t: any;
+  readonly selected: PropertyWithDetails;
+  readonly booleanValue?: boolean;
+  readonly readOnly: boolean;
+  readonly className?: string;
+  readonly onChange?: (value: string | number | Date | boolean | undefined | null) => void;
+  readonly autoFocus?: boolean;
+  readonly t: any;
 }) {
   return (
     <InputCheckbox
@@ -595,13 +596,13 @@ function MediaPropertyInput({
   autoFocus,
   t,
 }: readonly {
-  selected: PropertyWithDetails;
-  initialMedia?: RowMedia[];
-  readOnly: boolean;
-  className?: string;
-  setMedia: (media: MediaDto[]) => void;
-  autoFocus?: boolean;
-  t: any;
+  readonly selected: PropertyWithDetails;
+  readonly initialMedia?: RowMedia[];
+  readonly readOnly: boolean;
+  readonly className?: string;
+  readonly setMedia: (media: MediaDto[]) => void;
+  readonly autoFocus?: boolean;
+  readonly t: any;
 }) {
   return (
     <InputMedia
@@ -631,12 +632,12 @@ function MultiSelectPropertyInput({
   autoFocus,
   t,
 }: readonly {
-  selected: PropertyWithDetails;
-  multiple?: RowValueMultiple[];
-  readOnly: boolean;
-  onChangeMultiple?: (option: RowValueMultipleDto[]) => void;
-  autoFocus?: boolean;
-  t: any;
+  readonly selected: PropertyWithDetails;
+  readonly multiple?: RowValueMultiple[];
+  readonly readOnly: boolean;
+  readonly onChangeMultiple?: (option: RowValueMultipleDto[]) => void;
+  readonly autoFocus?: boolean;
+  readonly t: any;
 }) {
   return (
     <PropertyMultiSelector
@@ -659,12 +660,12 @@ function MultiSelectPropertyInput({
 const MultiTextPropertyInput = forwardRef<
   RefInputMultiText,
   {
-    selected: PropertyWithDetails;
-    multiple?: RowValueMultiple[];
-    readOnly: boolean;
-    className?: string;
-    autoFocus?: boolean;
-    t: any;
+    readonly selected: PropertyWithDetails;
+    readonly multiple?: RowValueMultiple[];
+    readonly readOnly: boolean;
+    readonly className?: string;
+    readonly autoFocus?: boolean;
+    readonly t: any;
   }
 >(({ selected, multiple, readOnly, className, autoFocus, t }, ref) => {
   return (
@@ -702,13 +703,13 @@ function RangeNumberPropertyInput({
   autoFocus,
   t,
 }: readonly {
-  selected: PropertyWithDetails;
-  range?: RowValueRange;
-  readOnly: boolean;
-  className?: string;
-  onChangeRange?: (option: RowValueRangeDto | undefined) => void;
-  autoFocus?: boolean;
-  t: any;
+  readonly selected: PropertyWithDetails;
+  readonly range?: RowValueRange;
+  readonly readOnly: boolean;
+  readonly className?: string;
+  readonly onChangeRange?: (option: RowValueRangeDto | undefined) => void;
+  readonly autoFocus?: boolean;
+  readonly t: any;
 }) {
   return (
     <InputRangeNumber
@@ -761,13 +762,13 @@ function RangeDatePropertyInput({
   autoFocus,
   t,
 }: readonly {
-  selected: PropertyWithDetails;
-  range?: RowValueRange;
-  readOnly: boolean;
-  className?: string;
-  onChangeRange?: (option: RowValueRangeDto | undefined) => void;
-  autoFocus?: boolean;
-  t: any;
+  readonly selected: PropertyWithDetails;
+  readonly range?: RowValueRange;
+  readonly readOnly: boolean;
+  readonly className?: string;
+  readonly onChangeRange?: (option: RowValueRangeDto | undefined) => void;
+  readonly autoFocus?: boolean;
+  readonly t: any;
 }) {
   return (
     <InputRangeDate
@@ -813,11 +814,11 @@ function FormulaPropertyInput({
   dateValue,
   booleanValue,
 }: readonly {
-  selected: PropertyWithDetails;
-  textValue?: string;
-  numberValue?: number;
-  dateValue?: Date;
-  booleanValue?: boolean;
+  readonly selected: PropertyWithDetails;
+  readonly textValue?: string;
+  readonly numberValue?: number;
+  readonly dateValue?: Date;
+  readonly booleanValue?: boolean;
 }) {
   if (!selected.formula) {
     return <div className="text-red-500">Unknown formula</div>;

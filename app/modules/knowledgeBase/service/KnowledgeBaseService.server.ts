@@ -35,11 +35,11 @@ async function get({ slug, enabled, request }: { slug: string; enabled?: boolean
     getFreshValue: () => getKnowledgeBaseBySlug(slug),
   });
   if (!item) {
-    throw Error(`Knowledge base not found`);
+    throw new Error(`Knowledge base not found`);
   }
 
   if (enabled !== undefined && item.enabled !== enabled) {
-    throw Error(`Knowledge base (${item.title}) is not enabled`);
+    throw new Error(`Knowledge base (${item.title}) is not enabled`);
   }
   return kbToDto(item, request);
 }
@@ -119,13 +119,6 @@ async function getCategories({
   });
 
   return items.map((f) => categoryToDto({ kb, category: f, params, request }));
-  // let allItems = await generateFakeData(kb);
-  // allItems.categories = allItems.categories.filter((f) => f.language === language);
-  // const result = await fakeSearch({ original: allItems, query });
-  // allItems.categories.forEach((category) => {
-  //   category.articles = allItems.articles;
-  // });
-  // return result.categories;
 }
 
 function categoryToDto({
@@ -212,10 +205,6 @@ async function getArticles({
     language,
   });
   return items.map((f) => articleToDto({ kb, article: f, relatedArticles: f.relatedArticles, params, request }));
-  // let allItems = await generateFakeData(kb);
-  // allItems.articles = allItems.articles.filter((f) => f.language === language);
-  // const result = await fakeSearch({ original: allItems, query });
-  // return result.articles;
 }
 
 async function getArticle({ kb, slug, params, request }: { kb: KnowledgeBaseDto; slug: string; params: { lang?: string }; request: Request }): Promise<{
@@ -242,18 +231,6 @@ async function getArticle({ kb, slug, params, request }: { kb: KnowledgeBaseDto;
     article: articleToDto({ kb, article: item, relatedArticles: item.relatedArticles, params, request }),
     category: categoryToDto({ kb, category, params, request }),
   };
-  // const getIdFromSlug = (slug: string) => {
-  //   return slug.split("-").pop();
-  // };
-  // const id = getIdFromSlug(slug);
-  // const allItems = await generateFakeData(kb);
-  // const article = allItems.articles.find((f) => f.id === id && f.language === language);
-
-  // if (!article) {
-  //   return null;
-  // }
-  // const category = allItems.categories[0];
-  // return { article, category };
 }
 
 async function getArticleById({ kb, id, request }: { kb: KnowledgeBaseDto; id: string; request: Request }): Promise<KbArticleDto | null> {
@@ -271,13 +248,6 @@ async function getFeaturedArticles({ kb, params, request }: { kb: KnowledgeBaseD
     language: params.lang || kb.defaultLanguage,
   });
   return items.map((f) => articleToDto({ kb, article: f, relatedArticles: f.relatedArticles, params, request }));
-  // let allItems = await generateFakeData(kb);
-  // allItems.articles = allItems.articles.filter((f) => f.language === language && f.featuredOrder);
-  // // return first 6
-  // if (allItems.articles.length <= 4) {
-  //   return allItems.articles;
-  // }
-  // return allItems.articles.slice(0, 4);
 }
 
 function articleToDto({
@@ -366,7 +336,7 @@ async function getCategory({
     return null;
   }
 
-  item.articles = item.articles.filter((f) => f.publishedAt);
+  item.articles = item.articles?.filter((f) => f.publishedAt) ?? item.articles;
   return categoryToDto({ kb, category: item, params, request });
 }
 
@@ -378,10 +348,10 @@ async function del(item: KnowledgeBaseDto) {
     where: { knowledgeBaseId: item.id },
   });
   if (articlesCount > 0) {
-    throw Error("Cannot delete knowledge base with articles");
+    throw new Error("Cannot delete knowledge base with articles");
   }
   if (categoriesCount > 0) {
-    throw Error("Cannot delete knowledge base with categories");
+    throw new Error("Cannot delete knowledge base with categories");
   }
   return await db.knowledgeBase.delete({
     where: { id: item.id },
@@ -395,7 +365,7 @@ async function duplicateCategory({ kb, language, categoryId }: { kb: KnowledgeBa
   });
   const existing = allCategories.find((p) => p.id === categoryId);
   if (!existing) {
-    throw Error("Invalid category");
+    throw new Error("Invalid category");
   }
   let number = 2;
   let slug = "";
@@ -442,7 +412,7 @@ async function duplicateArticle({ kb, language, articleId }: { kb: KnowledgeBase
 
   const existing = allArticles.find((p) => p.id === articleId);
   if (!existing) {
-    throw Error("Invalid article");
+    throw new Error("Invalid article");
   }
 
   const { slug, maxOrder, number } = KnowledgeBaseUtils.getAvailableArticleSlug({

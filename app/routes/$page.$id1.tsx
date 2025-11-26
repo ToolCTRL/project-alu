@@ -6,7 +6,6 @@ import { PageLoaderData } from "~/modules/pageBlocks/dtos/PageBlockData";
 import ServerError from "~/components/ui/errors/ServerError";
 import ErrorBanner from "~/components/ui/banners/ErrorBanner";
 import { useTranslation } from "react-i18next";
-import { createMetrics } from "~/modules/metrics/services/.server/MetricTracker";
 import Page404 from "~/components/pages/Page404";
 import { useState, useEffect } from "react";
 
@@ -22,16 +21,19 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
 
 export const action: ActionFunction = async ({ request, params }) => PageBlockService.action({ request, params });
 
-export default function () {
+export default function PageWithIdRoute() {
   const { t } = useTranslation();
   const data = useLoaderData<PageLoaderData>();
   const [blocks, setBlocks] = useState(data.blocks);
   useEffect(() => {
     setBlocks(data.blocks);
   }, [data]);
+
+  const hasNoData = !data?.blocks?.length;
+
   return (
     <>
-      {!data || !data.blocks || !data.blocks.length ? (
+      {hasNoData ? (
         <Page404 />
       ) : data.error ? (
         <div className="mx-auto max-w-7xl px-4 py-2 sm:px-6 lg:px-8">

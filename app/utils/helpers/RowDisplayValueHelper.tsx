@@ -9,7 +9,7 @@ import InputText from "~/components/ui/input/InputText";
 function renderReadOnlyValue<T>(header: RowHeaderDisplayDto<T>, item: T, idxRow: number) {
   const value = header.formattedValue ? header.formattedValue(item, idxRow) : header.value(item, idxRow);
 
-  if (header.href !== undefined && header.href(item)) {
+  if (header.href?.(item)) {
     return (
       <Link
         onClick={(e) => {

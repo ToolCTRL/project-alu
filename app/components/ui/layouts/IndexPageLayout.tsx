@@ -1,5 +1,4 @@
 import { ReactNode } from "react";
-import Breadcrumb from "../breadcrumbs/Breadcrumb";
 import Tabs, { TabItem } from "../tabs/Tabs";
 import BreadcrumbSimple from "../breadcrumbs/BreadcrumbSimple";
 
@@ -11,7 +10,7 @@ interface Props {
   breadcrumb?: { title: string; routePath?: string }[];
   replaceTitleWithTabs?: boolean;
 }
-export default function IndexPageLayout({ title, buttons, children, tabs, breadcrumb, replaceTitleWithTabs }: Props) {
+export default function IndexPageLayout({ title, buttons, children, tabs, breadcrumb, replaceTitleWithTabs }: Readonly<Props>) {
   return (
     <>
       {(title || buttons || (replaceTitleWithTabs && tabs)) && (

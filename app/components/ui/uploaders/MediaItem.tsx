@@ -15,9 +15,9 @@ interface Props {
   onPreview?: () => void;
   readOnly?: boolean;
 }
-export default function MediaItem({ item, onChangeTitle, onDelete, onDownload, onPreview, readOnly }: Props) {
+export default function MediaItem({ item, onChangeTitle, onDelete, onDownload, onPreview, readOnly }: Readonly<Props>) {
   return (
-    <div className={clsx("border-border w-full rounded-md border border-dashed px-2 text-xs", readOnly ? "" : "")}>
+    <div className={clsx("border-border w-full rounded-md border border-dashed px-2 text-xs")}>
       {readOnly ? (
         <div className="flex items-center justify-between py-2 pr-4 text-sm">
           <div className="flex w-0 flex-1 items-center">

@@ -2,99 +2,140 @@ import { FormulaOperatorType, FormulaDto, FormulaValueType, FormulaResultAsType,
 import BinaryOperatorUtils from "./BinaryOperatorUtils";
 import FormulaHelpers from "./FormulaHelpers";
 
+interface CalculationState {
+  result: FormulaValueType;
+  currentOperand: FormulaValueType;
+  currentOperator: FormulaOperatorType | null;
+  lastComponent: string | null;
+  insideParentheses: FormulaDto | null;
+  openParenthesesCount: number;
+  closeParenthesesCount: number;
+}
+
+function createState(): CalculationState {
+  return {
+    result: null,
+    currentOperand: null,
+    currentOperator: null,
+    lastComponent: null,
+    insideParentheses: null,
+    openParenthesesCount: 0,
+    closeParenthesesCount: 0,
+  };
+}
+
 function calculateFormula(formula: FormulaDto, values: Record<string, FormulaValueType>): FormulaEndResult {
+  const state = createState();
   const resultAs: FormulaResultAsType = FormulaHelpers.getResultAs(formula.resultAs);
-  let lastComponent: string | null = null;
-  let result: FormulaValueType | null = null;
-  let currentOperand: FormulaValueType = null;
-  let currentOperator: FormulaOperatorType | null = null;
-  let openParenthesesCount = 0;
-  let closeParenthesesCount = 0;
-  let insideParentheses: FormulaDto | null = null;
 
-  formula.components.forEach((component) => {
-    if (component.type === "variable") {
-      lastComponent = "variable: " + component.value;
-      if (insideParentheses !== null) {
-        insideParentheses.components.push(component);
-      } else {
-        currentOperand = values[component.value];
-      }
-    } else if (component.type === "operator") {
-      lastComponent = "operator: " + component.value;
-      if (currentOperator !== null) {
-        if (insideParentheses !== null) {
-          insideParentheses.components.push(component);
-        } else {
-          result = BinaryOperatorUtils.binaryOperators[currentOperator](result, currentOperand);
-        }
-      } else {
-        if (insideParentheses !== null) {
-          throw new Error("Invalid formula: parentheses must be used in pairs");
-        } else {
-          result = currentOperand;
-        }
-      }
-      // Reset the operand for the next iteration
-      currentOperand = null;
-      currentOperator = FormulaHelpers.getOperatorType(component.value);
-    } else if (component.type === "parenthesis") {
-      lastComponent = "parenthesis: " + component.value;
-      const parenthesis = FormulaHelpers.getParenthesisType(component.value);
-      if (parenthesis === "OPEN") {
-        if (insideParentheses !== null) {
-          throw new Error("Invalid formula: parentheses must be used in pairs");
-        } else {
-          insideParentheses = { name: "", description: "", resultAs: "number", calculationTrigger: formula.calculationTrigger, components: [] };
-          openParenthesesCount++;
-        }
-      } else if (parenthesis === "CLOSE") {
-        if (insideParentheses === null) {
-          throw new Error("Invalid formula: parentheses must be used in pairs");
-        } else {
-          closeParenthesesCount++;
-          if (closeParenthesesCount > openParenthesesCount) {
-            throw new Error("Invalid formula: parentheses must be used in pairs");
-          } else if (closeParenthesesCount === openParenthesesCount) {
-            currentOperand = calculateFormula(insideParentheses, values);
-            insideParentheses = null;
-          } else {
-            insideParentheses.components.push(component);
-          }
-        }
-      }
-    } else if (component.type === "value") {
-      lastComponent = "value: " + component.value;
-      if (insideParentheses !== null) {
-        insideParentheses.components.push(component);
-      } else {
-        currentOperand = component.value;
-      }
+  processComponents(formula, state, values);
+  return convertResult(finalizeCalculation(state), resultAs);
+}
+
+function processComponents(formula: FormulaDto, state: CalculationState, values: Record<string, FormulaValueType>) {
+  for (const component of formula.components) {
+    switch (component.type) {
+      case "variable":
+        state.lastComponent = "variable: " + component.value;
+        handleVariable(component, state, values);
+        break;
+      case "operator":
+        state.lastComponent = "operator: " + component.value;
+        handleOperator(component, state);
+        break;
+      case "parenthesis":
+        state.lastComponent = "parenthesis: " + component.value;
+        handleParenthesis(component, state, formula);
+        break;
+      case "value":
+        state.lastComponent = "value: " + component.value;
+        handleValue(component, state);
+        break;
     }
-  });
-
-  if (formula.components.length === 1 && currentOperand) {
-    result = currentOperand;
   }
+}
 
-  if (currentOperand !== null && currentOperator !== null) {
-    const operator = currentOperator as FormulaOperatorType;
-    result = BinaryOperatorUtils.binaryOperators[operator](result, currentOperand);
-  } else if (result === null) {
-    if (!lastComponent) {
-      throw new Error("Invalid formula");
+function handleVariable(component: any, state: CalculationState, values: Record<string, FormulaValueType>) {
+  if (state.insideParentheses) {
+    state.insideParentheses.components.push(component);
+  } else {
+    state.currentOperand = values[component.value];
+  }
+}
+
+function handleOperator(component: any, state: CalculationState) {
+  if (state.currentOperator) {
+    if (state.insideParentheses) {
+      state.insideParentheses.components.push(component);
     } else {
-      throw new Error(`Invalid formula component ${lastComponent}`);
+      state.result = BinaryOperatorUtils.binaryOperators[state.currentOperator](state.result, state.currentOperand);
+    }
+  } else {
+    if (!state.insideParentheses) {
+      state.result = state.currentOperand;
+    } else {
+      throw new Error("Invalid formula: parentheses must be used in pairs");
     }
   }
+  state.currentOperand = null;
+  state.currentOperator = FormulaHelpers.getOperatorType(component.value);
+}
 
+function handleParenthesis(component: any, state: CalculationState, formula: FormulaDto) {
+  const parenthesis = FormulaHelpers.getParenthesisType(component.value);
+  if (parenthesis === "OPEN") {
+    state.openParenthesesCount++;
+    if (!state.insideParentheses) {
+      state.insideParentheses = { name: "", description: "", resultAs: "number", calculationTrigger: formula.calculationTrigger, components: [] };
+    } else {
+      throw new Error("Invalid formula: parentheses must be used in pairs");
+    }
+  } else {
+    handleCloseParenthesis(state);
+  }
+}
+
+function handleCloseParenthesis(state: CalculationState) {
+  if (!state.insideParentheses) {
+    throw new Error("Invalid formula: parentheses must be used in pairs");
+  }
+  state.closeParenthesesCount++;
+  if (state.closeParenthesesCount > state.openParenthesesCount) {
+    throw new Error("Invalid formula: parentheses must be used in pairs");
+  } else if (state.closeParenthesesCount === state.openParenthesesCount) {
+    state.currentOperand = calculateFormula(state.insideParentheses, {});
+    state.insideParentheses = null;
+  } else {
+    state.insideParentheses.components.push({ type: "parenthesis", value: "CLOSE" });
+  }
+}
+
+function handleValue(component: any, state: CalculationState) {
+  if (state.insideParentheses) {
+    state.insideParentheses.components.push(component);
+  } else {
+    state.currentOperand = component.value;
+  }
+}
+
+function finalizeCalculation(state: CalculationState): FormulaValueType {
+  if (state.currentOperand !== null && state.currentOperator) {
+    return BinaryOperatorUtils.binaryOperators[state.currentOperator](state.result, state.currentOperand);
+  }
+  if (state.result === null) {
+    throw new Error(state.lastComponent ? `Invalid formula component ${state.lastComponent}` : "Invalid formula");
+  }
+  return state.result;
+}
+
+function convertResult(result: FormulaValueType, resultAs: FormulaResultAsType): FormulaEndResult {
   switch (resultAs) {
     case "number":
       return result !== null ? Number(result) : null;
     case "boolean":
       return result !== null ? Boolean(result) : null;
     case "date":
-      return !result === null || result instanceof Date === false ? null : result;
+      return result instanceof Date ? result : null;
     case "string":
       return result !== null ? String(result) : null;
     default:

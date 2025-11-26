@@ -86,7 +86,7 @@ export namespace FakeProjectService {
     await generateFakeData(500);
     const item = fakeData.find((x) => x.id === id);
     if (!item) {
-      throw Error("Project not found with ID: " + id);
+      throw new Error("Project not found with ID: " + id);
     }
     if (data.name !== undefined) {
       item.name = data.name;
@@ -113,7 +113,7 @@ export namespace FakeProjectService {
     await generateFakeData(500);
     const index = fakeData.findIndex((x) => x.id === id);
     if (index === -1) {
-      throw Error("Project not found with ID: " + id);
+      throw new Error("Project not found with ID: " + id);
     }
     fakeData.splice(index, 1);
   }
@@ -121,11 +121,11 @@ export namespace FakeProjectService {
     await generateFakeData(500);
     const item = fakeData.find((x) => x.id === id);
     if (!item) {
-      throw Error("Project not found with ID: " + id);
+      throw new Error("Project not found with ID: " + id);
     }
     const task = item.tasks.find((x) => x.id === taskId);
     if (!task) {
-      throw Error("Task not found with ID: " + taskId);
+      throw new Error("Task not found with ID: " + taskId);
     }
     task.completed = true;
     fakeData = fakeData.map((x) => (x.id === id ? item : x));

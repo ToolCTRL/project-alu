@@ -7,7 +7,9 @@ export const meta: MetaFunction<typeof loader> = ({ data }) => data?.metatags ||
 export const loader = (args: LoaderFunctionArgs) => WorkflowsDangerApi.loader(args);
 export const action = (args: ActionFunctionArgs) => WorkflowsDangerApi.action(args);
 
-export default () => <WorkflowsDangerView />;
+export default function WorkflowsDangerRoute() {
+  return <WorkflowsDangerView />;
+}
 
 export function ErrorBoundary() {
   return <ServerError />;

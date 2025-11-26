@@ -13,8 +13,8 @@ interface Props {
   name?: string;
   title?: string;
   withLabel?: boolean;
-  defaultValue?: string | undefined;
-  value?: string | undefined;
+  defaultValue?: string;
+  value?: string;
   setValue?: React.Dispatch<React.SetStateAction<string>>;
   className?: string;
   classNameBg?: string;
@@ -62,8 +62,7 @@ export default function InputPhone({
   onBlur,
   borderless,
   autoFocus,
-}: Readonly<Readonly<Props>>) {
-  // useImperativeHandle(ref, () => ({ input }));
+}: Readonly<Props>) {
   const input = useRef<HTMLInputElement>(null);
 
   const [isValid, setIsValid] = useState<boolean>(false);
@@ -152,7 +151,11 @@ export default function InputPhone({
         />
         {!(disabled || readOnly) && (
           <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
-            {isValid ? <CheckIcon className="h-4 w-4 text-teal-500" /> : value ? <ExclamationTriangleIcon className="h-4 w-4 text-red-500" /> : null}
+            {(() => {
+              if (isValid) return <CheckIcon className="h-4 w-4 text-teal-500" />;
+              if (value) return <ExclamationTriangleIcon className="h-4 w-4 text-red-500" />;
+              return null;
+            })()}
           </div>
         )}
         {button}

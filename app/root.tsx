@@ -1,5 +1,4 @@
-import { ActionFunction, LoaderFunctionArgs } from "react-router";
-import { Links, Meta, Outlet, Scripts, ScrollRestoration, useActionData, useLoaderData, useLocation, useMatches } from "react-router";
+import { ActionFunction, LoaderFunctionArgs, Links, Meta, Outlet, Scripts, ScrollRestoration, useActionData, useLoaderData, useLocation, useMatches } from "react-router";
 import "./globals.css";
 import "./themes.css";
 import "./styles/meisterwerk.css";
@@ -10,14 +9,13 @@ import FloatingLoader from "./components/ui/loaders/FloatingLoader";
 import CookieConsentBanner from "./components/cookies/CookieConsentBanner";
 import { allCookieCategories } from "./application/cookies/ApplicationCookies";
 import { CookieCategory } from "./application/cookies/CookieCategory";
-import { Fragment, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import AnalyticsHelper from "./utils/helpers/AnalyticsHelper";
 import CookieHelper from "./utils/helpers/CookieHelper";
 import clsx from "clsx";
 import { getUser, updateUserProfile } from "./utils/db/users.db.server";
 import ServerError from "./components/ui/errors/ServerError";
 import PageMaintenanceMode from "./components/pages/PageMaintenanceMode";
-import { serverTimingHeaders } from "./modules/metrics/utils/defaultHeaders.server";
 import BannerBlock from "./modules/pageBlocks/components/blocks/marketing/banner/BannerBlock";
 import { useTranslation } from "react-i18next";
 import { Toaster as ReactHostToaster } from "react-hot-toast";
@@ -29,9 +27,8 @@ import ScriptRewardful from "./modules/shared/scripts/ScriptRewardful";
 import ScriptCrisp from "./modules/shared/scripts/ScriptCrisp";
 import ScriptAnalytics from "./modules/shared/scripts/ScriptAnalytics";
 import { v2MetaFunction } from "./utils/compat/v2MetaFunction";
-import { DARK_MODE_IN_APP } from "./application/Constants";
 import { UI_REFRESH_FLAGS } from "./application/featureFlags/constants";
-export { serverTimingHeaders as headers };
+export { serverTimingHeaders as headers } from "./modules/metrics/utils/defaultHeaders.server";
 
 export const handle = { i18n: "translations" };
 export const loader = async ({ request, params }: LoaderFunctionArgs) => {
@@ -40,7 +37,7 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
 
 export const meta: v2MetaFunction<AppRootData> = ({ data }) => data?.metatags ?? [];
 
-function Document({ children, lang = "en", dir = "ltr" }: { children: React.ReactNode; lang?: string; dir?: string }) {
+function Document({ children, lang = "en", dir = "ltr" }: Readonly<{ children: React.ReactNode; lang?: string; dir?: string }>) {
   const { t } = useTranslation();
   const location = useLocation();
   const rootData = useRootData();
@@ -124,9 +121,7 @@ function Document({ children, lang = "en", dir = "ltr" }: { children: React.Reac
           />
         )}
         {rootData.featureFlags?.includes("maintenance") && !location.pathname.startsWith("/admin") && !location.pathname.startsWith("/login") ? (
-          <>
-            <PageMaintenanceMode />
-          </>
+          <PageMaintenanceMode />
         ) : (
           children
         )}
@@ -179,7 +174,7 @@ export const action: ActionFunction = async ({ request }) => {
     const cookies: { category: string; allowed: boolean }[] = [];
     allCookieCategories.forEach((item) => {
       const categoryName = CookieCategory[item];
-      const isAllowed = allowed.filter((f) => f.toString() === categoryName.toString()).length > 0;
+      const isAllowed = allowed.some((f) => f.toString() === categoryName.toString());
       cookies.push({ category: CookieCategory[item], allowed: isAllowed ?? item === CookieCategory.REQUIRED });
     });
     const searchParams = new URLSearchParams();

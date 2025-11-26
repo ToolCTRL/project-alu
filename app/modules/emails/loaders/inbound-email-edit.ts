@@ -1,6 +1,5 @@
 import { EmailRead } from "@prisma/client";
-import { redirect } from "react-router";
-import { Params } from "react-router";
+import { redirect, Params } from "react-router";
 import { createEmailRead, EmailWithDetails, getEmail, getEmailReads } from "~/utils/db/email/emails.db.server";
 import { requireAuth } from "~/utils/loaders.middleware";
 import { getUserInfo } from "~/utils/session.server";

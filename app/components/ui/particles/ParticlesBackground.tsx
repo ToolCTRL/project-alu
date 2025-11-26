@@ -5,7 +5,7 @@ type Props = {
   className?: string;
 };
 
-export default function ParticlesBackground({ children, className }: Props) {
+export default function ParticlesBackground({ children, className }: Readonly<Props>) {
   // Placeholder: renders children directly
   return <div className={className}>{children}</div>;
 }

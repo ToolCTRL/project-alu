@@ -28,7 +28,7 @@ export default function SendersListRoute() {
   }, [actionData]);
 
   function sendTest(item: EmailSenderWithoutApiKey) {
-    const email = window.prompt("Email", appOrAdminData.user?.email);
+    const email = globalThis.prompt("Email", appOrAdminData.user?.email);
     if (!email || email.trim() === "") {
       return;
     }
@@ -60,7 +60,7 @@ export default function SendersListRoute() {
             </a>
             , click on the "API Tokens" tab, and copy the API token.
           </InfoBanner>
-        ) : !data.hasSetWebhooks ? (
+        ) : data.hasSetWebhooks ? null : (
           <WarningBanner title={t("shared.warning")} text="">
             Go to your{" "}
             <a className="underline" target="_blank" rel="noreferrer" href="https://account.postmarkapp.com/servers">
@@ -73,7 +73,7 @@ export default function SendersListRoute() {
               Finally, before clicking "<b>Save webhook</b>", click on the "<b>Send test</b>" button to make sure it works.
             </p>
           </WarningBanner>
-        ) : null}
+        )}
 
         <TableSimple
           headers={[

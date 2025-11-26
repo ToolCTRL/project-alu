@@ -2,10 +2,10 @@ import clsx from "clsx";
 import { useNavigation } from "react-router";
 
 interface Props {
-  small?: boolean;
-  loading?: boolean;
+  readonly small?: boolean;
+  readonly loading?: boolean;
 }
-export default function Loading({ small = false, loading }: Props) {
+export default function Loading({ small = false, loading }: Readonly<Props>) {
   const navigation = useNavigation();
   return (
     <>

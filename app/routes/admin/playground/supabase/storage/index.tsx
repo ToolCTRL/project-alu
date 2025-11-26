@@ -6,7 +6,7 @@ export const meta: MetaFunction = () => {
   return [{ title: "Supabase Playground" }];
 };
 
-export default function () {
+export default function StorageIndex() {
   return (
     <IndexPageLayout title="Supabase Playground">
       <div className="grid gap-4">

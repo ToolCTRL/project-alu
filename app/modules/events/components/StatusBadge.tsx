@@ -17,40 +17,49 @@ enum State {
   ServerError = "Server error",
   Unknown = "Unknown",
 }
-export default function StatusBadge({ startedAt, finishedAt, endpoint, status }: Props) {
+export default function StatusBadge({ startedAt, finishedAt, endpoint, status }: readonly Props) {
+  function getStatusCategory() {
+    if (status === null) return null;
+    if (status >= 200 && status < 300) return "success";
+    if (status >= 300 && status < 400) return "redirect";
+    if (status >= 400 && status < 500) return "clientError";
+    if (status >= 500) return "serverError";
+    return "unknown";
+  }
+
   function getState() {
     if (status === null && startedAt === null) {
       return State.NotCatched;
-    } else if (status === null && startedAt !== null && finishedAt === null) {
+    }
+    if (status === null && startedAt !== null && finishedAt === null) {
       return State.Running;
-    } else if (status !== null && finishedAt !== null) {
-      if (status >= 200 && status < 300) {
-        return `[${status}] ${State.Success}`;
-      } else if (status >= 300 && status < 400) {
-        return `[${status}] ${State.Redirect}`;
-      } else if (status >= 400 && status < 500) {
-        return `[${status}] ${State.ClientError}`;
-      } else if (status >= 500) {
-        return `[${status}] ${State.ServerError}`;
-      } else {
-        return `[${status}] ${State.Unknown}`;
-      }
-    } else {
+    }
+    if (status === null || finishedAt === null) {
       return State.Unknown;
     }
+    const category = getStatusCategory();
+    const statusLabel = {
+      success: State.Success,
+      redirect: State.Redirect,
+      clientError: State.ClientError,
+      serverError: State.ServerError,
+      unknown: State.Unknown,
+    }[category];
+    return `[${status}] ${statusLabel}`;
   }
+
   function getColor() {
     if (status === null) {
       return Colors.YELLOW;
-    } else if (status >= 200 && status < 300) {
-      return Colors.GREEN;
-    } else if (status >= 300 && status < 400) {
-      return Colors.ORANGE;
-    } else if (status >= 400 && status < 500) {
-      return Colors.RED;
-    } else {
-      return Colors.UNDEFINED;
     }
+    const category = getStatusCategory();
+    return {
+      success: Colors.GREEN,
+      redirect: Colors.ORANGE,
+      clientError: Colors.RED,
+      serverError: Colors.RED,
+      unknown: Colors.UNDEFINED,
+    }[category];
   }
   return (
     <div title={endpoint}>

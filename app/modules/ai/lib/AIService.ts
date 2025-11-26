@@ -1,5 +1,4 @@
 import { OpenAIDefaults } from "../utils/OpenAIDefaults";
-// import LangChainService from "./LangChainService";
 import OpenAIService from "./OpenAIService";
 
 export async function createChatCompletion(data: {
@@ -23,22 +22,10 @@ export async function createChatCompletion(data: {
     } catch (error: any) {
       // eslint-disable-next-line no-console
       console.log({ provider, error });
-      throw Error(error);
+      throw new Error(error);
     }
-  } else if (provider === "LangChain") {
-    // try {
-    //   data.model = OpenAIDefaults.getModelName(data.model);
-    //   const response = await LangChainService.createChatCompletion(data);
-    //   // eslint-disable-next-line no-console
-    //   console.log({ provider, response });
-    //   return response;
-    // } catch (error: any) {
-    //   // eslint-disable-next-line no-console
-    //   console.log({ provider, error });
-    //   throw Error(error);
-    // }
   }
-  throw Error("Invalid provider in model: " + data.model);
+  throw new Error("Invalid provider in model: " + data.model);
 }
 
 export default {

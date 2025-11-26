@@ -14,13 +14,7 @@ type LoaderData = {};
 export const loader = async ({ request, params }: LoaderFunctionArgs) => {
   await requireAuth({ request, params });
   await verifyUserHasPermission(request, "admin.surveys");
-  // let item = { title: "Survey 1" };
-  // if (!item) {
-  //   return redirect("/admin/help-desk/surveys");
-  // }
-  const data: LoaderData = {
-    // item,
-  };
+  const data: LoaderData = {};
   return data;
 };
 

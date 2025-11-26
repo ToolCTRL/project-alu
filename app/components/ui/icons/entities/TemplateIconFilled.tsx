@@ -1,4 +1,4 @@
-export default function TemplateIconFilled({ className }: { className?: string }) {
+export default function TemplateIconFilled({ className }: { readonly className?: string }) {
   return (
     <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="50" height="50" viewBox="0 0 50 50" className={className} fill="currentColor">
       {" "}

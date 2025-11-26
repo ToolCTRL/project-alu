@@ -55,7 +55,7 @@ export default function PropertyFormulaSelector({ name, items, className, select
                               <div className="truncate">{item.name}</div>
                             </div>
                             {selected ? (
-                              <span className={clsx(active ? "" : "", "absolute inset-y-0 right-0 flex items-center pr-4")}>
+                              <span className="absolute inset-y-0 right-0 flex items-center pr-4">
                                 <CheckIcon className="h-5 w-5" aria-hidden="true" />
                               </span>
                             ) : null}

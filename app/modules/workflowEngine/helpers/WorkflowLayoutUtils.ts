@@ -76,10 +76,12 @@ const workflowToReactFlow = ({
     };
   });
 
-  let edges = workflowBlocks.flatMap((block) =>
-    block.toBlocks
-      .sort((a, b) => a.condition?.localeCompare(b.condition || "") || 0)
-      .map((toBlock) => {
+  const sortedToBlocks = workflowBlocks.flatMap((block) =>
+    block.toBlocks.map((toBlock) => ({ block, toBlock }))
+  );
+  sortedToBlocks.sort((a, b) => a.toBlock.condition?.localeCompare(b.toBlock.condition || "") || 0);
+
+  let edges = sortedToBlocks.map(({ block, toBlock }) => {
         const fromBlockId = block.id;
         const toBlockId = toBlock.toBlockId;
         const isExecuted = workflowExecution?.blockRuns.find((f) => f.fromWorkflowBlockId === fromBlockId && f.workflowBlockId === toBlockId);
@@ -106,11 +108,9 @@ const workflowToReactFlow = ({
           },
         };
         return edge;
-      })
-  );
+      });
 
-  const hasTrigger = WorkflowUtils.hasTriggerNode(workflow);
-  if (!hasTrigger) {
+  if (!WorkflowUtils.hasTriggerNode(workflow)) {
     nodes = [
       {
         type: "setTriggerNode",

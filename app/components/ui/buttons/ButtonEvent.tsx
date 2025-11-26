@@ -41,7 +41,7 @@ export default function ButtonEvent({
   disabled,
   isLoading,
   reloadDocument,
-}: Props) {
+}: Readonly<Props>) {
   let location = useLocation();
   const rootData = useRootData();
   const matches = useMatches();

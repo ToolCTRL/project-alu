@@ -4,7 +4,7 @@ import OnboardingSessionsTable from "../../components/OnboardingSessionsTable";
 import { OnboardingSummaryApi } from "../api/OnboardingSummaryApi.server";
 import { useLoaderData } from "react-router";
 
-export default function () {
+export default function OnboardingSummaryRoute() {
   const { t } = useTranslation();
   const data = useLoaderData<OnboardingSummaryApi.LoaderData>();
   return (

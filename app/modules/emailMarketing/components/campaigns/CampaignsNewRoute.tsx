@@ -31,16 +31,7 @@ export default function CampaignsNewRoute() {
   // const [track, setTrack] = useState(true);
 
   const [selectedContactsViewId, setSelectedContactsViewId] = useState<string>(data.contactsViews.length > 0 ? data.contactsViews[0].view?.id ?? "" : "");
-  const [, setSelectedContactsView] = useState<EntityViewsApi.GetEntityViewsWithRows>();
-
-  // const [sender, setSender] = useState<EmailSenderWithoutApiKey>();
-  // useEffect(() => {
-  //   const sender = data.emailSenders.find((s) => s.fromEmail === senderId);
-  //   if (!sender || sender.provider !== "postmark") {
-  //     setTrack(false);
-  //   }
-  //   setSender(sender);
-  // }, [data.emailSenders, senderId]);
+  const [selectedContactsView, setSelectedContactsView] = useState<EntityViewsApi.GetEntityViewsWithRows>();
 
   useEffect(() => {
     if (actionData?.success) {
@@ -63,7 +54,7 @@ export default function CampaignsNewRoute() {
   }
 
   function sendTest(i?: RowWithDetails) {
-    const email = window.prompt("Email", appOrAdminData.user?.email);
+    const email = globalThis.prompt("Email", appOrAdminData.user?.email);
     if (!email || email.trim() === "") {
       return;
     }
@@ -121,11 +112,9 @@ export default function CampaignsNewRoute() {
                     withSearch={false}
                     hint={
                       data.emailSenders.length === 0 ? (
-                        <>
-                          <Link to={params.tenant ? `/app/${params.tenant}/email-marketing/senders` : `/admin/email-marketing/senders`}>
-                            <span className="text-xs hover:underline">Manage senders</span>
-                          </Link>
-                        </>
+                        <Link to={params.tenant ? `/app/${params.tenant}/email-marketing/senders` : `/admin/email-marketing/senders`}>
+                          <span className="text-xs hover:underline">Manage senders</span>
+                        </Link>
                       ) : null
                     }
                     options={data.emailSenders.map((s) => {

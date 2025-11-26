@@ -2,7 +2,6 @@ import { ReactNode } from "react";
 import { useParams } from "react-router";
 import BreadcrumbSimple from "../breadcrumbs/BreadcrumbSimple";
 import Tabs, { TabItem } from "../tabs/Tabs";
-import clsx from "clsx";
 import { cn } from "~/lib/utils";
 
 interface Props {
@@ -18,7 +17,7 @@ interface Props {
   fullWidth?: boolean;
   className?: string;
 }
-export default function EditPageLayout({ title, menu, buttons, children, withHome = true, tabs, fullWidth, className }: Props) {
+export default function EditPageLayout({ title, menu, buttons, children, withHome = true, tabs, fullWidth, className }: Readonly<Props>) {
   const params = useParams();
   const home = params.tenant ? `/app/${params.tenant}/dashboard` : "/admin/dashboard";
   return (

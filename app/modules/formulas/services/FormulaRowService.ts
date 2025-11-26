@@ -42,11 +42,6 @@ function getRowValue({
     }
     return value;
   }
-  // console.log({
-  //   propertyName,
-  //   foundParentEntity: foundParentEntity?.parent.name,
-  //   foundChildEntity: foundChildEntity?.child.name,
-  // });
   if (foundParentEntity) {
     const parentRows = item.parentRows.filter((i) => i.relationshipId === foundParentEntity.id);
     const parentEntity = allEntities.find((i) => i.id === foundParentEntity.parent.id);

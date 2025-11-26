@@ -71,37 +71,45 @@ export function NavUser({
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
 
-            {layout === "app" ? (
-              <DropdownMenuGroup>
-                <Link to={!params.tenant ? "" : UrlUtils.currentTenantUrl(params, `settings/profile`)}>
-                  <DropdownMenuItem>
-                    <GearIcon className="mr-2 h-4 w-4" />
-                    {t("app.navbar.profile")}
-                  </DropdownMenuItem>
-                </Link>
-                <Link to={UrlUtils.currentTenantUrl(params, `settings/subscription`)}>
-                  <DropdownMenuItem>
-                    <CreditCard className="mr-2 h-4 w-4" />
-                    {t("app.navbar.subscription")}
-                  </DropdownMenuItem>
-                </Link>
-                <Link to={UrlUtils.currentTenantUrl(params, `settings/account`)}>
-                  <DropdownMenuItem>
-                    <BadgeCheck className="mr-2 h-4 w-4" />
-                    {t("app.navbar.tenant")}
-                  </DropdownMenuItem>
-                </Link>
-              </DropdownMenuGroup>
-            ) : layout === "admin" ? (
-              <DropdownMenuGroup>
-                <Link to="/admin/settings/profile">
-                  <DropdownMenuItem>
-                    <GearIcon className="mr-2 h-4 w-4" />
-                    {t("app.navbar.profile")}
-                  </DropdownMenuItem>
-                </Link>
-              </DropdownMenuGroup>
-            ) : null}
+            {(() => {
+              if (layout === "app") {
+                return (
+                  <DropdownMenuGroup>
+                    <Link to={params.tenant ? UrlUtils.currentTenantUrl(params, `settings/profile`) : ""}>
+                      <DropdownMenuItem>
+                        <GearIcon className="mr-2 h-4 w-4" />
+                        {t("app.navbar.profile")}
+                      </DropdownMenuItem>
+                    </Link>
+                    <Link to={UrlUtils.currentTenantUrl(params, `settings/subscription`)}>
+                      <DropdownMenuItem>
+                        <CreditCard className="mr-2 h-4 w-4" />
+                        {t("app.navbar.subscription")}
+                      </DropdownMenuItem>
+                    </Link>
+                    <Link to={UrlUtils.currentTenantUrl(params, `settings/account`)}>
+                      <DropdownMenuItem>
+                        <BadgeCheck className="mr-2 h-4 w-4" />
+                        {t("app.navbar.tenant")}
+                      </DropdownMenuItem>
+                    </Link>
+                  </DropdownMenuGroup>
+                );
+              }
+              if (layout === "admin") {
+                return (
+                  <DropdownMenuGroup>
+                    <Link to="/admin/settings/profile">
+                      <DropdownMenuItem>
+                        <GearIcon className="mr-2 h-4 w-4" />
+                        {t("app.navbar.profile")}
+                      </DropdownMenuItem>
+                    </Link>
+                  </DropdownMenuGroup>
+                );
+              }
+              return null;
+            })()}
 
             {/* Dark mode toggle removed */}
             <DropdownMenuSeparator />

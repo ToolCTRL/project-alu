@@ -4,7 +4,7 @@ import { useMotionValue, animate, motion } from "motion/react";
 import { useState, useEffect } from "react";
 import useMeasure from "react-use-measure";
 
-export type InfiniteSliderProps = {
+export type InfiniteSliderProps = Readonly<{
   children: React.ReactNode;
   gap?: number;
   speed?: number;
@@ -12,7 +12,7 @@ export type InfiniteSliderProps = {
   direction?: "horizontal" | "vertical";
   reverse?: boolean;
   className?: string;
-};
+}>;
 
 export function InfiniteSlider({ children, gap = 16, speed = 100, speedOnHover, direction = "horizontal", reverse = false, className }: InfiniteSliderProps) {
   const [currentSpeed, setCurrentSpeed] = useState(speed);

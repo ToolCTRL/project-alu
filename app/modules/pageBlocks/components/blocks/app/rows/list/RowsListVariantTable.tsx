@@ -2,9 +2,7 @@ import { useTranslation } from "react-i18next";
 import RowsViewRoute from "~/modules/rows/components/RowsViewRoute";
 import { RowsListBlockDto } from "./RowsListBlockUtils";
 
-export default function RowsListVariantTable({ item }: { item: RowsListBlockDto }) {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const { t } = useTranslation();
+export default function RowsListVariantTable({ item }: readonly { readonly item: RowsListBlockDto }) {
   return (
     <>
       {item.data && (

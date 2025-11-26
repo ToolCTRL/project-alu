@@ -71,8 +71,8 @@ export function NavActions({
 
       <div className="flex items-center space-x-2">
         {/* NavBar Button: My Subscription */}
-        {layout === "app" && getUserHasPermission(appOrAdminData, "app.settings.subscription.update") && !hasSubscription() && (
-          <Link to={!params.tenant ? "" : "/subscribe/" + params.tenant}>
+        {layout === "app" && getUserHasPermission(appOrAdminData, "app.settings.subscription.update") && hasSubscription() === false && (
+          <Link to={params.tenant ? "/subscribe/" + params.tenant : ""}>
             <Button variant="outline" size="sm">
               <span>{t("pricing.subscribe")} </span>
               <svg xmlns="http://www.w3.org/2000/svg" className="ml-2 h-4 w-4" viewBox="0 0 20 20" fill="currentColor">

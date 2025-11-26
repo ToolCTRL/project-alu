@@ -1,4 +1,4 @@
-export default function FormIconFilled({ className }: { className?: string }) {
+export default function FormIconFilled({ className }: Readonly<{ className?: string }>) {
   return (
     <svg className={className} fill="currentColor" xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="50" height="50" viewBox="0 0 50 50">
       {" "}

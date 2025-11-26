@@ -13,9 +13,9 @@ import KnowledgeBaseUtils from "../utils/KnowledgeBaseUtils";
 import KbSearch from "./KbSearch";
 
 interface Props {
-  kb: KnowledgeBaseDto;
-  withTitleAndDescription: boolean;
-  withSearch?: boolean;
+  readonly kb: KnowledgeBaseDto;
+  readonly withTitleAndDescription: boolean;
+  readonly withSearch?: boolean;
 }
 export default function KbHeader({ kb, withTitleAndDescription, withSearch = true }: Props) {
   const navigate = useNavigate();

@@ -42,7 +42,7 @@ function AppLayoutMenu({ params, appOrAdminData, rootData, closeDropdownUser, t 
         className="hover:bg-secondary block px-4 py-2 text-sm transition duration-150 ease-in-out"
         role="menuitem"
         onClick={closeDropdownUser}
-        to={!params.tenant ? "" : UrlUtils.currentTenantUrl(params, `settings/profile`)}
+        to={params.tenant ? UrlUtils.currentTenantUrl(params, `settings/profile`) : ""}
       >
         {t("app.navbar.profile")}
       </Link>
@@ -52,7 +52,7 @@ function AppLayoutMenu({ params, appOrAdminData, rootData, closeDropdownUser, t 
           className="hover:bg-secondary block px-4 py-2 text-sm transition duration-150 ease-in-out"
           role="menuitem"
           onClick={closeDropdownUser}
-          to={!params.tenant ? "" : UrlUtils.currentTenantUrl(params, "settings/members")}
+          to={params.tenant ? UrlUtils.currentTenantUrl(params, "settings/members") : ""}
         >
           {t("app.navbar.members")}
         </Link>

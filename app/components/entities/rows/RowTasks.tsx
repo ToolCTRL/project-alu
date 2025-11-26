@@ -10,10 +10,10 @@ import { useAppOrAdminData } from "~/utils/data/useAppOrAdminData";
 import { RowTaskWithDetails } from "~/utils/db/entities/rowTasks.db.server";
 
 interface Props {
-  items: RowTaskWithDetails[];
+  readonly items: RowTaskWithDetails[];
 }
 
-export default function RowTasks({ items }: Props) {
+export default function RowTasks({ items }: readonly Props) {
   const submit = useSubmit();
   const { t } = useTranslation();
   const navigation = useNavigation();
@@ -75,7 +75,7 @@ export default function RowTasks({ items }: Props) {
 
       {items.length === 0 && !showAddTask && (
         <>
-          {appOrAdminData.user !== undefined ? (
+          {appOrAdminData.user ? (
             <button
               type="button"
               onClick={() => setShowAddTask(true)}

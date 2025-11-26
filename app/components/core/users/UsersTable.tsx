@@ -153,7 +153,6 @@ export default function UsersTable({ items, canImpersonate, canChangePassword, c
       actions.push({
         title: t("shared.delete"),
         onClick: (_, item) => deleteUser(item),
-        disabled: (_) => !canDelete,
         destructive: true,
       });
     }
@@ -210,7 +209,7 @@ export default function UsersTable({ items, canImpersonate, canChangePassword, c
   );
 }
 
-function LastActivity({ item, lastLogs, action }: { item: UserWithDetails; lastLogs?: { userId: string; log: Log }[]; action?: string }) {
+function LastActivity({ item, lastLogs, action }: Readonly<{ item: UserWithDetails; lastLogs?: { userId: string; log: Log }[]; action?: string }>) {
   const lastLog = lastLogs?.find((f) => f.userId === item.id && (!action || f.log.action === action));
   if (lastLog) {
     return (

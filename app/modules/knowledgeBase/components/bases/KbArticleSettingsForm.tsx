@@ -19,13 +19,13 @@ export default function KbArticleSettingsForm({
   allCategories,
   item,
   onDelete,
-}: {
+}: Readonly<{
   allKnowledgeBases: { id: string; title: string }[];
   allArticles: KnowledgeBaseArticleSimple[];
   allCategories: KnowledgeBaseCategorySimple[];
   item: KnowledgeBaseArticleWithDetails;
   onDelete: () => void;
-}) {
+}>) {
   const { t } = useTranslation();
   const navigation = useNavigation();
   const inputTitle = useRef<RefInputText>(null);
@@ -39,7 +39,7 @@ export default function KbArticleSettingsForm({
   const [title, setTitle] = useState(item?.title ?? "");
   const [description, setDescription] = useState(item?.description ?? "");
   const [seoImage, setSeoImage] = useState(item?.seoImage ?? "");
-  const [isFeatured, setIsFeatured] = useState(item?.featuredOrder ? true : false);
+  const [isFeatured, setIsFeatured] = useState(!!item?.featuredOrder);
   const [relatedArticles, setRelatedArticles] = useState(item.relatedArticles.map((f) => f.relatedArticleId) ?? []);
 
   useEffect(() => {

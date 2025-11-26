@@ -13,7 +13,7 @@ export default function KbArticle({
   userState,
   actions,
   withMenu = true,
-}: {
+}: Readonly<{
   kb: KnowledgeBaseDto;
   category: KbCategoryDto;
   item: KbArticleDto;
@@ -26,7 +26,7 @@ export default function KbArticle({
     onThumbsDown: () => void;
   };
   withMenu?: boolean;
-}) {
+}>) {
   const params = useParams();
   return (
     <div className="space-y-6">

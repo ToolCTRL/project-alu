@@ -23,7 +23,27 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
 
 export const meta: MetaFunction<typeof loader> = ({ data }) => data?.metatags || [];
 
-export default function () {
+const RevenueInCurrencyCell = ({ item }: { item: StripeRevenueByProductPriceCurrency }) => (
+  <div className="flex flex-col">
+    <div>${NumberUtils.decimalFormat(item.revenueInCurrency)}</div>
+  </div>
+);
+
+const CountCell = ({ item }: { item: StripeRevenueByProductPriceCurrency }) => (
+  <div className="flex flex-col">
+    <div>{NumberUtils.intFormat(item.count)}</div>
+    <div className="text-muted-foreground text-xs">{NumberUtils.decimalFormat(item.countPercentage * 100)}%</div>
+  </div>
+);
+
+const RevenueUsdCell = ({ item }: { item: StripeRevenueByProductPriceCurrency }) => (
+  <div className="flex flex-col">
+    <div>${NumberUtils.decimalFormat(item.revenueUsd)} usd</div>
+    <div className="text-muted-foreground text-xs">{NumberUtils.decimalFormat(item.revenuePercentageUsd * 100)}%</div>
+  </div>
+);
+
+export default function SubscriptionsRevenuePage() {
   const { t } = useTranslation();
   const data = useLoaderData<LoaderData>();
 
@@ -51,33 +71,19 @@ export default function () {
             name: "revenueInCurrency",
             title: "Revenue in Currency",
             value: (item) => item.revenueInCurrency,
-            formattedValue: (item) => (
-              <div className="flex flex-col">
-                <div>${NumberUtils.decimalFormat(item.revenueInCurrency)}</div>
-              </div>
-            ),
+            formattedValue: (item) => <RevenueInCurrencyCell item={item} />,
           },
           {
             name: "count",
             title: "Count",
             value: (item) => item.count,
-            formattedValue: (item) => (
-              <div className="flex flex-col">
-                <div>{NumberUtils.intFormat(item.count)}</div>
-                <div className="text-muted-foreground text-xs">{NumberUtils.decimalFormat(item.countPercentage * 100)}%</div>
-              </div>
-            ),
+            formattedValue: (item) => <CountCell item={item} />,
           },
           {
             name: "revenueUsd",
             title: "Revenue USD",
             value: (item) => item.revenueUsd,
-            formattedValue: (item) => (
-              <div className="flex flex-col">
-                <div>${NumberUtils.decimalFormat(item.revenueUsd)} usd</div>
-                <div className="text-muted-foreground text-xs">{NumberUtils.decimalFormat(item.revenuePercentageUsd * 100)}%</div>
-              </div>
-            ),
+            formattedValue: (item) => <RevenueUsdCell item={item} />,
           },
         ]}
       />

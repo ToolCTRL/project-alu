@@ -14,7 +14,7 @@ import { LogWithDetails } from "~/utils/db/logs.db.server";
 import DateUtils from "~/utils/shared/DateUtils";
 
 interface Props {
-  item: LogWithDetails;
+  readonly item: LogWithDetails;
 }
 export default function RowLogComment({ item }: Props) {
   const { t } = useTranslation();

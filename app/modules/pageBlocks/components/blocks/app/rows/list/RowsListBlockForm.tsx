@@ -4,7 +4,7 @@ import InputRadioGroup from "~/components/ui/input/InputRadioGroup";
 import BlockVariableForm from "../../../shared/variables/BlockVariableForm";
 import { defaultRowsListBlock, RowsListBlockDto, RowsListBlockStyle, RowsListBlockStyles } from "./RowsListBlockUtils";
 
-export default function RowsListBlockForm({ item, onUpdate }: { item?: RowsListBlockDto; onUpdate: (item: RowsListBlockDto) => void }) {
+export default function RowsListBlockForm({ item, onUpdate }: readonly { readonly item?: RowsListBlockDto; readonly onUpdate: (item: RowsListBlockDto) => void }) {
   const [state, setState] = useState<RowsListBlockDto>(item || defaultRowsListBlock);
   useEffect(() => {
     onUpdate(state);

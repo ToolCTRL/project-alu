@@ -1,4 +1,3 @@
-import { Transition } from "@headlessui/react";
 import clsx from "clsx";
 import { FormEvent, Fragment, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -14,8 +13,6 @@ import { Input } from "../input";
 import { Button } from "../button";
 import { cn } from "~/lib/utils";
 import { Popover, PopoverContent, PopoverTrigger } from "~/components/ui/popover";
-import { PopoverClose } from "@radix-ui/react-popover";
-// import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "../dropdown-menu";
 
 export type FilterDto = {
   name: string;
@@ -32,16 +29,10 @@ export type FilterValueDto = FilterDto & {
 };
 
 interface Props {
-  filters: FilterDto[];
-  withSearch?: boolean;
-  withName?: boolean;
-  size?: "xs" | "sm" | "default" | "lg";
-  position?: "left" | "right";
-  // saveEntityFilters?: {
-  //   entity: EntityWithDetails;
-  //   currentView: EntityView | null;
-  //   onSaveFilters: (filters: FilterValueDto[]) => void;
-  // };
+  readonly filters: FilterDto[];
+  readonly withSearch?: boolean;
+  readonly size?: "xs" | "sm" | "default" | "lg";
+  readonly position?: "left" | "right";
 }
 
 export default function InputFilters({ filters, withSearch = true, size = "default", position = "right" }: Props) {
@@ -59,13 +50,13 @@ export default function InputFilters({ filters, withSearch = true, size = "defau
       const value = searchParams.get(item.name) ?? undefined;
       return {
         ...item,
-        selected: value !== undefined || item.fallbackValue ? true : false,
+        selected: Boolean(value !== undefined || item.fallbackValue),
         value,
       };
     });
     setItems(items);
     setSearchInput(searchParams.get("q") ?? "");
-  }, [filters]);
+  }, [filters, searchParams]);
 
   useEffect(() => {
     const appliedFilters: FilterValueDto[] = [];
@@ -82,34 +73,14 @@ export default function InputFilters({ filters, withSearch = true, size = "defau
     }
   }, [items, searchInput, searchParams, withSearch]);
 
-  // useEffect(() => {
-  //     const searchInput = searchParams.get("q");
-  //     setSearchInput(searchInput ?? "");
-
-  //     const newItems = items;
-  //     items.forEach((item, idx) => {
-  //       const valueInParam = searchParams.get(item.name);
-  //       if (valueInParam) {
-  //         newItems[idx].selected = true;
-  //         newItems[idx].value = valueInParam.toString();
-  //       } else {
-  //         newItems[idx].selected = false;
-  //         newItems[idx].value = undefined;
-  //       }
-  //     });
-  //     setItems(newItems);
-  //   // eslint-disable-next-line react-hooks/exhaustive-deps
-  // }, [searchParams]);
-
   function onClear() {
     setOpened(false);
 
-    items.forEach((item) => {
+    const updatedItems = items.map((item) => {
       searchParams.delete(item.name);
-      item.selected = false;
-      item.value = undefined;
+      return { ...item, selected: false, value: undefined };
     });
-    setItems(items);
+    setItems(updatedItems);
 
     searchParams.delete("page");
     searchParams.delete("q");
@@ -136,8 +107,6 @@ export default function InputFilters({ filters, withSearch = true, size = "defau
     setSearchParams(searchParams);
     setOpened(false);
   }
-
-  // const clickOutside = useOuterClick(() => setOpened(false));
 
   return (
     <Fragment>
@@ -204,13 +173,11 @@ export default function InputFilters({ filters, withSearch = true, size = "defau
                     </div>
                     {filter.selected && (
                       <div className="bg-secondary px-2 py-1">
-                        {filter.options && filter.options.length > 0 ? (
+                        {filter.options && filter.options.length > 0 && (
                           <div className="flex items-center space-x-2">
                             <InputSelect
-                              // withSearch={!filter.hideSearch}
                               name={filter.name}
                               title={""}
-                              // withColors={true}
                               placeholder={t("shared.select") + "..."}
                               options={filter.options.map((item) => {
                                 return {
@@ -219,7 +186,7 @@ export default function InputFilters({ filters, withSearch = true, size = "defau
                                   color: item.color,
                                 };
                               })}
-                              value={filter.value ?? filter.fallbackValue}
+                              value={filter.value ?? filter.fallbackValue ?? ""}
                               withLabel={false}
                               setValue={(e) => {
                                 updateItemByIdx(items, setItems, idx, {
@@ -230,10 +197,10 @@ export default function InputFilters({ filters, withSearch = true, size = "defau
                               selectClassName="bg-background"
                             />
                           </div>
-                        ) : filter.isBoolean ? (
+                        )}
+                        {(!filter.options || filter.options.length === 0) && filter.isBoolean && (
                           <div className="flex items-center space-x-2">
                             <InputSelect
-                              // withSearch={!filter.hideSearch}
                               name={filter.name}
                               title={""}
                               placeholder={t("shared.select") + "..."}
@@ -251,7 +218,8 @@ export default function InputFilters({ filters, withSearch = true, size = "defau
                               className="bg-background w-full pb-1"
                             />
                           </div>
-                        ) : (
+                        )}
+                        {(!filter.options || filter.options.length === 0) && !filter.isBoolean && (
                           <div className="flex items-center space-x-2">
                             <div className="text-muted-foreground flex-shrink-0 truncate">contains</div>
                             <Input
@@ -274,27 +242,6 @@ export default function InputFilters({ filters, withSearch = true, size = "defau
                   </div>
                 );
               })}
-              {/* {saveEntityFilters && (
-                <div className="divide-y divide-border">
-                  <div className="flex justify-end space-x-2 px-2 py-2">
-                    <button
-                      type="button"
-                      onClick={() => {
-                        saveEntityFilters?.onSaveFilters(items.filter((f) => f.value));
-                        setOpened(false);
-                      }}
-                      className={clsx(
-                        "rounded-md border border-border  px-2 py-0.5",
-                        false
-                          ? " bg-secondary/90 text-muted-foreground"
-                          : "bg-background text-muted-foreground hover:bg-secondary hover:text-muted-foreground focus:z-10 focus:border-border focus:outline-none focus:ring-1 focus:ring-ring"
-                      )}
-                    >
-                      {saveEntityFilters.currentView ? <div>{t("shared.updateView")}</div> : <div>{t("shared.createView")}</div>}
-                    </button>
-                  </div>
-                </div>
-              )} */}
             </div>
           </Form>
         </PopoverContent>
@@ -302,19 +249,3 @@ export default function InputFilters({ filters, withSearch = true, size = "defau
     </Fragment>
   );
 }
-
-// function InputFilters2({ filters, withSearch }: Props) {
-//   return (
-//     <DropdownMenu>
-//       <DropdownMenuTrigger>Open</DropdownMenuTrigger>
-//       <DropdownMenuContent>
-//         <DropdownMenuLabel>My Account</DropdownMenuLabel>
-//         <DropdownMenuSeparator />
-//         <DropdownMenuItem>Profile</DropdownMenuItem>
-//         <DropdownMenuItem>Billing</DropdownMenuItem>
-//         <DropdownMenuItem>Team</DropdownMenuItem>
-//         <DropdownMenuItem>Subscription</DropdownMenuItem>
-//       </DropdownMenuContent>
-//     </DropdownMenu>
-//   );
-// }

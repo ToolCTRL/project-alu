@@ -1,8 +1,7 @@
 import FooterBlock from "~/modules/pageBlocks/components/blocks/marketing/footer/FooterBlock";
 import HeaderBlock from "~/modules/pageBlocks/components/blocks/marketing/header/HeaderBlock";
 import { useEffect } from "react";
-import { ActionFunction, ActionFunctionArgs, LoaderFunctionArgs, useLoaderData } from "react-router";
-import { useActionData } from "react-router";
+import { ActionFunctionArgs, LoaderFunctionArgs, useActionData, useLoaderData } from "react-router";
 import { useTranslation } from "react-i18next";
 import { getTranslations } from "~/locale/i18next.server";
 import ServerError from "~/components/ui/errors/ServerError";
@@ -41,7 +40,7 @@ export const action = async ({ request, params }: ActionFunctionArgs) => {
   }
 };
 
-export default function () {
+export default function PricingRoute() {
   const { t } = useTranslation();
   const data = useLoaderData<LoaderData>();
   const actionData = useActionData<ActionData>();

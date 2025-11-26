@@ -11,14 +11,16 @@ import LogoDark from "~/assets/img/logo-dark.png";
 import KnowledgeBaseUtils from "../../utils/KnowledgeBaseUtils";
 import { KnowledgeBaseDto } from "../../dtos/KnowledgeBaseDto";
 
-interface Props {
+interface Props extends Readonly<{
   kb: KnowledgeBaseDto;
-}
+}> {}
 const withTitleAndDescription = true;
 export default function KbDocsHeader({ kb }: Props) {
   const navigate = useNavigate();
   const params = useParams();
   const [searchParams] = useSearchParams();
+
+  const logoSrc = kb.logo === "light" ? LogoLight : kb.logo === "dark" ? LogoDark : kb.logo;
 
   return (
     <div>
@@ -26,13 +28,7 @@ export default function KbDocsHeader({ kb }: Props) {
         <div className="mx-auto max-w-(--breakpoint-2xl) space-y-8 px-8 py-4">
           <div className="flex items-center justify-between space-x-2">
             <Link to={KnowledgeBaseUtils.getKbUrl({ kb, params })} className="flex select-none items-center space-x-2">
-              {kb.logo === "light" ? (
-                <img className="h-8 w-auto" src={LogoLight} alt="Logo" />
-              ) : kb.logo === "dark" ? (
-                <img className="h-8 w-auto" src={LogoDark} alt="Logo" />
-              ) : (
-                <img className="h-8 w-auto" src={kb.logo} alt="Logo" />
-              )}
+              <img className="h-8 w-auto" src={logoSrc} alt="Logo" />
               {!withTitleAndDescription && (
                 <Fragment>
                   <span className={clsx("hidden px-2 sm:block", ColorTextUtils.getText300(kb.color))}>|</span>
@@ -87,20 +83,8 @@ export default function KbDocsHeader({ kb }: Props) {
               </div>
             </div>
           </div>
-          {/* {withTitleAndDescription && (
-            <div className="space-y-4">
-              <h1 className="text-2xl font-semibold tracking-tight sm:text-4xl">{kb.title}</h1>
-              <p className={clsx("text-base", ColorTextUtils.getText300(kb.color))}>{kb.description}</p>
-            </div>
-          )} */}
-          {/* {withSearch && <KbSearch kb={kb} autoFocus={withTitleAndDescription} />} */}
         </div>
       </div>
-      {/* {searchParams.get("q") && (
-        <div className="mx-auto max-w-5xl space-y-8 px-8 py-6">
-          <WarningBanner title="TODO">TODO: Search results for {searchParams.get("q")}</WarningBanner>
-        </div>
-      )} */}
     </div>
   );
 }

@@ -16,29 +16,29 @@ export type KanbanColumn<T> = {
 };
 
 interface Props<T> {
-  columns: KanbanColumn<T>[];
-  className?: string;
-  withTitle?: boolean;
+  readonly columns: readonly KanbanColumn<T>[];
+  readonly className?: string;
+  readonly withTitle?: boolean;
 }
 
-export default function Kanban<T>({ columns, className, withTitle }: Props<T>) {
+export default function Kanban<T>({ columns, className, withTitle }: Readonly<Props<T>>) {
   return (
     <div className={clsx(className, "flex w-full")}>
       {columns.map((column, idx) => {
-        return <KanbanColumnCard idx={idx + 1} key={idx + 1} items={column.items} columns={columns} column={column} withTitle={withTitle} />;
+        return <KanbanColumnCard idx={idx + 1} key={column.name} items={column.items} columns={columns} column={column} withTitle={withTitle} />;
       })}
     </div>
   );
 }
 
 interface KanbanColumnCardProps<T> {
-  idx: number;
-  columns: KanbanColumn<T>[];
-  column: KanbanColumn<T>;
-  items: T[];
-  withTitle?: boolean;
+  readonly idx: number;
+  readonly columns: readonly KanbanColumn<T>[];
+  readonly column: KanbanColumn<T>;
+  readonly items: readonly T[];
+  readonly withTitle?: boolean;
 }
-function KanbanColumnCard<T>({ idx, columns, column, items, withTitle }: KanbanColumnCardProps<T>) {
+function KanbanColumnCard<T>({ idx, columns, column, items, withTitle }: Readonly<KanbanColumnCardProps<T>>) {
   const { t } = useTranslation();
   return (
     <div
@@ -61,11 +61,6 @@ function KanbanColumnCard<T>({ idx, columns, column, items, withTitle }: KanbanC
             )}
             <div>{column?.title ?? t("shared.undefined")}</div>
           </div>
-          {/* {column.onNew && (
-                <button type="button" onClick={() => column.onNew && column.onNew()}>
-                  <PlusIcon className="h-3 w-3" />
-                </button>
-              )} */}
         </div>
       )}
 
@@ -77,13 +72,12 @@ function KanbanColumnCard<T>({ idx, columns, column, items, withTitle }: KanbanC
         )}
       >
         <div className="space-y-3">
-          {/* {getItems(column.name).length === 0 && (
-                  <div className="p-2 flex justify-center">
-                    <div className="text-muted-foreground">{t("shared.noRecords")}</div>
-                  </div>
-                )} */}
-          {items.map((item, idx) => {
-            return <Fragment key={idx}>{column.card(item)}</Fragment>;
+          {items.map((item) => {
+            // Using the item's unique property as key if available, otherwise fallback to a combination
+            const itemKey = typeof item === 'object' && item !== null && 'id' in item
+              ? String((item as any).id)
+              : JSON.stringify(item);
+            return <Fragment key={itemKey}>{column.card(item)}</Fragment>;
           })}
 
           {column?.onNewRoute && (

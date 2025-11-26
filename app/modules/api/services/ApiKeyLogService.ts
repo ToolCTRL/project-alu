@@ -30,7 +30,7 @@ async function getSummary({ request, params }: { request: Request; params: Param
     } catch (e: any) {
       // eslint-disable-next-line no-console
       console.log({ error: e.message });
-      throw Error("Invalid group by: " + groupBy.join(", "));
+      throw new Error("Invalid group by: " + groupBy.join(", "));
     }
   }
   return { items, allTenants, filterableProperties };
@@ -59,11 +59,11 @@ async function getDetails({ request, params }: { request: Request; params: Param
     skip: pagination.pageSize * (pagination.page - 1),
     where: whereFilters,
     include,
-    orderBy: !pagination.sortedBy.length
-      ? { createdAt: "desc" }
-      : pagination.sortedBy.map((x) => ({
+    orderBy: pagination.sortedBy.length
+      ? pagination.sortedBy.map((x) => ({
           [x.name]: x.direction,
-        })),
+        }))
+      : { createdAt: "desc" },
   });
   const totalItems = await db.apiKeyLog.count({
     where: whereFilters,
@@ -82,10 +82,6 @@ async function getDetails({ request, params }: { request: Request; params: Param
 }
 
 async function getGroupBys(tenantId: string | null) {
-  // let where: Prisma.ApiKeyLogWhereInput = {};
-  // if (tenantId) {
-  //   where = { apiKeyId: tenantId };
-  // }
   const allMethods = [
     { name: "GET", value: "GET" },
     { name: "POST", value: "POST" },
@@ -93,63 +89,30 @@ async function getGroupBys(tenantId: string | null) {
     { name: "PATCH", value: "PATCH" },
     { name: "DELETE", value: "DELETE" },
   ];
-  // const allEndpoints = await db.apiKeyLog.groupBy({
-  //   by: ["endpoint"],
-  //   where,
-  //   _count: { endpoint: true },
-  //   orderBy: { _count: { endpoint: "desc" } },
-  // });
-  // const allParams = await db.apiKeyLog.groupBy({
-  //   where,
-  //   by: ["params"],
-  //   _count: { params: true },
-  //   orderBy: { _count: { params: "desc" } },
-  // });
-  // const allStatus = await db.apiKeyLog.groupBy({
-  //   by: ["status"],
-  //   where,
-  //   _count: { status: true },
-  //   orderBy: { _count: { status: "desc" } },
-  // });
-  // const allApiKeys = tenantId ? await getApiKeys(tenantId) : await getAllApiKeys();
 
   return {
     allMethods,
-    // allEndpoints,
-    // allParams,
-    // allStatus,
-    // allApiKeys,
   };
 }
 async function getFilterableProperties(tenantId: string | null) {
-  const {
-    allMethods,
-    // allEndpoints,
-    // allParams,
-    // allStatus,
-    // allApiKeys
-  } = await getGroupBys(tenantId);
+  const { allMethods } = await getGroupBys(tenantId);
   const filterableProperties: FilterablePropertyDto[] = [
     { name: "method", title: "Method", options: allMethods },
     {
       name: "endpoint",
       title: "Endpoint",
-      // options: allEndpoints.map((item) => ({ name: `${item.endpoint} (${item._count.endpoint})`, value: item.endpoint })),
     },
     {
       name: "params",
       title: "Params",
-      // options: allParams.map((item) => ({ name: `${item.params} (${item._count.params})`, value: item.params }))
     },
     {
       name: "status",
       title: "Status",
-      // options: allStatus.map((item) => ({ name: `${item.status ?? "- No status -"} (${item._count.status})`, value: item.status?.toString() ?? "{null}" })),
     },
     {
       name: "apiKeyId",
       title: "API Key",
-      // options: allApiKeys.map((item) => ({ name: `${item.alias} (${item.tenant?.name ?? "{Admin}"})`, value: item.id })),
     },
   ];
   let allTenants: { id: string; name: string; slug: string }[] = [];

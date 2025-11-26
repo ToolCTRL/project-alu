@@ -9,7 +9,7 @@ interface Props {
   children?: ReactNode;
 }
 
-export default function WarningBanner({ title = "Warning", text = "", redirect, children }: Props) {
+export default function WarningBanner({ title = "Warning", text = "", redirect, children }: Readonly<Props>) {
   const { t } = useTranslation();
   return (
     <div className="not-prose rounded-md border border-yellow-300 bg-yellow-50  ">

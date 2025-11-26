@@ -236,17 +236,17 @@ function getPropertyFilter(name: string, value: string, condition: string | unde
 }
 
 function getParam_String(urlSearchParams: URLSearchParams | undefined, names: string[]) {
-  for (let idx = 0; idx < names.length; idx++) {
-    const text = urlSearchParams?.get(names[idx])?.toString();
+  for (const name of names) {
+    const text = urlSearchParams?.get(name)?.toString();
     if (text) {
-      return urlSearchParams?.get(names[idx])?.toString();
+      return text;
     }
   }
 }
 
 function getParam_Number(urlSearchParams: URLSearchParams | undefined, names: string[]) {
-  for (let idx = 0; idx < names.length; idx++) {
-    const number = getNumber(urlSearchParams?.get(names[idx])?.toString());
+  for (const name of names) {
+    const number = getNumber(urlSearchParams?.get(name)?.toString());
     if (number) {
       return number;
     }
@@ -254,7 +254,7 @@ function getParam_Number(urlSearchParams: URLSearchParams | undefined, names: st
 }
 
 function getNumber(value?: string) {
-  if (value && !isNaN(Number(value)) && Number(value) < 2147483647) {
+  if (value && !Number.isNaN(Number(value)) && Number(value) < 2147483647) {
     return Number(value);
   }
 }

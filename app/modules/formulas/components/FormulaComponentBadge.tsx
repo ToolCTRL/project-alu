@@ -1,7 +1,11 @@
 import { FormulaComponentDto } from "../dtos/FormulaDto";
 import FormulaHelpers from "../utils/FormulaHelpers";
 
-export default function FormulaComponentBadge({ item }: { item: FormulaComponentDto }) {
+interface FormulaComponentBadgeProps {
+  readonly item: FormulaComponentDto;
+}
+
+export default function FormulaComponentBadge({ item }: FormulaComponentBadgeProps) {
   return (
     <div>
       {item.type === "variable" && <span className="text-muted-foreground text-sm">{item.value}</span>}

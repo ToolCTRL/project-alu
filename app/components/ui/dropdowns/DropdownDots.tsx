@@ -53,7 +53,7 @@ export default function DropdownDots({ title, items, size = "sm" }: Props) {
         )}
         <DropdownMenuGroup>
           {items.map((item, idx) => (
-            <DropdownMenuItem key={idx} asChild>
+            <DropdownMenuItem key={option.title} asChild>
               {item.href ? (
                 <Link
                   to={item.href}

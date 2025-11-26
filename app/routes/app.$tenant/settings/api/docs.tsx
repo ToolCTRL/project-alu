@@ -1,5 +1,4 @@
-import { LoaderFunctionArgs, useLoaderData } from "react-router";
-import { useParams } from "react-router";
+import { LoaderFunctionArgs, useLoaderData, useParams } from "react-router";
 import { useTranslation } from "react-i18next";
 import EditPageLayout from "~/components/ui/layouts/EditPageLayout";
 import ApiSpecs from "~/modules/api/components/ApiSpecs";
@@ -22,29 +21,27 @@ export default function AdminApiDocsRoute() {
   const data = useLoaderData<LoaderData>();
   const params = useParams();
   return (
-    <>
-      <EditPageLayout
-        tabs={[
-          {
-            name: t("shared.overview"),
-            routePath: UrlUtils.getModulePath(params, "api"),
-          },
-          {
-            name: t("models.apiCall.plural"),
-            routePath: UrlUtils.getModulePath(params, "api/logs"),
-          },
-          {
-            name: t("models.apiKey.plural"),
-            routePath: UrlUtils.getModulePath(params, "api/keys"),
-          },
-          {
-            name: "Docs",
-            routePath: UrlUtils.getModulePath(params, "api/docs"),
-          },
-        ]}
-      >
-        <ApiSpecs item={data.apiSpecs} />
-      </EditPageLayout>
-    </>
+    <EditPageLayout
+      tabs={[
+        {
+          name: t("shared.overview"),
+          routePath: UrlUtils.getModulePath(params, "api"),
+        },
+        {
+          name: t("models.apiCall.plural"),
+          routePath: UrlUtils.getModulePath(params, "api/logs"),
+        },
+        {
+          name: t("models.apiKey.plural"),
+          routePath: UrlUtils.getModulePath(params, "api/keys"),
+        },
+        {
+          name: "Docs",
+          routePath: UrlUtils.getModulePath(params, "api/docs"),
+        },
+      ]}
+    >
+      <ApiSpecs item={data.apiSpecs} />
+    </EditPageLayout>
   );
 }

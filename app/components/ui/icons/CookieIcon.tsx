@@ -1,4 +1,4 @@
-export default function CookieIcon({ className }: { className?: string }) {
+export default function CookieIcon({ className }: Readonly<{ className?: string }>) {
   return (
     <svg className={className} xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="100" height="100" viewBox="0 0 100 100" fill="currentColor">
       <path d="M50,56.666c-1.839,0-3.333-1.494-3.333-3.332C46.667,51.494,48.161,50,50,50s3.333,1.494,3.333,3.334	C53.333,55.172,51.839,56.666,50,56.666z"></path>

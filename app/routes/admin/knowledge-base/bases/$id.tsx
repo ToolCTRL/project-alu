@@ -1,5 +1,4 @@
-import { ActionFunctionArgs, LoaderFunctionArgs, redirect, useActionData, useLoaderData } from "react-router";
-import { useSubmit } from "react-router";
+import { ActionFunctionArgs, LoaderFunctionArgs, redirect, useActionData, useLoaderData, useSubmit } from "react-router";
 import { useRef } from "react";
 import ServerError from "~/components/ui/errors/ServerError";
 import ActionResultModal from "~/components/ui/modals/ActionResultModal";
@@ -39,7 +38,7 @@ async function handleEdit(request: Request, params: any, form: FormData, item: K
   const layout = form.get("layout") as string;
   const color = Number(form.get("color") ?? "");
   const enabled = Boolean(form.get("enabled"));
-  const languages = form.getAll("languages[]").map(String);
+  const languages = form.getAll("languages[]").map((l) => String(l));
   const links: KbNavLinkDto[] = form.getAll("links[]").map((l) => JSON.parse(String(l)));
   const logo = form.get("logo") as string;
   const seoImage = form.get("seoImage") as string;
@@ -111,7 +110,7 @@ export const action = async ({ request, params }: ActionFunctionArgs) => {
   }
 };
 
-export default function () {
+export default function KnowledgeBaseEdit() {
   const data = useLoaderData<LoaderData>();
   const actionData = useActionData<ActionData>();
   const submit = useSubmit();

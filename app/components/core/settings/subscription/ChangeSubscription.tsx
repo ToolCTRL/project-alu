@@ -16,11 +16,11 @@ import LoadingButton from "~/components/ui/buttons/LoadingButton";
 import NumberUtils from "~/utils/shared/NumberUtils";
 
 interface Props {
-  current: TenantSubscriptionWithDetails | null;
-  items: Awaited<ReturnType<typeof getAllSubscriptionProducts>>;
-  billingPeriod: SubscriptionBillingPeriod;
-  currency: string;
-  canSubscribe: boolean;
+  readonly current: TenantSubscriptionWithDetails | null;
+  readonly items: Awaited<ReturnType<typeof getAllSubscriptionProducts>>;
+  readonly billingPeriod: SubscriptionBillingPeriod;
+  readonly currency: string;
+  readonly canSubscribe: boolean;
 }
 export default function ChangeSubscription({ items, current, billingPeriod, currency, canSubscribe }: Props) {
   const { t } = useTranslation();
@@ -53,41 +53,38 @@ export default function ChangeSubscription({ items, current, billingPeriod, curr
 
   function selectPrice(product: SubscriptionProductDto) {
     const price = getPrice(product);
-    if (!price?.id) {
-      return;
-    }
-    setSelectedPlan(product);
-    if (product.model === PricingModel.PER_SEAT) {
-      setShowQuantityModal(true);
-    } else if (!isCurrent(product)) {
+    if (price?.id) {
+      setSelectedPlan(product);
+      if (product.model === PricingModel.PER_SEAT) {
+        setShowQuantityModal(true);
+      } else if (isCurrent(product)) {
+        cancel();
+      } else {
       const form = new FormData();
-      form.set("action", "subscribe");
-      form.set("product-id", product?.id?.toString() ?? "");
-      form.set("billing-period", billingPeriod.toString());
-      form.set("currency", currency);
-      submit(form, {
-        method: "post",
-      });
-    } else {
-      cancel();
+        form.set("action", "subscribe");
+        form.set("product-id", product?.id?.toString() ?? "");
+        form.set("billing-period", billingPeriod.toString());
+        form.set("currency", currency);
+        submit(form, {
+          method: "post",
+        });
+      }
     }
   }
 
   function confirmedQuantity() {
-    if (!selectedPlan) {
-      return;
+    if (selectedPlan) {
+      const price = getPrice(selectedPlan);
+      if (price?.id) {
+        const form = new FormData();
+        form.set("action", "subscribe");
+        form.set("quantity", quantity.toString());
+        form.set("price-id", price.id);
+        submit(form, {
+          method: "post",
+        });
+      }
     }
-    const price = getPrice(selectedPlan);
-    if (!price?.id) {
-      return;
-    }
-    const form = new FormData();
-    form.set("action", "subscribe");
-    form.set("quantity", quantity.toString());
-    form.set("price-id", price.id);
-    submit(form, {
-      method: "post",
-    });
   }
 
   function isCurrent(plan: SubscriptionProductDto) {

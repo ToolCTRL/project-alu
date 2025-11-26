@@ -2,8 +2,8 @@ import { useTranslation } from "react-i18next";
 import { RowWithCreatedBy } from "~/utils/db/entities/rows.db.server";
 
 interface Props {
-  row: RowWithCreatedBy;
-  withEmail?: boolean;
+  readonly row: RowWithCreatedBy;
+  readonly withEmail?: boolean;
 }
 export default function RowCreatedByBadge({ row, withEmail = true }: Props) {
   const { t } = useTranslation();

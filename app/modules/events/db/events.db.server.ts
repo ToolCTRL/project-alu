@@ -11,15 +11,6 @@ import UserModelHelper from "~/utils/helpers/models/UserModelHelper";
 export type EventWithAttempts = Event & {
   tenant: TenantSimple | null;
   user: UserSimple | null;
-  // attempts: {
-  //   id: string;
-  //   startedAt: Date | null;
-  //   finishedAt: Date | null;
-  //   endpoint: string;
-  //   success: boolean | null;
-  //   status: number | null;
-  //   message: string | null;
-  // }[];
 };
 
 export type EventWithDetails = Event & {
@@ -45,17 +36,6 @@ export async function getEvents(
     include: {
       tenant: { select: TenantModelHelper.selectSimpleTenantProperties },
       user: { select: UserModelHelper.selectSimpleUserProperties },
-      // attempts: {
-      //   select: {
-      //     id: true,
-      //     startedAt: true,
-      //     finishedAt: true,
-      //     endpoint: true,
-      //     success: true,
-      //     status: true,
-      //     message: true,
-      //   },
-      // },
     },
     orderBy: {
       createdAt: "desc",
@@ -90,7 +70,6 @@ export async function getEvent(id: string): Promise<EventWithDetails | null> {
     include: {
       tenant: { select: TenantModelHelper.selectSimpleTenantProperties },
       user: { select: UserModelHelper.selectSimpleUserProperties },
-      // attempts: true,
     },
   });
 }

@@ -236,7 +236,7 @@ async function importKbs({ template, currentUserId }: { template: KnowledgeBases
         });
         updated.articles++;
       } else {
-        existingArticle = await createKnowledgeBaseArticle({
+        await createKnowledgeBaseArticle({
           knowledgeBaseId: existing.id,
           categoryId: category?.id ?? null,
           sectionId: sectionId,

@@ -13,4 +13,4 @@ export const action: ActionFunction = async ({ request, params }) => {
 
 export const meta: MetaFunction<typeof loader> = ({ data }) => [{ title: data?.title }];
 
-export default InboundEmailsRoute;
+export { InboundEmailsRoute as default } from "~/modules/emails/routes/InboundEmailsRoute";

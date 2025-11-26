@@ -14,7 +14,7 @@ interface Props {
   featurePlanUsage: PlanFeatureUsageDto | undefined;
 }
 
-export default function NewMember({ featurePlanUsage }: Props) {
+export default function NewMember({ featurePlanUsage }: Readonly<Props>) {
   const params = useParams();
   const location = useLocation();
   const actionData = useActionData<NewMemberActionData>();
@@ -61,10 +61,8 @@ export default function NewMember({ featurePlanUsage }: Props) {
           {/*Email */}
           <div className="col-span-2">
             <label htmlFor="email" className="text-foreground/80 block truncate text-xs font-medium">
-              <div className="flex space-x-1 truncate">
-                <div>{t("models.user.email")}</div>
-                <div className="ml-1 text-red-500">*</div>
-              </div>
+              {t("models.user.email")}
+              <span className="ml-1 text-red-500">*</span>
             </label>
             <div className="mt-1 flex w-full rounded-md shadow-2xs">
               <input
@@ -88,10 +86,8 @@ export default function NewMember({ featurePlanUsage }: Props) {
           {/*User First Name */}
           <div>
             <label htmlFor="first-name" className="text-foreground/80 block truncate text-xs font-medium">
-              <div className="flex space-x-1 truncate">
-                <div>{t("models.user.firstName")}</div>
-                <div className="ml-1 text-red-500">*</div>
-              </div>
+              {t("models.user.firstName")}
+              <span className="ml-1 text-red-500">*</span>
             </label>
             <div className="mt-1 flex w-full rounded-md shadow-2xs">
               <input

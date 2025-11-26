@@ -9,11 +9,11 @@ export default function RowsLoadMoreCard({
   pagination,
   currentView,
   className,
-}: {
-  pagination?: PaginationDto;
-  currentView?: EntityViewWithDetails | null;
-  className?: string;
-}) {
+}: Readonly<{
+  readonly pagination?: PaginationDto;
+  readonly currentView?: EntityViewWithDetails | null;
+  readonly className?: string;
+}>) {
   const { t } = useTranslation();
   const [searchParams, setSearchParams] = useSearchParams();
   function theresMore() {
@@ -34,7 +34,7 @@ export default function RowsLoadMoreCard({
                 return;
               }
               let currentPageSize = 0;
-              const paramsPageSize = searchParams.get("pageSize") ? parseInt(searchParams.get("pageSize") ?? "") : undefined;
+              const paramsPageSize = searchParams.get("pageSize") ? Number.parseInt(searchParams.get("pageSize") ?? "", 10) : undefined;
               if (paramsPageSize) {
                 currentPageSize = paramsPageSize;
               } else {

@@ -73,7 +73,7 @@ export type InputTextProps = (WithDefaultValue | WithValueAndSetValue) & {
   borderless?: boolean;
   editorSize?: EditorSize;
   autoFocus?: boolean;
-  promptFlows?: { rowId: string | undefined; prompts: PromptFlowWithDetails[] } | undefined;
+  promptFlows?: { rowId: string; prompts: PromptFlowWithDetails[] } | undefined;
   hideChars?: boolean;
   onPaste?: (e: React.ClipboardEvent<HTMLInputElement>) => void;
 };
@@ -174,7 +174,7 @@ const InputText = (props: InputTextProps, ref: Ref<RefInputText>) => {
     return (
       <>
         <textarea hidden readOnly name={name} value={actualValue} />
-        {typeof window !== "undefined" && (
+        {typeof globalThis.window !== "undefined" && (
           <Editor
             theme={editorTheme}
             className={clsx(

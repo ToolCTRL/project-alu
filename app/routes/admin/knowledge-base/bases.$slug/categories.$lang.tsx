@@ -1,5 +1,4 @@
-import { ActionFunctionArgs, LoaderFunctionArgs, redirect, useActionData, useLoaderData } from "react-router";
-import { Link, useLocation, useNavigate, useOutlet, useParams, useSubmit } from "react-router";
+import { ActionFunctionArgs, LoaderFunctionArgs, redirect, useActionData, useLoaderData, Link, useLocation, useNavigate, useOutlet, useParams, useSubmit } from "react-router";
 import clsx from "clsx";
 import { useRef, useState } from "react";
 import { Colors } from "~/application/enums/shared/Colors";
@@ -390,7 +389,7 @@ export default function () {
                                   )}
                                 </div>
                                 <div>•</div>
-                                {item.articles.filter((f) => f.publishedAt).length > 0 ? (
+                                {item.articles.some((f) => f.publishedAt) ? (
                                   <div className="text-muted-foreground truncate text-xs">
                                     {item.articles.filter((f) => f.publishedAt).length}{" "}
                                     {item.articles.filter((f) => f.publishedAt).length === 1 ? "article" : "articles"}
@@ -492,14 +491,14 @@ function CategorySections({
   onNewArticle,
   onDeleteArticle,
   onUpdateArticleTitle,
-}: {
+}: Readonly<{
   kb: KnowledgeBaseDto;
   category: KnowledgeBaseCategoryWithDetails;
   onDeleteSection: (section: { id: string; title: string }) => void;
   onNewArticle: (categoryId: string, sectionId: string | undefined, position: "first" | "last") => void;
   onDeleteArticle: (article: { id: string; title: string }) => void;
   onUpdateArticleTitle: (article: { id: string; title: string }) => void;
-}) {
+}>) {
   const [toggledSections, setToggledSections] = useState<string[]>([]);
   const articles = category.articles.filter((f) => !f.sectionId).sort((a, b) => a.order - b.order);
 
@@ -521,7 +520,7 @@ function CategorySections({
         <div className="space-y-2">
           {category.sections.map((item, idx) => {
             return (
-              <div key={idx} className="border-border bg-background rounded-md border px-4 py-0.5 shadow-2xs">
+              <div key={item.id} className="border-border bg-background rounded-md border px-4 py-0.5 shadow-2xs">
                 <div className="space-y-2">
                   <div className="flex items-center justify-between space-x-2">
                     <div className="flex items-center space-x-2 truncate">
@@ -624,65 +623,20 @@ function SectionArticles({
   onNewArticle,
   onUpdateArticleTitle,
   onDeleteArticle,
-}: {
+}: Readonly<{
   kb: KnowledgeBaseDto;
   category: KnowledgeBaseCategoryWithDetails;
   section: { id: string; order: number; title: string; description: string };
   onNewArticle: (categoryId: string, sectionId: string, position: "first" | "last") => void;
   onUpdateArticleTitle: (article: { id: string; title: string }) => void;
   onDeleteArticle: (article: { id: string; title: string }) => void;
-}) {
+}>) {
   const articles = category.articles.filter((f) => f.sectionId === section.id).sort((a, b) => a.order - b.order);
   return (
     <div className="space-y-2 pb-2">
       <div className="border-border bg-secondary w-full space-y-2 rounded-md border px-2 py-2">
         <div className="space-y-2">
           <ArticlesList kb={kb} articles={articles} onUpdateArticleTitle={onUpdateArticleTitle} onDeleteArticle={onDeleteArticle} />
-          {/* {articles.map((item, idx) => {
-            return (
-              <div key={idx} className="rounded-md border border-border bg-background px-4 py-0.5 shadow-2xs">
-                <div className="space-y-2">
-                  <div className="flex items-center justify-between space-x-2">
-                    <div className="flex items-center space-x-2 truncate">
-                      <div className=" flex items-center space-x-3 truncate">
-                        <div className="hidden shrink-0 sm:flex">
-                          <OrderListButtons actionName="set-article-orders" index={idx} items={articles} editable={true} />
-                        </div>
-                        <div className="flex items-center space-x-2 truncate text-sm text-foreground">
-                          <div className="flex items-baseline space-x-1 truncate">
-                            <div className="flex flex-col">
-                              <div className="flex items-center space-x-2">
-                                <ColorBadge color={item.publishedAt ? Colors.GREEN : Colors.YELLOW} />
-                                <div className="flex items-baseline space-x-1">{item.title}</div>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="flex shrink-0 space-x-1">
-                      <div className="flex items-center space-x-1 truncate p-1">
-                        <Link
-                          to={`/admin/knowledge-base/bases/${kb.slug}/articles/${item.language}/${item.id}`}
-                          className="group flex items-center rounded-md border border-transparent p-2 hover:bg-secondary/90 focus:bg-secondary/90 focus:outline-hidden focus:ring-2 focus:ring-gray-400 focus:ring-offset-1"
-                        >
-                          <PencilIcon className="h-4 w-4 text-gray-300 group-hover:text-muted-foreground" />
-                        </Link>
-                        <button
-                          type="button"
-                          className="group flex items-center rounded-md border border-transparent p-2 hover:bg-secondary/90 focus:bg-secondary/90 focus:outline-hidden focus:ring-2 focus:ring-gray-400 focus:ring-offset-1"
-                          onClick={() => onDeleteArticle(item)}
-                        >
-                          <TrashIcon className="h-4 w-4 text-gray-300 group-hover:text-muted-foreground" />
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            );
-          })} */}
           <button
             type="button"
             onClick={() => onNewArticle(category.id, section.id, "last")}
@@ -701,7 +655,7 @@ function ArticlesList({
   articles,
   onUpdateArticleTitle,
   onDeleteArticle,
-}: {
+}: Readonly<{
   kb: KnowledgeBaseDto;
   articles: {
     id: string;
@@ -715,7 +669,7 @@ function ArticlesList({
   }[];
   onUpdateArticleTitle: (article: { id: string; title: string }) => void;
   onDeleteArticle: (article: { id: string; title: string }) => void;
-}) {
+}>) {
   const handleUpdateArticleTitle = (articleId: string, newTitle: string) => {
     const article = articles.find((article) => article.id === articleId);
     if (article) {
@@ -744,19 +698,20 @@ function ArticlesList({
                           <div className="flex items-center space-x-2">
                             <ColorBadge color={item.publishedAt ? Colors.GREEN : Colors.YELLOW} />
                             <div className="flex flex-col">
-                              <div
+                              <button
+                                type="button"
                                 className="text-foreground flex cursor-text items-baseline space-x-1 text-sm focus:outline-hidden"
                                 contentEditable
                                 suppressContentEditableWarning
-                                onBlur={(event) => handleUpdateArticleTitle(item.id, event.target.innerText)}
+                                onBlur={(event) => handleUpdateArticleTitle(item.id, event.currentTarget.innerText)}
                                 onPaste={(event) => {
                                   event.preventDefault();
                                   const plainText = event.clipboardData.getData("text/plain");
-                                  (event.target as HTMLElement).textContent = plainText;
+                                  (event.currentTarget as HTMLElement).textContent = plainText;
                                 }}
                               >
                                 {item.title || "{Untitled}"}
-                              </div>
+                              </button>
                               <div className="text-muted-foreground text-xs">
                                 {KnowledgeBaseUtils.getArticleUrl({
                                   kb,
@@ -799,18 +754,25 @@ function ArticlesList({
   );
 }
 
-function DeleteButton({ onDelete, canDelete }: { onDelete: () => void; canDelete: boolean }) {
+function DeleteButton({ onDelete, canDelete }: Readonly<{ onDelete: () => void; canDelete: boolean }>) {
+  if (canDelete) {
+    return (
+      <button
+        type="button"
+        className="hover:bg-secondary/90 focus:bg-secondary/90 group flex items-center rounded-md border border-transparent p-2 focus:outline-hidden focus:ring-2 focus:ring-gray-400 focus:ring-offset-1"
+        onClick={onDelete}
+      >
+        <TrashIcon className="group-hover:text-muted-foreground h-4 w-4 text-gray-300" />
+      </button>
+    );
+  }
   return (
     <button
       type="button"
-      className={clsx(
-        "focus:bg-secondary/90 group flex items-center rounded-md border border-transparent p-2 focus:outline-hidden focus:ring-2 focus:ring-gray-400 focus:ring-offset-1",
-        !canDelete ? "cursor-not-allowed opacity-50" : "hover:bg-secondary/90"
-      )}
-      disabled={!canDelete}
-      onClick={onDelete}
+      className="focus:bg-secondary/90 group flex items-center rounded-md border border-transparent p-2 focus:outline-hidden focus:ring-2 focus:ring-gray-400 focus:ring-offset-1 cursor-not-allowed opacity-50"
+      disabled={true}
     >
-      <TrashIcon className={clsx("h-4 w-4 text-gray-300", canDelete && "group-hover:text-muted-foreground")} />
+      <TrashIcon className="h-4 w-4 text-gray-300" />
     </button>
   );
 }

@@ -1,5 +1,4 @@
-import { ActionFunctionArgs, LoaderFunctionArgs, redirect, useActionData, useLoaderData } from "react-router";
-import { Form, Link, useParams } from "react-router";
+import { ActionFunctionArgs, LoaderFunctionArgs, redirect, useActionData, useLoaderData, Form, Link, useParams } from "react-router";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "react-hot-toast";
@@ -33,7 +32,7 @@ type LoaderData = {
 export const loader = async ({ request, params }: LoaderFunctionArgs) => {
   await requireAuth({ request, params });
   const tenantId = await getTenantIdOrNull({ request, params });
-  const item: (PortalWithDetails & { portalUrl?: string }) | null = await getPortalById(tenantId, params.portal!);
+  const item = await getPortalById(tenantId, params.portal!);
   if (!item) {
     return redirect(UrlUtils.getModulePath(params, "portals"));
   }
@@ -49,8 +48,8 @@ type ActionData = {
   error?: string;
 };
 async function handleEdit(request: Request, form: FormData, item: any, t: any) {
-  const subdomain = UrlUtils.slugify(form.get("subdomain")?.toString() ?? "");
-  const title = form.get("title")?.toString();
+  const subdomain = UrlUtils.slugify((form.get("subdomain") ?? "").toString());
+  const title = (form.get("title") ?? "").toString() || undefined;
 
   if (subdomain && subdomain !== item.subdomain) {
     const isValidSubdomainSyntax = /^[a-z0-9-]+$/i.test(subdomain);
@@ -80,13 +79,13 @@ async function handleEdit(request: Request, form: FormData, item: any, t: any) {
 }
 
 async function handleEditSeo(form: FormData, item: any, t: any) {
-  const seoTitle = form.get("seoTitle")?.toString();
-  const seoDescription = form.get("seoDescription")?.toString();
-  const seoTwitterCreator = form.get("seoTwitterCreator")?.toString();
-  const seoTwitterSite = form.get("seoTwitterSite")?.toString();
-  const seoKeywords = form.get("seoKeywords")?.toString();
-  const seoImage = form.get("seoImage")?.toString();
-  const seoThumbnail = form.get("seoThumbnail")?.toString();
+  const seoTitle = (form.get("seoTitle") ?? "").toString() || undefined;
+  const seoDescription = (form.get("seoDescription") ?? "").toString() || undefined;
+  const seoTwitterCreator = (form.get("seoTwitterCreator") ?? "").toString() || undefined;
+  const seoTwitterSite = (form.get("seoTwitterSite") ?? "").toString() || undefined;
+  const seoKeywords = (form.get("seoKeywords") ?? "").toString() || undefined;
+  const seoImage = (form.get("seoImage") ?? "").toString() || undefined;
+  const seoThumbnail = (form.get("seoThumbnail") ?? "").toString() || undefined;
 
   const { storedSeoImage, storedSeoThumbnail } = await promiseHash({
     storedSeoImage: seoImage ? storeSupabaseFile({ bucket: "seo", content: seoImage, id: `${item.id}-seo-image.png` }) : Promise.resolve(""),
@@ -107,13 +106,13 @@ async function handleEditSeo(form: FormData, item: any, t: any) {
 }
 
 async function handleEditBranding(form: FormData, item: any, t: any) {
-  const themeColor = form.get("themeColor")?.toString();
-  const themeScheme = form.get("themeScheme")?.toString();
-  const logo = form.get("logo")?.toString();
-  const logoDarkMode = form.get("logoDarkMode")?.toString();
-  const icon = form.get("icon")?.toString();
-  const iconDarkMode = form.get("iconDarkMode")?.toString();
-  const favicon = form.get("favicon")?.toString();
+  const themeColor = (form.get("themeColor") ?? "").toString() || undefined;
+  const themeScheme = (form.get("themeScheme") ?? "").toString() || undefined;
+  const logo = (form.get("logo") ?? "").toString() || undefined;
+  const logoDarkMode = (form.get("logoDarkMode") ?? "").toString() || undefined;
+  const icon = (form.get("icon") ?? "").toString() || undefined;
+  const iconDarkMode = (form.get("iconDarkMode") ?? "").toString() || undefined;
+  const favicon = (form.get("favicon") ?? "").toString() || undefined;
 
   const { storedLogo, storedLogoDarkMode, storedIcon, storedIconDarkMode, storedFavicon } = await promiseHash({
     storedLogo: logo ? storeSupabaseFile({ bucket: "branding", content: logo, id: `${item.id}-logo.png` }) : Promise.resolve(""),
@@ -139,7 +138,7 @@ async function handleEditBranding(form: FormData, item: any, t: any) {
 async function handleEditAnalytics(form: FormData, item: any, t: any) {
   const simpleAnalytics = FormHelper.getBoolean(form, "simpleAnalytics");
   const plausibleAnalytics = FormHelper.getBoolean(form, "plausibleAnalytics");
-  const googleAnalyticsTrackingId = form.get("googleAnalyticsTrackingId")?.toString();
+  const googleAnalyticsTrackingId = (form.get("googleAnalyticsTrackingId") ?? "").toString() || undefined;
 
   await updatePortal(item, {
     analyticsSimpleAnalytics: simpleAnalytics,
@@ -178,7 +177,7 @@ export const action = async ({ request, params }: ActionFunctionArgs) => {
   return Response.json({ error: t("shared.invalidForm") }, { status: 400 });
 };
 
-export default function () {
+export default function PortalSettings() {
   const { t } = useTranslation();
   const data = useLoaderData<LoaderData>();
   const actionData = useActionData<ActionData>();

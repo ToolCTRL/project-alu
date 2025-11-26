@@ -21,6 +21,23 @@ type PermissionDto = {
   groupId: string | null;
   roleId: string | null;
 };
+
+function getTypeOrder(permission: PermissionDto) {
+  if (permission.tenantId) {
+    return 1;
+  }
+  if (permission.userId) {
+    return 2;
+  }
+  if (permission.roleId) {
+    return 3;
+  }
+  if (permission.groupId) {
+    return 4;
+  }
+  return 0;
+}
+
 export default function RowSettingsPermissions({
   item,
   items,
@@ -28,11 +45,11 @@ export default function RowSettingsPermissions({
   users,
   withTitle,
 }: {
-  item: RowWithDetails;
-  items: RowPermission[];
-  tenants: Tenant[];
-  users: UserWithDetails[];
-  withTitle?: boolean;
+  readonly item: RowWithDetails;
+  readonly items: RowPermission[];
+  readonly tenants: Tenant[];
+  readonly users: UserWithDetails[];
+  readonly withTitle?: boolean;
 }) {
   const { t } = useTranslation();
   const rootData = useRootData();
@@ -43,21 +60,6 @@ export default function RowSettingsPermissions({
 
   const [adding, setAdding] = useState(false);
 
-  function getTypeOrder(permission: PermissionDto) {
-    if (permission.tenantId) {
-      return 1;
-    }
-    if (permission.userId) {
-      return 2;
-    }
-    if (permission.roleId) {
-      return 3;
-    }
-    if (permission.groupId) {
-      return 4;
-    }
-    return 0;
-  }
   function getName(permission: PermissionDto) {
     if (permission.tenantId) {
       return tenants.find((x) => x.id === permission.tenantId)?.name;
@@ -202,11 +204,11 @@ function NewPermissionForm({
   users,
   types,
   onClose,
-}: {
-  tenants: Tenant[];
-  users: UserWithDetails[];
-  types: { name: string; value: string; color: Colors }[];
-  onClose: () => void;
+}: readonly {
+  readonly tenants: Tenant[];
+  readonly users: UserWithDetails[];
+  readonly types: { name: string; value: string; color: Colors }[];
+  readonly onClose: () => void;
 }) {
   const { t } = useTranslation();
   const appData = useAppData();

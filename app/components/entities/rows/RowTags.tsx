@@ -9,12 +9,12 @@ import { getBackgroundColor } from "~/utils/shared/ColorUtils";
 import { useAppOrAdminData } from "~/utils/data/useAppOrAdminData";
 
 interface Props {
-  items: RowTagWithDetails[];
-  onRemove?: (item: RowTagWithDetails) => void;
-  onSetTagsRoute?: string;
+  readonly items: RowTagWithDetails[];
+  readonly onRemove?: (item: RowTagWithDetails) => void;
+  readonly onSetTagsRoute?: string;
 }
 
-export default function RowTags({ items, onRemove, onSetTagsRoute }: Props) {
+export default function RowTags({ items, onRemove, onSetTagsRoute }: readonly Props) {
   const { t } = useTranslation();
   const appOrAdminData = useAppOrAdminData();
 

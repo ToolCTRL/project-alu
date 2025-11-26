@@ -5,6 +5,14 @@ import ErrorModal, { RefErrorModal } from "./ErrorModal";
 import ConfirmModal, { RefConfirmModal } from "./ConfirmModal";
 import Modal from "./Modal";
 
+function onYes(value?: any) {
+  if (value) {
+    alert("confirmed with value: " + JSON.stringify(value));
+  } else {
+    alert("yes");
+  }
+}
+
 export default function PreviewModals() {
   const successModal = useRef<RefSuccessModal>(null);
   const errorModal = useRef<RefErrorModal>(null);
@@ -21,13 +29,6 @@ export default function PreviewModals() {
   function showConfirmModal() {
     confirmModal.current?.setValue({ name: "Sample" });
     confirmModal.current?.show("Title", "Confirm", "Cancel", "Description...");
-  }
-  function onYes(value?: any) {
-    if (value) {
-      alert("confirmed with value: " + JSON.stringify(value));
-    } else {
-      alert("yes");
-    }
   }
 
   return (

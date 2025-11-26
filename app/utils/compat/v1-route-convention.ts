@@ -157,6 +157,44 @@ export function createRoutesFromFolders(defineRoutes: DefineRoutesFunction, opti
   return defineRoutes(defineNestedRoutes);
 }
 
+function isNewEscapeSequence(inEscapeSequence: number, char: string, prevChar: string | undefined) {
+  return !inEscapeSequence && char === escapeStart && prevChar !== escapeStart;
+}
+
+function isCloseEscapeSequence(inEscapeSequence: number, char: string, nextChar: string | undefined) {
+  return inEscapeSequence && char === escapeEnd && nextChar !== escapeEnd;
+}
+
+function isStartOfLayoutSegment(char: string, nextChar: string | undefined, rawSegmentBuffer: string) {
+  return char === "_" && nextChar === "_" && !rawSegmentBuffer;
+}
+
+function isNewOptionalSegment(
+  char: string,
+  prevChar: string | undefined,
+  inOptionalSegment: number,
+  inEscapeSequence: number
+) {
+  return (
+    char === optionalStart &&
+    prevChar !== optionalStart &&
+    (isSegmentSeparator(prevChar) || prevChar === undefined) &&
+    !inOptionalSegment &&
+    !inEscapeSequence
+  );
+}
+
+function isCloseOptionalSegment(
+  char: string,
+  nextChar: string | undefined,
+  inOptionalSegment: number,
+  inEscapeSequence: number
+) {
+  return (
+    char === optionalEnd && nextChar !== optionalEnd && (isSegmentSeparator(nextChar) || nextChar === undefined) && inOptionalSegment && !inEscapeSequence
+  );
+}
+
 // TODO: Cleanup and write some tests for this function
 export function createRoutePath(partialRouteId: string): string | undefined {
   let result = "";
@@ -171,34 +209,6 @@ export function createRoutePath(partialRouteId: string): string | undefined {
     let prevChar = i > 0 ? partialRouteId.charAt(i - 1) : undefined;
     let nextChar = i < partialRouteId.length - 1 ? partialRouteId.charAt(i + 1) : undefined;
 
-    function isNewEscapeSequence() {
-      return !inEscapeSequence && char === escapeStart && prevChar !== escapeStart;
-    }
-
-    function isCloseEscapeSequence() {
-      return inEscapeSequence && char === escapeEnd && nextChar !== escapeEnd;
-    }
-
-    function isStartOfLayoutSegment() {
-      return char === "_" && nextChar === "_" && !rawSegmentBuffer;
-    }
-
-    function isNewOptionalSegment() {
-      return (
-        char === optionalStart &&
-        prevChar !== optionalStart &&
-        (isSegmentSeparator(prevChar) || prevChar === undefined) &&
-        !inOptionalSegment &&
-        !inEscapeSequence
-      );
-    }
-
-    function isCloseOptionalSegment() {
-      return (
-        char === optionalEnd && nextChar !== optionalEnd && (isSegmentSeparator(nextChar) || nextChar === undefined) && inOptionalSegment && !inEscapeSequence
-      );
-    }
-
     if (skipSegment) {
       if (isSegmentSeparator(char)) {
         skipSegment = false;
@@ -206,24 +216,24 @@ export function createRoutePath(partialRouteId: string): string | undefined {
       continue;
     }
 
-    if (isNewEscapeSequence()) {
+    if (isNewEscapeSequence(inEscapeSequence, char, prevChar)) {
       inEscapeSequence++;
       continue;
     }
 
-    if (isCloseEscapeSequence()) {
+    if (isCloseEscapeSequence(inEscapeSequence, char, nextChar)) {
       inEscapeSequence--;
       continue;
     }
 
-    if (isNewOptionalSegment()) {
+    if (isNewOptionalSegment(char, prevChar, inOptionalSegment, inEscapeSequence)) {
       inOptionalSegment++;
       optionalSegmentIndex = result.length;
       result += optionalStart;
       continue;
     }
 
-    if (isCloseOptionalSegment()) {
+    if (isCloseOptionalSegment(char, nextChar, inOptionalSegment, inEscapeSequence)) {
       if (optionalSegmentIndex !== null) {
         result = result.slice(0, optionalSegmentIndex) + result.slice(optionalSegmentIndex + 1);
       }
@@ -251,7 +261,7 @@ export function createRoutePath(partialRouteId: string): string | undefined {
       continue;
     }
 
-    if (isStartOfLayoutSegment()) {
+    if (isStartOfLayoutSegment(char, nextChar, rawSegmentBuffer)) {
       skipSegment = true;
       continue;
     }

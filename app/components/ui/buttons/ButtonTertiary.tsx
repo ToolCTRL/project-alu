@@ -10,9 +10,9 @@ import { useTranslation } from "react-i18next";
 
 interface Props {
   className?: string;
-  type?: "button" | "submit" | "reset" | undefined;
+  type?: "button" | "submit" | "reset";
   to?: string;
-  target?: undefined | "_blank";
+  target?: "_blank";
   rel?: string;
   disabled?: boolean;
   destructive?: boolean;
@@ -43,7 +43,7 @@ export default function ButtonTertiary({
   confirmation,
   event,
   sendEvent,
-}: Props) {
+}: Readonly<Props>) {
   const { t } = useTranslation();
   const refConfirm = useRef<RefConfirmModal>(null);
   let location = useLocation();

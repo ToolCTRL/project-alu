@@ -1,19 +1,17 @@
 import { useEffect } from "react";
-import { LoaderFunctionArgs } from "react-router";
-import { Outlet, useNavigate, useParams } from "react-router";
+import { LoaderFunctionArgs, Outlet, useNavigate, useParams } from "react-router";
 import { useTranslation } from "react-i18next";
 import AppLayout from "~/components/app/AppLayout";
 import { loadAppData } from "~/utils/data/.server/appData";
 import { useAppData } from "~/utils/data/useAppData";
 import { getTenantIdFromUrl } from "~/utils/services/.server/urlService";
 import { createMetrics } from "~/modules/metrics/services/.server/MetricTracker";
-import { serverTimingHeaders } from "~/modules/metrics/utils/defaultHeaders.server";
 import { getTranslations } from "~/locale/i18next.server";
 import { TenantAdminSidebar } from "~/application/sidebar/TenantAdminSidebar";
 import { verifyUserHasPermission } from "~/utils/helpers/.server/PermissionsService";
 import ServerError from "~/components/ui/errors/ServerError";
 
-export { serverTimingHeaders as headers };
+export { serverTimingHeaders as headers } from "~/modules/metrics/utils/defaultHeaders.server";
 
 export const loader = async ({ request, params }: LoaderFunctionArgs) => {
   const { time, getServerTimingHeader } = await createMetrics({ request, params }, "app.$tenant.admin");

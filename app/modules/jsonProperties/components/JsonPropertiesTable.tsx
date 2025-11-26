@@ -12,7 +12,7 @@ import { useSubmit } from "react-router";
 import ConfirmModal, { RefConfirmModal } from "~/components/ui/modals/ConfirmModal";
 
 interface Props {
-  items: JsonPropertyDto[];
+  readonly items: readonly JsonPropertyDto[];
 }
 export default function JsonPropertiesTable({ items }: Props) {
   const { t } = useTranslation();
@@ -48,8 +48,8 @@ export default function JsonPropertiesTable({ items }: Props) {
           {t("shared.add")}
         </button>
       </div> */}
-      {items.map((item, idx) => {
-        return <input key={idx} type="hidden" name="properties[]" value={JSON.stringify(item)} readOnly hidden />;
+      {items.map((item) => {
+        return <input key={item.name} type="hidden" name="properties[]" value={JSON.stringify(item)} readOnly hidden />;
       })}
 
       <div className="space-y-1">
@@ -83,7 +83,6 @@ export default function JsonPropertiesTable({ items }: Props) {
                             {["range-date", "range-number"].includes(item.type) && " (range)"}
                           </div>
                         </div>
-                        {/* {item.type === PropertyType.FORMULA && <div className="truncate italic text-muted-foreground">({item.formula})</div>} */}
                         {["select", "multiselect"].includes(item.type) && (
                           <div className="text-muted-foreground truncate text-xs">
                             {t("shared.options")}: [{!item.options || item.options.length === 0 ? "" : item.options?.map((f) => f.value).join(", ")}]
@@ -129,45 +128,6 @@ export default function JsonPropertiesTable({ items }: Props) {
           </button>
         </div>
       </div>
-
-      {/* <TableSimple
-        items={items}
-        emptyState={{ title: t("shared.noCustomProperties"), description: "" }}
-        actions={[
-          {
-            title: t("shared.edit"),
-            onClick: (_, item) => setSelectedProperty(item),
-          },
-          {
-            title: <TrashIcon className="text-muted-foreground group-hover:text-foreground h-4 w-4" />,
-            onClick: (_, item) => onChange(items.filter((i) => i !== item)),
-          },
-        ]}
-        headers={[
-          {
-            name: "type",
-            title: "Type",
-            value: (item) => <JsonPropertyTypeIcon type={item.type} className="h-4 w-4 text-muted-foreground" />,
-          },
-          {
-            name: "name",
-            title: "Name",
-            className: "w-full",
-            value: (item) => (
-              <div className="flex flex-col">
-                <div className="font-medium">
-                  {item.title} <span className="text-muted-foreground text-xs">({item.name})</span>
-                </div>
-              </div>
-            ),
-          },
-          {
-            name: "required",
-            title: t("shared.required"),
-            value: (item) => (item.required ? <CheckIcon className="text-muted-foreground h-4 w-4" /> : <XIcon className="text-muted-foreground h-4 w-4" />),
-          },
-        ]}
-      /> */}
 
       <SlideOverWideEmpty
         title={selectedProperty === null ? t("shared.new") : t("shared.edit")}

@@ -1,5 +1,4 @@
-import { ActionFunction, MetaFunction, redirect } from "react-router";
-import { useActionData } from "react-router";
+import { ActionFunction, MetaFunction, redirect, useActionData } from "react-router";
 import NewPageLayout from "~/components/ui/layouts/NewPageLayout";
 import { useTranslation } from "react-i18next";
 import { FakeProjectService } from "~/modules/fake/fakeProjectsCrud/services/FakeCrudService";
@@ -29,18 +28,18 @@ export const action: ActionFunction = async ({ request }) => {
     try {
       const name = form.get("name")?.toString() ?? "";
       const description = form.get("description")?.toString();
-      const tasks: Partial<FakeTaskDto>[] = form.getAll("tasks[]").map((f: FormDataEntryValue) => {
-        return JSON.parse(f.toString());
+      const tasks: Partial<FakeTaskDto>[] = form.getAll("tasks[]").map((taskString: FormDataEntryValue) => {
+        return JSON.parse(taskString.toString());
       });
       const isActive = form.get("isActive");
       const active = isActive ? isActive.toString() === "on" || isActive.toString() === "true" : false;
 
       if (!name) {
-        throw Error("Please fill all fields");
+        throw new Error("Please fill all fields");
       }
 
       if (tasks.length === 0) {
-        throw Error("Please add at least one task");
+        throw new Error("Please add at least one task");
       }
 
       const item = await FakeProjectService.create({
@@ -58,7 +57,7 @@ export const action: ActionFunction = async ({ request }) => {
   }
 };
 
-export default function () {
+export default function NewProjectPage() {
   const { t } = useTranslation();
   const actionData = useActionData<ActionData>();
 

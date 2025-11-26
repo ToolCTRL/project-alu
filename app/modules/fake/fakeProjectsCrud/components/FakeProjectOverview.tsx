@@ -5,15 +5,13 @@ import { FakeProjectDto } from "../dtos/FakeProjectDto";
 import { FakeTaskDto } from "../dtos/FakeTaskDto";
 import FakeTasksList from "./FakeTasksList";
 
-export default function FakeProjectOverview({
-  item,
-  onCompleteTask,
-  actionData,
-}: {
-  item: FakeProjectDto;
-  onCompleteTask: (item: FakeTaskDto) => void;
-  actionData?: { error?: string; success?: string };
-}) {
+interface FakeProjectOverviewProps {
+  readonly item: FakeProjectDto;
+  readonly onCompleteTask: (item: FakeTaskDto) => void;
+  readonly actionData?: { error?: string; success?: string };
+}
+
+export default function FakeProjectOverview({ item, onCompleteTask, actionData }: FakeProjectOverviewProps) {
   return (
     <div className="text-foreground/80 space-y-2 text-sm">
       <div>

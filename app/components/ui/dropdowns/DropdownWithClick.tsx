@@ -8,13 +8,12 @@ interface Props {
   button?: ReactNode;
   to?: string;
   options?: ReactNode;
-  children?: ReactNode;
   className?: string;
   onClick?: MouseEventHandler<HTMLButtonElement>;
   disabled?: boolean;
 }
 
-export default function DropdownWithClick({ button, to, options, right, onClick, className, disabled }: Props) {
+export default function DropdownWithClick({ button, to, options, right, onClick, className, disabled }: Readonly<Props>) {
   return (
     <span className={clsx(className, "relative z-10 inline-flex rounded-md shadow-2xs")}>
       {to ? (

@@ -1,8 +1,7 @@
 import FooterBlock from "~/modules/pageBlocks/components/blocks/marketing/footer/FooterBlock";
 import HeaderBlock from "~/modules/pageBlocks/components/blocks/marketing/header/HeaderBlock";
 import { useEffect, useRef, useState } from "react";
-import { ActionFunction, LoaderFunctionArgs, MetaFunction, useLoaderData } from "react-router";
-import { Form, useActionData, useNavigation } from "react-router";
+import { ActionFunction, Form, LoaderFunctionArgs, MetaFunction, useActionData, useLoaderData, useNavigation } from "react-router";
 import { useTranslation } from "react-i18next";
 import { getTranslations } from "~/locale/i18next.server";
 import OpenSuccessModal from "~/components/ui/modals/OpenSuccessModal";
@@ -147,20 +146,20 @@ export default function ContactRoute() {
                   />
                 </div> */}
                 <div className="mt-12">
-                  {data.settings.error ? (
-                    <WarningBanner title={t("shared.error")} text={data.settings.error} />
-                  ) : data.settings.actionUrl ? (
+                  {data.settings.error && <WarningBanner title={t("shared.error")} text={data.settings.error} />}
+                  {!data.settings.error && data.settings.actionUrl && (
                     <form ref={formRef} action={data.settings.actionUrl} method="POST">
                       <HoneypotInput name="_gotcha" />
                       <ContactForm />
                     </form>
-                  ) : data.settings.crm ? (
+                  )}
+                  {!data.settings.error && !data.settings.actionUrl && data.settings.crm && (
                     <Form ref={formRef} method="post">
                       <input type="hidden" name="action" value="submission" hidden readOnly />
                       <HoneypotInput name="codeId" />
                       <ContactForm />
                     </Form>
-                  ) : null}
+                  )}
                   <div></div>
                 </div>
               </div>

@@ -1,7 +1,7 @@
 export interface UsageBasedPriceDto {
   from: number;
-  to: number | undefined;
-  perUnitPrice: number | undefined;
-  flatFeePrice: number | undefined;
+  to?: number;
+  perUnitPrice?: number;
+  flatFeePrice?: number;
   currency: string;
 }

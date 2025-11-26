@@ -1,5 +1,4 @@
-import { LoaderFunctionArgs, useLoaderData } from "react-router";
-import { Outlet } from "react-router";
+import { LoaderFunctionArgs, useLoaderData, Outlet } from "react-router";
 import { useTranslation } from "react-i18next";
 import ApiKeysTable from "~/components/core/apiKeys/ApiKeysTable";
 import EditPageLayout from "~/components/ui/layouts/EditPageLayout";

@@ -13,7 +13,7 @@ const WELCOME_EMAIL = {
   name: "welcome",
   description: "Welcome email with login link",
   parse: ({ appConfiguration, data }: { appConfiguration: AppConfiguration; data: { name?: string; action_url: string } }) => {
-    const subject = !data.name ? `Welcome to ${appConfiguration.app.name}!` : `Welcome to ${appConfiguration.app.name}, ${data.name}!`;
+    const subject = data.name ? `Welcome to ${appConfiguration.app.name}, ${data.name}!` : `Welcome to ${appConfiguration.app.name}!`;
     const greetings = data.name ? `Welcome, ${data.name}!` : "Welcome!";
     const body = `<p>${greetings}</p>
 <p>Thanks for trying ${appConfiguration.app.name}.</p>

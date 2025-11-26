@@ -1,5 +1,4 @@
-import { ActionFunctionArgs, Link, LoaderFunctionArgs, useActionData, useLoaderData } from "react-router";
-import { useLocation, useNavigation, useSearchParams, useSubmit } from "react-router";
+import { ActionFunctionArgs, Link, LoaderFunctionArgs, useActionData, useLoaderData, useLocation, useNavigation, useSearchParams, useSubmit } from "react-router";
 import { cache } from "~/utils/cache.server";
 import EditPageLayout from "~/components/ui/layouts/EditPageLayout";
 import TableSimple from "~/components/ui/tables/TableSimple";
@@ -36,7 +35,7 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
   const cachedValues: CachedValue[] = [];
 
   for (const key of cache.keys()) {
-    if (cachedValues.find((x) => x.key === key)) {
+    if (cachedValues.some((x) => x.key === key)) {
       continue;
     }
     const value = cache.get(key);
@@ -194,7 +193,7 @@ export default function AdminCacheRoute() {
 
   const availableUsers = () => {
     let users = data.allUsers.filter((f) => {
-      if (!data.cachedValues.find((item) => item.key.includes(":" + f.id))) {
+      if (!data.cachedValues.some((item) => item.key.includes(":" + f.id))) {
         return false;
       }
       return true;
@@ -204,7 +203,7 @@ export default function AdminCacheRoute() {
 
   const availableTenants = () => {
     let tenants = data.allTenants.filter((f) => {
-      if (!data.cachedValues.find((item) => item.key.includes(":" + f.id) || item.key.includes(":" + f.slug))) {
+      if (!data.cachedValues.some((item) => item.key.includes(":" + f.id) || item.key.includes(":" + f.slug))) {
         return false;
       }
       return true;

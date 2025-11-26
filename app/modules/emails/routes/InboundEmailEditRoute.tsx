@@ -6,7 +6,6 @@ import { LoaderDataInboundEmailEdit } from "../loaders/inbound-email-edit";
 import SlideOverWideEmpty from "~/components/ui/slideOvers/SlideOverWideEmpty";
 
 export default function InboundEmailRoute() {
-  const { t } = useTranslation();
   const data = useLoaderData<LoaderDataInboundEmailEdit>();
   const navigate = useNavigate();
   const submit = useSubmit();
@@ -22,7 +21,7 @@ export default function InboundEmailRoute() {
     const imagesInBody: string[] = [];
     let htmlBody = data.item.htmlBody;
 
-    const regex = new RegExp(`<img.*?src="(.*?)"`, "g");
+    const regex = /<img.*?src="(.*?)"/g;
     let matches: RegExpExecArray | null;
     let times = 0;
     do {

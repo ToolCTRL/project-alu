@@ -29,7 +29,7 @@ export type KpiCardProps = {
   footnote?: string;
 };
 
-export function KpiCard({ title, value, subtitle, delta, badge, icon, tone = "accent", actions, sparkline, className, footnote }: KpiCardProps) {
+export function KpiCard({ title, value, subtitle, delta, badge, icon, tone = "accent", actions, sparkline, className, footnote }: Readonly<KpiCardProps>) {
   const { handleMouseMove, handleMouseLeave } = use3DTilt({ maxAngle: 10 });
   const sparklinePoints = useMemo(() => {
     if (!sparkline || sparkline.length === 0) {
@@ -51,7 +51,7 @@ export function KpiCard({ title, value, subtitle, delta, badge, icon, tone = "ac
   const trendTone = delta?.direction === "down" ? "text-rose-400" : "text-emerald-400";
 
   return (
-    <section
+    <div
       className={clsx(
         "relative overflow-hidden rounded-[var(--radius-lg,1.25rem)] border border-white/5 bg-card/80 p-5 text-card-foreground shadow-[var(--shadow-soft,0px_20px_40px_rgba(7,12,20,0.35))] ring-1 ring-white/5 transition-transform duration-200 will-change-transform",
         tone === "accent" ? "before:absolute before:inset-0 before:bg-[radial-gradient(circle_at_top,var(--color-accent,rgba(249,115,22,0.28)),transparent_60%)] before:opacity-50 before:content-['']" : "",
@@ -133,7 +133,7 @@ export function KpiCard({ title, value, subtitle, delta, badge, icon, tone = "ac
           </svg>
         </div>
       )}
-    </section>
+    </div>
   );
 }
 

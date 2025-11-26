@@ -4,7 +4,7 @@ import ApiKeyLogsConstants from "./ApiKeyLogsConstants";
 function getGroupByValues(searchParams: URLSearchParams) {
   const groupByValues = searchParams
     .getAll("groupBy")
-    .filter((x) => x)
+    .filter(Boolean)
     .sort((a, b) => a.localeCompare(b));
   const groupBy: Prisma.ApiKeyLogScalarFieldEnum[] = [];
   for (const param of groupByValues) {

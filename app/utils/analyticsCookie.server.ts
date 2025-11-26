@@ -1,5 +1,5 @@
 import { createCookieSessionStorage, redirect, Session } from "react-router";
-import { randomBytes } from "crypto";
+import { randomBytes } from "node:crypto";
 
 export type AnalyticsSession = {
   userAnalyticsId: string;

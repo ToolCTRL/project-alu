@@ -1,4 +1,3 @@
-import clsx from "clsx";
 import { Colors } from "~/application/enums/shared/Colors";
 import { cn } from "~/lib/utils";
 import { getBadgeColor, getBadgeColorDark } from "~/utils/shared/ColorUtils";
@@ -12,7 +11,7 @@ interface Props {
   darkMode?: boolean;
 }
 
-export default function SimpleBadge({ title, color, className, children, underline, darkMode }: Props) {
+export default function SimpleBadge({ title, color, className, children, underline, darkMode }: Readonly<Props>) {
   return (
     <div
       className={cn(

@@ -6,7 +6,7 @@ const useLocalStorage = <T>(key: string | undefined, initialValue: T): [T, (valu
   useEffect(() => {
     if (key) {
       // Retrieve from localStorage
-      const item = window.localStorage.getItem(key);
+      const item = globalThis.localStorage.getItem(key);
       if (item) {
         setStoredValue(JSON.parse(item));
       }
@@ -18,7 +18,7 @@ const useLocalStorage = <T>(key: string | undefined, initialValue: T): [T, (valu
     setStoredValue(value);
     if (key) {
       // Save to localStorage
-      window.localStorage.setItem(key, JSON.stringify(value));
+      globalThis.localStorage.setItem(key, JSON.stringify(value));
     }
   };
   return [storedValue, setValue];

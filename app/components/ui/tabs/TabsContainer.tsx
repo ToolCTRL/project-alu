@@ -1,7 +1,7 @@
 import { useState } from "react";
 import Tabs from "./Tabs";
 
-export default function TabsContainer({ items, selected }: { items: { name: string; render: React.ReactNode }[]; selected?: number }) {
+export default function TabsContainer({ items, selected }: { readonly items: { name: string; render: React.ReactNode }[]; readonly selected?: number }) {
   const [selectedTab, setSelectedTab] = useState(selected ?? 0);
   return (
     <div className="space-y-2">

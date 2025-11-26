@@ -19,7 +19,7 @@ import clsx from "clsx";
 import ColorBackgroundUtils from "~/utils/shared/colors/ColorBackgroundUtils";
 import { useTranslation } from "react-i18next";
 
-export default function KnowledgeBaseForm({ item, onDelete }: { item?: KnowledgeBaseDto; onDelete?: () => void }) {
+export default function KnowledgeBaseForm({ item, onDelete }: Readonly<{ item?: KnowledgeBaseDto; onDelete?: () => void }>) {
   const { t } = useTranslation();
   const navigation = useNavigation();
   const navigate = useNavigate();
@@ -36,12 +36,11 @@ export default function KnowledgeBaseForm({ item, onDelete }: { item?: Knowledge
   const [title, setTitle] = useState(item?.title || "");
   const [description, setDescription] = useState(item?.description || "");
   const [defaultLanguage, setDefaultLanguage] = useState<string | undefined>(item?.defaultLanguage || KnowledgeBaseUtils.defaultLanguage);
-  const [layout, setLayout] = useState<"list" | "articles" | "grid">(item?.layout || ("list" as any));
+  const [layout, setLayout] = useState<"list" | "articles" | "grid">(item?.layout || "list");
   const [color, setColor] = useState(item?.color || Colors.BLUE);
   const [enabled, setEnabled] = useState(item?.enabled ?? false);
-  // const [metatags, setMetatags] = useState<MetaTagsDto>(item?.metatags || []);
   const [languages, setLanguages] = useState<string[]>(item?.languages || [KnowledgeBaseUtils.defaultLanguage]);
-  const [logo, setLogo] = useState<"light" | "dark" | string>(item?.logo || "dark");
+  const [logo, setLogo] = useState<string>(item?.logo || "dark");
   const [seoImage, setSeoImage] = useState(item?.seoImage || "");
   const [links, setLinks] = useState<{ name: string; href: string; order: number }[]>(item?.links || []);
 
@@ -55,8 +54,8 @@ export default function KnowledgeBaseForm({ item, onDelete }: { item?: Knowledge
     <div>
       <Form method="post" className="inline-block w-full overflow-hidden p-1 text-left align-bottom sm:align-middle">
         <input type="hidden" name="action" value={item ? "edit" : "new"} hidden readOnly />
-        {links.map((linkItem, index) => {
-          return <input type="hidden" name="links[]" value={JSON.stringify(linkItem)} key={`link-${index}`} hidden readOnly />;
+        {links.map((linkItem) => {
+          return <input type="hidden" name="links[]" value={JSON.stringify(linkItem)} key={`link-${linkItem.href}`} hidden readOnly />;
         })}
 
         <div className="space-y-2">
@@ -192,12 +191,12 @@ function InputSlug({
   basePath,
   setSlug,
   setBasePath,
-}: {
+}: Readonly<{
   slug: string;
   basePath: string;
   setSlug: React.Dispatch<React.SetStateAction<string>>;
   setBasePath: React.Dispatch<React.SetStateAction<string | number | undefined>>;
-}) {
+}>) {
   const { t } = useTranslation();
   const [type, setType] = useState<"help" | "docs">(basePath === "/" ? "docs" : "help");
 

@@ -41,7 +41,7 @@ function renderRoleCell(
   disabled: boolean | undefined,
   onChange: (item: UserWithRoles, role: RoleWithPermissions, add: any) => void
 ) {
-  const existing = item.roles.find((f) => f.roleId === role.id && f.tenantId === tenantId) !== undefined;
+  const existing = item.roles.some((f) => f.roleId === role.id && f.tenantId === tenantId);
 
   return (
     <td key={role.name} className="text-muted-foreground whitespace-nowrap px-1 py-1 text-center text-sm">
@@ -64,7 +64,7 @@ function renderRoleCell(
   );
 }
 
-export default function UserRolesTable({ items, roles, className, onChange, tenantId = null, disabled, onRoleClick, actions }: Props) {
+export default function UserRolesTable({ items, roles, className, onChange, tenantId = null, disabled, onRoleClick, actions }: Readonly<Props>) {
   const { t } = useTranslation();
   const appOrAdminData = useAppOrAdminData();
 
@@ -129,7 +129,7 @@ export default function UserRolesTable({ items, roles, className, onChange, tena
                                       item={item}
                                       withAvatar={true}
                                       admin={item.admin}
-                                      href={!actions?.onEditRoute ? undefined : actions.onEditRoute(item)}
+                                      href={actions?.onEditRoute ? actions.onEditRoute(item) : undefined}
                                       roles={item.roles}
                                     />
                                   </td>
@@ -144,7 +144,7 @@ export default function UserRolesTable({ items, roles, className, onChange, tena
                                             onClick={() => (actions?.onImpersonate ? actions?.onImpersonate(item) : {})}
                                             className={clsx(
                                               "text-muted-foreground",
-                                              item.id !== appOrAdminData.user.id ? "hover:underline" : "cursor-not-allowed"
+                                              item.id === appOrAdminData.user.id ? "cursor-not-allowed" : "hover:underline"
                                             )}
                                           >
                                             {t("models.user.impersonate")}

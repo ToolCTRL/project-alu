@@ -4,6 +4,6 @@ interface Props {
   items: { title: string; routePath: string }[];
 }
 
-export default function DocBreadcrumb({ items }: Props) {
+export default function DocBreadcrumb({ items }: Readonly<Props>) {
   return <BreadcrumbSimple menu={[{ title: "Docs", routePath: "/docs" }, ...items]} />;
 }

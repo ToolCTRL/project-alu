@@ -7,12 +7,12 @@ import { useTranslation } from "react-i18next";
 let firstRender = false;
 
 interface Props {
-  loading?: boolean;
+  readonly loading?: boolean;
 }
-export default function FloatingLoader({ loading }: Props) {
+export default function FloatingLoader({ loading }: Readonly<Props>) {
   const { t } = useTranslation();
   const navigation = useNavigation();
-  const [, setWords] = useState<Array<string>>([]);
+  const [words, setWords] = useState<Array<string>>([]);
   const [pendingPath, setPendingPath] = useState("");
   const showLoader = useSpinDelay(Boolean(navigation.state !== "idle" || loading), {
     delay: 400,

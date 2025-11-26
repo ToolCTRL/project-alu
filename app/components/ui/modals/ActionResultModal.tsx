@@ -6,15 +6,15 @@ import { useTranslation } from "react-i18next";
 export type ActionResultDto = { success?: ResultMessageDto; error?: ResultMessageDto };
 type ResultMessageDto = { title?: string; description: string; closeText?: string };
 interface Props {
-  actionResult?: ActionResultDto;
-  className?: string;
-  actionData?: { error?: string; success?: string } | null;
-  showSuccess?: boolean;
-  showError?: boolean;
-  onClosed?: () => void;
+  readonly actionResult?: ActionResultDto;
+  readonly className?: string;
+  readonly actionData?: { error?: string; success?: string } | null;
+  readonly showSuccess?: boolean;
+  readonly showError?: boolean;
+  readonly onClosed?: () => void;
 }
 
-export default function ActionResultModal({ actionResult, className, actionData, showSuccess = true, showError = true, onClosed }: Props) {
+export default function ActionResultModal({ actionResult, className, actionData, showSuccess = true, showError = true, onClosed }: Readonly<Props>) {
   const { t } = useTranslation();
   const [data, setData] = useState<ResultMessageDto>();
   const [open, setOpen] = useState(false);

@@ -1,6 +1,5 @@
-import { ActionFunctionArgs, LoaderFunctionArgs, redirect, MetaFunction, useLoaderData } from "react-router";
+import { ActionFunctionArgs, LoaderFunctionArgs, redirect, MetaFunction, useLoaderData, Link, useLocation, useNavigate, useOutlet, useParams } from "react-router";
 import { useTranslation } from "react-i18next";
-import { Link, useLocation, useNavigate, useOutlet, useParams } from "react-router";
 import { getTranslations } from "~/locale/i18next.server";
 import { EntityViewWithTenantAndUser, getAllEntityViews } from "~/utils/db/entities/entityViews.db.server";
 import EditPageLayout from "~/components/ui/layouts/EditPageLayout";
@@ -108,7 +107,17 @@ export const action = async ({ request, params }: ActionFunctionArgs) => {
   }
 };
 
-export default function () {
+function getSlideOverTitle(params: Record<string, string | undefined>) {
+  if (params.id) {
+    return "Edit view";
+  }
+  if (params.entity) {
+    return `New ${params.entity} view`;
+  }
+  return "New view";
+}
+
+export default function AdminEntityViewsRoute() {
   const { t } = useTranslation();
   const data = useLoaderData<LoaderData>();
   const appOrAdminData = useAppOrAdminData();
@@ -192,7 +201,7 @@ export default function () {
       />
 
       <SlideOverWideEmpty
-        title={params.id ? "Edit view" : params.entity ? `New ${params.entity} view` : "New view"}
+        title={getSlideOverTitle(params)}
         open={!!outlet}
         onClose={() => {
           navigate("." + location.search, { replace: true });

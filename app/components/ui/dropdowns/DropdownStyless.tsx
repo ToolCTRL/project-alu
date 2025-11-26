@@ -12,13 +12,12 @@ interface Props {
     onClick?: () => void;
     disabled?: boolean;
   }[];
-  children?: ReactNode;
   className?: string;
   btnClassName?: string;
   onClick?: MouseEventHandler<HTMLButtonElement>;
 }
 
-export default function DropdownStyless({ title, options, right, onClick, className, btnClassName }: Props) {
+export default function DropdownStyless({ title, options, right, onClick, className, btnClassName }: Readonly<Props>) {
   return (
     <Menu as="div" className={clsx(className, "relative inline-block text-left")}>
       <div>
@@ -60,7 +59,7 @@ export default function DropdownStyless({ title, options, right, onClick, classN
           <div className="py-1">
             {options.map((item, idx) => {
               return (
-                <Menu.Item key={idx}>
+                <Menu.Item key={`dropdown-option-${item.title}-${idx}`}>
                   {({ active, close }) => (
                     <>
                       {item.onClick && (

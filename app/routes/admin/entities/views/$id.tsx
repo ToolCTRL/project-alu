@@ -1,5 +1,4 @@
-import { ActionFunction, LoaderFunctionArgs, redirect, useLoaderData } from "react-router";
-import { useNavigate } from "react-router";
+import { ActionFunction, LoaderFunctionArgs, redirect, useLoaderData, useNavigate } from "react-router";
 import { useEffect, useState } from "react";
 import EntityViewForm from "~/components/entities/views/EntityViewForm";
 import { getTranslations } from "~/locale/i18next.server";
@@ -70,7 +69,7 @@ export const action: ActionFunction = async ({ request, params }) => {
   }
 };
 
-export default function () {
+export default function AdminEntityViewEditRoute() {
   const data = useLoaderData<LoaderData>();
   const appOrAdminData = useAppOrAdminData();
   const navigate = useNavigate();

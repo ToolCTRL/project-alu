@@ -45,13 +45,17 @@ export async function getFormula(id: string): Promise<FormulaWithDetails | null>
 }
 
 export async function getFormulaWithLogs(id: string): Promise<FormulaWithDetails | null> {
-  return await db.formula.findUnique({
+  const formula = await db.formula.findUnique({
     where: { id },
     include: {
       components: { orderBy: { order: "asc" } },
       inProperties: { include: { entity: true } },
     },
   });
+  if (formula?.withLogs) {
+    // TODO: Fetch and return formula logs here
+  }
+  return formula;
 }
 
 export type CreateFormulaDto = {

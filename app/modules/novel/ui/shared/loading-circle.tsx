@@ -1,4 +1,4 @@
-export default function LoadingCircle({ dimensions }: { dimensions?: string }) {
+export default function LoadingCircle({ dimensions }: Readonly<{ dimensions?: string }>) {
   return (
     <svg
       aria-hidden="true"

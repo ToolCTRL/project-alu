@@ -17,11 +17,11 @@ export default function ShadcnSidebarLayout({
   children,
   layout,
   menuItems,
-}: {
+}: Readonly<{
   children: React.ReactNode;
   layout: "app" | "admin" | "docs";
   menuItems?: SideBarItem[];
-}) {
+}>) {
   const params = useParams();
   const title = useTitleData() ?? "";
 
@@ -32,7 +32,7 @@ export default function ShadcnSidebarLayout({
   const refreshNavigation = useFeatureFlag(UI_REFRESH_FLAG_GROUPS.navigation) ?? true;
   const navModern = true;
 
-  const [_onboardingModalOpen, setOnboardingModalOpen] = useState(false);
+  const [, setOnboardingModalOpen] = useState(false);
 
   function onOpenCommandPalette() {
     query.toggle();

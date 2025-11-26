@@ -87,12 +87,11 @@ export default function GroupForm({ item, allUsers, canUpdate = true, canDelete 
         />
 
         <div className="col-span-12 mt-2">
-          <label htmlFor="group-users" className="text-muted-foreground flex justify-between space-x-2 truncate text-xs font-medium">
-            <div className=" flex items-center justify-between space-x-1">
+          <div className="text-muted-foreground flex justify-between space-x-2 truncate text-xs font-medium">
+            <div className="flex items-center justify-between space-x-1">
               <div className="text-foreground text-sm font-bold">{t("models.user.plural")}</div>
-              <div className="sr-only">{t("models.user.plural")}</div>
             </div>
-          </label>
+          </div>
           <div className="mt-1">
             {users.map((user) => {
               return <input key={user} type="hidden" name="users[]" value={user} />;

@@ -1,6 +1,5 @@
 import { useTranslation } from "react-i18next";
-import { LoaderFunctionArgs, MetaFunction } from "react-router";
-import { useNavigate } from "react-router";
+import { LoaderFunctionArgs, MetaFunction, useNavigate } from "react-router";
 import FooterBlock from "~/modules/pageBlocks/components/blocks/marketing/footer/FooterBlock";
 import Logo from "~/components/brand/Logo";
 import { getTranslations } from "~/locale/i18next.server";
@@ -15,7 +14,7 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
 export const meta: MetaFunction<typeof loader> = ({ data }) => [{ title: data?.title }];
 
 interface Props {
-  withFooter?: boolean;
+  readonly withFooter?: boolean;
 }
 export default function Page401({ withFooter = true }: Props) {
   const { t } = useTranslation();

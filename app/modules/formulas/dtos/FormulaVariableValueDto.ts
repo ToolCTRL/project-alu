@@ -6,10 +6,10 @@ import { UserWithDetails } from "~/utils/db/users.db.server";
 export type FormulaVariableValueDto = {
   plain?: {
     variable: string;
-    textValue?: string | undefined;
-    numberValue?: number | undefined;
-    dateValue?: Date | undefined;
-    booleanValue?: boolean | undefined;
+    textValue?: string;
+    numberValue?: number;
+    dateValue?: Date;
+    booleanValue?: boolean;
   };
   row?: {
     entity: EntityWithDetails;

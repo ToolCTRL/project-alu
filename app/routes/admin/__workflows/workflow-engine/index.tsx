@@ -5,9 +5,10 @@ import WorkflowEngineIndexView from "~/modules/workflowEngine/routes/workflow-en
 
 export const meta: MetaFunction<typeof loader> = ({ data }) => data?.metatags || [];
 export const loader = (args: LoaderFunctionArgs) => WorkflowEngineIndexApi.loader(args);
-// export const action = (args: ActionFunctionArgs) => WorkflowEngineIndexApi.action(args);
 
-export default () => <WorkflowEngineIndexView />;
+export default function WorkflowEngineIndexRoute() {
+  return <WorkflowEngineIndexView />;
+}
 
 export function ErrorBoundary() {
   return <ServerError />;

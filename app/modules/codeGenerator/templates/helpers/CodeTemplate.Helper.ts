@@ -4,15 +4,13 @@ import CodeGeneratorPropertiesHelper from "../../utils/CodeGeneratorPropertiesHe
 
 function generate({ entity }: { entity: EntityWithDetails }): string {
   const { capitalized } = CodeGeneratorHelper.getNames(entity);
-  const imports: string[] = [];
-  imports.push(`import { EntityWithDetails } from "~/utils/db/entities/entities.db.server";
+  const imports: string[] = [
+    `import { EntityWithDetails } from "~/utils/db/entities/entities.db.server";
 import { RowWithDetails } from "~/utils/db/entities/rows.db.server";
 import FormHelper from "~/utils/helpers/FormHelper";
-import RowValueHelper from "~/utils/helpers/RowValueHelper";`);
-  imports.push(`import { ${capitalized}Dto } from "../dtos/${capitalized}Dto";`);
-  // if (entity.properties.some((p) => p.type === PropertyType.MEDIA)) {
-  //   imports.push(`import { MediaDto } from "~/application/dtos/entities/MediaDto";`);
-  // }
+import RowValueHelper from "~/utils/helpers/RowValueHelper";`,
+    `import { ${capitalized}Dto } from "../dtos/${capitalized}Dto";`
+  ];
 
   let template = `
 function rowToDto({ entity, row }: { entity: EntityWithDetails; row: RowWithDetails }): ${capitalized}Dto {

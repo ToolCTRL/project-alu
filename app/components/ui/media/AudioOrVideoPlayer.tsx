@@ -14,13 +14,19 @@ const AudioOrVideoPlayer = ({ url, type }: { url: string; type: "audio" | "video
     },
   }));
 
+  const renderMedia = () => {
+    if (type === "video") {
+      return <video ref={videoRef} src={url} controls className="border-border bg-secondary/90 w-full rounded-md border shadow-2xs"><track kind="captions" /></video>;
+    }
+    if (type === "audio") {
+      return <audio ref={audioRef} src={url} controls className="border-border bg-secondary/90 w-full rounded-md border shadow-2xs"><track kind="captions" /></audio>;
+    }
+    return null;
+  };
+
   return (
     <div className="w-full">
-      {type === "video" ? (
-        <video ref={videoRef} src={url} controls className="border-border bg-secondary/90 w-full rounded-md border shadow-2xs" />
-      ) : type === "audio" ? (
-        <audio ref={audioRef} src={url} controls className="border-border bg-secondary/90 w-full rounded-md border shadow-2xs" />
-      ) : null}
+      {renderMedia()}
     </div>
   );
 };

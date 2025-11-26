@@ -106,8 +106,8 @@ async function workflowToDto(
     block.variableName = variableName;
     block.index = index;
   });
-  workflow.blocks = workflow.blocks.sort((a, b) => a.index - b.index);
-  workflow.inputExamples = workflow.inputExamples.sort((a, b) => {
+  workflow.blocks = workflow.blocks.toSorted((a, b) => a.index - b.index);
+  workflow.inputExamples = workflow.inputExamples.toSorted((a, b) => {
     if (a.createdAt && b.createdAt) {
       return a.createdAt > b.createdAt ? 1 : -1;
     }
@@ -184,12 +184,12 @@ async function getNextUntiledWorkflowName({ tenantId }: { tenantId: string | nul
   });
 
   let workflowName = "Untitled workflow 1";
-  const existingWorkflowNames = allWorkflowNames.map((f) => f.name);
-  if (!existingWorkflowNames.includes(workflowName)) {
+  const existingWorkflowNames = new Set(allWorkflowNames.map((f) => f.name));
+  if (!existingWorkflowNames.has(workflowName)) {
     return workflowName;
   }
   let i = 2;
-  while (existingWorkflowNames.includes(workflowName)) {
+  while (existingWorkflowNames.has(workflowName)) {
     workflowName = `Untitled workflow ${i}`;
     i++;
     if (i > 1000) {
@@ -240,7 +240,7 @@ async function addBlock({
   }
   let inputData: { [key: string]: any } = {};
   workflowBlock.inputs.forEach((input) => {
-    let blockInput = input as WorkflowBlockInput;
+    const blockInput = input;
     if (blockInput.defaultValue !== undefined) {
       inputData[blockInput.name] = blockInput.defaultValue;
     }
@@ -319,13 +319,11 @@ async function updateConditionsGroups(block: WorkflowBlockDto, conditionGroups: 
       workflowBlockId: block.id,
     },
   });
+  const sortedGroups = conditionGroups.toSorted((a, b) => a.index - b.index);
   await Promise.all(
-    conditionGroups
-      .sort((a, b) => a.index - b.index)
-      .map(async (group, groupIndex) => {
-        const conditions = group.conditions
-          .sort((a, b) => a.index - b.index)
-          .map((condition, conditionIndex) => {
+    sortedGroups.map(async (group, groupIndex) => {
+        const sortedConditions = group.conditions.toSorted((a, b) => a.index - b.index);
+        const conditions = sortedConditions.map((condition, conditionIndex) => {
             return {
               index: conditionIndex,
               variable: condition.variable,

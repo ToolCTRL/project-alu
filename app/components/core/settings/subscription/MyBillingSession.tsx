@@ -1,7 +1,7 @@
 import { ExternalLinkIcon } from "lucide-react";
 
 interface Props {
-  onClick: () => void;
+  readonly onClick: () => void;
 }
 
 export default function MyBillingSession({ onClick }: Props) {

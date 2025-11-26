@@ -12,7 +12,7 @@ interface Props {
   className?: string;
 }
 
-export default function OpenErrorModal({ title, description, closeText, open, onClose, className }: Props) {
+export default function OpenErrorModal({ title, description, closeText, open, onClose, className }: Readonly<Props>) {
   const { t } = useTranslation();
   const [data, setData] = useState<{ title: string; description: string; closeText?: string }>();
 

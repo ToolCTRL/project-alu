@@ -21,30 +21,30 @@ export namespace OutboundEmails_List {
     const tenantId = await getTenantIdOrNull({ request, params });
     const emailSenders = await getAllEmailSenders(tenantId);
     const campaigns = await getAllCampaigns(tenantId);
+    const senderOptions = emailSenders.map((i) => {
+      return {
+        value: i.id,
+        name: i.fromEmail + " (" + i.provider + ")",
+      };
+    });
+    const campaignOptions = campaigns.map((i) => {
+      return {
+        value: i.id,
+        name: i.name,
+      };
+    });
     const filterableProperties: FilterablePropertyDto[] = [
       {
         name: "senderId",
         title: "Sender",
-        options: [
-          ...emailSenders.map((i) => {
-            return {
-              value: i.id,
-              name: i.fromEmail + " (" + i.provider + ")",
-            };
-          }),
-        ],
+        options: senderOptions,
       },
       {
         name: "campaignId",
         title: "Campaign",
         options: [
           { name: "{Preview}", value: "null" },
-          ...campaigns.map((i) => {
-            return {
-              value: i.id,
-              name: i.name,
-            };
-          }),
+          ...campaignOptions,
         ],
       },
     ];

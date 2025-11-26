@@ -10,14 +10,12 @@ export const TiptapEditorProps: EditorProps = {
       // prevent default event listeners from firing when slash command is active
       if (["ArrowUp", "ArrowDown", "Enter"].includes(event.key)) {
         const slashCommand = document.querySelector("#slash-command");
-        if (slashCommand) {
-          return true;
-        }
+        return !!slashCommand;
       }
     },
   },
   handlePaste: (view, event, _slice) => {
-    if (event.clipboardData && event.clipboardData.files && event.clipboardData.files[0]) {
+    if (event.clipboardData?.files?.[0]) {
       event.preventDefault();
       const file = event.clipboardData.files[0];
       return handleImageUpload(file, view, event);
@@ -25,7 +23,7 @@ export const TiptapEditorProps: EditorProps = {
     return false;
   },
   handleDrop: (view, event, _slice, moved) => {
-    if (!moved && event.dataTransfer && event.dataTransfer.files && event.dataTransfer.files[0]) {
+    if (!moved && event.dataTransfer?.files?.[0]) {
       event.preventDefault();
       const file = event.dataTransfer.files[0];
       return handleImageUpload(file, view, event);

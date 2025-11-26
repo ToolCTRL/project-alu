@@ -1,5 +1,4 @@
-import { LoaderFunctionArgs, MetaFunction } from "react-router";
-import { Outlet } from "react-router";
+import { LoaderFunctionArgs, MetaFunction, Outlet } from "react-router";
 import { useTranslation } from "react-i18next";
 import ServerError from "~/components/ui/errors/ServerError";
 import TagsIcon from "~/components/ui/icons/crud/TagsIcon";
@@ -25,7 +24,7 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
 
 export const meta: MetaFunction<typeof loader> = ({ data }) => [{ title: data?.title }];
 
-export default () => {
+export default function AdminPages() {
   const { t } = useTranslation();
   return (
     <SidebarIconsLayout
@@ -57,7 +56,7 @@ export default () => {
       <Outlet />
     </SidebarIconsLayout>
   );
-};
+}
 
 export function ErrorBoundary() {
   return <ServerError />;

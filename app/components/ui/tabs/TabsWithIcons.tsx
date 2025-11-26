@@ -17,7 +17,7 @@ interface Props {
   justify?: "start" | "center" | "end" | "between";
   breakpoint?: "sm" | "md" | "lg" | "xl" | "2xl";
 }
-export default function TabsWithIcons({ tabs, className, justify, breakpoint = "md" }: Props) {
+export default function TabsWithIcons({ tabs, className, justify, breakpoint = "md" }: Readonly<Props>) {
   const { t } = useTranslation();
   const navigate = useNavigate();
   return (
@@ -76,40 +76,43 @@ export default function TabsWithIcons({ tabs, className, justify, breakpoint = "
             )}
             aria-label="Tabs"
           >
-            {tabs.map((tab, idx) => (
-              <Fragment key={idx}>
-                {tab.href && (
-                  <Link
-                    key={tab.name}
-                    to={tab.href}
-                    className={clsx(
-                      tab.current ? "border-border" : "hover:border-border text-muted-foreground hover:text-foreground/80 border-transparent",
-                      "group inline-flex items-center space-x-2 border-b-2 px-1 py-2 text-sm font-medium",
-                      tab.className
-                    )}
-                    aria-current={tab.current ? "page" : undefined}
-                  >
-                    {tab.icon}
-                    <div className="truncate">{tab.name}</div>
-                  </Link>
-                )}
-                {tab.onClick && (
-                  <button
-                    type="button"
-                    onClick={tab.onClick}
-                    className={clsx(
-                      tab.current ? "border-border" : "hover:border-border text-muted-foreground hover:text-foreground/80 border-transparent",
-                      "group inline-flex w-full items-center space-x-2 border-b-2 px-1 py-2 text-sm font-medium",
-                      tab.className
-                    )}
-                    aria-current={tab.current ? "page" : undefined}
-                  >
-                    {tab.icon}
-                    <div className="truncate">{tab.name}</div>
-                  </button>
-                )}
-              </Fragment>
-            ))}
+            {tabs.map((tab, idx) => {
+              const tabKey = tab.href || tab.name || `tab-icon-${idx}`;
+              return (
+                <Fragment key={tabKey}>
+                  {tab.href && (
+                    <Link
+                      key={tab.name}
+                      to={tab.href}
+                      className={clsx(
+                        tab.current ? "border-border" : "hover:border-border text-muted-foreground hover:text-foreground/80 border-transparent",
+                        "group inline-flex items-center space-x-2 border-b-2 px-1 py-2 text-sm font-medium",
+                        tab.className
+                      )}
+                      aria-current={tab.current ? "page" : undefined}
+                    >
+                      {tab.icon}
+                      <div className="truncate">{tab.name}</div>
+                    </Link>
+                  )}
+                  {tab.onClick && (
+                    <button
+                      type="button"
+                      onClick={tab.onClick}
+                      className={clsx(
+                        tab.current ? "border-border" : "hover:border-border text-muted-foreground hover:text-foreground/80 border-transparent",
+                        "group inline-flex w-full items-center space-x-2 border-b-2 px-1 py-2 text-sm font-medium",
+                        tab.className
+                      )}
+                      aria-current={tab.current ? "page" : undefined}
+                    >
+                      {tab.icon}
+                      <div className="truncate">{tab.name}</div>
+                    </button>
+                  )}
+                </Fragment>
+              );
+            })}
           </nav>
         </div>
       </div>

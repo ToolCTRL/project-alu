@@ -4,7 +4,7 @@ import InputCheckboxWithDescription from "~/components/ui/input/InputCheckboxWit
 import InputRadioGroup from "~/components/ui/input/InputRadioGroup";
 import { defaultBlogPostsBlock, BlogPostsBlockDto, BlogPostsBlockStyle, BlogPostsBlockStyles } from "./BlogPostsBlockUtils";
 
-export default function BlogPostsBlockForm({ item, onUpdate }: { item?: BlogPostsBlockDto; onUpdate: (item: BlogPostsBlockDto) => void }) {
+export default function BlogPostsBlockForm({ item, onUpdate }: readonly { readonly item?: BlogPostsBlockDto; readonly onUpdate: (item: BlogPostsBlockDto) => void }) {
   const [state, setState] = useState<BlogPostsBlockDto>(item || defaultBlogPostsBlock);
   useEffect(() => {
     onUpdate(state);

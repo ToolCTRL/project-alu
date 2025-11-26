@@ -25,7 +25,7 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
 
 export const meta: MetaFunction<typeof loader> = ({ data }) => [{ title: data?.title }];
 
-export default () => {
+export default function AdminFeatureFlagsRoute() {
   const { t } = useTranslation();
   return (
     <SidebarIconsLayout
@@ -56,12 +56,11 @@ export default () => {
       <IndexPageLayout>
         <ErrorBanner title="Pro feature 🚀" text="">
           Dynamic feature flags management is only available in SaasRock Pro. But you can see how it works by clicking{" "}
-          <a href="/?debugFlag=maintenance" target="_blank" className="underline">
+          <a href="/?debugFlag=maintenance" target="_blank" rel="noreferrer" className="underline">
             here
-          </a>
-          .
+          </a>.
         </ErrorBanner>
       </IndexPageLayout>
     </SidebarIconsLayout>
   );
-};
+}

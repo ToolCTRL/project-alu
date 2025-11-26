@@ -17,10 +17,10 @@ export default function JsonPropertyValuesInput({
   prefix = "attributes",
   properties,
   attributes,
-}: {
-  prefix?: string;
-  properties: JsonPropertyDto[] | JsonValue | null;
-  attributes: JsonPropertiesValuesDto | null;
+}: readonly {
+  readonly prefix?: string;
+  readonly properties: JsonPropertyDto[] | JsonValue | null;
+  readonly attributes: JsonPropertiesValuesDto | null;
 }) {
   let propertiesObj = properties as JsonPropertyDto[] | null;
   if (!propertiesObj) {
@@ -54,7 +54,7 @@ export default function JsonPropertyValuesInput({
   );
 }
 
-function GroupInputs({ prefix, properties, attributes }: { prefix: string; properties: JsonPropertyDto[]; attributes: JsonPropertiesValuesDto | null }) {
+function GroupInputs({ prefix, properties, attributes }: readonly { readonly prefix: string; readonly properties: JsonPropertyDto[]; readonly attributes: JsonPropertiesValuesDto | null }) {
   let propertiesObj = properties as JsonPropertyDto[] | null;
   return (
     <Fragment>
@@ -69,7 +69,7 @@ function GroupInputs({ prefix, properties, attributes }: { prefix: string; prope
   );
 }
 
-function JsonPropertyInput({ prefix, property, attributes }: { prefix: string; property: JsonPropertyDto; attributes: JsonPropertiesValuesDto | null }) {
+function JsonPropertyInput({ prefix, property, attributes }: readonly { readonly prefix: string; readonly property: JsonPropertyDto; readonly attributes: JsonPropertiesValuesDto | null }) {
   const { t } = useTranslation();
   let value: JsonValue | undefined = attributes ? attributes[property.name] : undefined;
 
@@ -114,7 +114,7 @@ function JsonPropertyInput({ prefix, property, attributes }: { prefix: string; p
       );
     }
     case "date": {
-      let dateValue = !value ? undefined : new Date(value as string);
+      let dateValue = value ? new Date(value as string) : undefined;
       const defaultDateValue = property.defaultValue === undefined ? undefined : new Date(property.defaultValue as string);
       if (dateValue === undefined && defaultDateValue !== undefined) {
         dateValue = defaultDateValue;
@@ -143,6 +143,7 @@ function JsonPropertyInput({ prefix, property, attributes }: { prefix: string; p
       if (stringValue === undefined && defaultStringValue !== undefined) {
         stringValue = defaultStringValue;
       }
+      const selectOptions = property.options?.filter((f) => f.value) || [];
       return (
         <div>
           <InputSelect
@@ -150,7 +151,7 @@ function JsonPropertyInput({ prefix, property, attributes }: { prefix: string; p
             title={t(property.title)}
             defaultValue={stringValue}
             required={property.required}
-            options={property.options?.filter((f) => f.value) || []}
+            options={selectOptions}
             placeholder={`${t("shared.select")}...`}
           />
         </div>
@@ -159,7 +160,7 @@ function JsonPropertyInput({ prefix, property, attributes }: { prefix: string; p
     case "multiselect": {
       let arrValue = value === undefined ? [] : (value as Array<string>);
       const defaultArrValue = property.defaultValue === undefined ? [] : (property.defaultValue as Array<string>);
-      if (!value && defaultArrValue.length > 0) {
+      if (value === undefined && defaultArrValue.length > 0) {
         arrValue = defaultArrValue;
       }
       return <JsonMultiSelectInput prefix={prefix} property={property} initial={arrValue} />;
@@ -216,7 +217,7 @@ function JsonPropertyInput({ prefix, property, attributes }: { prefix: string; p
   }
 }
 
-function JsonMultiSelectInput({ prefix, property, initial }: { prefix: string; property: JsonPropertyDto; initial: string[] }) {
+function JsonMultiSelectInput({ prefix, property, initial }: readonly { readonly prefix: string; readonly property: JsonPropertyDto; readonly initial: string[] }) {
   const { t } = useTranslation();
   const [actualValue, setActualValue] = useState<(string | number)[]>(initial);
   return (
@@ -236,7 +237,7 @@ function JsonMultiSelectInput({ prefix, property, initial }: { prefix: string; p
   );
 }
 
-function ContentForm({ prefix, property, value }: { prefix: string; property: JsonPropertyDto; value: string | undefined }) {
+function ContentForm({ prefix, property, value }: readonly { readonly prefix: string; readonly property: JsonPropertyDto; readonly value: string | undefined }) {
   const [content, setContent] = useState(value);
   const [contentType, setContentType] = useState("wysiwyg");
 

@@ -1,6 +1,6 @@
 import FooterBlock from "~/modules/pageBlocks/components/blocks/marketing/footer/FooterBlock";
 import HeaderBlock from "~/modules/pageBlocks/components/blocks/marketing/header/HeaderBlock";
-import { LoaderFunctionArgs, MetaFunction, useLoaderData } from "react-router";
+import { Link, LoaderFunctionArgs, MetaFunction, useLoaderData } from "react-router";
 import { useTranslation } from "react-i18next";
 import ChangelogIssues, { ChangelogItem } from "~/components/changelog/ChangelogIssues";
 import UrlUtils from "~/utils/app/UrlUtils";
@@ -10,7 +10,6 @@ import { PageLoaderData } from "~/modules/pageBlocks/dtos/PageBlockData";
 import ButtonPrimary from "~/components/ui/buttons/ButtonPrimary";
 import { defaultChangelog } from "~/modules/pageBlocks/utils/defaultChangelog";
 import { getTranslations } from "~/locale/i18next.server";
-import { Link } from "react-router";
 
 export const meta: MetaFunction<typeof loader> = ({ data }) => data?.metatags || [];
 
@@ -47,9 +46,9 @@ export default function ChangelogRoute() {
                 <div className="mx-auto mt-12">
                   <div className="prose dark:prose-dark text-sm">
                     <div className="border-border relative border-l">
-                      {data.items.map((item, idx) => {
+                      {data.items.map((item) => {
                         return (
-                          <div key={idx} className="mb-10 ml-4">
+                          <div key={UrlUtils.slugify(item.date)} className="mb-10 ml-4">
                             <div className="border-border bg-background absolute -left-1.5 mt-1.5 h-3 w-3 rounded-full border"></div>
                             <time id={UrlUtils.slugify(item.date)} className="text-muted-foreground text-sm font-normal leading-none">
                               {item.date}{" "}
@@ -71,9 +70,9 @@ export default function ChangelogRoute() {
                               <div>
                                 <h3 className="text-sm font-semibold ">Videos</h3>
                                 <ul>
-                                  {item.videos.map((video, idx) => {
+                                  {item.videos.map((video) => {
                                     return (
-                                      <li key={idx}>
+                                      <li key={video.url}>
                                         <a href={video.url} target={video.target} className="text-primary not-prose hover:underline">
                                           🎥 {video.title}
                                         </a>

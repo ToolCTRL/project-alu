@@ -24,21 +24,6 @@ interface InnerComponentProps {
   readonly idx: number;
 }
 
-interface InnerCurrencyPriceProps {
-  readonly currency: string;
-  readonly idx: number;
-  readonly allTiers: { from: number; to?: number }[];
-  readonly prices: Array<{
-    currency: string;
-    from: number;
-    to?: number;
-    perUnitPrice?: number;
-    flatFeePrice?: number;
-  }>;
-  readonly setPerUnitPrice: (idx: number, currency: string, price: number) => void;
-  readonly setFlatFeePrice: (idx: number, currency: string, price: number) => void;
-}
-
 function FromTitleCell({ tiersMode, idx }: InnerComponentProps) {
   return <>{tiersMode === "graduated" ? <div>{idx === 0 ? <div>For the first</div> : <div>For the next</div>}</div> : <div>Total units</div>}</>;
 }
@@ -62,17 +47,6 @@ function updateNewTierLimits(tiers: { from: number; to?: number }[]) {
     }
   }
   return tiers;
-}
-
-function CurrencyPricePerUnitColumn({ currency, idx, allTiers, prices, setPerUnitPrice }: {
-  readonly currency: { name: string; value: string; disabled?: boolean };
-  readonly idx: number;
-  readonly allTiers: { from: number; to?: number }[];
-  readonly prices: Array<{ currency: string; from: number; to?: number; perUnitPrice?: number; flatFeePrice?: number }>;
-  readonly setPerUnitPrice: (idx: number, currency: string, price: number) => void;
-}) {
-  // Return nothing, the column is handled by the parent
-  return null;
 }
 
 export default function UsageBasedPricesUnit({ item, onUpdate, disabled }: Readonly<Props>) {
@@ -135,7 +109,7 @@ export default function UsageBasedPricesUnit({ item, onUpdate, disabled }: Reado
         name: "fromTitle",
         title: "",
         value: (_) => "",
-        formattedValue: (_, idx) => <FromTitleCell tiersMode={tiersMode} idx={idx} />,
+        formattedValue: FromTitleCell,
       },
       {
         name: "from",
@@ -150,7 +124,7 @@ export default function UsageBasedPricesUnit({ item, onUpdate, disabled }: Reado
         name: "to",
         title: "To",
         value: (e) => (e.to ? e.to : "∞"),
-        formattedValue: (e) => <ToValueCell to={e.to} />,
+        formattedValue: ToValueCell,
         className: "w-24",
       },
     ];

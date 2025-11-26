@@ -12,7 +12,7 @@ interface Props {
   children: ReactNode;
   className?: string;
 }
-export default function NewPageLayout({ title, menu, buttons, children, className }: Props) {
+export default function NewPageLayout({ title, menu, buttons, children, className }: Readonly<Props>) {
   return (
     <div className={cn(className, "mx-auto max-w-2xl space-y-3 px-4 pb-6 pt-3 sm:px-6 lg:px-8")}>
       <div className="space-y-1">

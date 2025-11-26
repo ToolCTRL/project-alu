@@ -1,6 +1,5 @@
-import { ActionFunctionArgs, LoaderFunctionArgs, MetaFunction, useLoaderData } from "react-router";
+import { ActionFunctionArgs, LoaderFunctionArgs, MetaFunction, useLoaderData, Link, useNavigate, useOutlet, useParams, useSubmit } from "react-router";
 import { useTranslation } from "react-i18next";
-import { Link, useNavigate, useOutlet, useParams, useSubmit } from "react-router";
 import TableSimple from "~/components/ui/tables/TableSimple";
 import { getTranslations } from "~/locale/i18next.server";
 import { verifyUserHasPermission } from "~/utils/helpers/.server/PermissionsService";
@@ -66,7 +65,7 @@ export const action = async ({ request }: ActionFunctionArgs) => {
 
 export const meta: MetaFunction<typeof loader> = ({ data }) => [{ title: data?.title }];
 
-export default function () {
+export default function AccountTypesList() {
   const { t } = useTranslation();
   const data = useLoaderData<LoaderData>();
   const rootData = useRootData();

@@ -5,8 +5,7 @@ import { TenantUserType } from "~/application/enums/tenants/TenantUserType";
 import { AdminSidebar } from "~/application/sidebar/AdminSidebar";
 import { AppSidebar } from "~/application/sidebar/AppSidebar";
 import SidebarIcon from "~/components/layouts/icons/SidebarIcon";
-import { LoaderFunctionArgs, MetaFunction } from "react-router";
-import { useParams } from "react-router";
+import { LoaderFunctionArgs, MetaFunction, useParams } from "react-router";
 import { getTranslations } from "~/locale/i18next.server";
 import { useAdminData } from "~/utils/data/useAdminData";
 import InputSearch from "~/components/ui/input/InputSearch";
@@ -54,8 +53,8 @@ export default function AdminNavigationRoute() {
 
     setItems(allItems);
 
-    const roleKeys = Object.keys(TenantUserType).filter((key) => !isNaN(Number(key)));
-    setTenantUserTypes(roleKeys.map((f) => Number(f)));
+    const roleKeys = Object.keys(TenantUserType).filter((key) => !Number.isNaN(Number(key)));
+    setTenantUserTypes(roleKeys.map(Number));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -109,10 +108,10 @@ export default function AdminNavigationRoute() {
                             <th className="border-border text-muted-foreground select-none truncate border px-4 py-2 text-left text-xs font-bold tracking-wider">
                               {t("admin.navigation.sysadmin")}
                             </th>
-                            {tenantUserTypes.map((role, idx) => {
+                            {tenantUserTypes.map((role) => {
                               return (
                                 <th
-                                  key={idx}
+                                  key={role}
                                   scope="col"
                                   className="border-border text-muted-foreground select-none truncate border px-4 py-2 text-left text-xs font-bold tracking-wider"
                                 >
@@ -123,9 +122,9 @@ export default function AdminNavigationRoute() {
                           </tr>
                         </thead>
                         <tbody className="divide-border bg-background divide-y">
-                          {items.map((item, idx) => {
+                          {items.map((item) => {
                             return (
-                              <tr key={idx}>
+                              <tr key={item.path}>
                                 <td className="border-border w-10 whitespace-nowrap border-b border-l border-t px-4 py-2 text-sm">
                                   {item.icon && <SidebarIcon className="mx-auto h-5 w-5 text-slate-700" item={item} />}
                                 </td>

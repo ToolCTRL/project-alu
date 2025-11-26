@@ -8,11 +8,14 @@ interface Props {
   currencySymbol?: string;
 }
 export default function RowRangeNumberCell({ value, format, currencySymbol }: Readonly<Props>) {
+  const minValue = value?.numberMin !== undefined && value?.numberMin !== null ? Number(value.numberMin) : undefined;
+  const maxValue = value?.numberMax !== undefined && value?.numberMax !== null ? Number(value.numberMax) : undefined;
+
   return (
     <div className="flex items-center space-x-1">
-      <RowNumberCell value={Number(value?.numberMin) ?? undefined} format={format} currencySymbol={currencySymbol} />
+      <RowNumberCell value={minValue} format={format} currencySymbol={currencySymbol} />
       <div className="text-muted-foreground">-</div>
-      <RowNumberCell value={Number(value?.numberMax) ?? undefined} format={format} currencySymbol={currencySymbol} />
+      <RowNumberCell value={maxValue} format={format} currencySymbol={currencySymbol} />
     </div>
   );
 }

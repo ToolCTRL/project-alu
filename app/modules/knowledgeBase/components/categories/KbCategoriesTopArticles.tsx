@@ -5,7 +5,7 @@ import { KnowledgeBaseDto } from "../../dtos/KnowledgeBaseDto";
 import ColorTextUtils from "~/utils/shared/colors/ColorTextUtils";
 import ColorGroupHoverUtils from "~/utils/shared/colors/ColorGroupHoverUtils";
 
-export default function KbCategoriesTopArticles({ kb, items }: { kb: KnowledgeBaseDto; items: KbCategoryDto[] }) {
+export default function KbCategoriesTopArticles({ kb, items }: Readonly<{ kb: KnowledgeBaseDto; items: KbCategoryDto[] }>) {
   function getTopArticles(item: KbCategoryDto) {
     return item.articles.slice(0, 3);
   }

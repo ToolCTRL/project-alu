@@ -10,9 +10,9 @@ import { EntityWithDetails } from "~/utils/db/entities/entities.db.server";
 import { EntityRelationshipWithDetails } from "~/utils/db/entities/entityRelationships.db.server";
 
 interface Props {
-  entity: EntityWithDetails;
-  entities: EntityWithDetails[];
-  item?: EntityRelationshipWithDetails;
+  readonly entity: EntityWithDetails;
+  readonly entities: EntityWithDetails[];
+  readonly item?: EntityRelationshipWithDetails;
 }
 
 export default function EntityRelationshipForm({ entity, entities, item }: Props) {

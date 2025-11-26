@@ -5,4 +5,6 @@ import { Campaigns_New } from "~/modules/emailMarketing/routes/Campaigns_New";
 export const loader = (args: LoaderFunctionArgs) => Campaigns_New.loader(args);
 export const action: ActionFunction = (args) => Campaigns_New.action(args);
 
-export default () => <CampaignsNewRoute />;
+export default function CampaignsNew() {
+  return <CampaignsNewRoute />;
+}

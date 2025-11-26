@@ -11,14 +11,14 @@ export default function ShowPayloadModalButton({
   withCopy = true,
   className,
   size = "xl",
-}: {
+}: Readonly<{
   payload: string;
   title?: string;
   description?: React.ReactNode;
   withCopy?: boolean;
   className?: string;
   size?: "sm" | "md" | "lg" | "xl" | "2xl" | "3xl" | "4xl" | "5xl" | "6xl" | "7xl" | "full";
-}) {
+}>) {
   const { t } = useTranslation();
   const [open, setOpen] = useState(false);
 
@@ -28,7 +28,8 @@ export default function ShowPayloadModalButton({
     }
     try {
       return JSON.stringify(JSON.parse(payload ?? "{}"), null, "\t");
-    } catch (e) {
+    } catch (error) {
+      console.error("Failed to parse payload:", error);
       return JSON.stringify(payload, null, "\t");
     }
   }
@@ -41,7 +42,6 @@ export default function ShowPayloadModalButton({
             onClick={() => setOpen(true)}
             className={clsx(className, "hover:border-theme-400 border-border border-b border-dotted hover:border-dashed")}
           >
-            {/* {t("models.log.details")} */}
             {description ?? JSON.stringify(payload)}
           </button>
         )}

@@ -2,10 +2,10 @@ import { useEffect, useState } from "react";
 import ButtonSecondary from "~/components/ui/buttons/ButtonSecondary";
 
 interface Props {
-  text: string;
-  prompt: string;
-  onResponse: (response: string) => void;
-  onError: (error: string) => void;
+  readonly text: string;
+  readonly prompt: string;
+  readonly onResponse: (response: string) => void;
+  readonly onError: (error: string) => void;
 }
 export default function ChatGptStreaming({ text, prompt, onResponse, onError }: Props) {
   const [response, setResponse] = useState<string>("");

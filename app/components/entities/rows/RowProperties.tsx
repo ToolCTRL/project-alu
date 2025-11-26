@@ -10,6 +10,14 @@ import { RowValueDto } from "~/application/dtos/entities/RowValueDto";
 import { getFormProperties } from "~/utils/helpers/PropertyHelper";
 import { RowDto } from "~/modules/rows/repositories/RowDto";
 
+function getPropertyColumnSpan(property: PropertyWithDetails) {
+  const columns = PropertyAttributeHelper.getPropertyAttributeValue_Number(property, PropertyAttributeName.Columns);
+  if (!columns || columns === undefined) {
+    return "col-span-12";
+  }
+  return `col-span-${columns}`;
+}
+
 export default function RowProperties({
   entity,
   item,
@@ -17,11 +25,11 @@ export default function RowProperties({
   properties,
   gridColumns,
 }: {
-  entity: EntityWithDetails;
-  item: RowDto | null;
-  readOnly?: boolean;
-  properties?: string[];
-  gridColumns?: "grid-cols-4" | "grid-cols-3" | "grid-cols-2";
+  readonly entity: EntityWithDetails;
+  readonly item: RowDto | null;
+  readonly readOnly?: boolean;
+  readonly properties?: string[];
+  readonly gridColumns?: "grid-cols-4" | "grid-cols-3" | "grid-cols-2";
 }) {
   const [values, setValues] = useState<RowValueDto[]>(
     getFormProperties({ mode: item ? "edit" : "create", entity, properties }).map((property) => {
@@ -41,14 +49,6 @@ export default function RowProperties({
       };
     })
   );
-
-  function getPropertyColumnSpan(property: PropertyWithDetails) {
-    const columns = PropertyAttributeHelper.getPropertyAttributeValue_Number(property, PropertyAttributeName.Columns);
-    if (!columns || columns === undefined) {
-      return "col-span-12";
-    }
-    return `col-span-${columns}`;
-  }
 
   return (
     <div className={clsx("grid gap-2", gridColumns)}>

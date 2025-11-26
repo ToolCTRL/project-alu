@@ -1,7 +1,7 @@
 import { BlogPostBlockDto } from "./BlogPostBlockUtils";
 import { Link, useParams, useSubmit } from "react-router";
 import { useTranslation } from "react-i18next";
-import { Fragment, useRef } from "react";
+import { useRef } from "react";
 import ConfirmModal, { RefConfirmModal } from "~/components/ui/modals/ConfirmModal";
 import ButtonSecondary from "~/components/ui/buttons/ButtonSecondary";
 import ButtonPrimary from "~/components/ui/buttons/ButtonPrimary";
@@ -10,7 +10,7 @@ import PostTags from "~/components/blog/PostTags";
 import { marked } from "marked";
 import UrlUtils from "~/utils/app/UrlUtils";
 
-export default function BlogPostVariantSimple({ item }: { item: BlogPostBlockDto }) {
+export default function BlogPostVariantSimple({ item }: readonly { readonly item: BlogPostBlockDto }) {
   const { t } = useTranslation();
   const params = useParams();
   const submit = useSubmit();

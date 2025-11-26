@@ -9,7 +9,7 @@ import CollapsibleRow from "~/components/ui/tables/CollapsibleRow";
 import PageBlockUtils from "~/modules/pageBlocks/components/blocks/PageBlockUtils";
 import GridBlockForm from "../../shared/grid/GridBlockForm";
 
-export default function FeaturesBlockForm({ item, onUpdate }: { item?: FeaturesBlockDto; onUpdate: (item: FeaturesBlockDto) => void }) {
+export default function FeaturesBlockForm({ item, onUpdate }: { readonly item?: FeaturesBlockDto; readonly onUpdate: (item: FeaturesBlockDto) => void }) {
   const { t } = useTranslation();
   const [state, setState] = useState<FeaturesBlockDto>(item || PageBlockUtils.defaultBlocks.features!);
   useEffect(() => {
@@ -39,7 +39,7 @@ export default function FeaturesBlockForm({ item, onUpdate }: { item?: FeaturesB
         <div className="flex flex-col space-y-2">
           {state.items.map((item, index) => (
             <CollapsibleRow
-              key={index}
+              key={`feature-${index}-${item.name}`}
               title={item.name}
               value={item.name}
               initial={!item.description}

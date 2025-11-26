@@ -7,7 +7,7 @@ import EmptyState from "~/components/ui/emptyState/EmptyState";
 import { Fragment } from "react";
 import { useTranslation } from "react-i18next";
 
-export default function KbCategories({ items, kb }: { items: KbCategoryDto[]; kb: KnowledgeBaseDto }) {
+export default function KbCategories({ items, kb }: Readonly<{ items: KbCategoryDto[]; kb: KnowledgeBaseDto }>) {
   const { t } = useTranslation();
   return (
     <div>

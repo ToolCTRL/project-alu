@@ -256,7 +256,7 @@ export default function WorkflowsIdIndexView() {
   );
 }
 
-function StatCard({ label, value, hint }: { label: string; value: string; hint?: string }) {
+function StatCard({ label, value, hint }: Readonly<{ label: string; value: string; hint?: string }>) {
   return (
     <div className="rounded-xl border border-white/5 bg-white/5 px-4 py-3 text-white shadow-md ring-1 ring-inset ring-white/10 backdrop-blur">
       <div className="text-xs uppercase tracking-[0.2em] text-white/70">{label}</div>

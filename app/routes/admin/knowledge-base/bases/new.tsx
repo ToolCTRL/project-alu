@@ -1,5 +1,4 @@
-import { ActionFunctionArgs, redirect, useActionData } from "react-router";
-import { useSubmit } from "react-router";
+import { ActionFunctionArgs, redirect, useActionData, useSubmit } from "react-router";
 import ServerError from "~/components/ui/errors/ServerError";
 import ActionResultModal from "~/components/ui/modals/ActionResultModal";
 import KnowledgeBaseForm from "~/modules/knowledgeBase/components/bases/KnowledgeBaseForm";
@@ -69,7 +68,7 @@ export const action = async ({ request, params }: ActionFunctionArgs) => {
   }
 };
 
-export default function () {
+export default function KnowledgeBaseNew() {
   const actionData = useActionData<ActionData>();
   const submit = useSubmit();
 

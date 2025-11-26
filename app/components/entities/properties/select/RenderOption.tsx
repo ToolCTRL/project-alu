@@ -7,7 +7,7 @@ export default function RenderOption({
   option,
   hasColors,
   display,
-}: {
+}: Readonly<{
   option:
     | {
         name?: string | null;
@@ -17,102 +17,94 @@ export default function RenderOption({
     | undefined;
   hasColors: boolean;
   display?: SelectOptionsDisplay;
-}) {
+}>) {
+  if (!option) {
+    return null;
+  }
+
   return (
     <Fragment>
-      {!option ? (
-        <></>
-      ) : (
+      {!display ? (
         <Fragment>
-          {!display ? (
-            <Fragment>
-              {option.name ? (
-                option.name
-              ) : (
-                <>
-                  {option.value}
-                  {option.name && option.value && " - "}
-                  {option.name}
-                </>
-              )}
-            </Fragment>
+          {option.name ? (
+            option.name
           ) : (
+            <>
+              {option.value}
+              {option.name && option.value && " - "}
+              {option.name}
+            </>
+          )}
+        </Fragment>
+      ) : (
+        <div className="flex space-x-2 truncate">
+          {display === "Name" && (option.name ?? option.value)}
+          {display === "Value" && option.value}
+          {display === "Color" && <ColorBadge color={option.color} />}
+          {display === "ColorWithTitle" && (
             <Fragment>
-              <div className="flex space-x-2 truncate">
-                {display === "Name" && (option.name ?? option.value)}
-                {display === "Value" && option.value}
-                {display === "Color" && (
-                  <Fragment>
-                    <ColorBadge color={option.color} />
-                  </Fragment>
-                )}
-                {display === "ColorWithTitle" && (
-                  <Fragment>
-                    <div>
-                      <ColorBadge color={option.color} />
-                    </div>
-                    {option.color !== undefined && option.color !== null && <div className="capitalize">{Colors[option.color]?.toLowerCase()}</div>}
-                  </Fragment>
-                )}
-                {display === "NameAndValue" && (
-                  <Fragment>
-                    {option.name}
-                    {option.name && option.value && " - "}
-                    {option.value}
-                  </Fragment>
-                )}
-                {display === "ValueAndName" && (
-                  <Fragment>
-                    {option.value}
-                    {option.name && option.value && " - "}
-                    {option.name}
-                  </Fragment>
-                )}
-                {display === "NameValueAndColor" && (
-                  <Fragment>
-                    <div>
-                      <ColorBadge color={option.color} />
-                    </div>
-                    <div>
-                      {option.name}
-                      {option.name && option.value && " - "}
-                      {option.value}
-                    </div>
-                  </Fragment>
-                )}
-
-                {display === "ValueNameAndColor" && (
-                  <Fragment>
-                    <div>
-                      <ColorBadge color={option.color} />
-                    </div>
-                    <div>
-                      {option.value}
-                      {option.name && option.value && " - "}
-                      {option.name}
-                    </div>
-                  </Fragment>
-                )}
-                {display === "NameAndColor" && (
-                  <Fragment>
-                    <div>
-                      <ColorBadge color={option.color} />
-                    </div>
-                    <div>{option.name}</div>
-                  </Fragment>
-                )}
-                {display === "ValueAndColor" && (
-                  <Fragment>
-                    <div>
-                      <ColorBadge color={option.color} />
-                    </div>
-                    <div>{option.value}</div>
-                  </Fragment>
-                )}
+              <div>
+                <ColorBadge color={option.color} />
+              </div>
+              {option.color !== undefined && option.color !== null && <div className="capitalize">{Colors[option.color]?.toLowerCase()}</div>}
+            </Fragment>
+          )}
+          {display === "NameAndValue" && (
+            <Fragment>
+              {option.name}
+              {option.name && option.value && " - "}
+              {option.value}
+            </Fragment>
+          )}
+          {display === "ValueAndName" && (
+            <Fragment>
+              {option.value}
+              {option.name && option.value && " - "}
+              {option.name}
+            </Fragment>
+          )}
+          {display === "NameValueAndColor" && (
+            <Fragment>
+              <div>
+                <ColorBadge color={option.color} />
+              </div>
+              <div>
+                {option.name}
+                {option.name && option.value && " - "}
+                {option.value}
               </div>
             </Fragment>
           )}
-        </Fragment>
+
+          {display === "ValueNameAndColor" && (
+            <Fragment>
+              <div>
+                <ColorBadge color={option.color} />
+              </div>
+              <div>
+                {option.value}
+                {option.name && option.value && " - "}
+                {option.name}
+              </div>
+            </Fragment>
+          )}
+          {display === "NameAndColor" && (
+            <Fragment>
+              <div>
+                <ColorBadge color={option.color} />
+              </div>
+              <div>{option.name}</div>
+            </Fragment>
+          )}
+          {display === "ValueAndColor" && (
+            <Fragment>
+              <div>
+                <ColorBadge color={option.color} />
+              </div>
+              <div>{option.value}</div>
+            </Fragment>
+          )}
+        </div>
       )}
     </Fragment>
   );

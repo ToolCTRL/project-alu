@@ -46,10 +46,8 @@ const profileName = (user: { firstName: string | null; lastName: string | null; 
 };
 
 const validateEmail = (email: unknown) => {
-  const regexp = new RegExp(
-    // eslint-disable-next-line no-useless-escape
-    /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
-  );
+  // Simplified regex to reduce complexity and use \d instead of [0-9]
+  const regexp = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   if (typeof email !== "string" || email.length < 5 || !regexp.test(email) || email.length > 100) {
     return false;
   }

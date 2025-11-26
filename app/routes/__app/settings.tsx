@@ -208,7 +208,7 @@ export const action = async ({ request, params }: ActionFunctionArgs) => {
   return Response.json({ error: `Invalid action` }, { status: 400 });
 };
 
-export default function () {
+export default function SettingsRoute() {
   const data = useLoaderData<LoaderData>();
   const actionData = useActionData<ActionData>();
   useEffect(() => {

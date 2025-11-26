@@ -53,7 +53,7 @@ export default function PropertySubtypeSelector({ types, className, selected, on
                               <div className="truncate">{t("entities.subtypes." + item)}</div>
                             </div>
                             {selected ? (
-                              <span className={clsx(active ? "" : "", "absolute inset-y-0 right-0 flex items-center pr-4")}>
+                              <span className="absolute inset-y-0 right-0 flex items-center pr-4">
                                 <CheckIcon className="h-5 w-5" aria-hidden="true" />
                               </span>
                             ) : null}

@@ -2,9 +2,7 @@ import OpenAI from "openai";
 import { OpenAIDefaults } from "../utils/OpenAIDefaults";
 
 function getClient(apiKey?: string) {
-  if (apiKey === undefined) {
-    apiKey = process.env.OPENAI_API_KEY;
-  }
+  apiKey ??= process.env.OPENAI_API_KEY;
   return new OpenAI({ apiKey });
 }
 
@@ -38,12 +36,12 @@ async function createChatCompletion({
       user,
       stream,
     })
-    .catch((reason) => {
-      const message = reason?.response?.data?.error?.message;
+    .catch((error_) => {
+      const message = error_?.response?.data?.error?.message;
       if (message) {
-        throw Error(message);
+        throw new Error(message);
       }
-      throw Error(reason);
+      throw new Error(error_);
     });
   if ("choices" in response === false) {
     return [];

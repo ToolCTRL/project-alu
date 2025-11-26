@@ -127,36 +127,25 @@ export default function EntityViewsTable({
         {
           name: "properties",
           title: t("models.view.properties"),
-          value: (i) => {
-            return (
-              <div>
-                {/* {i.properties
-                  .map((p) => {
+          value: (i) => (
+            <div>
+              <ShowPayloadModalButton
+                description={i.properties.length > 1 ? `${i.properties.length} properties` : `${i.properties.length} property`}
+                title="Properties"
+                payload={JSON.stringify(
+                  i.properties.map((p) => {
                     const defaultProperty = defaultDisplayProperties.find((f) => f.name === p.name);
                     if (defaultProperty) {
                       return t(defaultProperty.title);
                     }
                     return p.name;
-                  })
-                  .join(", ")} */}
-                <ShowPayloadModalButton
-                  description={i.properties.length > 1 ? `${i.properties.length} properties` : `${i.properties.length} property`}
-                  title="Properties"
-                  payload={JSON.stringify(
-                    i.properties.map((p) => {
-                      const defaultProperty = defaultDisplayProperties.find((f) => f.name === p.name);
-                      if (defaultProperty) {
-                        return t(defaultProperty.title);
-                      }
-                      return p.name;
-                    }),
-                    null,
-                    2
-                  )}
-                />
-              </div>
-            );
-          },
+                  }),
+                  null,
+                  2
+                )}
+              />
+            </div>
+          ),
         },
         {
           name: "filters",
@@ -183,7 +172,7 @@ export default function EntityViewsTable({
           value: (i) => (
             <div>
               <ShowPayloadModalButton
-                description={i.sort.length > 1 ? `${i.sort.length} sort` : `${i.sort.length} sort`}
+                description={i.sort.length === 1 ? `${i.sort.length} sort option` : `${i.sort.length} sort options`}
                 title="sort"
                 payload={JSON.stringify(
                   i.sort.map((p) => {

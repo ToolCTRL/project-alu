@@ -1,6 +1,5 @@
 import { useEffect } from "react";
-import { ActionFunction, LoaderFunctionArgs, MetaFunction, redirect, useLoaderData } from "react-router";
-import { useActionData } from "react-router";
+import { ActionFunction, LoaderFunctionArgs, MetaFunction, redirect, useLoaderData, useActionData } from "react-router";
 import { getAllSubscriptionProducts } from "~/utils/db/subscriptionProducts.db.server";
 import {
   createCustomerPortalSession,
@@ -19,9 +18,7 @@ import { getTranslations } from "~/locale/i18next.server";
 import { getOrPersistTenantSubscription, getTenantSubscription, TenantSubscriptionWithDetails } from "~/utils/db/tenantSubscriptions.db.server";
 import { getMyTenants, TenantSimple } from "~/utils/db/tenants.db.server";
 import { cancelTenantSubscription, getActiveTenantSubscriptions, getPlanFeaturesUsage } from "~/utils/services/.server/subscriptionService";
-import { serverTimingHeaders } from "~/modules/metrics/utils/defaultHeaders.server";
 import { promiseHash } from "~/utils/promises/promiseHash";
-import { createMetrics } from "~/modules/metrics/services/.server/MetricTracker";
 import SubscriptionSettings from "~/modules/users/components/SubscriptionSettings";
 import toast from "react-hot-toast";
 import FooterBlock from "~/modules/pageBlocks/components/blocks/marketing/footer/FooterBlock";
@@ -30,6 +27,7 @@ import Tabs from "~/components/ui/tabs/Tabs";
 import Stripe from "stripe";
 import { PlanFeatureUsageDto } from "~/application/dtos/subscriptions/PlanFeatureUsageDto";
 import { getAppConfiguration } from "~/utils/db/appConfiguration.db.server";
+import { serverTimingHeaders } from "~/modules/metrics/utils/defaultHeaders.server";
 export { serverTimingHeaders as headers };
 
 export const meta: MetaFunction<typeof loader> = ({ data }) => [{ title: data?.title }];
@@ -66,9 +64,6 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
   const tenantId = currentTenant.id;
 
   const tenantSubscription = await getOrPersistTenantSubscription(tenantId);
-  // if (tenantSubscription.products.length === 0) {
-  //   await autosubscribeToTrialOrFreePlan({ request, t, tenantId: tenantId, userId: userInfo.userId });
-  // }
   const { mySubscription, customer, myInvoices, myPayments, myUpcomingInvoices, myPaymentMethods, myFeatures, dashboardData, products } = await promiseHash({
     mySubscription: getActiveTenantSubscriptions(tenantId),
     customer: getStripeCustomer(tenantSubscription.stripeCustomerId),
@@ -120,7 +115,7 @@ export const action: ActionFunction = async ({ request, params }) => {
 
   const action = form.get("action")?.toString();
 
-  if (!tenantSubscription || !tenantSubscription?.stripeCustomerId) {
+  if (!tenantSubscription?.stripeCustomerId) {
     return badRequest({
       error: "Invalid stripe customer",
     });

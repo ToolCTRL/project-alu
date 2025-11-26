@@ -34,7 +34,7 @@ async function getContactsInRowIds(rowIds: string[]): Promise<ContactDto[]> {
   const rows = await getRowsInIds(rowIds);
   return await Promise.all(
     rowIds
-      .filter((f) => f)
+      .filter(Boolean)
       .map(async (rowId) => {
         const row = rows.find((i) => i.id === rowId);
         if (!row) {
@@ -94,7 +94,7 @@ async function getContactFormSettings() {
   try {
     await validate();
     settings.crm = true;
-  } catch (e: any) {
+  } catch (e: unknown) {
     if (process.env.INTEGRATIONS_CONTACT_FORMSPREE) {
       settings.actionUrl = process.env.INTEGRATIONS_CONTACT_FORMSPREE;
     } else {
@@ -121,8 +121,8 @@ async function getNewsletterFormSettings() {
   try {
     await validate();
     settings.crm = true;
-  } catch (e: any) {
-    //
+  } catch {
+    // Validation failed, CRM not available
   }
   if (!settings.crm && !settings.convertKit) {
     settings.error = "Newsletter form is not configured";
@@ -317,14 +317,17 @@ async function updateContact(
     return null;
   }
   const contact = rowToContact({ row, entity: contactsEntity });
-  let changes: RowValueUpdateDto[] = [];
+  const changes: RowValueUpdateDto[] = [];
   if (data.firstName !== undefined && data.firstName !== contact.firstName) {
     changes.push({ name: "firstName", textValue: data.firstName });
-  } else if (data.lastName !== undefined && data.lastName !== contact.lastName) {
+  }
+  if (data.lastName !== undefined && data.lastName !== contact.lastName) {
     changes.push({ name: "lastName", textValue: data.lastName });
-  } else if (data.jobTitle !== undefined && data.jobTitle !== contact.jobTitle) {
+  }
+  if (data.jobTitle !== undefined && data.jobTitle !== contact.jobTitle) {
     changes.push({ name: "jobTitle", textValue: data.jobTitle });
-  } else if (data.marketingSubscriber !== undefined && data.marketingSubscriber !== contact.marketingSubscriber) {
+  }
+  if (data.marketingSubscriber !== undefined && data.marketingSubscriber !== contact.marketingSubscriber) {
     changes.push({ name: "marketingSubscriber", booleanValue: data.marketingSubscriber });
   }
   if (changes.length === 0) {
@@ -350,65 +353,85 @@ async function subscribeToNewsletter({ firstName, lastName, email, source }: { f
   }
 
   if (settings.crm) {
-    console.log("[Newsletter] Creating contact in CRM");
-    let contact = await RowsApi.find({
-      entity: { name: "contact" },
-      tenantId: null,
-      properties: [{ name: "email", value: email }],
-    });
-
-    if (!contact) {
-      contact = await createContact({
-        tenantId: null,
-        firstName,
-        lastName,
-        email: email,
-        jobTitle: "",
-        status: "contact",
-        marketingSubscriber: true,
-      });
-      if (source) {
-        await RowsApi.addTag({ row: contact, tag: { value: source, color: Colors.ORANGE } });
-      } else {
-        await RowsApi.addTag({ row: contact, tag: { value: "newsletter", color: Colors.ORANGE } });
-      }
-    } else {
-      await updateContact(contact.id, { marketingSubscriber: true });
-    }
+    await subscribeToCrm({ firstName, lastName, email, source });
   }
   if (settings.convertKit) {
-    console.log("[Newsletter] Subscribing to ConvertKit");
-    const API_KEY = process.env.CONVERTKIT_APIKEY;
-    const FORM_ID = process.env.CONVERTKIT_FORM;
-    const API = "https://api.convertkit.com/v3";
-
-    const res = await fetch(`${API}/forms/${FORM_ID}/subscribe`, {
-      method: "post",
-      body: JSON.stringify({ email, firstName, lastName, api_key: API_KEY }),
-      headers: {
-        "Content-Type": "application/json; charset=utf-8",
-      },
-    });
-
-    try {
-      const response = await res.json();
-      console.log("[Newsletter] ConvertKit response", response);
-      if (response.error) {
-        return { error: response.message };
-      } else {
-        await NotificationService.sendToRoles({
-          channel: "admin-users",
-          notification: {
-            message: `Newsletter subscription (${source}): ${firstName} ${lastName} <${email}>`,
-          },
-        });
-      }
-    } catch (e: any) {
-      console.error("[Newsletter] ConvertKit error", e);
-      return { error: e.message };
+    const result = await subscribeToConvertKit({ firstName, lastName, email, source });
+    if (result.error) {
+      return result;
     }
   }
   return { success: "Subscribed" };
+}
+
+async function subscribeToCrm({ firstName, lastName, email, source }: { firstName: string; lastName: string; email: string; source?: string }) {
+  console.log("[Newsletter] Creating contact in CRM");
+  let contact = await RowsApi.find({
+    entity: { name: "contact" },
+    tenantId: null,
+    properties: [{ name: "email", value: email }],
+  });
+
+  if (contact) {
+    await updateContact(contact.id, { marketingSubscriber: true });
+    return;
+  }
+
+  contact = await createContact({
+    tenantId: null,
+    firstName,
+    lastName,
+    email: email,
+    jobTitle: "",
+    status: "contact",
+    marketingSubscriber: true,
+  });
+  const tagValue = source || "newsletter";
+  await RowsApi.addTag({ row: contact, tag: { value: tagValue, color: Colors.ORANGE } });
+}
+
+async function subscribeToConvertKit({
+  firstName,
+  lastName,
+  email,
+  source,
+}: {
+  firstName: string;
+  lastName: string;
+  email: string;
+  source?: string;
+}): Promise<{ error?: string }> {
+  console.log("[Newsletter] Subscribing to ConvertKit");
+  const API_KEY = process.env.CONVERTKIT_APIKEY;
+  const FORM_ID = process.env.CONVERTKIT_FORM;
+  const API = "https://api.convertkit.com/v3";
+
+  const res = await fetch(`${API}/forms/${FORM_ID}/subscribe`, {
+    method: "post",
+    body: JSON.stringify({ email, firstName, lastName, api_key: API_KEY }),
+    headers: {
+      "Content-Type": "application/json; charset=utf-8",
+    },
+  });
+
+  try {
+    const response = await res.json();
+    console.log("[Newsletter] ConvertKit response", response);
+    if (response.error) {
+      return { error: response.message };
+    }
+    await NotificationService.sendToRoles({
+      channel: "admin-users",
+      notification: {
+        message: `Newsletter subscription (${source}): ${firstName} ${lastName} <${email}>`,
+      },
+    });
+    return {};
+  } catch (e: unknown) {
+    const message = e instanceof Error ? e.message : "Unknown error";
+    console.error("[Newsletter] ConvertKit error", e);
+    return { error: message };
+  }
 }
 
 function rowToContact({ row, entity }: { row: RowWithDetails; entity: EntityWithDetails }) {
@@ -552,7 +575,7 @@ async function loadFromConvertKit({
         isContact: !!contact,
         contact,
       };
-      if (!usersInCrm.find((f) => f.email === user.email)) {
+      if (!usersInCrm.some((f) => f.email === user.email)) {
         convertKitUsersInCrm.push(userInCrm);
       }
     });

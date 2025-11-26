@@ -1,5 +1,4 @@
-import { ActionFunction, LoaderFunctionArgs, MetaFunction, useLoaderData } from "react-router";
-import { Form, useActionData, useParams, useSubmit, useNavigation } from "react-router";
+import { ActionFunction, LoaderFunctionArgs, MetaFunction, useLoaderData, Form, useActionData, useParams, useSubmit, useNavigation } from "react-router";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { MediaDto } from "~/application/dtos/entities/MediaDto";
@@ -54,12 +53,12 @@ type ActionData = {
 
 const toSafeString = (value: FormDataEntryValue | null) => (typeof value === "string" ? value : "");
 async function handleFileSave(supabaseBucketId: string, form: FormData) {
-  const name = toSafeString(form.get("name"));
+  const name = toSafeString(form.get("name") as FormDataEntryValue | null);
   if (name === "") {
     return Response.json({ error: "Missing name" }, { status: 400 });
   }
-  const files: MediaDto[] = form.getAll("files[]").map((f: FormDataEntryValue) => {
-    return JSON.parse(f.toString());
+  const files: MediaDto[] = form.getAll("files[]").map((f) => {
+    return JSON.parse((f as FormDataEntryValue).toString());
   });
   if (files.length !== 1) {
     return Response.json({ error: "Missing file" }, { status: 400 });
@@ -119,7 +118,7 @@ export const action: ActionFunction = async ({ request, params }) => {
 };
 
 type SupabaseFileDto = { id: string; name: string };
-export default function () {
+export default function BucketsDetail() {
   const { t } = useTranslation();
   const data = useLoaderData<LoaderData>();
   const actionData = useActionData<ActionData>();
@@ -238,28 +237,28 @@ export default function () {
       )}
 
       <Modal size="md" open={isAdding} setOpen={() => setIsAdding(false)}>
-        <FileForm />
+        <FileFormComponent item={undefined} />
       </Modal>
 
       <Modal size="md" open={!!isEditing} setOpen={() => setIsEditing(undefined)}>
-        <FileForm item={isEditing} />
+        <FileFormComponent item={isEditing} />
       </Modal>
     </EditPageLayout>
   );
 }
 
-function FileForm({ item }: { item?: SupabaseFileDto }) {
+function FileFormComponent({ item }: { readonly item?: SupabaseFileDto }) {
   const submit = useSubmit();
   const navigation = useNavigation();
   const actionData = useActionData<ActionData>();
-  function onDelete() {
+  function onDeleteFile() {
     if (!item || !confirm("Are you sure?")) {
       return;
     }
-    const form = new FormData();
-    form.set("action", "file-delete");
-    form.set("name", item.name);
-    submit(form, {
+    const formData = new FormData();
+    formData.set("action", "file-delete");
+    formData.set("name", item.name);
+    submit(formData, {
       method: "post",
     });
   }
@@ -285,7 +284,7 @@ function FileForm({ item }: { item?: SupabaseFileDto }) {
       <div className="flex justify-between space-x-2">
         <div>
           {item && (
-            <ButtonSecondary disabled={navigation.state !== "idle"} destructive onClick={onDelete}>
+            <ButtonSecondary disabled={navigation.state !== "idle"} destructive onClick={onDeleteFile}>
               Delete
             </ButtonSecondary>
           )}

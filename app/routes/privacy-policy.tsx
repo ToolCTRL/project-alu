@@ -48,7 +48,7 @@ export default function PrivacyPolicyRoute() {
                   regarding any personal information we may collect about you, including across our website,{" "}
                   <a className="text-black dark:text-white" href="https://saasrock.com">
                     https://saasrock.com
-                  </a>
+                  </a>{" "}
                   , and other sites we own and operate.
                 </p>
                 <p>This policy is effective as of 14 December 2021 and was last updated on 14 December 2021.</p>

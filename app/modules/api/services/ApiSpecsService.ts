@@ -43,46 +43,48 @@ function getEntityEndpoints({ entity, t }: { entity: EntityWithDetails; t: TFunc
         [property.name]: type ?? "",
       };
     });
-  endpoints.push({
-    entity,
-    route: `/api/${entity.slug}`,
-    method: "GET",
-    description: `Get all ${t(entity.titlePlural)}`,
-    responseSchema: JSON.stringify(schema, null, 2),
-    bodyExample: "",
-  });
-  endpoints.push({
-    entity,
-    route: `/api/${entity.slug}/:id`,
-    method: "GET",
-    description: `Get ${t(entity.title)}`,
-    responseSchema: JSON.stringify(schema, null, 2),
-    bodyExample: "",
-  });
-  endpoints.push({
-    entity,
-    route: `/api/${entity.slug}`,
-    method: "POST",
-    description: `Create ${t(entity.title)}`,
-    responseSchema: JSON.stringify(schema, null, 2),
-    bodyExample: JSON.stringify(body, null, 2),
-  });
-  endpoints.push({
-    entity,
-    route: `/api/${entity.slug}/:id`,
-    method: "PUT",
-    description: `Update ${t(entity.title)}`,
-    responseSchema: JSON.stringify(schema, null, 2),
-    bodyExample: JSON.stringify(body, null, 2),
-  });
-  endpoints.push({
-    entity,
-    route: `/api/${entity.slug}/:id`,
-    method: "DELETE",
-    description: `Delete ${t(entity.title)}`,
-    responseSchema: "",
-    bodyExample: "",
-  });
+  endpoints.push(
+    {
+      entity,
+      route: `/api/${entity.slug}`,
+      method: "GET",
+      description: `Get all ${t(entity.titlePlural)}`,
+      responseSchema: JSON.stringify(schema, null, 2),
+      bodyExample: "",
+    },
+    {
+      entity,
+      route: `/api/${entity.slug}/:id`,
+      method: "GET",
+      description: `Get ${t(entity.title)}`,
+      responseSchema: JSON.stringify(schema, null, 2),
+      bodyExample: "",
+    },
+    {
+      entity,
+      route: `/api/${entity.slug}`,
+      method: "POST",
+      description: `Create ${t(entity.title)}`,
+      responseSchema: JSON.stringify(schema, null, 2),
+      bodyExample: JSON.stringify(body, null, 2),
+    },
+    {
+      entity,
+      route: `/api/${entity.slug}/:id`,
+      method: "PUT",
+      description: `Update ${t(entity.title)}`,
+      responseSchema: JSON.stringify(schema, null, 2),
+      bodyExample: JSON.stringify(body, null, 2),
+    },
+    {
+      entity,
+      route: `/api/${entity.slug}/:id`,
+      method: "DELETE",
+      description: `Delete ${t(entity.title)}`,
+      responseSchema: "",
+      bodyExample: "",
+    }
+  );
   return endpoints;
 }
 
@@ -392,18 +394,6 @@ async function generatePostmanCollection({ request, entities, t }: { request: Re
     request: loginRequest,
   });
 
-  // // Define the authentication object
-  // const authObject: any = {
-  //   type: "bearer",
-  //   bearer: [
-  //     {
-  //       key: "token",
-  //       value: "<token>",
-  //       type: "string",
-  //     },
-  //   ],
-  // };
-
   entities.forEach((entity) => {
     const entityEndpoints = getEntityEndpoints({ entity, t });
 
@@ -438,62 +428,64 @@ async function generatePostmanCollection({ request, entities, t }: { request: Re
 
   const thereAreRelationships = entities.find((f) => f.childEntities.length > 0 || f.parentEntities.length > 0);
   if (thereAreRelationships) {
-    item.push({
-      name: `GET /api/relationships/:id`,
-      request: {
-        url: {
-          raw: `${serverUrl}/api/relationships/:id`,
-          protocol: new URL(serverUrl).protocol.replace(":", ""),
-          host: [new URL(serverUrl).hostname],
-          path: [`/api/relationships/:id`],
-          port: new URL(serverUrl).port,
-        },
-        method: `GET`,
-        header: [],
-        description: `Get a relationship between two rows`,
-      },
-    });
-    item.push({
-      name: `POST /api/relationships`,
-      request: {
-        url: {
-          raw: `${serverUrl}/api/relationships`,
-          protocol: new URL(serverUrl).protocol.replace(":", ""),
-          host: [new URL(serverUrl).hostname],
-          path: [`/api/relationships`],
-          port: new URL(serverUrl).port,
-        },
-        method: `POST`,
-        header: [],
-        description: `Create a relationship between two rows`,
-        body: {
-          mode: "raw",
-          raw: JSON.stringify(
-            {
-              parent: "<parentRowId>",
-              child: "<childRowId>",
-            },
-            null,
-            2
-          ),
+    item.push(
+      {
+        name: `GET /api/relationships/:id`,
+        request: {
+          url: {
+            raw: `${serverUrl}/api/relationships/:id`,
+            protocol: new URL(serverUrl).protocol.replace(":", ""),
+            host: [new URL(serverUrl).hostname],
+            path: [`/api/relationships/:id`],
+            port: new URL(serverUrl).port,
+          },
+          method: `GET`,
+          header: [],
+          description: `Get a relationship between two rows`,
         },
       },
-    });
-    item.push({
-      name: `DELETE /api/relationships/:id`,
-      request: {
-        url: {
-          raw: `${serverUrl}/api/relationships/:id`,
-          protocol: new URL(serverUrl).protocol.replace(":", ""),
-          host: [new URL(serverUrl).hostname],
-          path: [`/api/relationships/:id`],
-          port: new URL(serverUrl).port,
+      {
+        name: `POST /api/relationships`,
+        request: {
+          url: {
+            raw: `${serverUrl}/api/relationships`,
+            protocol: new URL(serverUrl).protocol.replace(":", ""),
+            host: [new URL(serverUrl).hostname],
+            path: [`/api/relationships`],
+            port: new URL(serverUrl).port,
+          },
+          method: `POST`,
+          header: [],
+          description: `Create a relationship between two rows`,
+          body: {
+            mode: "raw",
+            raw: JSON.stringify(
+              {
+                parent: "<parentRowId>",
+                child: "<childRowId>",
+              },
+              null,
+              2
+            ),
+          },
         },
-        method: `DELETE`,
-        header: [],
-        description: `Delete a relationship between two rows`,
       },
-    });
+      {
+        name: `DELETE /api/relationships/:id`,
+        request: {
+          url: {
+            raw: `${serverUrl}/api/relationships/:id`,
+            protocol: new URL(serverUrl).protocol.replace(":", ""),
+            host: [new URL(serverUrl).hostname],
+            path: [`/api/relationships/:id`],
+            port: new URL(serverUrl).port,
+          },
+          method: `DELETE`,
+          header: [],
+          description: `Delete a relationship between two rows`,
+        },
+      }
+    );
   }
 
   const postmanCollection = {

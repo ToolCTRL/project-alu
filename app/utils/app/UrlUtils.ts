@@ -9,7 +9,6 @@ const currentTenantUrl = (params: Params, path?: string) => {
   const { tenant } = params;
   if (path) {
     const appPath = path.startsWith("/") ? path.substring(1, path.length - 1) : path;
-    // console.log({ appPath });
     return `/app/${tenant}/${appPath}`;
   }
   return `/app/${tenant}/`;
@@ -23,27 +22,6 @@ const currentEntityUrl = (params: Params) => {
 const replaceVariables = (params: Params, path?: string) => {
   return path?.replace(":tenant", params.tenant ?? "");
 };
-
-// https://mhagemann.medium.com/the-ultimate-way-to-slugify-a-url-string-in-javascript-b8e4a0d849e1
-// const slugify = (str: string, max: number = 100) => {
-//   const a = "àáâäæãåāăąçćčđďèéêëēėęěğǵḧîïíīįìıİłḿñńǹňôöòóœøōõőṕŕřßśšşșťțûüùúūǘůűųẃẍÿýžźż·/_,:;";
-//   const b = "aaaaaaaaaacccddeeeeeeeegghiiiiiiiilmnnnnoooooooooprrsssssttuuuuuuuuuwxyyzzz------";
-//   const p = new RegExp(a.split("").join("|"), "g");
-
-//   return (
-//     str
-//       .toString()
-//       .toLowerCase()
-//       .replace(/\s+/g, "-") // Replace spaces with -
-//       .replace(p, (c) => b.charAt(a.indexOf(c))) // Replace special characters
-//       .replace(/&/g, "-and-") // Replace & with 'and'
-//       // .replace(/[^\w\-]+/g, "") // Remove all non-word characters
-//       // eslint-disable-next-line no-useless-escape
-//       .replace(/\-\-+/g, "-") // Replace multiple - with single -
-//       .replace(/^-+/, "") // Trim - from start of text
-//       .replace(/-+$/, "")
-//   ); // Trim - from end of text
-// };
 
 function getParentRoute(pathname: string) {
   const url = stripTrailingSlash(pathname);
@@ -72,26 +50,27 @@ function getModulePath(params: Params, path: string) {
 
 function getBlogPath(params: Params, path?: string) {
   if (params.tenant) {
-    return !path ? `/b/${params.tenant}` : `/b/${params.tenant}/${path}`;
+    return path ? `/b/${params.tenant}/${path}` : `/b/${params.tenant}`;
   }
-  return !path ? `/blog` : `/blog/${path}`;
+  return path ? `/blog/${path}` : `/blog`;
 }
 
 function join(...paths: string[]) {
-  return paths.join("/").replace(/\/+/g, "/");
+  return paths.join("/").replaceAll(/\/+/g, "/");
+}
+
+function paramsToObject(entries: any) {
+  const result: any = {};
+  for (const [key, value] of entries) {
+    // each 'entry' is a [key, value] tupple
+    result[key] = value;
+  }
+  return result;
 }
 
 function searchParamsToString({ type, searchParams }: { type: "string" | "object"; searchParams: URLSearchParams }) {
   searchParams.delete("entity");
   searchParams.delete("id");
-  function paramsToObject(entries: any) {
-    const result: any = {};
-    for (const [key, value] of entries) {
-      // each 'entry' is a [key, value] tupple
-      result[key] = value;
-    }
-    return result;
-  }
   const entries = searchParams.entries();
   if (type === "object") {
     //{abc:"foo",def:"[asf]",xyz:"5"}

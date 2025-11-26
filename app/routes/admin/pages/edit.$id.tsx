@@ -1,11 +1,9 @@
 import { useTranslation } from "react-i18next";
-import { LoaderFunctionArgs, redirect } from "react-router";
-import { Outlet, useLoaderData, useLocation, useNavigate, useParams } from "react-router";
+import { LoaderFunctionArgs, Outlet, redirect, useLoaderData, useLocation, useNavigate, useParams } from "react-router";
 import { getPage } from "~/modules/pageBlocks/db/pages.db.server";
 import { useEffect } from "react";
 import UrlUtils from "~/utils/app/UrlUtils";
 import { getPageConfiguration } from "~/modules/pageBlocks/services/.server/pagesService";
-import IndexPageLayout from "~/components/ui/layouts/IndexPageLayout";
 import { PageConfiguration } from "~/modules/pageBlocks/dtos/PageConfiguration";
 import { verifyUserHasPermission } from "~/utils/helpers/.server/PermissionsService";
 import EditPageLayout from "~/components/ui/layouts/EditPageLayout";

@@ -109,7 +109,7 @@ export const action: ActionFunction = async ({ request, params }) => {
   return badRequest({ error: t("shared.invalidForm") });
 };
 
-export default function () {
+export default function PropertiesRoute() {
   const { t } = useTranslation();
   const data = useLoaderData<LoaderData>();
   const navigate = useNavigate();
@@ -170,7 +170,7 @@ export default function () {
               )}
 
               {EntityViewLayoutTypes.map((layout) => {
-                if (layout.value === "board" && !entity.properties.find((f) => f.type === PropertyType.SELECT)) {
+                if (layout.value === "board" && !entity.properties.some((f) => f.type === PropertyType.SELECT)) {
                   return null;
                 }
                 return (
@@ -204,7 +204,7 @@ export default function () {
   );
 }
 
-function Section({ title }: { title: string }) {
+function Section({ title }: Readonly<{ title: string }>) {
   return (
     <div className="relative">
       <div className="absolute inset-0 flex items-center" aria-hidden="true">

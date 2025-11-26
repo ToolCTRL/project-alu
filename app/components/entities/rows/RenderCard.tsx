@@ -14,7 +14,7 @@ export default function RenderCard({
   routes,
   actions,
   href,
-}: {
+}: Readonly<{
   layout: "table" | "grid" | "board" | "card";
   item: RowWithDetails;
   entity: EntityWithDetails;
@@ -23,7 +23,7 @@ export default function RenderCard({
   routes: EntitiesApi.Routes | undefined;
   actions?: (row: RowWithDetails) => { title?: string; href?: string; onClick?: () => void; isLoading?: boolean; render?: React.ReactNode }[];
   href: string | undefined;
-}) {
+}>) {
   return (
     <div className={clsx("border-border bg-background rounded-md border p-3 shadow-2xs", href && "hover:border-border hover:shadow-md")}>
       <RowCard layout={layout} item={item} entity={entity} columns={columns} allEntities={allEntities} routes={routes} actions={actions} />

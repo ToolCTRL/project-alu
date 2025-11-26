@@ -63,20 +63,20 @@ export async function voteArticle({ userAnalyticsId, articleId, type }: { userAn
         },
       },
     });
-    if (!existing) {
-      await db.knowledgeBaseArticleUpvotes.create({
-        data: {
-          userAnalyticsId,
-          knowledgeBaseArticleId: articleId,
-        },
-      });
-    } else {
+    if (existing) {
       await db.knowledgeBaseArticleUpvotes.delete({
         where: {
           knowledgeBaseArticleId_userAnalyticsId: {
             userAnalyticsId,
             knowledgeBaseArticleId: articleId,
           },
+        },
+      });
+    } else {
+      await db.knowledgeBaseArticleUpvotes.create({
+        data: {
+          userAnalyticsId,
+          knowledgeBaseArticleId: articleId,
         },
       });
     }
@@ -95,20 +95,20 @@ export async function voteArticle({ userAnalyticsId, articleId, type }: { userAn
         },
       },
     });
-    if (!existing) {
-      await db.knowledgeBaseArticleDownvotes.create({
-        data: {
-          userAnalyticsId,
-          knowledgeBaseArticleId: articleId,
-        },
-      });
-    } else {
+    if (existing) {
       await db.knowledgeBaseArticleDownvotes.delete({
         where: {
           knowledgeBaseArticleId_userAnalyticsId: {
             userAnalyticsId,
             knowledgeBaseArticleId: articleId,
           },
+        },
+      });
+    } else {
+      await db.knowledgeBaseArticleDownvotes.create({
+        data: {
+          userAnalyticsId,
+          knowledgeBaseArticleId: articleId,
         },
       });
     }

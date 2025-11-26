@@ -5,7 +5,7 @@ interface Props {
   show: boolean;
   children: ReactNode;
 }
-export default function EaseInAndOut({ show, children }: Props) {
+export default function EaseInAndOut({ show, children }: Readonly<Props>) {
   return (
     <Transition
       show={show}

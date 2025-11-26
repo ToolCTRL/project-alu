@@ -8,7 +8,7 @@ import InputText from "~/components/ui/input/InputText";
 import CollapsibleRow from "~/components/ui/tables/CollapsibleRow";
 import PageBlockUtils from "~/modules/pageBlocks/components/blocks/PageBlockUtils";
 
-export default function FaqBlockForm({ item, onUpdate }: { item?: FaqBlockDto; onUpdate: (item: FaqBlockDto) => void }) {
+export default function FaqBlockForm({ item, onUpdate }: { readonly item?: FaqBlockDto; readonly onUpdate: (item: FaqBlockDto) => void }) {
   const { t } = useTranslation();
   const [state, setState] = useState<FaqBlockDto>(item || PageBlockUtils.defaultBlocks.faq!);
   useEffect(() => {
@@ -36,7 +36,7 @@ export default function FaqBlockForm({ item, onUpdate }: { item?: FaqBlockDto; o
         <div className="flex flex-col space-y-2">
           {state.items.map((item, index) => (
             <CollapsibleRow
-              key={index}
+              key={`faq-item-${index}-${item.question}`}
               title={item.question}
               value={item.question}
               initial={!item.answer}

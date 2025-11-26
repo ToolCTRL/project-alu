@@ -22,7 +22,7 @@ export default function KbDocsLayout({
   featured,
   article,
   isAdmin,
-}: {
+}: Readonly<{
   kb: KnowledgeBaseDto;
   categories: KbCategoryDto[];
   featured?: KbArticleDto[];
@@ -35,8 +35,7 @@ export default function KbDocsLayout({
     };
   } | null;
   isAdmin: boolean;
-}) {
-  // const outlet = useOutlet();
+}>) {
   const location = useLocation();
 
   const items: SideBarItem[] = [];
@@ -47,7 +46,7 @@ export default function KbDocsLayout({
       path: category.href,
       items: [],
     });
-    let categoryItem = items[items.length - 1];
+    let categoryItem = items.at(-1);
     sections.forEach((section) => {
       if (section.articles.length === 0) return;
       if (section.section) {
@@ -56,7 +55,7 @@ export default function KbDocsLayout({
           path: "",
           items: [],
         });
-        categoryItem = items[items.length - 1];
+        categoryItem = items.at(-1);
       }
       section.articles.forEach((article) => {
         categoryItem.items?.push({
@@ -124,16 +123,16 @@ function Article({
   article,
   isAdmin,
 }: {
-  kb: KnowledgeBaseDto;
-  article: {
-    article: KbArticleDto;
-    category: KbCategoryDto;
-    userState: {
-      hasThumbsUp: boolean;
-      hasThumbsDown: boolean;
+  readonly kb: KnowledgeBaseDto;
+  readonly article: {
+    readonly article: KbArticleDto;
+    readonly category: KbCategoryDto;
+    readonly userState: {
+      readonly hasThumbsUp: boolean;
+      readonly hasThumbsDown: boolean;
     };
   };
-  isAdmin: boolean;
+  readonly isAdmin: boolean;
 }) {
   const submit = useSubmit();
   function onAction(name: string) {
@@ -181,12 +180,3 @@ function Article({
   );
 }
 
-// function getArticles({ kb, category, sectionId }: { kb: KnowledgeBaseDto; category: KbCategoryDto; sectionId: string | null }) {
-//   return category.articles
-//     .filter((f) => f.publishedAt !== null && (sectionId ? f.sectionId === sectionId : true))
-//     .sort((a, b) => a.order - b.order)
-//     .map((article) => ({
-//       title: article.title,
-//       path: KnowledgeBaseUtils.getArticleUrl({ kb, article, params: {} }),
-//     }));
-// }

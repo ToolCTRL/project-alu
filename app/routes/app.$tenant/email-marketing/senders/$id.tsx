@@ -5,4 +5,6 @@ import { Senders_Edit } from "~/modules/emailMarketing/routes/Senders_Edit";
 export const loader = (args: LoaderFunctionArgs) => Senders_Edit.loader(args);
 export const action: ActionFunction = (args) => Senders_Edit.action(args);
 
-export default () => <SendersEditRoute />;
+export default function SendersEdit() {
+  return <SendersEditRoute />;
+}

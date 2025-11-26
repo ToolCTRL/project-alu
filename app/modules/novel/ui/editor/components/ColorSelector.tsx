@@ -13,37 +13,49 @@ interface ColorSelectorProps {
   setIsOpen: (isOpen: boolean) => void;
 }
 
-export default function ColorSelector({ editor, isOpen, setIsOpen }: ColorSelectorProps) {
-  const items: BubbleColorMenuItem[] = [
+export interface BubbleColorMenuItemWithId extends BubbleColorMenuItem {
+  id: string;
+}
+
+export default function ColorSelector({ editor, isOpen, setIsOpen }: Readonly<ColorSelectorProps>) {
+  const items: BubbleColorMenuItemWithId[] = [
     {
+      id: "default",
       name: "Default",
       color: "#000000",
     },
     {
+      id: "purple",
       name: "Purple",
       color: "#9333EA",
     },
     {
+      id: "red",
       name: "Red",
       color: "#E00000",
     },
     {
+      id: "blue",
       name: "Blue",
       color: "#2563EB",
     },
     {
+      id: "green",
       name: "Green",
       color: "#008A00",
     },
     {
+      id: "orange",
       name: "Orange",
       color: "#FFA500",
     },
     {
+      id: "pink",
       name: "Pink",
       color: "#BA4081",
     },
     {
+      id: "gray",
       name: "Gray",
       color: "#A8A29E",
     },
@@ -65,10 +77,10 @@ export default function ColorSelector({ editor, isOpen, setIsOpen }: ColorSelect
 
       {isOpen && (
         <section className="animate-in fade-in slide-in-from-top-1 bg-background fixed top-full z-99999 mt-1 flex w-48 flex-col overflow-hidden rounded border border-stone-200 p-1 shadow-xl">
-          {items.map(({ name, color }, index) => (
+          {items.map(({ id, name, color }) => (
             <button
               type="button"
-              key={index}
+              key={id}
               onClick={() => {
                 editor.chain().focus().setColor(color).run();
                 setIsOpen(false);

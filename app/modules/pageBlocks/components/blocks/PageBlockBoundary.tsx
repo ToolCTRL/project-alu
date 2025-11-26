@@ -4,7 +4,7 @@ import WarningBanner from "~/components/ui/banners/WarningBanner";
 import { PageBlockDto } from "~/modules/pageBlocks/dtos/PageBlockDto";
 import StringUtils from "~/utils/shared/StringUtils";
 
-export default function PageBlockBoundary({ item }: { item: PageBlockDto }) {
+export default function PageBlockBoundary({ item }: { readonly item: PageBlockDto }) {
   const { t } = useTranslation();
   function getType() {
     if (!item) {
@@ -21,9 +21,7 @@ export default function PageBlockBoundary({ item }: { item: PageBlockDto }) {
     const block = item[getType()];
     if (block) {
       const keys = Object.keys(block);
-      if (keys.find((f) => f === "data")) {
-        return true;
-      }
+      return keys.some((f) => f === "data");
     }
     return false;
   }
@@ -37,7 +35,7 @@ export default function PageBlockBoundary({ item }: { item: PageBlockDto }) {
         <div className="mx-auto max-w-7xl px-4 py-2 sm:px-6 lg:px-8">
           <ErrorBanner title={t("shared.error")} text={item.error} />
         </div>
-      ) : hasData() && !getData() ? (
+      ) : hasData() && getData() === undefined ? (
         <div className="mx-auto max-w-7xl px-4 py-2 sm:px-6 lg:px-8">
           <WarningBanner title={StringUtils.capitalize(getType())} text={"Data is not displayed in edit mode."} />
         </div>

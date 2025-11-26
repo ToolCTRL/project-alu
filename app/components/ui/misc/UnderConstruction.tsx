@@ -1,7 +1,7 @@
 import { useTranslation } from "react-i18next";
 import SaasRockProFeature from "./SaasRockProFeature";
 
-export default function UnderConstruction({ title, description, proFeature }: { title?: string; description?: string; proFeature?: boolean }) {
+export default function UnderConstruction({ title, description, proFeature }: Readonly<{ title?: string; description?: string; proFeature?: boolean }>) {
   const { t } = useTranslation();
   return (
     <div className="space-y-3">

@@ -4,15 +4,14 @@ import CodeGeneratorPropertiesHelper from "../../utils/CodeGeneratorPropertiesHe
 
 function generate({ entity }: { entity: EntityWithDetails }): string {
   const { capitalized } = CodeGeneratorHelper.getNames(entity);
-  const imports: string[] = [];
-  const code: string[] = [];
-  imports.push(`import { RowWithDetails } from "~/utils/db/entities/rows.db.server";`);
-
-  code.push("");
-  code.push(`export type ${capitalized}Dto = {`);
-  code.push(`  row: RowWithDetails;`);
-  code.push(`  prefix: string;`);
-  code.push(`  // Custom Row Properties:`);
+  const imports: string[] = [`import { RowWithDetails } from "~/utils/db/entities/rows.db.server";`];
+  const code: string[] = [
+    "",
+    `export type ${capitalized}Dto = {`,
+    `  row: RowWithDetails;`,
+    `  prefix: string;`,
+    `  // Custom Row Properties:`
+  ];
   entity.properties
     .filter((f) => !f.isDefault)
     .forEach((property) => {

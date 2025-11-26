@@ -7,7 +7,7 @@ import { useRootData } from "~/utils/data/useRootData";
 import { EmailSenderWithoutApiKey } from "~/modules/emailMarketing/db/emailSender";
 
 interface Props {
-  item?: EmailSenderWithoutApiKey;
+  readonly item?: EmailSenderWithoutApiKey;
 }
 
 export default function EmailSenderForm({ item }: Props) {
@@ -17,12 +17,9 @@ export default function EmailSenderForm({ item }: Props) {
   const [stream, setStream] = useState<string>(item?.stream ?? "broadcast");
   const [apiKey, setApiKey] = useState<string>("*******************");
   const [fromEmail, setFromEmail] = useState<string>(item?.fromEmail ?? "marketing@" + rootData.appConfiguration.app.domain);
-  // const [fromName, setFromName] = useState<string>(item?.fromName ?? "");
-  // const [replyToEmail, setReplyToEmail] = useState<string>(item?.replyToEmail ?? "");
 
   return (
     <FormGroup id={item?.id} editing={true}>
-      {/* <input type="hidden" name="order" value={order} hidden readOnly /> */}
       <InputSelect
         name="provider"
         title={t("emailMarketing.senders.provider")}
@@ -39,8 +36,6 @@ export default function EmailSenderForm({ item }: Props) {
       <InputText name="stream" title={t("emailMarketing.senders.stream") + " ID"} value={stream} setValue={setStream} required />
       <InputText type="password" name="apiKey" title={t("emailMarketing.senders.apiKey")} value={apiKey} setValue={setApiKey} required disabled={!!item} />
       <InputText name="fromEmail" title={t("emailMarketing.senders.fromEmail")} value={fromEmail} setValue={setFromEmail} required />
-      {/* <InputText name="fromName" title={t("emailMarketing.senders.fromName")} value={fromName} setValue={setFromName} />
-      <InputText name="replyToEmail" title={t("emailMarketing.senders.replyToEmail")} value={replyToEmail} setValue={setReplyToEmail} /> */}
     </FormGroup>
   );
 }

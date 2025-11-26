@@ -1,6 +1,6 @@
 import hljs from "highlight.js";
 
-export default function CodeBlock({ code, language = "ts" }: { code: string; language?: "js" | "ts" | "shell" }) {
+export default function CodeBlock({ code, language = "ts" }: Readonly<{ code: string; language?: "js" | "ts" | "shell" }>) {
   return (
     <div className="prose">
       <pre data-syntax={language}>

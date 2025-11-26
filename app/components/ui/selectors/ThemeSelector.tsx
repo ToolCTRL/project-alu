@@ -22,7 +22,7 @@ interface Props {
   disabled?: boolean;
 }
 
-export default function ThemeSelector({ className, variant = "primary", disabled }: Props) {
+export default function ThemeSelector({ className, variant = "primary", disabled }: Readonly<Props>) {
   let location = useLocation();
   const fetcher = useFetcher();
   const rootData = useRootData();
@@ -48,10 +48,8 @@ export default function ThemeSelector({ className, variant = "primary", disabled
     });
   }
 
-  return (
-    <Fragment>
-      {variant === "primary" || variant === "secondary" ? (
-        <DropdownMenu>
+  const renderPrimaryOrSecondary = () => (
+    <DropdownMenu>
           <DropdownMenuTrigger disabled={disabled} className={clsx(className, "select-none")} asChild>
             <Button
               variant="ghost"
@@ -128,7 +126,9 @@ export default function ThemeSelector({ className, variant = "primary", disabled
             </DropdownMenuGroup>
           </DropdownMenuContent>
         </DropdownMenu>
-      ) : variant === "tertiary" ? (
+  );
+
+  const renderTertiary = () => (
         <Select value={rootData.appConfiguration.app.theme} onValueChange={(e) => select(e.toString())}>
           <SelectTrigger className={className}>
             <SelectValue
@@ -145,9 +145,9 @@ export default function ThemeSelector({ className, variant = "primary", disabled
           </SelectTrigger>
           <SelectContent>
             <SelectGroup>
-              {defaultThemes.map((item, idx) => {
+              {defaultThemes.map((item) => {
                 return (
-                  <SelectItem key={idx} value={item.value}>
+                  <SelectItem key={item.value} value={item.value}>
                     {item.name}
                   </SelectItem>
                 );
@@ -155,7 +155,11 @@ export default function ThemeSelector({ className, variant = "primary", disabled
             </SelectGroup>
           </SelectContent>
         </Select>
-      ) : null}
+  );
+
+  return (
+    <Fragment>
+      {variant === "primary" || variant === "secondary" ? renderPrimaryOrSecondary() : variant === "tertiary" ? renderTertiary() : null}
     </Fragment>
   );
 }

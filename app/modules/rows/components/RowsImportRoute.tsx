@@ -467,13 +467,7 @@ function MapFields({ entity, data, onConfirm }: { entity: EntityWithDetails; dat
           disabled={rawData.columns.filter((f) => f.name).length === 0 || uniqueRows.length === 0}
           onClick={removeDuplicatesAndConfirm}
         >
-          {uniqueRows.length === 0 ? (
-            <div>
-              <div className="">No rows</div>
-            </div>
-          ) : (
-            <>{t("shared.continue")}</>
-          )}
+          {uniqueRows.length === 0 ? <div className="">No rows</div> : t("shared.continue")}
         </ButtonPrimary>
       </div>
 
@@ -625,7 +619,7 @@ function Confirm({
     e.stopPropagation();
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
-    const tag = window.prompt("tag", "import");
+    const tag = globalThis.prompt("tag", "import");
     formData.set("tag", tag ?? "");
     submit(formData, {
       method: "post",

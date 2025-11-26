@@ -1,4 +1,4 @@
-export default function Magic({ className }: { className: string }) {
+export default function Magic({ className }: Readonly<{ className: string }>) {
   return (
     <svg
       width="469"

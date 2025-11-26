@@ -5,7 +5,7 @@ export type BannerBlockDto = {
   href?: string;
   target?: undefined | "_blank";
   icon?: string;
-  cta: {
+  cta: readonly {
     text: string;
     href: string;
     target?: undefined | "_blank";

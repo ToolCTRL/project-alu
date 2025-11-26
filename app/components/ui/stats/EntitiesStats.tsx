@@ -5,10 +5,10 @@ import { Stat } from "~/application/dtos/stats/Stat";
 import { StatChange } from "~/application/dtos/stats/StatChange";
 
 interface Props {
-  items: Stat[];
+  readonly items: Stat[];
 }
 
-export function EntitiesStats({ items }: Props) {
+export function EntitiesStats({ items }: Readonly<Props>) {
   const { t } = useTranslation();
   const navigation = useNavigation();
   const loading = navigation.state === "loading";
@@ -45,36 +45,7 @@ export function EntitiesStats({ items }: Props) {
                     "inline-flex items-baseline rounded-full px-2.5 py-0.5 text-sm font-medium md:mt-2 lg:mt-0"
                   )}
                 >
-                  {item.changeType === StatChange.Increase ? (
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      className="-ml-1 mr-0.5 h-5 w-5 shrink-0 self-center text-teal-500"
-                      viewBox="0 0 20 20"
-                      fill="currentColor"
-                    >
-                      <path
-                        fillRule="evenodd"
-                        d="M5.293 9.707a1 1 0 010-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 01-1.414 1.414L11 7.414V15a1 1 0 11-2 0V7.414L6.707 9.707a1 1 0 01-1.414 0z"
-                        clipRule="evenodd"
-                      />
-                    </svg>
-                  ) : item.changeType === StatChange.Decrease ? (
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      className="-ml-1 mr-0.5 h-5 w-5 shrink-0 self-center text-rose-500"
-                      viewBox="0 0 20 20"
-                      fill="currentColor"
-                    >
-                      <path
-                        fillRule="evenodd"
-                        d="M14.707 10.293a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 111.414-1.414L9 12.586V5a1 1 0 012 0v7.586l2.293-2.293a1 1 0 011.414 0z"
-                        clipRule="evenodd"
-                      />
-                    </svg>
-                  ) : (
-                    <div className=" text-muted-foreground">-</div>
-                  )}
-
+                  {renderChangeIcon(item.changeType)}
                   <span className="sr-only">{item.changeType === StatChange.Increase ? "Increased" : "Decreased"} by</span>
                   {item.change}
                 </div>
@@ -85,4 +56,42 @@ export function EntitiesStats({ items }: Props) {
       </dl>
     </div>
   );
+}
+
+function renderChangeIcon(changeType: StatChange | undefined) {
+  if (changeType === StatChange.Increase) {
+    return (
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        className="-ml-1 mr-0.5 h-5 w-5 shrink-0 self-center text-teal-500"
+        viewBox="0 0 20 20"
+        fill="currentColor"
+      >
+        <path
+          fillRule="evenodd"
+          d="M5.293 9.707a1 1 0 010-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 01-1.414 1.414L11 7.414V15a1 1 0 11-2 0V7.414L6.707 9.707a1 1 0 01-1.414 0z"
+          clipRule="evenodd"
+        />
+      </svg>
+    );
+  }
+
+  if (changeType === StatChange.Decrease) {
+    return (
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        className="-ml-1 mr-0.5 h-5 w-5 shrink-0 self-center text-rose-500"
+        viewBox="0 0 20 20"
+        fill="currentColor"
+      >
+        <path
+          fillRule="evenodd"
+          d="M14.707 10.293a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 111.414-1.414L9 12.586V5a1 1 0 012 0v7.586l2.293-2.293a1 1 0 011.414 0z"
+          clipRule="evenodd"
+        />
+      </svg>
+    );
+  }
+
+  return <div className=" text-muted-foreground">-</div>;
 }

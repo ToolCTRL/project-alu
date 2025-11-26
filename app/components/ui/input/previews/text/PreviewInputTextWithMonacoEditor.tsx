@@ -30,7 +30,7 @@ export default function PreviewInputTextWithMonacoEditor() {
           />
 
           <div className="h-64 space-y-1 overflow-auto">
-            <label className="text-muted-foreground text-xs font-medium">Preview</label>
+            <div className="text-muted-foreground text-xs font-medium">Preview</div>
             <div className="prose border-border rounded-md border-2 border-dashed p-6">
               <div dangerouslySetInnerHTML={{ __html: marked(markdownValue) ?? "" }} />
             </div>

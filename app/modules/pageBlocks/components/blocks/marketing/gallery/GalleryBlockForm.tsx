@@ -8,7 +8,7 @@ import InputText from "~/components/ui/input/InputText";
 import CollapsibleRow from "~/components/ui/tables/CollapsibleRow";
 import PageBlockUtils from "~/modules/pageBlocks/components/blocks/PageBlockUtils";
 
-export default function GalleryBlockForm({ item, onUpdate }: { item?: GalleryBlockDto; onUpdate: (item: GalleryBlockDto) => void }) {
+export default function GalleryBlockForm({ item, onUpdate }: { readonly item?: GalleryBlockDto; readonly onUpdate: (item: GalleryBlockDto) => void }) {
   const { t } = useTranslation();
   const [state, setState] = useState<GalleryBlockDto>(item || PageBlockUtils.defaultBlocks.gallery!);
   useEffect(() => {
@@ -37,7 +37,7 @@ export default function GalleryBlockForm({ item, onUpdate }: { item?: GalleryBlo
         <div className="flex flex-col space-y-2">
           {state.items.map((item, index) => (
             <CollapsibleRow
-              key={index}
+              key={`gallery-item-${index}-${item.title}`}
               title={item.title}
               value={item.title}
               initial={!item.src}

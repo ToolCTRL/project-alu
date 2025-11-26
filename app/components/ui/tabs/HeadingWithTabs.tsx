@@ -2,7 +2,7 @@ import { useLocation } from "react-router";
 import clsx from "clsx";
 import UrlUtils from "~/utils/app/UrlUtils";
 
-export default function HeadingWithTabs({ tabs }: { tabs: { name: string; href: string }[] }) {
+export default function HeadingWithTabs({ tabs }: { readonly tabs: { name: string; href: string }[] }) {
   const location = useLocation();
   function isCurrent(idx: number) {
     return currentTab() === tabs[idx];

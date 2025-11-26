@@ -10,23 +10,17 @@ import FormulaHelpers from "../utils/FormulaHelpers";
 import InputSelect from "~/components/ui/input/InputSelect";
 import InputRadioGroupCards from "~/components/ui/input/InputRadioGroupCards";
 
-export default function FormulaComponentModal({
-  item,
-  idx,
-  order,
-  open,
-  onClose,
-  onSave,
-  onRemove,
-}: {
-  item: FormulaComponentDto | undefined;
-  idx: number | undefined;
-  order: number;
-  open: boolean;
-  onClose: () => void;
-  onSave: (item: FormulaComponentDto) => void;
-  onRemove?: (idx: number) => void;
-}) {
+interface FormulaComponentModalProps {
+  readonly item: FormulaComponentDto | undefined;
+  readonly idx: number | undefined;
+  readonly order: number;
+  readonly open: boolean;
+  readonly onClose: () => void;
+  readonly onSave: (item: FormulaComponentDto) => void;
+  readonly onRemove?: (idx: number) => void;
+}
+
+export default function FormulaComponentModal({ item, idx, order, open, onClose, onSave, onRemove }: FormulaComponentModalProps) {
   const { t } = useTranslation();
   const [type, setType] = useState<FormulaComponentType>(item?.type ?? "variable");
   const [value, setValue] = useState<string>(item?.value ?? "");
@@ -47,10 +41,51 @@ export default function FormulaComponentModal({
     e.preventDefault();
     onConfirm();
   }
+
   function onClosing() {
     setType("variable");
     setValue("");
     onClose();
+  }
+
+  function renderComponentInput() {
+    if (type === "variable") {
+      return <InputText autoFocus name="name" title="Name" value={value} setValue={(e) => setValue(e.toString())} required />;
+    }
+    if (type === "operator") {
+      return (
+        <InputSelect
+          autoFocus
+          name="operator"
+          title="Operator"
+          value={value}
+          setValue={(e) => setValue(FormulaHelpers.getOperatorType(e?.toString() ?? ""))}
+          required
+          options={FormulaOperatorTypes.map((item) => {
+            return { name: item, value: item };
+          })}
+        />
+      );
+    }
+    if (type === "parenthesis") {
+      return (
+        <InputSelect
+          autoFocus
+          name="parenthesis"
+          title="Parenthesis"
+          value={value}
+          setValue={(e) => setValue(FormulaHelpers.getParenthesisType(e?.toString() ?? ""))}
+          required
+          options={["OPEN", "CLOSE"].map((item) => {
+            return { name: item, value: item };
+          })}
+        />
+      );
+    }
+    if (type === "value") {
+      return <InputText autoFocus name="value" title="Value" value={value} setValue={(e) => setValue(e.toString())} required />;
+    }
+    return null;
   }
 
   return (
@@ -77,35 +112,7 @@ export default function FormulaComponentModal({
                 ]}
               />
             </div>
-            {type === "variable" ? (
-              <InputText autoFocus name="name" title="Name" value={value} setValue={(e) => setValue(e.toString())} required />
-            ) : type === "operator" ? (
-              <InputSelect
-                autoFocus
-                name="operator"
-                title="Operator"
-                value={value}
-                setValue={(e) => setValue(FormulaHelpers.getOperatorType(e?.toString() ?? ""))}
-                required
-                options={FormulaOperatorTypes.map((item) => {
-                  return { name: item, value: item };
-                })}
-              />
-            ) : type === "parenthesis" ? (
-              <InputSelect
-                autoFocus
-                name="parenthesis"
-                title="Parenthesis"
-                value={value}
-                setValue={(e) => setValue(FormulaHelpers.getParenthesisType(e?.toString() ?? ""))}
-                required
-                options={["OPEN", "CLOSE"].map((item) => {
-                  return { name: item, value: item };
-                })}
-              />
-            ) : type === "value" ? (
-              <InputText autoFocus name="value" title="Value" value={value} setValue={(e) => setValue(e.toString())} required />
-            ) : null}
+            {renderComponentInput()}
           </div>
         </div>
         <div className="mt-3 flex justify-between space-x-2">

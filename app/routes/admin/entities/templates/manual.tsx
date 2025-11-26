@@ -1,5 +1,4 @@
-import { ActionFunction, useActionData } from "react-router";
-import { Form, Link } from "react-router";
+import { ActionFunction, useActionData, Form, Link } from "react-router";
 import { useState } from "react";
 import PreviewEntitiesTemplate from "~/components/entities/templates/PreviewEntitiesTemplate";
 import ButtonPrimary from "~/components/ui/buttons/ButtonPrimary";
@@ -87,13 +86,12 @@ export default function AdminEntityTemplatesManual() {
       ]}
     >
       <div className="md:border-border md:border-t md:py-2">
-        {actionData?.error ? (
-          <>
-            <p id="form-error-message" className="py-2 text-sm text-rose-500" role="alert">
-              {actionData.error}
-            </p>
-          </>
-        ) : actionData?.success ? (
+        {actionData?.error && (
+          <p id="form-error-message" className="py-2 text-sm text-rose-500" role="alert">
+            {actionData.error}
+          </p>
+        )}
+        {actionData?.success && (
           <>
             <p id="form-success-message" className="text-text-500 py-2 text-sm" role="alert">
               {actionData.success}
@@ -102,66 +100,64 @@ export default function AdminEntityTemplatesManual() {
               Go to entities
             </Link>
           </>
-        ) : actionData?.previewTemplate === undefined ? (
+        )}
+        {!actionData?.error && !actionData?.success && actionData?.previewTemplate === undefined && (
+          <Form method="post">
+            <input type="hidden" name="action" value="preview" hidden readOnly />
+            <div className="space-y-3">
+              <div className="flex flex-wrap gap-2">
+                {defaultTemplates.map((t) => (
+                  <button
+                    key={t.title}
+                    type="button"
+                    onClick={() => setConfiguration(JSON.stringify(t.template, null, "\t"))}
+                    className="bg-theme-100 text-theme-700 hover:bg-theme-200 focus:ring-ring inline-flex items-center rounded border border-transparent px-2.5 py-1.5 text-xs font-medium focus:outline-hidden focus:ring-2 focus:ring-offset-2"
+                  >
+                    {t.title}
+                  </button>
+                ))}
+              </div>
+              <div>
+                <InputText
+                  name="configuration"
+                  title="Configuration"
+                  editor="monaco"
+                  editorLanguage="json"
+                  value={configuration}
+                  setValue={setConfiguration}
+                  editorSize="lg"
+                />
+              </div>
+              <div className="flex justify-end">
+                <ButtonPrimary type="submit">Preview</ButtonPrimary>
+              </div>
+            </div>
+          </Form>
+        )}
+        {!actionData?.error && !actionData?.success && actionData?.previewTemplate !== undefined && (
           <>
+            <div className="md:border-border md:border-b md:py-2">
+              <div className="flex items-center justify-between">
+                <h3 className="text-foreground text-lg font-medium leading-6">Preview entities</h3>
+              </div>
+            </div>
             <Form method="post">
-              <input type="hidden" name="action" value="preview" hidden readOnly />
-              <div className="space-y-3">
-                <div className="flex flex-wrap gap-2">
-                  {defaultTemplates.map((t) => (
-                    <button
-                      key={t.title}
-                      type="button"
-                      onClick={() => setConfiguration(JSON.stringify(t.template, null, "\t"))}
-                      className="bg-theme-100 text-theme-700 hover:bg-theme-200 focus:ring-ring inline-flex items-center rounded border border-transparent px-2.5 py-1.5 text-xs font-medium focus:outline-hidden focus:ring-2 focus:ring-offset-2"
-                    >
-                      {t.title}
-                    </button>
-                  ))}
-                </div>
-                <div>
-                  <InputText
-                    name="configuration"
-                    title="Configuration"
-                    editor="monaco"
-                    editorLanguage="json"
-                    value={configuration}
-                    setValue={setConfiguration}
-                    editorSize="lg"
-                  />
-                </div>
-                <div className="flex justify-end">
-                  <ButtonPrimary type="submit">Preview</ButtonPrimary>
+              <input type="hidden" name="action" value="create" hidden readOnly />
+              <input type="hidden" name="configuration" value={configuration} hidden readOnly />
+              <div className="space-y-2">
+                <PreviewEntitiesTemplate template={actionData.previewTemplate} />
+                <div className="flex justify-end space-x-2">
+                  <ButtonPrimary type="submit">
+                    {actionData.previewTemplate.entities.length === 1 ? (
+                      <span>Create 1 entity</span>
+                    ) : (
+                      <span>Create {actionData.previewTemplate.entities.length} entities</span>
+                    )}
+                  </ButtonPrimary>
                 </div>
               </div>
             </Form>
           </>
-        ) : (
-          actionData?.previewTemplate !== undefined && (
-            <>
-              <div className="md:border-border md:border-b md:py-2">
-                <div className="flex items-center justify-between">
-                  <h3 className="text-foreground text-lg font-medium leading-6">Preview entities</h3>
-                </div>
-              </div>
-              <Form method="post">
-                <input type="hidden" name="action" value="create" hidden readOnly />
-                <input type="hidden" name="configuration" value={configuration} hidden readOnly />
-                <div className="space-y-2">
-                  <PreviewEntitiesTemplate template={actionData.previewTemplate} />
-                  <div className="flex justify-end space-x-2">
-                    <ButtonPrimary type="submit">
-                      {actionData.previewTemplate.entities.length === 1 ? (
-                        <span>Create 1 entity</span>
-                      ) : (
-                        <span>Create {actionData.previewTemplate.entities.length} entities</span>
-                      )}
-                    </ButtonPrimary>
-                  </div>
-                </div>
-              </Form>
-            </>
-          )
         )}
       </div>
     </EditPageLayout>

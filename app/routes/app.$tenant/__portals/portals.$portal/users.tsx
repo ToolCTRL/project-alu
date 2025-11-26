@@ -1,5 +1,4 @@
-import { ActionFunctionArgs, LoaderFunctionArgs, MetaFunction, redirect, useActionData, useLoaderData } from "react-router";
-import { useNavigate, useOutlet, useParams, useSubmit } from "react-router";
+import { ActionFunctionArgs, LoaderFunctionArgs, MetaFunction, redirect, useActionData, useLoaderData, useNavigate, useOutlet, useParams, useSubmit } from "react-router";
 import { useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
@@ -56,7 +55,7 @@ export const action = async ({ request, params }: ActionFunctionArgs) => {
   const userId = form.get("id")?.toString() ?? "";
 
   const tenantId = await getTenantIdOrNull({ request, params });
-  const portal = await getPortalById(tenantId, params.portal!);
+  const portal = await getPortalById(tenantId, params.portal ?? "");
   if (!portal) {
     return Response.json({ error: t("shared.notFound") }, { status: 404 });
   }

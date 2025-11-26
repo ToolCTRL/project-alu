@@ -7,7 +7,9 @@ export const loader = (args: LoaderFunctionArgs) => EmailMarketing_Summary.loade
 
 export const meta: MetaFunction<typeof loader> = ({ data }) => [{ title: data?.title }];
 
-export default () => <EmailMarketingSummaryRoute />;
+export default function EmailMarketingSummary() {
+  return <EmailMarketingSummaryRoute />;
+}
 
 export function ErrorBoundary() {
   return <ServerError />;

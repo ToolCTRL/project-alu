@@ -228,7 +228,6 @@ export async function deleteEntityPermissions(entity: Entity) {
 
 export async function createEntityPermissions(entity: Entity) {
   const allUserRoles = await getAllRolesNames();
-  // const assignToAllUserRoles = allUserRoles.filter((f) => f.assignToNewUsers);
   const entityPermissions = getEntityPermissions(entity);
   await Promise.all(
     entityPermissions.map(async (permission, idx) => {

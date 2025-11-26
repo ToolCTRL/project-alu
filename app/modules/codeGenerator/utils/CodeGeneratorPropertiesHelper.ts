@@ -387,18 +387,18 @@ function uiForm({ code, imports, property, index }: { code: string[]; imports: s
   }
 }
 
-// Cell renderers for different property types
-const cellRenderers: Record<PropertyType, (code: string[], imports: string[], property: PropertyWithDetails, props: string[]) => void> = {
-  [PropertyType.TEXT]: (code, imports, property, props) => {
+function uiCell({ code, imports, property }: { code: string[]; imports: string[]; property: PropertyWithDetails }) {
+  const props: string[] = [];
+
+  if (property.type === PropertyType.TEXT) {
     code.push(`{
             name: "${property.name}",
             title: t("${property.title}"),
             value: (item) => <div className="max-w-sm truncate">{item.${property.name}}</div>,
           },`);
-  },
-  [PropertyType.NUMBER]: (code, imports, property, props) => {
+  } else if (property.type === PropertyType.NUMBER) {
     imports.push(`import RowNumberCell from "~/components/entities/rows/cells/RowNumberCell";`);
-    let format = PropertyAttributeHelper.getPropertyAttributeValue_String(property, PropertyAttributeName.FormatNumber);
+    const format = PropertyAttributeHelper.getPropertyAttributeValue_String(property, PropertyAttributeName.FormatNumber);
     if (format) {
       props.push(`format="${format}"`);
     }
@@ -409,7 +409,7 @@ const cellRenderers: Record<PropertyType, (code: string[], imports: string[], pr
           },`);
   } else if (property.type === PropertyType.DATE) {
     imports.push(`import RowDateCell from "~/components/entities/rows/cells/RowDateCell";`);
-    let format = PropertyAttributeHelper.getPropertyAttributeValue_String(property, PropertyAttributeName.FormatDate);
+    const format = PropertyAttributeHelper.getPropertyAttributeValue_String(property, PropertyAttributeName.FormatDate);
     if (format) {
       props.push(`format="${format}"`);
     }
@@ -420,19 +420,15 @@ const cellRenderers: Record<PropertyType, (code: string[], imports: string[], pr
           },`);
   } else if (property.type === PropertyType.SELECT) {
     imports.push(`import RowSelectedOptionCell from "~/components/entities/rows/cells/RowSelectedOptionCell";`);
-    // const withColors = property.options.filter((f) => f.color).length > 0;
-    // if (withColors) {
     imports.push(`import { Colors } from "~/application/enums/shared/Colors";`);
-    // }
-    props.push(
-      `options={[${property.options.map((option) => {
-        return `{ name: ${option.name === null ? "null" : `"${option.name}"`}, value: "${option.value}", color: ${getColor(option.color)} }`;
-      })}]}`
-    );
+    const optionName = (option: { name: string | null; value: string }) => option.name === null ? "null" : `"${option.name}"`;
+    const optionValue = (option: { value: string }) => option.value;
+    const optionsStr = property.options.map((option) => `{ name: ${optionName(option)}, value: "${optionValue(option)}", color: ${getColor(option.color)} }`).join(", ");
+    props.push(`options={[${optionsStr}]}`);
     let display: SelectOptionsDisplay = "Value";
-    let format = PropertyAttributeHelper.getPropertyAttributeValue_String(property, PropertyAttributeName.SelectOptions);
-    if (format) {
-      display = format as SelectOptionsDisplay;
+    const formatAttr = PropertyAttributeHelper.getPropertyAttributeValue_String(property, PropertyAttributeName.SelectOptions);
+    if (formatAttr) {
+      display = formatAttr as SelectOptionsDisplay;
     }
     code.push(`{
             name: "${property.name}",
@@ -441,7 +437,7 @@ const cellRenderers: Record<PropertyType, (code: string[], imports: string[], pr
           },`);
   } else if (property.type === PropertyType.BOOLEAN) {
     imports.push(`import RowBooleanCell from "~/components/entities/rows/cells/RowBooleanCell";`);
-    let format = PropertyAttributeHelper.getPropertyAttributeValue_String(property, PropertyAttributeName.FormatBoolean);
+    const format = PropertyAttributeHelper.getPropertyAttributeValue_String(property, PropertyAttributeName.FormatBoolean);
     if (format) {
       props.push(`format="${format}"`);
     }
@@ -467,11 +463,10 @@ const cellRenderers: Record<PropertyType, (code: string[], imports: string[], pr
     }
   } else if (property.type === PropertyType.MULTI_SELECT) {
     imports.push(`import PropertyMultipleValueBadge from "~/components/entities/properties/PropertyMultipleValueBadge";`);
-    props.push(
-      `options={[${property.options.map((option) => {
-        return `{ name: ${option.name === null ? "null" : `"${option.name}"`}, value: "${option.value}" }`;
-      })}]}`
-    );
+    const optionName = (option: { name: string | null; value: string }) => option.name === null ? "null" : `"${option.name}"`;
+    const optionValue = (option: { value: string }) => option.value;
+    const optionsStr = property.options.map((option) => `{ name: ${optionName(option)}, value: "${optionValue(option)}" }`).join(", ");
+    props.push(`options={[${optionsStr}]}`);
     code.push(`{
             name: "${property.name}",
             title: t("${property.title}"),
@@ -479,7 +474,7 @@ const cellRenderers: Record<PropertyType, (code: string[], imports: string[], pr
           },`);
   } else if (property.type === PropertyType.RANGE_NUMBER) {
     imports.push(`import RowRangeNumberCell from "~/components/entities/rows/cells/RowRangeNumberCell";`);
-    let format = PropertyAttributeHelper.getPropertyAttributeValue_String(property, PropertyAttributeName.FormatNumber);
+    const format = PropertyAttributeHelper.getPropertyAttributeValue_String(property, PropertyAttributeName.FormatNumber);
     if (format) {
       props.push(`format="${format}"`);
     }
@@ -490,7 +485,7 @@ const cellRenderers: Record<PropertyType, (code: string[], imports: string[], pr
           },`);
   } else if (property.type === PropertyType.RANGE_DATE) {
     imports.push(`import RowRangeDateCell from "~/components/entities/rows/cells/RowRangeDateCell";`);
-    let format = PropertyAttributeHelper.getPropertyAttributeValue_String(property, PropertyAttributeName.FormatNumber);
+    const format = PropertyAttributeHelper.getPropertyAttributeValue_String(property, PropertyAttributeName.FormatDate);
     if (format) {
       props.push(`format="${format}"`);
     }
@@ -501,11 +496,10 @@ const cellRenderers: Record<PropertyType, (code: string[], imports: string[], pr
           },`);
   } else if (property.type === PropertyType.MULTI_TEXT) {
     imports.push(`import PropertyMultipleValueBadge from "~/components/entities/properties/PropertyMultipleValueBadge";`);
-    props.push(
-      `options={[${property.options.map((option) => {
-        return `{ name: ${option.name === null ? "null" : `"${option.name}"`}, value: "${option.value}" }`;
-      })}]}`
-    );
+    const optionName = (option: { name: string | null; value: string }) => option.name === null ? "null" : `"${option.name}"`;
+    const optionValue = (option: { value: string }) => option.value;
+    const optionsStr = property.options.map((option) => `{ name: ${optionName(option)}, value: "${optionValue(option)}" }`).join(", ");
+    props.push(`options={[${optionsStr}]}`);
     code.push(`{
             name: "${property.name}",
             title: t("${property.title}"),

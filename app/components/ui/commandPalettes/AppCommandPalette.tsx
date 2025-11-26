@@ -12,7 +12,7 @@ interface Props {
   onClosed: () => void;
 }
 
-export default function AppCommandPalette({ onClosed, isOpen }: Props) {
+export default function AppCommandPalette({ onClosed, isOpen }: Readonly<Props>) {
   const { t } = useTranslation();
   const appData = useAppData();
   const navigate = useNavigate();
@@ -54,10 +54,7 @@ export default function AppCommandPalette({ onClosed, isOpen }: Props) {
 
   useEffect(() => {
     setQuery("");
-    if (!selectedCommand) {
-      setCommandSearchTitle(t("app.commands.type"));
-      setItems(getAllowedCommands(commands));
-    } else {
+    if (selectedCommand) {
       if (selectedCommand.toPath) {
         navigate(selectedCommand.toPath);
         onClose();
@@ -107,25 +104,30 @@ export default function AppCommandPalette({ onClosed, isOpen }: Props) {
           });
         }
         if (selectedCommand.command === "P") {
-          items.push({
-            title: `${t("app.commands.profile.update")}`,
-            description: `${t("app.commands.profile.updateDescription")}`,
-            command: "U",
-            bgClassName: "bg-pink-600",
-            textClassName: "text-pink-200",
-            toPath: UrlUtils.currentTenantUrl(params, "settings/profile"),
-          });
-          items.push({
-            title: `${t("app.commands.profile.logout")}`,
-            description: `${t("app.commands.profile.logoutDescription")}`,
-            command: "L",
-            bgClassName: "bg-gray-600",
-            textClassName: "text-white",
-            toPath: "/logout",
-          });
+          items.push(
+            {
+              title: `${t("app.commands.profile.update")}`,
+              description: `${t("app.commands.profile.updateDescription")}`,
+              command: "U",
+              bgClassName: "bg-pink-600",
+              textClassName: "text-pink-200",
+              toPath: UrlUtils.currentTenantUrl(params, "settings/profile"),
+            },
+            {
+              title: `${t("app.commands.profile.logout")}`,
+              description: `${t("app.commands.profile.logoutDescription")}`,
+              command: "L",
+              bgClassName: "bg-gray-600",
+              textClassName: "text-white",
+              toPath: "/logout",
+            }
+          );
         }
         setItems(getAllowedCommands(items));
       }
+    } else {
+      setCommandSearchTitle(t("app.commands.type"));
+      setItems(getAllowedCommands(commands));
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedCommand]);
@@ -146,28 +148,6 @@ export default function AppCommandPalette({ onClosed, isOpen }: Props) {
     }
   }, [items, query]);
 
-  // useEffect(() => {
-  //   if (!query || query.trim() === "") {
-  //     setFilteredItems(items);
-  //   } else {
-  //     const itemsByCommand = items.filter((f) => f.command.trim().toLowerCase() === query.toLowerCase().trim());
-  //     if (itemsByCommand.length === 1) {
-  //       setQuery("");
-  //       setSelectedCommand(itemsByCommand[0]);
-  //       setFilteredItems(itemsByCommand);
-  //     } else {
-  //       setFilteredItems(
-  //         itemsByCommand.filter(
-  //           (item) =>
-  //             item.command.trim().toLowerCase() === query.toLowerCase().trim() ||
-  //             item.title.toLowerCase().trim().includes(query.toLowerCase().trim()) ||
-  //             item.description.toLowerCase().trim().includes(query.toLowerCase().trim())
-  //         )
-  //       );
-  //     }
-  //   }
-  // }, [items, query]);
-
   function getAllowedCommands(items: Command[]) {
     return items.filter((f) => !f.adminOnly || appData.user?.admin);
   }
@@ -183,8 +163,7 @@ export default function AppCommandPalette({ onClosed, isOpen }: Props) {
   }
 
   return (
-    <>
-      <Transition show={isOpen} as={Fragment} afterLeave={() => setQuery("")}>
+    <Transition show={isOpen} as={Fragment} afterLeave={() => setQuery("")}>
         <Dialog as="div" className="fixed inset-0 z-50 overflow-y-auto p-4 sm:p-6 md:p-20" onClose={onClose}>
           <TransitionChild
             as={Fragment}
@@ -290,6 +269,5 @@ export default function AppCommandPalette({ onClosed, isOpen }: Props) {
           </TransitionChild>
         </Dialog>
       </Transition>
-    </>
   );
 }

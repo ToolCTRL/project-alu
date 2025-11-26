@@ -11,19 +11,45 @@ import RoleBadge from "./RoleBadge";
 
 interface Props {
   items: RoleWithPermissionsAndUsers[];
-  className?: string;
   canUpdate: boolean;
   tenantId?: string | null;
 }
 
-export default function RolesTable({ items, canUpdate = true, tenantId = null }: Props) {
+function RoleNameCell(item: RoleWithPermissionsAndUsers) {
+  return <RoleBadge item={item} />;
+}
+
+function RolePermissionsCell({ item, tenantId, onSelectRole }: { readonly item: RoleWithPermissionsAndUsers; readonly tenantId: string | null; readonly onSelectRole: (role: RoleWithPermissionsAndUsers) => void }) {
+  return (
+    <div className="w-40 truncate">
+      {tenantId ? (
+        <ButtonTertiary onClick={() => onSelectRole(item)}>View {item.permissions.length} permissions</ButtonTertiary>
+      ) : (
+        <div>
+          {item.permissions.length}{" "}
+          <span className="text-muted-foreground max-w-sm text-xs italic">({item.permissions.map((f) => f.permission.name).join(", ")})</span>{" "}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function RoleAssignToNewUsersCell(item: RoleWithPermissionsAndUsers) {
+  return item.assignToNewUsers ? <CheckIcon className="h-4 w-4 text-teal-500" /> : <XIcon className="h-4 w-4 text-gray-300" />;
+}
+
+function RoleModalPermissionNameCell(item: { permission: { name: string; description: string } }) {
+  return <RoleBadge item={item.permission} />;
+}
+
+export default function RolesTable({ items, canUpdate = true, tenantId = null }: Readonly<Props>) {
   const { t } = useTranslation();
 
   const [actions, setActions] = useState<any[]>([]);
   const [headers, setHeaders] = useState<RowHeaderDisplayDto<RoleWithPermissionsAndUsers>[]>([]);
 
   const [permissionsModalOpen, setPermissionsModalOpen] = useState(false);
-  const [selectedRole, setSelectedRow] = useState<RoleWithPermissionsAndUsers>();
+  const [selectedRole, setSelectedRole] = useState<RoleWithPermissionsAndUsers>();
 
   useEffect(() => {
     if (canUpdate) {
@@ -40,7 +66,7 @@ export default function RolesTable({ items, canUpdate = true, tenantId = null }:
         name: "name",
         title: t("models.role.name"),
         value: (i) => i.name,
-        formattedValue: (i) => <RoleBadge item={i} />,
+        formattedValue: RoleNameCell,
         className: "max-w-xs truncate",
       },
       {
@@ -53,18 +79,7 @@ export default function RolesTable({ items, canUpdate = true, tenantId = null }:
         name: "permissions",
         title: t("models.role.permissions"),
         value: (i) => i.permissions.length,
-        formattedValue: (i) => (
-          <div className="w-40 truncate">
-            {tenantId ? (
-              <ButtonTertiary onClick={() => setSelectedRow(i)}>View {i.permissions.length} permissions</ButtonTertiary>
-            ) : (
-              <div>
-                {i.permissions.length}{" "}
-                <span className="text-muted-foreground max-w-sm text-xs italic">({i.permissions.map((f) => f.permission.name).join(", ")})</span>{" "}
-              </div>
-            )}
-          </div>
-        ),
+        formattedValue: (i) => <RolePermissionsCell item={i} tenantId={tenantId} onSelectRole={setSelectedRole} />,
         className: "max-w-xs truncate",
       },
       {
@@ -78,7 +93,7 @@ export default function RolesTable({ items, canUpdate = true, tenantId = null }:
         name: "assignToNewUsers",
         title: t("models.role.assignToNewUsers"),
         value: (i) => i.assignToNewUsers,
-        formattedValue: (i) => (i.assignToNewUsers ? <CheckIcon className="h-4 w-4 text-teal-500" /> : <XIcon className="h-4 w-4 text-gray-300" />),
+        formattedValue: RoleAssignToNewUsersCell,
       });
     }
     setHeaders(headers);
@@ -91,7 +106,7 @@ export default function RolesTable({ items, canUpdate = true, tenantId = null }:
 
   useEffect(() => {
     if (!permissionsModalOpen) {
-      setSelectedRow(undefined);
+      setSelectedRole(undefined);
     }
   }, [permissionsModalOpen]);
 
@@ -112,7 +127,7 @@ export default function RolesTable({ items, canUpdate = true, tenantId = null }:
               name: "name",
               title: t("models.permission.name"),
               value: (i) => i.permission.name,
-              formattedValue: (i) => <RoleBadge item={i.permission} />,
+              formattedValue: RoleModalPermissionNameCell,
             },
             {
               name: "description",

@@ -1,5 +1,4 @@
-import { LoaderFunctionArgs, MetaFunction, useLoaderData } from "react-router";
-import { Link, useParams } from "react-router";
+import { LoaderFunctionArgs, MetaFunction, useLoaderData, Link, useParams } from "react-router";
 import { useTranslation } from "react-i18next";
 import { MetaTagsDto } from "~/application/dtos/seo/MetaTagsDto";
 import Page404 from "~/components/pages/Page404";
@@ -31,7 +30,7 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
   if (!post) {
     return Response.json({ error: t("shared.notFound") }, { status: 404 });
   }
-  if (!post.published && (!user || !user.admin)) {
+  if (!post.published && !user?.admin) {
     return Response.json({ error: t("shared.notFound") }, { status: 404 });
   }
   let metatags: MetaTagsDto = [
@@ -41,7 +40,7 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
     { property: "og:image", content: post.image },
     { property: "og:title", content: post.title },
     { property: "og:description", content: post.description },
-    { property: "og:url", content: !tenantId ? `${getBaseURL(request)}/blog/${post.slug}` : `${getBaseURL(request)}/b/${params.tenant}/${post.slug}` },
+    { property: "og:url", content: tenantId ? `${getBaseURL(request)}/b/${params.tenant}/${post.slug}` : `${getBaseURL(request)}/blog/${post.slug}` },
     { property: "twitter:image", content: post.image },
     { property: "twitter:card", content: "summary_large_image" },
     { property: "twitter:title", content: post.title },
@@ -62,23 +61,14 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
   return data;
 };
 
-export default function () {
+export default function BlogPostRoute() {
   const data = useLoaderData<LoaderData>();
   const { t } = useTranslation();
   const params = useParams();
   return (
     <div>
       <HeaderBlock />
-      {!data.post ? (
-        <Page404
-          withLogo={false}
-          customBackButton={
-            <Link to={UrlUtils.getBlogPath(params)}>
-              <span aria-hidden="true"> &larr;</span> {t("blog.backToBlog")}
-            </Link>
-          }
-        />
-      ) : (
+      {data.post ? (
         <BlogPostBlock
           item={{
             style: "simple",
@@ -87,6 +77,15 @@ export default function () {
               canEdit: data.canEdit,
             },
           }}
+        />
+      ) : (
+        <Page404
+          withLogo={false}
+          customBackButton={
+            <Link to={UrlUtils.getBlogPath(params)}>
+              <span aria-hidden="true"> &larr;</span> {t("blog.backToBlog")}
+            </Link>
+          }
         />
       )}
       <FooterBlock />

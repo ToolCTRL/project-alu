@@ -5,23 +5,23 @@ import HintTooltip from "~/components/ui/tooltips/HintTooltip";
 import { Input } from "../../input";
 
 interface Props {
-  name: string;
-  title: string;
-  valueMin?: Date | null;
-  defaultValueMin?: Date | null;
-  onChangeMin?: (date: Date) => void;
-  valueMax?: Date | null;
-  defaultValueMax?: Date | null;
-  onChangeMax?: (date: Date) => void;
-  className?: string;
-  help?: string;
-  disabled?: boolean;
-  readOnly?: boolean;
-  required?: boolean;
-  hint?: ReactNode;
-  icon?: string;
-  darkMode?: boolean;
-  autoFocus?: boolean;
+  readonly name: string;
+  readonly title: string;
+  readonly valueMin?: Date | null;
+  readonly defaultValueMin?: Date | null;
+  readonly onChangeMin?: (date: Date) => void;
+  readonly valueMax?: Date | null;
+  readonly defaultValueMax?: Date | null;
+  readonly onChangeMax?: (date: Date) => void;
+  readonly className?: string;
+  readonly help?: string;
+  readonly disabled?: boolean;
+  readonly readOnly?: boolean;
+  readonly required?: boolean;
+  readonly hint?: ReactNode;
+  readonly icon?: string;
+  readonly darkMode?: boolean;
+  readonly autoFocus?: boolean;
 }
 export default function InputDateRangeDate({
   name,
@@ -42,10 +42,6 @@ export default function InputDateRangeDate({
   darkMode,
   autoFocus,
 }: Props) {
-  // useImperativeHandle(ref, () => ({ inputMin, inputMax }));
-  // const inputMin = useRef<HTMLInputElement>(null);
-  // const inputMax = useRef<HTMLInputElement>(null);
-
   const [actualMin, setActualMin] = useState<string>("");
   const [actualMax, setActualMax] = useState<string>("");
 

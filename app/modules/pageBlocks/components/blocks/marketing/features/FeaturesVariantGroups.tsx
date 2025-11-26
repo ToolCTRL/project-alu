@@ -11,7 +11,7 @@ import ColorBorderUtils from "~/utils/shared/colors/ColorBorderUtils";
 import ColorTextUtils from "~/utils/shared/colors/ColorTextUtils";
 import ColorDarkUtils from "~/utils/shared/colors/ColorDarkUtils";
 
-export default function FeaturesVariantGroups({ item }: { item: FeaturesBlockDto }) {
+export default function FeaturesVariantGroups({ item }: { readonly item: FeaturesBlockDto }) {
   const { t } = useTranslation();
   const [selectedIdx, setSelectedIdx] = useState(0);
   const [currentFeature, setCurrentFeature] = useState<FeatureDto | null>(item.items.length > 0 ? item.items[0] : null);
@@ -56,7 +56,7 @@ export default function FeaturesVariantGroups({ item }: { item: FeaturesBlockDto
               {item.cta?.map((item, idx) => {
                 return (
                   <ButtonEvent
-                    key={idx}
+                    key={`cta-${idx}-${item.href}`}
                     to={item.href}
                     target={item.target}
                     className={clsx(
@@ -78,7 +78,7 @@ export default function FeaturesVariantGroups({ item }: { item: FeaturesBlockDto
             <div className="border border-red-500 bg-red-50 p-12">No features</div>
           ) : !currentFeature ? (
             <div className="border border-red-500 bg-red-50 p-12">No feature selected</div>
-          ) : (
+          ) : currentFeature ? (
             <div
               className={clsx(
                 "rounded-lg border p-6 shadow-2xs",
@@ -90,11 +90,18 @@ export default function FeaturesVariantGroups({ item }: { item: FeaturesBlockDto
               <div className="relative flex flex-col space-y-4 md:flex-row md:space-x-4 md:space-y-0">
                 <div className="md:w-3/12">
                   <div className="flex flex-col space-y-3">
-                    <FeaturesNav item={item} features={item.items} selectedIdx={selectedIdx} setSelectedIdx={setSelectedIdx} />
+                    <FeaturesNav item={item} features={item.items} selectedIdx={selectedIdx} setSelectedIdx={setSelectedIdx} onKeyDown={(e) => {
+                      if (e.key === "Enter" || e.key === " ") {
+                        e.preventDefault();
+                        if (selectedIdx < item.items.length - 1) {
+                          setSelectedIdx(selectedIdx + 1);
+                        }
+                      }
+                    }} />
                     <div className="space-y-1">
                       {currentFeature.subFeatures?.map((subFeature, idx) => {
                         return (
-                          <div key={idx} className="flex items-center space-x-2">
+                          <div key={`subfeature-${idx}-${subFeature.name}`} className="flex items-center space-x-2">
                             <div className="mr-3 inline-flex shrink-0 items-center justify-center text-purple-500">
                               <CheckIcon className="text-primary h-5 w-5" aria-hidden="true" />
                             </div>
@@ -133,7 +140,7 @@ export default function FeaturesVariantGroups({ item }: { item: FeaturesBlockDto
                             <div className="flex flex-wrap gap-4">
                               {currentFeature.logos.items.map((item, idx) => {
                                 return (
-                                  <div key={idx} className="flex items-center space-x-1">
+                                  <div key={`logo-${idx}-${item.name || item.img}`} className="flex items-center space-x-1">
                                     {!item.img && item.name ? (
                                       <div className="rounded-md text-base font-bold">{item.name}</div>
                                     ) : (
@@ -205,11 +212,13 @@ function FeaturesNav({
   features,
   selectedIdx,
   setSelectedIdx,
+  onKeyDown,
 }: {
-  item: FeaturesBlockDto;
-  features: FeatureDto[];
-  selectedIdx: number;
-  setSelectedIdx: (idx: number) => void;
+  readonly item: FeaturesBlockDto;
+  readonly features: FeatureDto[];
+  readonly selectedIdx: number;
+  readonly setSelectedIdx: (idx: number) => void;
+  readonly onKeyDown: (e: React.KeyboardEvent<HTMLDivElement>) => void;
 }) {
   const [secondsDisabled, setSecondsDisabled] = useState(0);
   useEffect(() => {
@@ -226,8 +235,19 @@ function FeaturesNav({
         {features.map((feature, idx) => {
           return (
             <div
-              key={idx}
+              key={`feature-nav-${idx}-${feature.name}`}
               className={clsx("m-1 flex cursor-pointer items-center space-x-2 text-lg", selectedIdx === idx ? "font-bold" : "font-bold opacity-60")}
+              role="button"
+              tabIndex={0}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" || e.key === " ") {
+                  e.preventDefault();
+                  if (!feature.disabled) {
+                    setSecondsDisabled(2);
+                    setSelectedIdx(idx);
+                  }
+                }
+              }}
               onClick={() => {
                 if (!feature.disabled) {
                   setSecondsDisabled(2);

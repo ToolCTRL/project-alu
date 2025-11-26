@@ -24,5 +24,9 @@
   "[prisma]": {
     "editor.defaultFormatter": "Prisma.prisma"
   },
-  "vite.autoStart": false
+  "vite.autoStart": false,
+  "sonarlint.connectedMode.project": {
+    "connectionId": "toolctrl",
+    "projectKey": "ToolCTRL_project-alu"
+  }
 }

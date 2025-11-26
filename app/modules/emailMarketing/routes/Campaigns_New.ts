@@ -44,7 +44,6 @@ export namespace Campaigns_New {
     let subject = form.get("subject")?.toString() ?? "";
     let htmlBody = form.get("htmlBody")?.toString() ?? "";
     let textBody = form.get("textBody")?.toString() ?? "";
-    // console.log({ action, email, subject });
     const sender = await getEmailSender(senderId, tenantId);
     if (!sender) {
       return Response.json({ error: "Invalid sender" }, { status: 400 });

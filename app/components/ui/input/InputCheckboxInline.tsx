@@ -4,17 +4,17 @@ import HintTooltip from "~/components/ui/tooltips/HintTooltip";
 import { Checkbox } from "../checkbox";
 
 interface Props {
-  name: string;
-  title: string | ReactNode;
-  value?: boolean;
-  setValue?: React.Dispatch<React.SetStateAction<boolean>>;
-  className?: string;
-  help?: string;
-  required?: boolean;
-  disabled?: boolean;
-  description?: ReactNode;
-  readOnly?: boolean;
-  autoFocus?: boolean;
+  readonly name: string;
+  readonly title: string | ReactNode;
+  readonly value?: boolean;
+  readonly setValue?: React.Dispatch<React.SetStateAction<boolean>>;
+  readonly className?: string;
+  readonly help?: string;
+  readonly required?: boolean;
+  readonly disabled?: boolean;
+  readonly description?: ReactNode;
+  readonly readOnly?: boolean;
+  readonly autoFocus?: boolean;
 }
 export default function InputCheckboxInline({
   name,
@@ -29,8 +29,6 @@ export default function InputCheckboxInline({
   readOnly,
   autoFocus,
 }: Props) {
-  // useImperativeHandle(ref, () => ({ input }));
-  // const input = useRef<HTMLInputElement>(null);
   return (
     <div className={clsx(className, "")}>
       <div className="relative flex cursor-pointer select-none items-start sm:col-span-6">

@@ -2,15 +2,17 @@ import { RadioGroup } from "@headlessui/react";
 import { ReactNode } from "react";
 import clsx from "~/utils/shared/ClassesUtils";
 
+type OptionValue = string | number | undefined;
+
 interface Props {
-  name?: string;
-  title?: string;
-  options: { name: string | ReactNode; value: string | number | undefined; disabled?: boolean }[];
-  value?: string | number | undefined;
-  setValue?: React.Dispatch<React.SetStateAction<string | number | undefined>>;
-  className?: string;
-  required?: boolean;
-  disabled?: boolean;
+  readonly name?: string;
+  readonly title?: string;
+  readonly options: { name: string | ReactNode; value: OptionValue; disabled?: boolean }[];
+  readonly value?: OptionValue;
+  readonly setValue?: React.Dispatch<React.SetStateAction<OptionValue>>;
+  readonly className?: string;
+  readonly required?: boolean;
+  readonly disabled?: boolean;
 }
 export default function InputRadioGroup({ name, title, value, options, setValue, className, required, disabled }: Props) {
   return (
@@ -27,9 +29,9 @@ export default function InputRadioGroup({ name, title, value, options, setValue,
       <RadioGroup disabled={disabled} defaultValue={value} value={value} onChange={(e) => (setValue ? setValue(e) : {})} className="mt-1">
         <RadioGroup.Label className="sr-only">{title}</RadioGroup.Label>
         <div className={clsx("flex flex-col flex-wrap space-y-1 sm:flex-row sm:space-x-2 sm:space-y-0")}>
-          {options.map((option, idx) => (
+          {options.map((option) => (
             <RadioGroup.Option
-              key={idx}
+              key={option.value}
               value={option.value}
               className={({ active, checked }) =>
                 clsx(

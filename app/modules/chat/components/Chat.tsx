@@ -10,18 +10,22 @@ import { EntityWithDetails } from "~/utils/db/entities/entities.db.server";
 import { marked } from "marked";
 import { Input } from "~/components/ui/input";
 
+function formatTime(date: Date) {
+  return `${date.getHours().toString().padStart(2, "0")}:${date.getMinutes().toString().padStart(2, "0")}`;
+}
+
 interface Props {
   messages: ChatMessageDto[];
   onSendMessage: (message: string) => void;
   onDeleteMessage?: (message: ChatMessageDto, index: number) => void;
-  className?: string;
-  entitiesMetadata?: {
+  readonly className?: string;
+  readonly entitiesMetadata?: {
     allEntities: EntityWithDetails[];
     routes: EntitiesApi.Routes | undefined;
   };
-  scrollToBottom?: boolean;
-  defaultMessage?: string;
-  disabled?: boolean;
+  readonly scrollToBottom?: boolean;
+  readonly defaultMessage?: string;
+  readonly disabled?: boolean;
 }
 export default function Chat({
   messages,
@@ -50,32 +54,19 @@ export default function Chat({
     onSendMessage(inputMessage);
   }
 
-  // function handleDeleteMessage(message: ChatMessageDto, index: number) {
-  //   if (confirm("Are you sure you want to delete this message?")) {
-  //     if (onDeleteMessage) {
-  //       onDeleteMessage(message, index);
-  //     }
-  //   }
-  // }
-
-  function formatTime(date: Date) {
-    return `${date.getHours().toString().padStart(2, "0")}:${date.getMinutes().toString().padStart(2, "0")}`;
-  }
-
   return (
     <Form onSubmit={onSubmit} className={clsx(className, "bg-secondary relative flex flex-col space-y-4 overflow-hidden")}>
       <div className="grow overflow-auto px-4 py-2">
         <div className="flex-1 space-y-2">
-          {messages.map((message, idx) => (
+          {messages.map((message) => (
             <div
-              key={idx}
-              // ref={idx === messages.length - 1 ? messagesEndRef : undefined}
+              key={message.createdAt}
               className={clsx("flex", message.position === "right" ? "justify-end" : "justify-start")}
             >
               <div
                 className={clsx(
                   "text-foreground group relative max-w-lg rounded-lg border px-2 py-1.5 shadow-xs",
-                  message.position === "right" ? "border-border bg-background" : "border-border bg-background"
+                  "border-border bg-background"
                 )}
               >
                 <div>
@@ -138,12 +129,12 @@ function FileBubble({
   file,
   className,
 }: {
-  file: {
+  readonly file: {
     file: string;
     name: string;
     type: string;
   };
-  className?: string;
+  readonly className?: string;
 }) {
   const onDownload = (media: { file: string; name: string; type: string }) => {
     const downloadLink = document.createElement("a");

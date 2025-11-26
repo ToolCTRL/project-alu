@@ -8,7 +8,7 @@ import InputRadioGroup from "~/components/ui/input/InputRadioGroup";
 import InputText from "~/components/ui/input/InputText";
 import PageBlockUtils from "~/modules/pageBlocks/components/blocks/PageBlockUtils";
 
-export default function BannerBlockForm({ item, onUpdate }: { item?: BannerBlockDto; onUpdate: (item: BannerBlockDto) => void }) {
+export default function BannerBlockForm({ item, onUpdate }: readonly { readonly item?: BannerBlockDto; readonly onUpdate: (item: BannerBlockDto) => void }) {
   const { t } = useTranslation();
   const [state, setState] = useState<BannerBlockDto>(item || PageBlockUtils.defaultBlocks.banner!);
   useEffect(() => {
@@ -31,7 +31,7 @@ export default function BannerBlockForm({ item, onUpdate }: { item?: BannerBlock
 
           <div className="flex flex-col space-y-2">
             {state.cta.map((cta, index) => (
-              <div key={index} className="group relative grid grid-cols-2 gap-2">
+              <div key={cta.id ?? index} className="group relative grid grid-cols-2 gap-2">
                 <button
                   onClick={() => {
                     const cta = state.cta;

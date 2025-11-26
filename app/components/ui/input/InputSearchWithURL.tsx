@@ -7,11 +7,11 @@ import clsx from "clsx";
 import { cn } from "~/lib/utils";
 
 interface Props {
-  onNew?: () => void;
-  onNewRoute?: string;
-  placeholder?: string;
-  size?: "xs" | "sm" | "lg";
-  className?: string;
+  readonly onNew?: () => void;
+  readonly onNewRoute?: string;
+  readonly placeholder?: string;
+  readonly size?: "xs" | "sm" | "lg";
+  readonly className?: string;
 }
 
 export default function InputSearchWithURL({ onNew, onNewRoute, placeholder, size = "lg", className }: Props) {

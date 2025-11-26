@@ -164,9 +164,9 @@ export function RouteBackground() {
     <div className={clsx("pointer-events-none fixed inset-0 z-0", theme.key)} style={{ opacity: theme.overlayOpacity ?? 0.8 }}>
       <div className="absolute inset-0" style={{ background: theme.base }} />
 
-      {theme.rays?.map((ray, idx) => (
+      {theme.rays?.map((ray) => (
         <div
-          key={`ray-${idx}`}
+          key={`ray-${ray.rotate}-${ray.color}`}
           className="absolute inset-0"
           style={{
             background: `linear-gradient(${ray.rotate}, transparent 15%, ${ray.color} 45%, transparent 65%)`,
@@ -181,9 +181,9 @@ export function RouteBackground() {
         />
       ))}
 
-      {theme.blobs.map((blob, idx) => (
+      {theme.blobs.map((blob) => (
         <div
-          key={`blob-${idx}`}
+          key={`blob-${blob.top}-${blob.left}-${blob.color}`}
           className="absolute rounded-full"
           style={{
             width: blob.size,
@@ -214,9 +214,9 @@ export function RouteBackground() {
         />
       )}
 
-      {theme.accents?.map((accent, idx) => (
+      {theme.accents?.map((accent) => (
         <div
-          key={`accent-${idx}`}
+          key={`accent-${accent.top}-${accent.left}-${accent.color}`}
           className="absolute rounded-full"
           style={{
             width: accent.size,

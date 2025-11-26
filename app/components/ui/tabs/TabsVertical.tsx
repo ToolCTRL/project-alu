@@ -18,7 +18,7 @@ interface Props {
   exact?: boolean;
 }
 
-export default function TabsVertical({ className = "", tabs = [], asLinks = true, onSelected, exact, breakpoint = "md" }: Props) {
+export default function TabsVertical({ className = "", tabs = [], asLinks = true, onSelected, exact, breakpoint = "md" }: Readonly<Props>) {
   const { t } = useTranslation();
 
   const navigate = useNavigate();
@@ -42,10 +42,8 @@ export default function TabsVertical({ className = "", tabs = [], asLinks = true
       if (tab?.routePath) {
         navigate(tab.routePath);
       }
-    } else {
-      if (onSelected) {
-        onSelected(idx);
-      }
+    } else if (onSelected) {
+      onSelected(idx);
     }
   }
   function isCurrent(idx: number) {

@@ -59,22 +59,21 @@ export const action: ActionFunction = async ({ request, params }) => {
   }
 
   const options: { order: number; value: string; name?: string; color?: Colors }[] = form.getAll("options[]").map((f: FormDataEntryValue) => {
-    return JSON.parse(f.toString());
+    return JSON.parse(String(f));
   });
 
   const attributes: { name: string; value: string }[] = form.getAll("attributes[]").map((f: FormDataEntryValue) => {
-    return JSON.parse(f.toString());
+    return JSON.parse(String(f));
   });
 
   if ([PropertyType.SELECT, PropertyType.MULTI_SELECT].includes(type) && options.length === 0) {
-    // return badRequest({ error: "Add at least one option" });
   }
 
-  if (type !== PropertyType.FORMULA) {
-    formulaId = null;
-  } else {
+  if (type === PropertyType.FORMULA) {
     isRequired = false;
     showInCreate = false;
+  } else {
+    formulaId = null;
   }
   if ([PropertyType.FORMULA].includes(type) && !formulaId) {
     return badRequest({ error: "Select a formula" });

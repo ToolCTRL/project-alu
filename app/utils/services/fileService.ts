@@ -1,4 +1,4 @@
-import fs from "fs";
+import fs from "node:fs";
 
 export async function saveZip(path: string, data: { type: string; content: string }) {
   try {

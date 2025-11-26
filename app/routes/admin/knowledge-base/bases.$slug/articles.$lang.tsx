@@ -1,5 +1,4 @@
-import { ActionFunctionArgs, LoaderFunctionArgs, redirect, useActionData, useLoaderData } from "react-router";
-import { Link, useNavigate, useOutlet, useParams, useSubmit } from "react-router";
+import { ActionFunctionArgs, LoaderFunctionArgs, redirect, useActionData, useLoaderData, Link, useNavigate, useOutlet, useParams, useSubmit } from "react-router";
 import { useTranslation } from "react-i18next";
 import { FilterablePropertyDto } from "~/application/dtos/data/FilterablePropertyDto";
 import { PaginationDto } from "~/application/dtos/data/PaginationDto";
@@ -130,7 +129,7 @@ async function handleNewArticle(kb: KnowledgeBaseDto, params: any, userId: strin
 
 async function handleSetOrders(form: FormData) {
   const items: { id: string; order: number }[] = form.getAll("orders[]").map((f: FormDataEntryValue) => {
-    return JSON.parse(f.toString());
+    return JSON.parse(String(f));
   });
   await Promise.all(
     items.map(async ({ id, order }) => {
@@ -144,7 +143,7 @@ async function handleSetOrders(form: FormData) {
 
 async function handleSetSectionOrders(form: FormData) {
   const items: { id: string; order: number }[] = form.getAll("orders[]").map((f: FormDataEntryValue) => {
-    return JSON.parse(f.toString());
+    return JSON.parse(String(f));
   });
   await Promise.all(
     items.map(async ({ id, order }) => {
@@ -171,7 +170,7 @@ async function handleDuplicateArticle(kb: KnowledgeBaseDto, params: any, form: F
 
 async function handleToggleFeatured(form: FormData, kb: KnowledgeBaseDto, request: Request) {
   const id = stringOrEmpty(form.get("id"));
-  const isFeatured = String(form.get("isFeatured") ?? "") === "true";
+  const isFeatured = stringOrEmpty(form.get("isFeatured")) === "true";
 
   const item = await getKbArticleById(id);
   if (item == null) {
@@ -211,7 +210,7 @@ export const action = async ({ request, params }: ActionFunctionArgs) => {
   return Response.json({ error: "Invalid action" }, { status: 400 });
 };
 
-export default function () {
+export default function AdminKnowledgeBaseArticlesLang() {
   const { t } = useTranslation();
   const data = useLoaderData<LoaderData>();
   const actionData = useActionData<ActionData>();
@@ -288,7 +287,7 @@ export default function () {
               name: "status",
               title: "Status",
               value: (i) => (
-                <div>{!i.publishedAt ? <SimpleBadge title="Draft" color={Colors.GRAY} /> : <SimpleBadge title="Published" color={Colors.TEAL} />}</div>
+                <div>{i.publishedAt ? <SimpleBadge title="Published" color={Colors.TEAL} /> : <SimpleBadge title="Draft" color={Colors.GRAY} />}</div>
               ),
             },
             // {

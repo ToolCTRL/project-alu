@@ -6,7 +6,7 @@ export interface CreateUsageBasedPriceTiersDto {
   usage_type: "licensed" | "metered";
   aggregate_usage: "last_during_period" | "last_ever" | "max" | "sum";
   tiers_mode: "graduated" | "volume";
-  billing_scheme: string;
+  billing_scheme: "per_unit" | "tiered";
   tiers: {
     from: number;
     up_to: "inf" | number;

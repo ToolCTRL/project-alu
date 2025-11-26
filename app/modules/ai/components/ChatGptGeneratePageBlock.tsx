@@ -20,18 +20,18 @@ import { PageConfiguration } from "~/modules/pageBlocks/dtos/PageConfiguration";
 import PageBlockPromptUtils from "../prompts/PageBlockPromptUtils";
 
 interface Props {
-  page?: PageConfiguration;
-  block: PageBlockDto;
-  onGenerated: (block: PageBlockDto) => void;
-  onLoading?: (isLoading: boolean) => void;
-  onError?: (error: string) => void;
+  readonly page?: PageConfiguration;
+  readonly block: PageBlockDto;
+  readonly onGenerated: (block: PageBlockDto) => void;
+  readonly onLoading?: (isLoading: boolean) => void;
+  readonly onError?: (error: string) => void;
 }
 export default function ChatGptGeneratePageBlock({ page, block, onGenerated, onError, onLoading }: Props) {
   const { t } = useTranslation();
 
   const [searchParams, setSearchParams] = useSearchParams();
 
-  const [selectedTab, selectTab] = useState(0);
+  const [selectedTab, setSelectedTab] = useState(0);
 
   const [response, setResponse] = useState<string>("");
   const [isLoading, setIsLoading] = useState(false);
@@ -81,7 +81,7 @@ export default function ChatGptGeneratePageBlock({ page, block, onGenerated, onE
       let finishedBlock = AIPageBuilderService.parseChatGptContentToBlock(response);
       if (finishedBlock) {
         setFinishedBlock(finishedBlock);
-        selectTab(2);
+        setSelectedTab(2);
       } else {
         setError("Could not parse response");
       }
@@ -146,8 +146,7 @@ export default function ChatGptGeneratePageBlock({ page, block, onGenerated, onE
   function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     event.stopPropagation();
-    // setIsSettingParameters(false);
-    selectTab(1);
+    setSelectedTab(1);
     onClick(parameters);
   }
 
@@ -158,17 +157,11 @@ export default function ChatGptGeneratePageBlock({ page, block, onGenerated, onE
         onClick={() => setIsSettingParameters(true)}
       >
         {error ? (
-          <>
-            <ExclamationTriangleIcon className="h-4 w-4" />
-          </>
+          <ExclamationTriangleIcon className="h-4 w-4" />
         ) : finishedBlock ? (
-          <>
-            <CheckIcon className="h-4 w-4" />
-          </>
+          <CheckIcon className="h-4 w-4" />
         ) : (
-          <>
-            <ChatGptIcon className="h-4 w-4" />
-          </>
+          <ChatGptIcon className="h-4 w-4" />
         )}
       </ButtonSecondary>
 
@@ -177,7 +170,7 @@ export default function ChatGptGeneratePageBlock({ page, block, onGenerated, onE
           <Tabs
             asLinks={false}
             selectedTab={selectedTab}
-            onSelected={(index) => selectTab(index)}
+            onSelected={(index) => setSelectedTab(index)}
             tabs={[{ name: `Generate` }, { name: `Response` }, { name: `Generated Block` }]}
           />
           <div className="mt-3">

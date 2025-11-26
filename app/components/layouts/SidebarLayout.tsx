@@ -131,7 +131,7 @@ export default function SidebarLayout({ layout, children, menuItems, className =
                       <SidebarMenu layout={layout} onSelected={() => setSidebarOpen(!sidebarOpen)} menuItems={menuItems} />
                     </nav>
                   </div>
-                  {layout == "app" && <TenantSelect onOpenCommandPalette={onOpenCommandPalette} />}
+                  {layout === "app" && <TenantSelect onOpenCommandPalette={onOpenCommandPalette} />}
                 </div>
               </Transition>
               <div className="w-14 shrink-0">{/*Dummy element to force sidebar to shrink to fit close icon */}</div>
@@ -161,7 +161,7 @@ export default function SidebarLayout({ layout, children, menuItems, className =
               </div>
             </div>
 
-            {layout == "app" && <TenantSelect onOpenCommandPalette={onOpenCommandPalette} />}
+            {layout === "app" && <TenantSelect onOpenCommandPalette={onOpenCommandPalette} />}
           </div>
         </div>
 
@@ -195,7 +195,7 @@ export default function SidebarLayout({ layout, children, menuItems, className =
             />
           </div>
 
-          <main ref={mainElement} className="bg-secondary flex-1 overflow-y-auto focus:outline-hidden" tabIndex={0}>
+          <main ref={mainElement} className="bg-secondary flex-1 overflow-y-auto focus:outline-hidden">
             <div key={params.tenant} className="pb-20 sm:pb-0">
               {children}
             </div>

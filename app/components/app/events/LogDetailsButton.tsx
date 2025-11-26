@@ -3,14 +3,16 @@ import { useTranslation } from "react-i18next";
 import Modal from "~/components/ui/modals/Modal";
 import { LogWithDetails } from "~/utils/db/logs.db.server";
 
-export default function LogDetailsButton({ item }: { item: LogWithDetails }) {
+export default function LogDetailsButton({ item }: { readonly item: LogWithDetails }) {
   const { t } = useTranslation();
   const [open, setOpen] = useState(false);
 
   function stringifyDetails() {
     try {
       return JSON.stringify(JSON.parse(item.details?.toString() ?? "{}"), null, "\t");
-    } catch (e) {
+    } catch (error) {
+      // If JSON parsing fails, return raw details
+      console.warn("Failed to parse log details as JSON:", error);
       return item.details;
     }
   }

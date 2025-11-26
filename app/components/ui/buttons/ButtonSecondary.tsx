@@ -5,9 +5,9 @@ import clsx from "clsx";
 
 interface Props {
   className?: string;
-  type?: "button" | "submit" | "reset" | undefined;
+  type?: "button" | "submit" | "reset";
   to?: string;
-  target?: undefined | "_blank";
+  target?: "_blank";
   rel?: string;
   disabled?: boolean;
   destructive?: boolean;
@@ -31,7 +31,7 @@ export default function ButtonSecondary({
   isLoading,
   prefetch,
   reloadDocument,
-}: Props) {
+}: Readonly<Props>) {
   return (
     <span>
       {(() => {

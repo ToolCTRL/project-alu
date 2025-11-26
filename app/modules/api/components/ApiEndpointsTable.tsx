@@ -5,7 +5,7 @@ import { useTranslation } from "react-i18next";
 import EmptyState from "~/components/ui/emptyState/EmptyState";
 import ApiEndpoint from "./ApiEndpoint";
 
-export default function ApiEndpointsTable({ items }: { items: ApiEndpointDto[] }) {
+export default function ApiEndpointsTable({ items }: { readonly items: ApiEndpointDto[] }) {
   const { t } = useTranslation();
   const [searchInput, setSearchInput] = useState("");
   function filteredItems() {
@@ -32,8 +32,8 @@ export default function ApiEndpointsTable({ items }: { items: ApiEndpointDto[] }
           }}
         />
       )}
-      {filteredItems().map((endpoint, idx) => {
-        return <ApiEndpoint key={idx} item={endpoint} />;
+      {filteredItems().map((endpoint) => {
+        return <ApiEndpoint key={endpoint.route} item={endpoint} />;
       })}
     </div>
   );

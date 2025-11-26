@@ -1,4 +1,4 @@
-export default function YoutubeIcon({ className }: { className?: string }) {
+export default function YoutubeIcon({ className }: Readonly<{ className?: string }>) {
   return (
     <svg className={className} xmlns="http://www.w3.org/2000/svg" width="48" height="48">
       <path

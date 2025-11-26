@@ -11,23 +11,23 @@ import UploadDocuments from "~/components/ui/uploaders/UploadDocument";
 import { updateItemByIdx } from "~/utils/shared/ObjectUtils";
 
 interface Props {
-  name: string;
-  title?: string;
-  initialMedia?: RowMedia[] | MediaDto[] | undefined;
-  disabled?: boolean;
-  onSelected?: (item: MediaDto[]) => void;
-  className?: string;
-  readOnly?: boolean;
-  required?: boolean;
-  min?: number;
-  max?: number;
-  accept?: string;
-  hint?: ReactNode;
-  help?: string;
-  icon?: string;
-  maxSize?: number;
-  uploadText?: string;
-  autoFocus?: boolean;
+  readonly name: string;
+  readonly title?: string;
+  readonly initialMedia?: RowMedia[] | MediaDto[];
+  readonly disabled?: boolean;
+  readonly onSelected?: (item: MediaDto[]) => void;
+  readonly className?: string;
+  readonly readOnly?: boolean;
+  readonly required?: boolean;
+  readonly min?: number;
+  readonly max?: number;
+  readonly accept?: string;
+  readonly hint?: ReactNode;
+  readonly help?: string;
+  readonly icon?: string;
+  readonly maxSize?: number;
+  readonly uploadText?: string;
+  readonly autoFocus?: boolean;
 }
 export default function InputMedia({
   name,
@@ -85,7 +85,7 @@ export default function InputMedia({
       const invalidFiles = e.map((f) => {
         let foundExtension = "";
         acceptedFileExtensions
-          .filter((f) => f)
+          .filter(Boolean)
           .forEach((element) => {
             if (f.file.name.toLowerCase().endsWith(element.toLowerCase())) {
               foundExtension = element;
@@ -96,7 +96,7 @@ export default function InputMedia({
         }
         return null;
       });
-      if (invalidFiles.find((f) => f !== null)) {
+      if (invalidFiles.some((f) => f !== null)) {
         setError("Invalid file type: " + accept);
         return;
       }
@@ -170,8 +170,8 @@ export default function InputMedia({
           </div>
         )}
 
-        {items.map((item, idx) => {
-          return <input key={idx} type="hidden" name={name + `[]`} value={JSON.stringify(item)} />;
+        {items.map((item) => {
+          return <input key={item.name} type="hidden" name={name + `[]`} value={JSON.stringify(item)} />;
         })}
 
         {items.length > 0 ? (
@@ -179,7 +179,7 @@ export default function InputMedia({
             {items.map((item, idx) => {
               return (
                 <MediaItem
-                  key={idx}
+                  key={item.name}
                   item={item}
                   onChangeTitle={(title) =>
                     updateItemByIdx(items, setItems, idx, {
@@ -200,7 +200,7 @@ export default function InputMedia({
           <div></div>
         )}
 
-        {isDisabled() && items.filter((f) => f.type.includes("image")).length > 0 && (
+        {isDisabled() && items.some((f) => f.type.includes("image")) && (
           <div className="mt-2">
             <div className="grid gap-1  overflow-auto">
               {items

@@ -3,7 +3,7 @@ import PropertyBadge from "~/components/entities/properties/PropertyBadge";
 import { JsonPropertyType } from "../dtos/JsonPropertyTypeDto";
 import { useTranslation } from "react-i18next";
 
-export default function JsonPropertyTypeIcon({ type, className }: { type: JsonPropertyType; className?: string }) {
+export default function JsonPropertyTypeIcon({ type, className }: readonly { readonly type: JsonPropertyType; readonly className?: string }) {
   const { t } = useTranslation();
   switch (type) {
     case "string":

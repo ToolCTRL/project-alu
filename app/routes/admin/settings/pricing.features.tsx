@@ -1,6 +1,6 @@
 import { ActionFunctionArgs, LoaderFunctionArgs, MetaFunction, useActionData, useLoaderData } from "react-router";
 import { Form, useSubmit } from "react-router";
-import { Fragment, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { RowHeaderDisplayDto } from "~/application/dtos/data/RowHeaderDisplayDto";
 import { MetaTagsDto } from "~/application/dtos/seo/MetaTagsDto";
@@ -405,7 +405,7 @@ export default function () {
             <ClosedOpenedValue
               closed={
                 <div>
-                  {!item.name || !existing || !existing.title.trim() || existing.title === "?" ? (
+                  {!item.name || !existing || !existing?.title?.trim() || existing?.title === "?" ? (
                     <div className="text-red-600 underline">Click to set</div>
                   ) : (
                     <PlanFeatureDescription
@@ -486,23 +486,6 @@ export default function () {
       });
     });
 
-    // headers.push({
-    //   name: "url",
-    //   title: "URL",
-    //   className: "w-32",
-    //   value: (item) => (
-    //     <div>
-    //       <InputText
-    //         // title="URL"
-    //         value={item.href ?? undefined}
-    //         setValue={(e) => {
-    //           item.href = e?.toString() ?? "";
-    //           setItems([...items]);
-    //         }}
-    //       />
-    //     </div>
-    //   ),
-    // });
 
     setHeaders(headers);
   }, [selectedPlans, items, t]);
@@ -564,8 +547,7 @@ export default function () {
   }
 
   return (
-    <Fragment>
-      <EditPageLayout
+    <EditPageLayout
         title={"Features"}
         menu={[
           { title: t("admin.pricing.title"), routePath: "/admin/settings/pricing" },
@@ -671,11 +653,10 @@ export default function () {
           />
         </Modal>
       </EditPageLayout>
-    </Fragment>
   );
 }
 
-function ClosedOpenedValue({ closed, opened }: { closed: React.ReactNode; opened: React.ReactNode }) {
+function ClosedOpenedValue({ closed, opened }: { readonly closed: React.ReactNode; readonly opened: React.ReactNode }) {
   const [open, setOpen] = useState(false);
 
   return (

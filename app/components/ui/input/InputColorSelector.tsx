@@ -5,15 +5,15 @@ import ColorBadge from "../badges/ColorBadge";
 import InputSelector from "./InputSelector";
 
 interface Props {
-  name?: string;
-  title?: string;
-  value?: string | number | undefined;
-  setValue?: React.Dispatch<React.SetStateAction<string | number | undefined>>;
-  className?: string;
-  withColorNames?: boolean;
-  withSearch?: boolean;
-  selectPlaceholder?: string;
-  required?: boolean;
+  readonly name?: string;
+  readonly title?: string;
+  readonly value?: string | number;
+  readonly setValue?: React.Dispatch<React.SetStateAction<string | number | undefined>>;
+  readonly className?: string;
+  readonly withColorNames?: boolean;
+  readonly withSearch?: boolean;
+  readonly selectPlaceholder?: string;
+  readonly required?: boolean;
 }
 export default function InputColorSelector({
   name,

@@ -16,7 +16,7 @@ interface Props {
   onClick?: () => void;
 }
 
-export default function EmptyState({ className, captions, to, icon, onClick }: Props) {
+export default function EmptyState({ className, captions, to, icon, onClick }: Readonly<Props>) {
   return (
     <div className={clsx(className, "px-1.6 border-border rounded-md border-2 border-dashed py-16 text-center")}>
       <IconEmptyResults className="mx-auto w-10" />

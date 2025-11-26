@@ -43,7 +43,8 @@ export namespace Rows_Tags {
   const badRequest = (data: { error: string }) => Response.json(data, { status: 400 });
 
   async function handleNewTag(entityId: string, itemId: string, form: FormData) {
-    const value = form.get("tag-name")?.toString() ?? "";
+    const tagNameValue = form.get("tag-name");
+    const value = tagNameValue?.toString() ?? "";
     const color = Number(form.get("tag-color") ?? Colors.INDIGO);
     let tag = await getEntityTag(entityId, value);
     if (!tag) {
@@ -63,8 +64,10 @@ export namespace Rows_Tags {
   }
 
   async function handleEditTag(form: FormData) {
-    const id = form.get("tag-id")?.toString() ?? "";
-    const value = form.get("tag-name")?.toString() ?? "";
+    const tagIdValue = form.get("tag-id");
+    const id = tagIdValue?.toString() ?? "";
+    const tagNameValue = form.get("tag-name");
+    const value = tagNameValue?.toString() ?? "";
     const color = Number(form.get("tag-color"));
     await updateEntityTag(id, {
       value,
@@ -73,8 +76,10 @@ export namespace Rows_Tags {
   }
 
   async function handleSetTag(itemId: string, form: FormData) {
-    const id = form.get("tag-id")?.toString() ?? "";
-    const tagAction = form.get("tag-action")?.toString() ?? "";
+    const tagIdValue = form.get("tag-id");
+    const id = tagIdValue?.toString() ?? "";
+    const tagActionValue = form.get("tag-action");
+    const tagAction = tagActionValue?.toString() ?? "";
     if (tagAction === "add") {
       await createRowTag({
         rowId: itemId,

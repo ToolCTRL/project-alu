@@ -17,22 +17,22 @@ export interface RefInputDate {
 }
 
 interface Props {
-  display?: "default" | "calendar";
-  name?: string;
-  title: string;
-  defaultValue?: Date | undefined;
-  value?: Date;
-  onChange?: (date: Date) => void;
-  className?: string;
-  help?: string;
-  disabled?: boolean;
-  readOnly?: boolean;
-  required?: boolean;
-  hint?: ReactNode;
-  icon?: string;
-  darkMode?: boolean;
-  autoFocus?: boolean;
-  classNameInput?: string;
+  readonly display?: "default" | "calendar";
+  readonly name?: string;
+  readonly title: string;
+  readonly defaultValue?: Date;
+  readonly value?: Date;
+  readonly onChange?: (date: Date) => void;
+  readonly className?: string;
+  readonly help?: string;
+  readonly disabled?: boolean;
+  readonly readOnly?: boolean;
+  readonly required?: boolean;
+  readonly hint?: ReactNode;
+  readonly icon?: string;
+  readonly darkMode?: boolean;
+  readonly autoFocus?: boolean;
+  readonly classNameInput?: string;
 }
 const InputDate = (
   {
@@ -63,7 +63,6 @@ const InputDate = (
 
   useEffect(() => {
     if (defaultValue) {
-      // setActualValue(defaultValue?.toISOString().split("T")[0]);
       setActualValue(defaultValue);
     }
   }, [defaultValue]);
@@ -72,21 +71,10 @@ const InputDate = (
     if (value) {
       const date = new Date(value);
       if (date) {
-        // setActualValue(date.toISOString().split("T")[0]);
         setActualValue(date);
       }
     }
   }, [value]);
-
-  useEffect(() => {
-    if (defaultValue) {
-      const date = new Date(defaultValue);
-      if (date) {
-        // setActualValue(date.toISOString().split("T")[0]);
-        setActualValue(date);
-      }
-    }
-  }, [defaultValue]);
 
   useEffect(() => {
     if (onChange && actualValue) {

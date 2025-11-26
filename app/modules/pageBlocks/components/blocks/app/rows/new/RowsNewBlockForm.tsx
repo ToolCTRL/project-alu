@@ -5,7 +5,7 @@ import InputText from "~/components/ui/input/InputText";
 import BlockVariableForm from "../../../shared/variables/BlockVariableForm";
 import { defaultRowsNewBlock, RowsNewBlockDto, RowsNewBlockStyle, RowsNewBlockStyles } from "./RowsNewBlockUtils";
 
-export default function RowsNewBlockForm({ item, onUpdate }: { item?: RowsNewBlockDto; onUpdate: (item: RowsNewBlockDto) => void }) {
+export default function RowsNewBlockForm({ item, onUpdate }: readonly { readonly item?: RowsNewBlockDto; readonly onUpdate: (item: RowsNewBlockDto) => void }) {
   const [state, setState] = useState<RowsNewBlockDto>(item || defaultRowsNewBlock);
   useEffect(() => {
     onUpdate(state);
@@ -32,7 +32,7 @@ export default function RowsNewBlockForm({ item, onUpdate }: { item?: RowsNewBlo
               hiddenProperties: value
                 .toString()
                 .split(",")
-                .filter((f) => f),
+                .filter(Boolean),
             })
           }
         />

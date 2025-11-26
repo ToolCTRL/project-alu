@@ -1,4 +1,4 @@
-export default function RectangleGroupIcon({ className }: { className?: string }) {
+export default function RectangleGroupIcon({ className }: { readonly className?: string }) {
   return (
     <svg className={className} stroke="currentColor" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5">
       <path

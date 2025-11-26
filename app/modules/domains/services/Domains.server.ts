@@ -3,35 +3,28 @@ import FlyDomainsServer from "./FlyDomains.server";
 import { GetCertDto } from "../dtos/GetCertDto";
 
 async function getConfig({ appConfiguration, request }: { appConfiguration?: AppConfiguration; request: Request }) {
-  if (!appConfiguration) {
-    appConfiguration = await getAppConfiguration({ request });
-  }
+  appConfiguration ??= await getAppConfiguration({ request });
   const domains = appConfiguration.portals?.domains;
   if (!domains?.enabled) {
     throw new Error("Custom domains are not enabled");
   }
-  switch (domains.provider) {
-    case "fly": {
-      if (!process.env.PORTAL_SERVER_FLY_TOKEN) {
-        throw new Error("PORTAL_SERVER_FLY_TOKEN is not defined");
-      }
-      return domains;
+  if (domains.provider === "fly") {
+    if (!process.env.PORTAL_SERVER_FLY_TOKEN) {
+      throw new Error("PORTAL_SERVER_FLY_TOKEN is not defined");
     }
-    default:
-      throw new Error(`Unknown custom domain provider: ${domains.provider}`);
+    return domains;
   }
+  throw new Error(`Unknown custom domain provider: ${domains.provider}`);
 }
 
 async function addCert({ hostname, request }: { hostname: string; request: Request }) {
   const domainsConfig = await getConfig({ request });
-  switch (domainsConfig.provider) {
-    case "fly": {
-      await FlyDomainsServer.addCert({
-        appId: domainsConfig.portalAppId,
-        hostname,
-        apiToken: process.env.PORTAL_SERVER_FLY_TOKEN?.toString() ?? "",
-      });
-    }
+  if (domainsConfig.provider === "fly") {
+    await FlyDomainsServer.addCert({
+      appId: domainsConfig.portalAppId,
+      hostname,
+      apiToken: process.env.PORTAL_SERVER_FLY_TOKEN?.toString() ?? "",
+    });
   }
 }
 
@@ -40,35 +33,33 @@ async function getCert({ hostname, request }: { hostname: string | null; request
     return null;
   }
   const domainsConfig = await getConfig({ request });
-  switch (domainsConfig.provider) {
-    case "fly": {
-      const cer = await FlyDomainsServer.getCert({
-        appId: domainsConfig.portalAppId,
-        hostname,
-        apiToken: process.env.PORTAL_SERVER_FLY_TOKEN?.toString() ?? "",
-      }).catch(() => null);
-      if (!cer) {
-        return null;
-      }
-      const certificate: GetCertDto = {
-        configured: cer.data.app.certificate.configured,
-        records: {
-          A: {
-            name: getApexDomain(hostname),
-            value: domainsConfig.records?.A ?? "",
-          },
-          AAAA: {
-            name: getApexDomain(hostname),
-            value: domainsConfig.records?.AAAA ?? "",
-          },
-          CNAME: {
-            name: cer.data.app.certificate.dnsValidationHostname,
-            value: cer.data.app.certificate.dnsValidationTarget,
-          },
-        },
-      };
-      return certificate;
+  if (domainsConfig.provider === "fly") {
+    const cer = await FlyDomainsServer.getCert({
+      appId: domainsConfig.portalAppId,
+      hostname,
+      apiToken: process.env.PORTAL_SERVER_FLY_TOKEN?.toString() ?? "",
+    }).catch(() => null);
+    if (!cer) {
+      return null;
     }
+    const certificate: GetCertDto = {
+      configured: cer.data.app.certificate.configured,
+      records: {
+        A: {
+          name: getApexDomain(hostname),
+          value: domainsConfig.records?.A ?? "",
+        },
+        AAAA: {
+          name: getApexDomain(hostname),
+          value: domainsConfig.records?.AAAA ?? "",
+        },
+        CNAME: {
+          name: cer.data.app.certificate.dnsValidationHostname,
+          value: cer.data.app.certificate.dnsValidationTarget,
+        },
+      },
+    };
+    return certificate;
   }
 
   return null;
@@ -85,14 +76,12 @@ function getRootDomain(hostname: string) {
 
 async function delCert({ hostname, request }: { hostname: string; request: Request }) {
   const domainsConfig = await getConfig({ request });
-  switch (domainsConfig.provider) {
-    case "fly": {
-      return FlyDomainsServer.delCert({
-        appId: domainsConfig.portalAppId,
-        hostname,
-        apiToken: process.env.PORTAL_SERVER_FLY_TOKEN?.toString() ?? "",
-      });
-    }
+  if (domainsConfig.provider === "fly") {
+    return FlyDomainsServer.delCert({
+      appId: domainsConfig.portalAppId,
+      hostname,
+      apiToken: process.env.PORTAL_SERVER_FLY_TOKEN?.toString() ?? "",
+    });
   }
 }
 

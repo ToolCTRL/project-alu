@@ -29,7 +29,7 @@ export function TeamSwitcher({ tenants, size = "md" }: Readonly<{ tenants: Tenan
   const [activeTenant] = React.useState(appData?.currentTenant);
 
   const activeTenantDescription = appData.mySubscription?.products.length
-    ? t(appData.mySubscription.products.find((f) => f)?.subscriptionProduct.title || "")
+    ? t(appData.mySubscription.products.find(Boolean)?.subscriptionProduct.title || "")
     : t("settings.subscription.noSubscription");
 
   return (

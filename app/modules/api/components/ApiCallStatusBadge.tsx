@@ -23,13 +23,9 @@ function getStatusColor(status: number | null): Colors {
   return Colors.UNDEFINED;
 }
 
-export default function ApiCallStatusBadge({ item, underline }: { item: ApiKeyLogDto; underline?: boolean }) {
+export default function ApiCallStatusBadge({ item, underline }: { readonly item: ApiKeyLogDto; readonly underline?: boolean }) {
   const title = item.status?.toString() ?? "?";
   const color = getStatusColor(item.status);
 
-  return (
-    <Fragment>
-      <SimpleBadge title={title} color={color} underline={underline} />
-    </Fragment>
-  );
+  return <SimpleBadge title={title} color={color} underline={underline} />;
 }

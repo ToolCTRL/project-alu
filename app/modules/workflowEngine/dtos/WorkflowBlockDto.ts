@@ -10,15 +10,9 @@ export type WorkflowBlockDto = {
   input: { [key: string]: any };
   isTrigger: boolean;
   isBlock: boolean;
-  // position: {
-  //   x: number;
-  //   y: number;
-  // };
   conditionGroups: WorkflowConditionsGroupDto[];
   toBlocks: {
     id: string;
-    // flowId: string;
-    // sourceHandle?: string | null;
     toBlockId: string;
     condition: string | null;
   }[];

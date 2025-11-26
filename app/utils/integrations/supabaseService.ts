@@ -63,9 +63,9 @@ export async function createSupabaseFile(
   const bucket = await getOrCreateSupabaseBucket(bucketId, true);
   if (!bucket.data) {
     if (bucket.error) {
-      throw Error("Could not create supabase bucket: " + bucket.error.message);
+      throw new Error("Could not create supabase bucket: " + bucket.error.message);
     } else {
-      throw Error("Could not create supabase bucket: Unknown error");
+      throw new Error("Could not create supabase bucket: Unknown error");
     }
   }
 
@@ -75,9 +75,9 @@ export async function createSupabaseFile(
   });
   if (!createdSupabaseFile.data) {
     if (createdSupabaseFile.error) {
-      throw Error("Could not create supabase file: " + JSON.stringify({ error: createdSupabaseFile.error.message, path }));
+      throw new Error("Could not create supabase file: " + JSON.stringify({ error: createdSupabaseFile.error.message, path }));
     } else {
-      throw Error("Could not create supabase file: Unknown error");
+      throw new Error("Could not create supabase file: Unknown error");
     }
   }
 
@@ -92,7 +92,7 @@ export async function getSupabaseFilePublicUrl(bucketId: string, path: string): 
 
   const supabaseFile = client.storage.from(bucketId).getPublicUrl(path);
   if (!supabaseFile.data.publicUrl) {
-    throw Error("Could not get supabase file: Unknown error");
+    throw new Error("Could not get supabase file: Unknown error");
   }
   return supabaseFile.data.publicUrl;
 }
@@ -107,9 +107,9 @@ export async function getSupabaseFileDownload(bucketId: string, path: string): P
   const supabaseFile = await client.storage.from(bucketId).download(path);
   if (!supabaseFile.data) {
     if (supabaseFile.error) {
-      throw Error("Could not download supabase file: " + supabaseFile.error.message);
+      throw new Error("Could not download supabase file: " + supabaseFile.error.message);
     } else {
-      throw Error("Could not download supabase file: Unknown error");
+      throw new Error("Could not download supabase file: Unknown error");
     }
   }
   return supabaseFile.data;

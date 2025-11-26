@@ -6,8 +6,7 @@ import ErrorModal, { RefErrorModal } from "~/components/ui/modals/ErrorModal";
 import SuccessModal, { RefSuccessModal } from "~/components/ui/modals/SuccessModal";
 import { useEscapeKeypress } from "~/utils/shared/KeypressUtils";
 import { TenantUser, User } from "@prisma/client";
-import { ActionFunction, LoaderFunctionArgs, MetaFunction, redirect, useLoaderData } from "react-router";
-import { Form, useActionData, useParams, useSubmit, useNavigation, useNavigate } from "react-router";
+import { ActionFunction, LoaderFunctionArgs, MetaFunction, redirect, useLoaderData, Form, useActionData, useParams, useSubmit, useNavigation, useNavigate } from "react-router";
 import { deleteTenantUser, getTenantUser } from "~/utils/db/tenants.db.server";
 import { getTranslations } from "~/locale/i18next.server";
 import clsx from "clsx";
@@ -54,7 +53,6 @@ export const action: ActionFunction = async ({ request, params }) => {
   const tenantId = await getTenantIdFromUrl(params);
   await verifyUserHasPermission(request, "app.settings.members.update", tenantId);
   const { t } = await getTranslations(request);
-  // const tenantId = await getTenantIdFromUrl(params);
 
   const { id } = params;
   if (!id) {
@@ -64,17 +62,6 @@ export const action: ActionFunction = async ({ request, params }) => {
   }
   const form = await request.formData();
   const action = form.get("action")?.toString();
-  // const email = form.get("email")?.toString().toLowerCase().trim();
-  // const firstName = form.get("firstName")?.toString() ?? "";
-  // const lastName = Number(form.get("lastName")) ?? "";
-
-  // const tenantUsers = await getTenantUsers(tenantId);
-  // const owners = tenantUsers?.filter((f) => f.type === TenantUserType.OWNER);
-  // if (owners?.length === 1 && owners?.find((f) => f.user.email === email) && type !== TenantUserType.OWNER) {
-  //   return badRequest({
-  //     error: t("api.errors.cannotBeWithoutOwner"),
-  //   });
-  // }
 
   if (action === "edit") {
     const tenantUser = await getTenantUser(id);
@@ -83,7 +70,6 @@ export const action: ActionFunction = async ({ request, params }) => {
         error: t("shared.notFound"),
       });
     }
-    // await updateTenantUser(id, { type });
 
     return redirect(UrlUtils.currentTenantUrl(params, "settings/members"));
   } else if (action === "delete") {
@@ -102,7 +88,7 @@ export const action: ActionFunction = async ({ request, params }) => {
 export const meta: MetaFunction<typeof loader> = ({ data }) => data?.metatags ?? [];
 
 interface Props {
-  maxSize?: string;
+  readonly maxSize?: string;
 }
 
 export default function EditMemberRoute({ maxSize = "sm:max-w-lg" }: Props) {
@@ -119,13 +105,6 @@ export default function EditMemberRoute({ maxSize = "sm:max-w-lg" }: Props) {
   const errorModal = useRef<RefErrorModal>(null);
   const successModal = useRef<RefSuccessModal>(null);
   const confirmRemove = useRef<RefConfirmModal>(null);
-
-  // const [item, setItem] = useState<TenantUserDto | null>(null);
-  // const [loading, setLoading] = useState(false);
-  // const [email, setEmail] = useState("");
-  // const [firstName, setFirstName] = useState("");
-  // const [lastName, setLastName] = useState("");
-  // const [phone, setPhone] = useState("");
 
   useEffect(() => {
     if (actionData?.error) {

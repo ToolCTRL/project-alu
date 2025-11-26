@@ -34,6 +34,37 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
   return data;
 };
 
+const SurveyItemTitle = ({ item, submissions, surveyItemTitle }: { item: any; submissions: any[]; surveyItemTitle: string }) => {
+  if (item.isOther) {
+    const results = submissions.flatMap((f) => f.results).filter((result) => result.surveItemTitle === surveyItemTitle);
+    return (
+      <ShowPayloadModalButton
+        description={item.title}
+        payload={JSON.stringify(
+          results.map((f) => f.other),
+          null,
+          2
+        )}
+      />
+    );
+  }
+  return <div>{item.title}</div>;
+};
+
+const SurveyItemVotes = ({ item, submissions, surveyItemTitle }: { item: any; submissions: any[]; surveyItemTitle: string }) => {
+  const itemResults = submissions.flatMap((f) => f.results).filter((result) => result.surveItemTitle === surveyItemTitle);
+  const optionResults = itemResults.filter((result) => {
+    if (typeof result.value === "string") {
+      return result.value === item.title;
+    } else if (Array.isArray(result.value)) {
+      return result.value.includes(item.title);
+    } else {
+      return false;
+    }
+  });
+  return <div>{optionResults.length} votes</div>;
+};
+
 export default function () {
   const { t } = useTranslation();
   const data = useLoaderData<LoaderData>();
@@ -73,9 +104,9 @@ export default function () {
       ]}
     >
       <div className="space-y-2">
-        {data.item.items.map((surveyItem, idx) => {
+        {data.item.items.map((surveyItem) => {
           return (
-            <div key={idx} className="space-y-1">
+            <div key={surveyItem.id || surveyItem.title} className="space-y-1">
               <p className="text-base font-semibold">{surveyItem.title}</p>
               <TableSimple
                 items={surveyItem.options}
@@ -84,39 +115,12 @@ export default function () {
                     name: "title",
                     title: "Title",
                     className: "w-full",
-                    value: (item) => {
-                      if (item.isOther) {
-                        const results = data.submissions.flatMap((f) => f.results).filter((result) => result.surveItemTitle === surveyItem.title);
-                        return (
-                          <ShowPayloadModalButton
-                            description={item.title}
-                            payload={JSON.stringify(
-                              results.map((f) => f.other),
-                              null,
-                              2
-                            )}
-                          />
-                        );
-                      }
-                      return <div>{item.title}</div>;
-                    },
+                    value: (item) => <SurveyItemTitle item={item} submissions={data.submissions} surveyItemTitle={surveyItem.title} />,
                   },
                   {
                     name: "votes",
                     title: "Votes",
-                    value: (item) => {
-                      const itemResults = data.submissions.flatMap((f) => f.results).filter((result) => result.surveItemTitle === surveyItem.title);
-                      const optionResults = itemResults.filter((result) => {
-                        if (typeof result.value === "string") {
-                          return result.value === item.title;
-                        } else if (Array.isArray(result.value)) {
-                          return result.value.includes(item.title);
-                        } else {
-                          return false;
-                        }
-                      });
-                      return <div>{optionResults.length} votes</div>;
-                    },
+                    value: (item) => <SurveyItemVotes item={item} submissions={data.submissions} surveyItemTitle={surveyItem.title} />,
                   },
                 ]}
               />

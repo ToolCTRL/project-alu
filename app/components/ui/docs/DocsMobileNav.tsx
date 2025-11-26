@@ -7,7 +7,7 @@ import { Link } from "react-router";
 import clsx from "clsx";
 import { SideBarItem } from "~/application/sidebar/SidebarItem";
 
-export function MobileNav({ items }: { items: SideBarItem[] }) {
+export function MobileNav({ items }: Readonly<{ items: SideBarItem[] }>) {
   const [open, setOpen] = useState(false);
 
   return (
@@ -28,20 +28,9 @@ export function MobileNav({ items }: { items: SideBarItem[] }) {
       <SheetContent side="left" className="pr-0">
         <Logo className="mr-2" />
         <ScrollArea className="my-4 h-[calc(100vh-100px)] pb-10 pl-3">
-          <div className="flex flex-col space-y-3">
-            {/* {docsConfig.mainNav?.map(
-              (item) =>
-                item.href && (
-                  <MobileLink key={item.href} href={item.href} onOpenChange={setOpen}>
-                    {item.title}
-                  </MobileLink>
-                )
-            )} */}
-            {/* MAIN NAV? */}
-          </div>
           <div className="flex flex-col space-y-2">
-            {items.map((item, index) => (
-              <div key={index} className="flex flex-col space-y-3 pt-4">
+            {items.map((item) => (
+              <div key={item.path || item.title} className="flex flex-col space-y-3 pt-4">
                 {item.path ? (
                   <Link to={item.path}>
                     <h4 className="font-medium">{item.title}</h4>
@@ -81,12 +70,12 @@ function MobileLink({
   className,
   children,
   ...props
-}: {
+}: Readonly<{
   href: string;
   onOpenChange: (open: boolean) => void;
   className: string;
   children: React.ReactNode;
-}) {
+}>) {
   return (
     <Link
       to={href}

@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next";
 import { Colors } from "~/application/enums/shared/Colors";
 import SimpleBadge from "~/components/ui/badges/SimpleBadge";
 
-export default function OnboardingBadge({ item }: { item: Onboarding }) {
+export default function OnboardingBadge({ item }: Readonly<{ item: Onboarding }>) {
   const { t } = useTranslation();
   return (
     <>

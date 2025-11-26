@@ -1,10 +1,10 @@
 import clsx from "clsx";
 
 interface Props {
-  avatar: string | undefined | null;
-  className?: string;
+  readonly avatar: string | undefined | null;
+  readonly className?: string;
 }
-export default function UserAvatarBadge({ avatar, className = "h-9 w-9" }: Props) {
+export default function UserAvatarBadge({ avatar, className = "h-9 w-9" }: Readonly<Props>) {
   return (
     <div className="flex shrink-0">
       {avatar ? (

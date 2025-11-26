@@ -8,7 +8,7 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
   return Response.json({}, { status: 404 });
 };
 
-export default function () {
+export default function CatchAllRoute() {
   return <Page404 />;
 }
 

@@ -155,14 +155,7 @@ function Table<T>({
               {headers
                 .filter((f) => !f.hidden)
                 .map((header) => {
-                  const alignment =
-                    header.align === "right"
-                      ? "justify-end"
-                      : header.align === "center"
-                      ? "justify-center"
-                      : header.align === "left"
-                      ? "justify-start"
-                      : "justify-between";
+                  const alignment = getAlignment(header.align);
                   return (
                     <th
                       key={header.name ?? header.title}
@@ -226,17 +219,7 @@ function Table<T>({
                       (item as { key?: string | number })?.key ??
                       JSON.stringify(item)
                     }
-                    onClick={
-                      href
-                        ? (e) => {
-                            if (e.ctrlKey || e.metaKey) {
-                              window.open(href, "_blank");
-                            } else {
-                              navigate(href);
-                            }
-                          }
-                        : undefined
-                    }
+                    onClick={href ? (e) => handleRowClick(e, href, navigate) : undefined}
                     className={clsx("group", href && "hover:bg-secondary cursor-pointer", darkMode && "")}
                   >
                     <ActionsCells actions={actions.filter((f) => f.firstColumn)} className={className} item={item} idxRow={idxRow} />
@@ -296,16 +279,31 @@ function Table<T>({
   );
 }
 
+function getAlignment(align: string | undefined): string {
+  if (align === "right") return "justify-end";
+  if (align === "center") return "justify-center";
+  if (align === "left") return "justify-start";
+  return "justify-between";
+}
+
+function handleRowClick(e: React.MouseEvent, href: string, navigate: (path: string) => void) {
+  if (e.ctrlKey || e.metaKey) {
+    window.open(href, "_blank");
+  } else {
+    navigate(href);
+  }
+}
+
 function ActionsCells<T>({
   item,
   actions,
   idxRow,
   className,
 }: Readonly<{
-  item: T;
-  actions: RowHeaderActionDto<T>[];
-  idxRow: number;
-  className?: (idx: number, item: T) => string;
+  readonly item: T;
+  readonly actions: RowHeaderActionDto<T>[];
+  readonly idxRow: number;
+  readonly className?: (idx: number, item: T) => string;
 }>) {
   const { t } = useTranslation();
   const refConfirm = useRef<RefConfirmModal>(null);
@@ -320,12 +318,17 @@ function ActionsCells<T>({
         <td className={clsx("whitespace-nowrap px-2 py-1", className?.(idxRow, item))}>
           <div className="flex space-x-2">
             {actions
-              .filter((f) => (f.hidden ? f.hidden(item) === false : true))
+              .filter((f) => (f.hidden ? !f.hidden(item) : true))
               .map((action) => {
+                const actionKey =
+                  (action.title && action.title.toString()) ||
+                  action.onClick?.name ||
+                  action.onClickRouteTarget ||
+                  `action-${idxRow}`;
                 return (
                   <ButtonTertiary
                     disabled={action.disabled !== undefined ? action.disabled(item) : action.disabled}
-                    key={(action.title && action.title.toString()) || action.onClick?.name || action.onClickRouteTarget || "action"}
+                    key={actionKey}
                     destructive={action.renderIsDestructive !== undefined ? action.renderIsDestructive(item) : action.destructive}
                     prefetch={action.prefetch}
                     onClick={(e) => {

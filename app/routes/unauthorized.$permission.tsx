@@ -1,6 +1,5 @@
 import { useTranslation } from "react-i18next";
-import { LoaderFunctionArgs, MetaFunction, redirect } from "react-router";
-import { useLoaderData, useLocation, useNavigate } from "react-router";
+import { LoaderFunctionArgs, MetaFunction, redirect, useLoaderData, useLocation, useNavigate } from "react-router";
 import FooterBlock from "~/modules/pageBlocks/components/blocks/marketing/footer/FooterBlock";
 import Logo from "~/components/brand/Logo";
 import ButtonTertiary from "~/components/ui/buttons/ButtonTertiary";

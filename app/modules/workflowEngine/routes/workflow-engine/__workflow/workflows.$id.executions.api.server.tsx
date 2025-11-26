@@ -16,7 +16,7 @@ export namespace WorkflowsIdExecutionsApi {
   export const loader = async ({ request, params }: LoaderFunctionArgs) => {
     await requireAuth({ request, params });
     const tenantId = await getTenantIdOrNull({ request, params });
-    const item = await WorkflowsService.get(params.id!, { tenantId });
+    const item = await WorkflowsService.get(params.id, { tenantId });
     if (!item) {
       throw redirect(UrlUtils.getModulePath(params, `workflow-engine/workflows`));
     }

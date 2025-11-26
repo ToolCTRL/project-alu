@@ -10,7 +10,8 @@ const validateUrl = (value: string | undefined) => {
   if (!value) {
     return false;
   }
-  return /^(?:(ftp|http|https)?:\/\/)?(?:[\w-]+\.)+([a-z]|[A-Z]|[0-9]){2,}(?:\/.*)?$/gi.test(value);
+  // Simplified regex to reduce complexity and use \d instead of [0-9]
+  return /^(?:(?:ftp|https?):\/\/)?(?:[\w-]+\.)+[a-z\d]{2,}(?:\/.*)?$/i.test(value);
 };
 
 const validatePhone = (value: string | undefined) => {

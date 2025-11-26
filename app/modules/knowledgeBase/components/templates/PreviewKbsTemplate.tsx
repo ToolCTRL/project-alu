@@ -1,7 +1,7 @@
 import TableSimple from "~/components/ui/tables/TableSimple";
 import { KnowledgeBasesTemplateDto } from "../../dtos/KnowledgeBasesTemplateDto";
 
-export default function PreviewKbsTemplate({ template }: { template: KnowledgeBasesTemplateDto }) {
+export default function PreviewKbsTemplate({ template }: { readonly template: KnowledgeBasesTemplateDto }) {
   return (
     <div className="space-y-2">
       <h3 className="font-medium">Knowledge Bases</h3>

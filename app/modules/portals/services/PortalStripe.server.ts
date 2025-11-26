@@ -125,7 +125,9 @@ async function reactivateStripeSubscription(subscriptionId: string) {
 async function getStripeSubscription(id: string) {
   try {
     return await stripe.subscriptions.retrieve(id);
-  } catch (e) {
+  } catch (e: any) {
+    // eslint-disable-next-line no-console
+    console.error("Error retrieving subscription:", e.message);
     return null;
   }
 }
@@ -152,7 +154,9 @@ async function getStripeInvoices(id: string | null) {
         customer: id,
       })
     ).data;
-  } catch (e) {
+  } catch (e: any) {
+    // eslint-disable-next-line no-console
+    console.error("Error retrieving invoices:", e.message);
     return [];
   }
 }
@@ -171,7 +175,9 @@ async function getStripePaymentIntents(id: string | null, status?: Stripe.Paymen
       items = items.filter((item) => item.status === status);
     }
     return items;
-  } catch (e) {
+  } catch (e: any) {
+    // eslint-disable-next-line no-console
+    console.error("Error retrieving payment intents:", e.message);
     return [];
   }
 }
@@ -179,7 +185,9 @@ async function getStripePaymentIntents(id: string | null, status?: Stripe.Paymen
 async function getStripePaymentIntent(id: string) {
   try {
     return await stripe.paymentIntents.retrieve(id);
-  } catch (e) {
+  } catch (e: any) {
+    // eslint-disable-next-line no-console
+    console.error("Error retrieving payment intent:", e.message);
     return null;
   }
 }
@@ -192,7 +200,9 @@ async function getStripeUpcomingInvoice(id: string | null) {
     return await stripe.invoices.retrieveUpcoming({
       customer: id,
     });
-  } catch (e) {
+  } catch (e: any) {
+    // eslint-disable-next-line no-console
+    console.error("Error retrieving upcoming invoice:", e.message);
     return null;
   }
 }
@@ -208,7 +218,9 @@ async function getStripePaymentMethods(customer: string | null) {
         type: "card",
       })
     ).data;
-  } catch (e) {
+  } catch (e: any) {
+    // eslint-disable-next-line no-console
+    console.error("Error retrieving payment methods:", e.message);
     return [];
   }
 }
@@ -260,8 +272,8 @@ async function updateStripeProduct(id: string, data: { title: string }) {
       name: data.title,
     })
     .catch((error) => {
-      // console.error(error);
-      // ignore
+      // eslint-disable-next-line no-console
+      console.error("Error updating Stripe product:", error);
     });
 }
 
@@ -439,18 +451,15 @@ async function getStripeRevenueByProductPriceCurrency(portalId: string): Promise
     }
     const invoice = payment.invoice;
     if (typeof invoice === "string") {
-      throw new Error("invoice is string");
+      throw new TypeError("invoice is string");
     }
     const lines = invoice?.lines?.data[0];
     const plan = lines?.plan;
-    // const price = lines?.price;
     const amount = payment.amount / 100;
     const currency = payment.currency;
-    // const interval = plan?.interval;
     const priceId = plan?.id;
 
     const productId = plan?.product;
-    // const priceType = price?.type;
 
     const product = allProducts.find((x) => x.stripeId === productId);
     let productName = "?";

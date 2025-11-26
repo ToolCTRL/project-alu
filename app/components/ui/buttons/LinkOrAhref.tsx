@@ -8,7 +8,7 @@ interface Props {
   to: string | undefined;
   children: ReactNode;
   className?: string;
-  target?: undefined | "_blank" | string;
+  target?: string;
   role?: string;
   rel?: string;
   onClick?: (e: React.MouseEvent<HTMLButtonElement | HTMLAnchorElement>) => void;
@@ -36,43 +36,47 @@ export default function LinkOrAhref({
   isLoading,
   onMouseEnter,
   onMouseLeave,
-}: Props) {
+}: Readonly<Props>) {
+  if ((!to && !onClick) || (to && disabled)) {
+    return (
+      <div className={className} autoFocus={autoFocus} onMouseEnter={onMouseEnter} onMouseLeave={onMouseLeave}>
+        {children}
+      </div>
+    );
+  }
+
+  if (to === undefined) {
+    return (
+      <Button
+        type={type}
+        onClick={onClick}
+        className={clsx(className, isLoading && "base-spinner cursor-not-allowed")}
+        role={role}
+        autoFocus={autoFocus}
+        disabled={disabled}
+        onMouseEnter={onMouseEnter}
+        onMouseLeave={onMouseLeave}
+      >
+        {children}
+      </Button>
+    );
+  }
+
   return (
-    <Fragment>
-      {(!to && !onClick) || (to && disabled) ? (
-        <div className={className} role={role} autoFocus={autoFocus} onMouseEnter={onMouseEnter} onMouseLeave={onMouseLeave}>
-          {children}
-        </div>
-      ) : to == undefined ? (
-        <Button
-          type={type}
-          onClick={onClick}
-          className={clsx(className, isLoading && "base-spinner cursor-not-allowed")}
-          role={role}
-          autoFocus={autoFocus}
-          disabled={disabled}
-          onMouseEnter={onMouseEnter}
-          onMouseLeave={onMouseLeave}
-        >
-          {children}
-        </Button>
-      ) : (
-        <Link
-          reloadDocument={reloadDocument}
-          onClick={onClick}
-          to={to}
-          target={target}
-          className={className}
-          role={role}
-          autoFocus={autoFocus}
-          prefetch={prefetch}
-          rel={rel}
-          onMouseEnter={onMouseEnter}
-          onMouseLeave={onMouseLeave}
-        >
-          {children}
-        </Link>
-      )}
-    </Fragment>
+    <Link
+      reloadDocument={reloadDocument}
+      onClick={onClick}
+      to={to}
+      target={target}
+      className={className}
+      role={role}
+      autoFocus={autoFocus}
+      prefetch={prefetch}
+      rel={rel}
+      onMouseEnter={onMouseEnter}
+      onMouseLeave={onMouseLeave}
+    >
+      {children}
+    </Link>
   );
 }

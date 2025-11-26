@@ -36,7 +36,6 @@ interface Props {
   isUpgrade?: boolean;
   isDowngrade?: boolean;
   stripeCoupon: Stripe.Coupon | null;
-  isPreview?: boolean;
   onClickFeature?: (name: string) => void;
 }
 
@@ -45,9 +44,9 @@ function confirmed(product: SubscriptionProductDto | undefined) {
     return;
   }
   if (product?.title.includes("Core") || product?.title.includes("Enterprise") || product?.title.includes("Pro")) {
-    window.location.href = "https://alexandromg.gumroad.com/l/SaasRock";
+    globalThis.location.href = "https://alexandromg.gumroad.com/l/SaasRock";
   } else {
-    window.location.href = "https://alexandromg.gumroad.com/l/SaasRockDevelopment";
+    globalThis.location.href = "https://alexandromg.gumroad.com/l/SaasRockDevelopment";
   }
 }
 
@@ -69,7 +68,7 @@ export default function Plan({
   isDowngrade,
   stripeCoupon,
   onClickFeature,
-}: Props) {
+}: Readonly<Props>) {
   const { t } = useTranslation();
   const [searchParams] = useSearchParams();
   const submit = useSubmit();
@@ -85,7 +84,7 @@ export default function Plan({
   const [referral, setReferral] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!(typeof window === "undefined") && rootData.appConfiguration.affiliates?.provider.rewardfulApiKey) {
+    if (typeof window !== "undefined" && rootData.appConfiguration.affiliates?.provider.rewardfulApiKey) {
       try {
         // @ts-ignore
         window.rewardful("ready", () => {

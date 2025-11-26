@@ -8,7 +8,7 @@ import ButtonEvent from "~/components/ui/buttons/ButtonEvent";
 import GitHubIcon from "~/components/ui/icons/GitHubIcon";
 import ExternalLinkEmptyIcon from "~/components/ui/icons/ExternalLinkEmptyIcon";
 
-export default function BannerVariantBottom({ item, onClose }: { item: BannerBlockDto; onClose?: () => void }) {
+export default function BannerVariantBottom({ item, onClose }: readonly { readonly item: BannerBlockDto; readonly onClose?: () => void }) {
   const { t } = useTranslation();
   const [open, setOpen] = useState(true);
   return (
@@ -28,10 +28,10 @@ export default function BannerVariantBottom({ item, onClose }: { item: BannerBlo
                   </p>
                 </div>
                 <div className="order-2 mt-0 flex w-auto shrink-0 space-x-1 md:space-x-2">
-                  {item.cta.map((cta) => {
+                  {item.cta.map((cta, idx) => {
                     return (
                       <ButtonEvent
-                        key={cta.href}
+                        key={cta.id ?? idx}
                         to={cta.href}
                         target={cta.target}
                         className={clsx(

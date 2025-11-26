@@ -18,16 +18,14 @@ interface Props {
     billingPeriods: { value: SubscriptionBillingPeriod; options: SubscriptionBillingPeriod[] };
   };
 }
-export default function PlansGrouped({ items, tenantSubscription, canSubmit, stripeCoupon, currenciesAndPeriod }: Props) {
+export default function PlansGrouped({ items, tenantSubscription, canSubmit, stripeCoupon, currenciesAndPeriod }: Readonly<Props>) {
   const [showFeatureInfoModal, setShowFeatureInfoModal] = useState<boolean>(false);
   const [showFeatureInfo, setShowFeatureInfo] = useState<string | null>(null);
   const groups = () => {
     const groups: { group: { title: string; description: string }; items: SubscriptionProductDto[] }[] = [];
     items.forEach((product) => {
       let found = groups.find((f) => f.group.title === product.groupTitle && f.group.description === product.groupDescription);
-      if (!found) {
-        found = groups.find((f) => !f.group.title && !f.group.description && !product.groupTitle && !product.groupDescription);
-      }
+      found ??= groups.find((f) => !f.group.title && !f.group.description && !product.groupTitle && !product.groupDescription);
       if (found) {
         found.items.push(product);
       } else {

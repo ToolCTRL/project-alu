@@ -5,7 +5,7 @@ import ShareIcon from "~/components/ui/icons/crud/ShareIcon";
 import TagsIcon from "~/components/ui/icons/crud/TagsIcon";
 import TabsWithIcons, { TabWithIcon } from "~/components/ui/tabs/TabsWithIcons";
 
-export default function RowSettingsTabs({ canUpdate, isOwner, hasTags = true }: { canUpdate: boolean; isOwner: boolean; hasTags: boolean }) {
+export default function RowSettingsTabs({ canUpdate, isOwner, hasTags = true }: readonly { readonly canUpdate: boolean; readonly isOwner: boolean; readonly hasTags: boolean }) {
   const { t } = useTranslation();
   const location = useLocation();
   function isCurrent(name: string) {

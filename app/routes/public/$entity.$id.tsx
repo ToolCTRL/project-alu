@@ -1,6 +1,5 @@
 import { useTranslation } from "react-i18next";
-import { data, LoaderFunctionArgs, redirect, useLoaderData } from "react-router";
-import { Outlet } from "react-router";
+import { LoaderFunctionArgs, Outlet, redirect, useLoaderData } from "react-router";
 import { getTranslations } from "~/locale/i18next.server";
 import RowHelper from "~/utils/helpers/RowHelper";
 import { createUserSession, getUserInfo } from "~/utils/session.server";

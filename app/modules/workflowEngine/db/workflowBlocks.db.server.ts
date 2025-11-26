@@ -17,8 +17,6 @@ export async function createWorkflowBlock(data: {
   description: string;
   isTrigger: boolean;
   isBlock: boolean;
-  // positionX: number;
-  // positionY: number;
 }) {
   return await db.workflowBlock.create({
     data: {
@@ -28,8 +26,6 @@ export async function createWorkflowBlock(data: {
       isTrigger: data.isTrigger,
       isBlock: data.isBlock,
       input: data.input,
-      // positionX: data.positionX,
-      // positionY: data.positionY,
     },
   });
 }
@@ -52,8 +48,6 @@ export async function updateWorkflowBlock(
       input: data.input,
       isTrigger: data.isTrigger,
       isBlock: data.isBlock,
-      // positionX: data.positionX,
-      // positionY: data.positionY,
     },
   });
 }

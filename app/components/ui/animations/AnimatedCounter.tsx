@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react";
 
-type AnimatedCounterProps = {
+type AnimatedCounterProps = Readonly<{
   value: number;
   duration?: number;
   className?: string;
   prefix?: string;
   suffix?: string;
-};
+}>;
 
 export default function AnimatedCounter({ value, duration = 500, className, prefix = "", suffix = "" }: AnimatedCounterProps) {
   const [display, setDisplay] = useState(0);

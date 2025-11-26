@@ -5,13 +5,13 @@ interface OrderType {
   order: number;
 }
 interface Props<OrderType> {
-  idx: number;
-  items: OrderType[];
-  editable?: boolean;
-  onChange: (orders: OrderType[]) => void;
-  className?: string;
+  readonly idx: number;
+  readonly items: OrderType[];
+  readonly editable?: boolean;
+  readonly onChange: (orders: OrderType[]) => void;
+  readonly className?: string;
 }
-export default function OrderIndexButtons({ idx, items, editable = true, onChange, className }: Props<OrderType>) {
+export default function OrderIndexButtons({ idx, items, editable = true, onChange, className }: Readonly<Props<OrderType>>) {
   function changeOrder(forward: boolean) {
     const currentItem = items[idx];
     let nextItem: OrderType | undefined = undefined;
@@ -21,10 +21,8 @@ export default function OrderIndexButtons({ idx, items, editable = true, onChang
       if (items.length > idx + 1) {
         nextItem = items[idx + 1];
       }
-    } else {
-      if (idx - 1 >= 0) {
-        prevItem = items[idx - 1];
-      }
+    } else if (idx - 1 >= 0) {
+      prevItem = items[idx - 1];
     }
 
     const newOrders = items.map((item, idx) => {

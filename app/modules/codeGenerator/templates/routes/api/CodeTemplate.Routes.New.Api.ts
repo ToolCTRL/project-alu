@@ -3,17 +3,18 @@ import { EntityWithDetails } from "~/utils/db/entities/entities.db.server";
 
 function generate({ entity }: { entity: EntityWithDetails }): string {
   const { capitalized, name } = CodeGeneratorHelper.getNames(entity);
-  const imports: string[] = [];
-  imports.push(`import { LoaderFunctionArgs, ActionFunction, redirect } from "react-router";
+  const imports: string[] = [
+    `import { LoaderFunctionArgs, ActionFunction, redirect } from "react-router";
 import { PlanFeatureUsageDto } from "~/application/dtos/subscriptions/PlanFeatureUsageDto";
 import { getTranslations } from "~/locale/i18next.server";
 import UrlUtils from "~/utils/app/UrlUtils";
 import { getPlanFeatureUsage } from "~/utils/services/.server/subscriptionService";
 import { getTenantIdOrNull } from "~/utils/services/.server/urlService";
 import { getUserInfo } from "~/utils/session.server";
-import { MetaTagsDto } from "~/application/dtos/seo/MetaTagsDto";`);
-  imports.push(`import ${capitalized}Helpers from "../../helpers/${capitalized}Helpers";
-import { ${capitalized}Service } from "../../services/${capitalized}Service";`);
+import { MetaTagsDto } from "~/application/dtos/seo/MetaTagsDto";`,
+    `import ${capitalized}Helpers from "../../helpers/${capitalized}Helpers";
+import { ${capitalized}Service } from "../../services/${capitalized}Service";`
+  ];
 
   let template = `
 export namespace ${capitalized}RoutesNewApi {

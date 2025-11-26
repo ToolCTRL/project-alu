@@ -26,21 +26,19 @@ export const loaderEmails = async (request: Request, params: Params, tenantId: s
   const server = await getPostmarkServer();
   if (server?.InboundAddress) {
     if (!server.InboundDomain) {
-      if (tenantId !== null) {
-        error = `Invalid inbound domain`;
-      } else {
-        inboundEmailAddress = `${server.InboundAddress}`;
-      }
-    } else {
       if (tenantId === null) {
-        inboundEmailAddress = `support@${server.InboundDomain}`;
+        inboundEmailAddress = server.InboundAddress;
       } else {
-        const address = await getTenantDefaultInboundAddress(tenantId);
-        if (address) {
-          inboundEmailAddress = `${address}@${server.InboundDomain}`;
-        } else {
-          error = `Invalid account address`;
-        }
+        error = `Invalid inbound domain`;
+      }
+    } else if (tenantId === null) {
+      inboundEmailAddress = `support@${server.InboundDomain}`;
+    } else {
+      const address = await getTenantDefaultInboundAddress(tenantId);
+      if (address) {
+        inboundEmailAddress = `${address}@${server.InboundDomain}`;
+      } else {
+        error = `Invalid account address`;
       }
     }
   }

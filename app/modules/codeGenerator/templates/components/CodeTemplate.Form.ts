@@ -4,16 +4,17 @@ import CodeGeneratorPropertiesHelper from "../../utils/CodeGeneratorPropertiesHe
 
 function generate({ entity }: { entity: EntityWithDetails }): string {
   const { capitalized } = CodeGeneratorHelper.getNames(entity);
-  const imports: string[] = [];
-  imports.push(`import { useNavigation, useSubmit, Form } from "react-router";
+  const imports: string[] = [
+    `import { useNavigation, useSubmit, Form } from "react-router";
 import { useTranslation } from "react-i18next";
 import { useRef } from "react";
 import ButtonPrimary from "~/components/ui/buttons/ButtonPrimary";
 import ButtonSecondary from "~/components/ui/buttons/ButtonSecondary";
 import InputGroup from "~/components/ui/forms/InputGroup";
 import ActionResultModal from "~/components/ui/modals/ActionResultModal";
-import ConfirmModal, { RefConfirmModal } from "~/components/ui/modals/ConfirmModal";`);
-  imports.push(`import { ${capitalized}Dto } from "../dtos/${capitalized}Dto";`);
+import ConfirmModal, { RefConfirmModal } from "~/components/ui/modals/ConfirmModal";`,
+    `import { ${capitalized}Dto } from "../dtos/${capitalized}Dto";`
+  ];
 
   let template = `
 export default function ${capitalized}Form({

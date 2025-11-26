@@ -1,5 +1,4 @@
-import { LoaderFunctionArgs, redirect, useLoaderData } from "react-router";
-import { Link, useParams } from "react-router";
+import { LoaderFunctionArgs, redirect, useLoaderData, Link, useParams } from "react-router";
 import EditPageLayout from "~/components/ui/layouts/EditPageLayout";
 import { KnowledgeBaseArticleWithDetails, getAllKnowledgeBaseArticles } from "~/modules/knowledgeBase/db/kbArticles.db.server";
 import { KnowledgeBaseDto } from "~/modules/knowledgeBase/dtos/KnowledgeBaseDto";
@@ -30,7 +29,7 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
   };
   return data;
 };
-export default function () {
+export default function AdminKnowledgeBaseArticles() {
   const data = useLoaderData<LoaderData>();
   const params = useParams();
   return (

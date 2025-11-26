@@ -3,10 +3,10 @@ import TableIcon from "../icons/TableIcon";
 import ViewBoardsIcon from "../icons/ViewBoardsIcon";
 
 interface Props {
-  view: "table" | "board";
-  setView: (value: "table" | "board") => void;
+  readonly view: "table" | "board";
+  readonly setView: (value: "table" | "board") => void;
 }
-export default function ViewToggle({ view, setView }: Props) {
+export default function ViewToggle({ view, setView }: Readonly<Props>) {
   return (
     <span className="relative z-0 inline-flex rounded-md shadow-2xs">
       <button

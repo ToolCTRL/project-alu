@@ -7,7 +7,9 @@ export const meta: MetaFunction<typeof loader> = ({ data }) => data?.metatags ||
 export const loader = (args: LoaderFunctionArgs) => WorkflowsVariablesNewApi.loader(args);
 export const action = (args: ActionFunctionArgs) => WorkflowsVariablesNewApi.action(args);
 
-export default () => <WorkflowsVariablesNewView />;
+export default function WorkflowsVariablesNewRoute() {
+  return <WorkflowsVariablesNewView />;
+}
 
 export function ErrorBoundary() {
   return <ServerError />;

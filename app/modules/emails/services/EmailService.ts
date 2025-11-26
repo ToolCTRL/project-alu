@@ -57,6 +57,37 @@ export async function getEmailProvider({ request }: { request: Request }) {
   return clientConfig?.provider;
 }
 
+async function getProviderApiKey(provider: string, apiKeyCredentialValue?: string): Promise<string | null> {
+  const providersMap: { [key: string]: string } = {
+    postmark: "POSTMARK_SERVER_TOKEN",
+    resend: "RESEND_API_KEY",
+    sendgrid: "SENDGRID_API_KEY",
+  };
+  const envVarName = providersMap[provider];
+  if (!envVarName) {
+    return apiKeyCredentialValue || null;
+  }
+  return apiKeyCredentialValue || process.env[envVarName] || null;
+}
+
+function validateAndThrowIfNeeded(apiKey: string | null, provider: string, throwError: boolean): boolean {
+  if (apiKey) {
+    return true;
+  }
+  const errorMessages: { [key: string]: string } = {
+    postmark: "POSTMARK_SERVER_TOKEN required",
+    resend: "RESEND_API_KEY required",
+    sendgrid: "SENDGRID_API_KEY required",
+  };
+  const errorMsg = errorMessages[provider] || "Email provider API key required";
+  // eslint-disable-next-line no-console
+  console.error(`📧 ${errorMsg}`);
+  if (throwError) {
+    throw new Error(errorMsg);
+  }
+  return false;
+}
+
 export async function getEmailConfig({ request, throwError = false }: { request: Request; throwError?: boolean }) {
   const appConfiguration = await getAppConfiguration({ request });
   const apiKeyCredential = await db.credential.findUnique({
@@ -64,57 +95,15 @@ export async function getEmailConfig({ request, throwError = false }: { request:
       name: appConfiguration.email.provider,
     },
   });
-  let provider = appConfiguration.email.provider;
-  let apiKey = apiKeyCredential?.value?.toString();
-  if (provider === "postmark") {
-    if (!apiKey) {
-      apiKey = process.env.POSTMARK_SERVER_TOKEN;
-    }
-    if (!apiKey) {
-      // eslint-disable-next-line no-console
-      console.error("📧 POSTMARK_SERVER_TOKEN required");
-      if (throwError) {
-        throw new Error("POSTMARK_SERVER_TOKEN required");
-      }
-      return null;
-    }
-    return {
-      apiKey,
-      ...appConfiguration.email,
-    };
-  } else if (provider === "resend") {
-    if (!apiKey) {
-      apiKey = process.env.RESEND_API_KEY;
-    }
-    if (!apiKey) {
-      // eslint-disable-next-line no-console
-      console.error("📧 RESEND_API_KEY required");
-      if (throwError) {
-        throw new Error("RESEND_API_KEY required");
-      }
-      return null;
-    }
-    return {
-      apiKey,
-      ...appConfiguration.email,
-    };
-  } else if (provider === "sendgrid") {
-    if (!apiKey) {
-      apiKey = process.env.SENDGRID_API_KEY;
-    }
-    if (!apiKey) {
-      // eslint-disable-next-line no-console
-      console.error("📧 SENDGRID_API_KEY required");
-      if (throwError) {
-        throw new Error("SENDGRID_API_KEY required");
-      }
-      return null;
-    }
-    return {
-      apiKey,
-      ...appConfiguration.email,
-    };
+  const provider = appConfiguration.email.provider;
+  const apiKey = await getProviderApiKey(provider, apiKeyCredential?.value?.toString());
+
+  if (!validateAndThrowIfNeeded(apiKey, provider, throwError)) {
+    return null;
   }
-  console.error("📧 POSTMARK_SERVER_TOKEN, RESEND_API_KEY or SENDGRID_API_KEY required");
-  return null;
+
+  return {
+    apiKey,
+    ...appConfiguration.email,
+  };
 }

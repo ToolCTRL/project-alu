@@ -48,9 +48,7 @@ export default function KbRoutesArticleView() {
             </div>
           )}
 
-          {!data.item ? (
-            <div>Not found</div>
-          ) : (
+          {data.item ? (
             <KbArticle
               kb={data.kb}
               category={data.item.category}
@@ -64,6 +62,8 @@ export default function KbRoutesArticleView() {
                 onThumbsDown: () => onAction("thumbsDown"),
               }}
             />
+          ) : (
+            <div>Not found</div>
           )}
         </div>
       </div>

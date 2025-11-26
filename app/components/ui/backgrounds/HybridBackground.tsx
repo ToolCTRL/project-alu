@@ -1,10 +1,10 @@
 import clsx from "clsx";
 import { ReactNode } from "react";
 
-type HybridBackgroundProps = {
+type HybridBackgroundProps = Readonly<{
   children?: ReactNode;
   className?: string;
-};
+}>;
 
 export default function HybridBackground({ children, className }: HybridBackgroundProps) {
   return (

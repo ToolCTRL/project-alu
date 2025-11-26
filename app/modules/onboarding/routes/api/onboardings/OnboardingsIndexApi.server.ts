@@ -15,10 +15,10 @@ export namespace OnboardingIndexApi {
     await verifyUserHasPermission(request, "admin.onboarding.view");
     const { t } = await getTranslations(request);
     const urlSearchParams = new URL(request.url).searchParams;
-    // const currentPagination = getPaginationFromCurrentUrl(urlSearchParams);
     const status = urlSearchParams.get("status");
+    const isActive = status === "active" ? true : status === "inactive" ? false : undefined;
     const items = await getOnboardings({
-      active: status === "active" ? true : status === "inactive" ? false : undefined,
+      active: isActive,
     });
     const groupByStatus: { status: string; count: number }[] = [];
     items.forEach((item) => {

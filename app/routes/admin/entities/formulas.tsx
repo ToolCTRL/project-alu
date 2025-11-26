@@ -1,6 +1,6 @@
-import { ActionFunctionArgs, LoaderFunctionArgs, MetaFunction, useLoaderData } from "react-router";
+import { ActionFunctionArgs, LoaderFunctionArgs, MetaFunction, useLoaderData, useActionData, useNavigate, useNavigation, useOutlet, useParams, useSubmit } from "react-router";
 import { useTranslation } from "react-i18next";
-import { Link, useActionData, useNavigate, useNavigation, useOutlet, useParams, useSubmit } from "react-router";
+import { Link } from "react-router";
 import ButtonPrimary from "~/components/ui/buttons/ButtonPrimary";
 import TableSimple from "~/components/ui/tables/TableSimple";
 import { getTranslations } from "~/locale/i18next.server";
@@ -103,7 +103,7 @@ export const action = async ({ request, params }: ActionFunctionArgs) => {
 
 export const meta: MetaFunction<typeof loader> = ({ data }) => [{ title: data?.title }];
 
-export default function () {
+export default function FormulasRoute() {
   const { t } = useTranslation();
   const data = useLoaderData<LoaderData>();
   const actionData = useActionData<ActionData>();
@@ -196,13 +196,12 @@ export default function () {
         </InfoBanner>
       )}
 
-      {actionData?.success !== undefined ? (
+      {actionData?.success !== undefined && (
         <SuccessBanner>
           <span className="font-bold">Result:</span> {actionData.success}
         </SuccessBanner>
-      ) : (
-        actionData?.error !== undefined && <ErrorBanner title="Error">{actionData.error}</ErrorBanner>
       )}
+      {actionData?.error !== undefined && <ErrorBanner title="Error">{actionData.error}</ErrorBanner>}
 
       <TableSimple
         items={data.items}
@@ -255,7 +254,7 @@ export default function () {
               <div className="flex flex-wrap">
                 {i.components.map((item, idx) => {
                   return (
-                    <span key={idx} className="m-0.5">
+                    <span key={`${i.id}-component-${idx}`} className="m-0.5">
                       <FormulaComponentBadge item={item} />
                     </span>
                   );
@@ -328,13 +327,13 @@ function ExecuteModal({
   onClose,
   onCreate,
   allEntities,
-}: {
+}: Readonly<{
   item?: FormulaDto;
   open: boolean;
   onClose: () => void;
   onCreate: ({ item, variables }: { item: FormulaDto; variables: FormulaVariableValueDto[] }) => void;
   allEntities: EntityWithDetails[];
-}) {
+}>) {
   const { t } = useTranslation();
   const [formula, setFormula] = useState<FormulaDto | undefined>(item);
   const [variablesValues, setVariablesValues] = useState<FormulaVariableValueDto[]>([]);
@@ -348,26 +347,7 @@ function ExecuteModal({
   }, [formula, item]);
 
   useEffect(() => {
-    if (formula) {
-      // FormulaService.calculate({
-      //   allEntities,
-      //   formula: formula as FormulaWithDetails,
-      //   variables: variablesValues,
-      //   session: { userId: undefined, tenantId: null },
-      //   originalTrigger: "",
-      //   triggeredBy: "",
-      //   isDebugging: true,
-      //   t,
-      // })
-      //   .then((r) => {
-      //     setResultState("success");
-      //     setResult(r?.toString() ?? "null");
-      //   })
-      //   .catch((e) => {
-      //     setResultState("error");
-      //     setResult(e.message);
-      //   });
-    }
+    // Formula calculation is handled by the form submission
   }, [allEntities, formula, variablesValues, t]);
 
   function onChangeVariableValue(component: FormulaComponentDto, value: string) {
@@ -404,7 +384,7 @@ function ExecuteModal({
               <div className="border-border bg-secondary grid max-h-72 grid-cols-12 gap-1 overflow-x-auto rounded-md border border-dashed p-2 pb-4">
                 {formula.components.map((v, idx) => {
                   return (
-                    <Fragment key={idx}>
+                    <Fragment key={`${formula.id}-execute-${idx}`}>
                       {v.type === "variable" ? (
                         <InputText
                           className="col-span-12"

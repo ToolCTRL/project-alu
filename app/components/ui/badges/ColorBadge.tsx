@@ -7,7 +7,7 @@ interface Props {
   size?: "sm" | "md";
 }
 
-export default function ColorBadge({ color, size = "md" }: Props) {
+export default function ColorBadge({ color, size = "md" }: Readonly<Props>) {
   return (
     <span
       className={clsx(

@@ -58,16 +58,15 @@ export default function PostForm({ item, categories, tags, canUpdate = true, can
   const [readingTime, setReadingTime] = useState(item?.readingTime ?? "");
   const [published, setPublished] = useState(item?.published ?? false);
   const [image, setImage] = useState(item?.image ?? "");
-  const [content, setContent] = useLocalStorage(!item ? "blog-post-content" : "blog-" + item.slug, item?.content ?? "");
+  const [content, setContent] = useLocalStorage(item ? "blog-" + item.slug : "blog-post-content", item?.content ?? "");
 
   useEffect(() => {
-    if (!item) {
-      if (categories.length === 1) {
-        setCategory(categories[0].id);
-      }
-    } else {
+    if (item) {
       setCategory(item.categoryId ?? undefined);
       setPostTags(item?.tags.map((postTag) => postTag.tag.name).join(",") ?? "");
+    }
+    if (!item && categories.length === 1) {
+      setCategory(categories[0].id);
     }
 
     if (actionData?.error) {
@@ -77,10 +76,11 @@ export default function PostForm({ item, categories, tags, canUpdate = true, can
   }, [actionData]);
 
   useEffect(() => {
-    if (!item) {
-      const slug = UrlUtils.slugify(title);
-      setSlug(slug);
+    if (item) {
+      return;
     }
+    const slug = UrlUtils.slugify(title);
+    setSlug(slug);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [title]);
 
@@ -118,7 +118,7 @@ export default function PostForm({ item, categories, tags, canUpdate = true, can
           {contentType === "wysiwyg" && (
             <div>
               <input type="hidden" name="content" value={content} hidden readOnly />
-              {typeof window !== "undefined" && (
+              {typeof globalThis.window !== "undefined" && (
                 <Editor
                   content={content}
                   onChange={(e) => {

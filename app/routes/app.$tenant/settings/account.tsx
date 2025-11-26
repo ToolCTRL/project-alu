@@ -134,7 +134,7 @@ async function handleEditAction(request: Request, params: any, form: FormData, t
 async function handleDeleteAction(request: Request, tenantId: string, userInfo: any, t: any) {
   await verifyUserHasPermission(request, "app.settings.account.delete", tenantId);
   const activeSubscriptions = await getActiveTenantSubscriptions(tenantId);
-  if (activeSubscriptions && activeSubscriptions.products.find((f) => !f.cancelledAt)) {
+  if (activeSubscriptions?.products.some((f) => !f.cancelledAt)) {
     return badRequest({
       deleteError: "You cannot delete a tenant with active subscriptions",
     });

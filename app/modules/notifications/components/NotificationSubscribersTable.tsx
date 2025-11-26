@@ -6,7 +6,7 @@ import TableSimple from "~/components/ui/tables/TableSimple";
 import DateUtils from "~/utils/shared/DateUtils";
 import { IGetSubscribersData } from "../services/.server/NotificationService";
 
-export default function NotificationSubscribersTable({ items }: { items: IGetSubscribersData | null }) {
+export default function NotificationSubscribersTable({ items }: { readonly items: IGetSubscribersData | null }) {
   return (
     <TableSimple
       items={items?.data ?? []}
@@ -22,9 +22,7 @@ export default function NotificationSubscribersTable({ items }: { items: IGetSub
           title: "Subscriber",
           value: (i) => (
             <div>
-              {!i.email ? (
-                <div>-</div>
-              ) : (
+              {i.email ? (
                 <Link to={"/admin/notifications/messages?subscriberId=" + i.subscriberId}>
                   <UserBadge
                     item={{
@@ -35,6 +33,8 @@ export default function NotificationSubscribersTable({ items }: { items: IGetSub
                     }}
                   />
                 </Link>
+              ) : (
+                <div>-</div>
               )}
             </div>
           ),

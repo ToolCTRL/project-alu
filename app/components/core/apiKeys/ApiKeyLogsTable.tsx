@@ -27,7 +27,7 @@ const AliasCell = ({ item }: { item: ApiKeyLogWithDetails }) => (
   <div>{item.apiKey ? item.apiKey?.alias : <span className="text-gray-300">?</span>}</div>
 );
 
-const IpCell = ({ item }: { item: ApiKeyLogWithDetails }) => (
+const IpCell = ({ item }: Readonly<{ item: ApiKeyLogWithDetails }>) => (
   <div>{item.ip.length > 0 ? item.ip : <span className="text-gray-300">?</span>}</div>
 );
 
@@ -75,7 +75,7 @@ export default function ApiKeyLogsTable({ withTenant, items, pagination }: Reado
       name: "createdAt",
       title: t("shared.createdAt"),
       value: (item) => DateUtils.dateYMDHMS(item.createdAt),
-      formattedValue: (item) => <CreatedAtCell item={item} />,
+      formattedValue: CreatedAtCell,
     };
     headers.push(createdAtHeader);
     if (withTenant) {
@@ -90,14 +90,14 @@ export default function ApiKeyLogsTable({ withTenant, items, pagination }: Reado
       name: "alias",
       title: t("models.apiKey.alias"),
       value: (item) => item.apiKey?.alias,
-      formattedValue: (item) => <AliasCell item={item} />,
+      formattedValue: AliasCell,
     };
     headers.push(aliasHeader);
     const ipHeader: RowHeaderDisplayDto<ApiKeyLogWithDetails> = {
       name: "ip",
       title: t("models.apiKeyLog.ip"),
       value: (item) => item.ip,
-      formattedValue: (item) => <IpCell item={item} />,
+      formattedValue: IpCell,
     };
     headers.push(ipHeader);
     const endpointHeader: RowHeaderDisplayDto<ApiKeyLogWithDetails> = {
@@ -110,28 +110,28 @@ export default function ApiKeyLogsTable({ withTenant, items, pagination }: Reado
       name: "method",
       title: t("models.apiKeyLog.method"),
       value: (item) => item.method,
-      formattedValue: (item) => <MethodCell item={item} />,
+      formattedValue: MethodCell,
     };
     const statusHeader: RowHeaderDisplayDto<ApiKeyLogWithDetails> = {
       name: "status",
       title: t("models.apiKeyLog.status"),
       value: (item) => item.status,
-      formattedValue: (item) => <StatusCell item={item} />,
+      formattedValue: StatusCell,
     };
     const durationHeader: RowHeaderDisplayDto<ApiKeyLogWithDetails> = {
       name: "duration",
       title: "Duration",
-      value: (item) => <DurationCell item={item} />,
+      formattedValue: DurationCell,
     };
     const paramsHeader: RowHeaderDisplayDto<ApiKeyLogWithDetails> = {
       name: "params",
       title: t("models.apiKeyLog.params"),
-      value: (item) => <ParamsCell item={item} />,
+      formattedValue: ParamsCell,
     };
     const errorHeader: RowHeaderDisplayDto<ApiKeyLogWithDetails> = {
       name: "error",
       title: "Error",
-      value: (item) => <ErrorCell item={item} />,
+      formattedValue: ErrorCell,
     };
     headers = [...headers, methodHeader, statusHeader, durationHeader, paramsHeader, errorHeader];
     setHeaders(headers);

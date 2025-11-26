@@ -10,18 +10,17 @@ import ButtonPrimary from "../buttons/ButtonPrimary";
 import ButtonSecondary from "../buttons/ButtonSecondary";
 
 interface Props {
-  page: number;
-  pageSize: number;
-  totalItems: number;
-  totalPages: number;
-  defaultPageSize?: number;
+  readonly page: number;
+  readonly pageSize: number;
+  readonly totalItems: number;
+  readonly totalPages: number;
+  readonly defaultPageSize?: number;
 }
-export default function GridPagination({ page, pageSize, totalItems, totalPages, defaultPageSize = Constants.DEFAULT_PAGE_SIZE }: Props) {
+export default function GridPagination({ page, pageSize, totalItems, totalPages, defaultPageSize = Constants.DEFAULT_PAGE_SIZE }: Readonly<Props>) {
   const { t } = useTranslation();
   const [state, setState] = useState<{ page: number; pageSize: number | undefined }>({ page, pageSize });
   const [from, setFrom] = useState(0);
   const [to, setTo] = useState(0);
-  // const submit = useSubmit();
   const navigation = useNavigation();
   const loading = navigation.state === "loading" || navigation.state === "submitting";
   const [searchParams, setSearchParams] = useSearchParams();
@@ -94,7 +93,7 @@ export default function GridPagination({ page, pageSize, totalItems, totalPages,
             max={totalPages}
             disabled={totalPages <= 1}
             value={state.page}
-            onChange={(e) => setState({ ...state, page: parseInt(e.target.value) })}
+            onChange={(e) => setState({ ...state, page: Number.parseInt(e.target.value, 10) })}
             onBlur={() => setShowPageNumberModal(false)}
             className="focus:border-border focus:ring-ring border-border block w-full min-w-0 flex-1 rounded text-xs"
           />
@@ -148,12 +147,12 @@ function PageOptionsForm({
   pageSize,
   onChange,
   totalItems,
-}: {
-  page: number;
-  pageSize?: number;
-  totalItems?: number;
-  onChange: (state: { currentPage: number; pageSize?: number }) => void;
-}) {
+}: Readonly<{
+  readonly page: number;
+  readonly pageSize?: number;
+  readonly totalItems?: number;
+  readonly onChange: (state: { currentPage: number; pageSize?: number }) => void;
+}>) {
   const { t } = useTranslation();
   const [totalPages, setTotalPages] = useState(0);
   const [state, setState] = useState({ currentPage: page, pageSize: pageSize });
@@ -216,20 +215,3 @@ function PageOptionsForm({
     </form>
   );
 }
-
-// function PageSize({ number, onSelected }: { number?: number; onSelected: () => void }) {
-//   const { t } = useTranslation();
-//   const [searchParams] = useSearchParams();
-//   return (
-//     <button onClick={onSelected} className="w-full bg-background p-2 text-center text-sm text-muted-foreground hover:bg-secondary hover:text-foreground">
-//       <div className="flex items-center justify-center space-x-2">
-//         {number === undefined ? <div className="text-muted-foreground">{t("shared.default")}</div> : <div>{number}</div>}
-//         <div>
-//           {searchParams.get("pageSize") === number?.toString() || (number === undefined && !searchParams.get("pageSize")) ? (
-//             <CheckIcon className="h-3 w-3 text-teal-500" />
-//           ) : null}
-//         </div>
-//       </div>
-//     </button>
-//   );
-// }

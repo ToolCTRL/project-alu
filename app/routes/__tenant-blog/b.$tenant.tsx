@@ -31,7 +31,7 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
   return data;
 };
 
-export default function () {
+export default function BlogListingRoute() {
   const { t } = useTranslation();
   const data = useLoaderData<LoaderData>();
   return (
@@ -41,8 +41,8 @@ export default function () {
         <HeadingBlock
           item={{
             style: "centered",
-            headline: !data.tenant ? t("blog.title") : `${data.tenant?.name} ${t("blog.title")}`,
-            subheadline: !data.tenant ? t("blog.headline") : "",
+            headline: data.tenant ? `${data.tenant?.name} ${t("blog.title")}` : t("blog.title"),
+            subheadline: data.tenant ? "" : t("blog.headline"),
           }}
         />
       </div>

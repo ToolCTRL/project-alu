@@ -45,9 +45,9 @@ export default function DocPageBlock({ type, block }: Props) {
               <h4 className="text-lg font-medium ">Design</h4>
               <div className="border-border border-2 border-dashed">
                 {item && (
-                  <>
+                  <div>
                     <PageBlocks className="" items={[item]} onChange={(e) => onUpdate(e[0])} />
-                  </>
+                  < /div>
                 )}
               </div>
             </div>

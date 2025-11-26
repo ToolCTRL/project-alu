@@ -4,7 +4,7 @@ import type { KnowledgeBaseDto } from "../../dtos/KnowledgeBaseDto";
 import KbArticles from "./KbArticles";
 import KnowledgeBaseUtils from "../../utils/KnowledgeBaseUtils";
 
-export default function KbArticlesBySection({ kb, item }: { kb: KnowledgeBaseDto; item: KbCategoryDto }) {
+export default function KbArticlesBySection({ kb, item }: Readonly<{ kb: KnowledgeBaseDto; item: KbCategoryDto }>) {
   return (
     <div>
       {item.articles.length === 0 ? (

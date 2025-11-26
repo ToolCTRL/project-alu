@@ -5,7 +5,7 @@ import InputText from "~/components/ui/input/InputText";
 import BlockVariableForm from "../../../shared/variables/BlockVariableForm";
 import { defaultRowsOverviewBlock, RowsOverviewBlockDto, RowsOverviewBlockStyle, RowsOverviewBlockStyles } from "./RowsOverviewBlockUtils";
 
-export default function RowsOverviewBlockForm({ item, onUpdate }: { item?: RowsOverviewBlockDto; onUpdate: (item: RowsOverviewBlockDto) => void }) {
+export default function RowsOverviewBlockForm({ item, onUpdate }: readonly { readonly item?: RowsOverviewBlockDto; readonly onUpdate: (item: RowsOverviewBlockDto) => void }) {
   const [state, setState] = useState<RowsOverviewBlockDto>(item || defaultRowsOverviewBlock);
   useEffect(() => {
     onUpdate(state);
@@ -32,7 +32,7 @@ export default function RowsOverviewBlockForm({ item, onUpdate }: { item?: RowsO
               hiddenProperties: value
                 .toString()
                 .split(",")
-                .filter((f) => f),
+                .filter(Boolean),
             })
           }
         />

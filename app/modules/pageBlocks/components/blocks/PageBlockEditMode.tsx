@@ -14,25 +14,12 @@ export default function PageBlockEditMode({
   items,
   onSetBlocks,
 }: {
-  page: PageConfiguration | undefined;
-  items: PageBlockDto[];
-  onSetBlocks: (items: PageBlockDto[]) => void;
-  canExit?: boolean;
+  readonly page: PageConfiguration | undefined;
+  readonly items: PageBlockDto[];
+  readonly onSetBlocks: (items: PageBlockDto[]) => void;
 }) {
-  // const [searchParams, setSearchParams] = useSearchParams();
   const [settingTemplate, setSettingTemplate] = useState(false);
   const [searchParams, setSearchParams] = useSearchParams();
-
-  // function isEditMode() {
-  //   return searchParams.get("editMode") !== "false";
-  // }
-  // function toggleEditMode() {
-  //   if (searchParams.get("editMode") === "false") {
-  //     setSearchParams({ editMode: "true" });
-  //   } else {
-  //     setSearchParams({ editMode: "false" });
-  //   }
-  // }
 
   function onDownload() {
     if (items.length === 0) {
@@ -63,7 +50,6 @@ export default function PageBlockEditMode({
 
   return (
     <div>
-      {/* {isEditMode() && ( */}
       <div className="dark:text-foreground dark:bg-secondary bg-gray-900 p-2 text-gray-50">
         <div className="flex justify-center space-x-2">
           <ChatGptSetParametersButton
@@ -107,7 +93,6 @@ export default function PageBlockEditMode({
           </button>
         </div>
       </div>
-      {/* )} */}
 
       <Modal open={settingTemplate} setOpen={setSettingTemplate}>
         <div>

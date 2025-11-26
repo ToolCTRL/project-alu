@@ -2,7 +2,7 @@ import ApiUtils from "~/utils/app/ApiUtils";
 import { ApiEndpointDto } from "../dtos/ApiEndpointDto";
 import SimpleBadge from "~/components/ui/badges/SimpleBadge";
 
-export default function ApiEndpointTitle({ item }: { item: ApiEndpointDto }) {
+export default function ApiEndpointTitle({ item }: { readonly item: ApiEndpointDto }) {
   return (
     <div className="flex flex-col truncate">
       <div className="flex items-center space-x-2">

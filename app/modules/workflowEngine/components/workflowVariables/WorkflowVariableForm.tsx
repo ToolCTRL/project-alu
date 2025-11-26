@@ -3,7 +3,15 @@ import FormGroup from "~/components/ui/forms/FormGroup";
 import InputText, { RefInputText } from "~/components/ui/input/InputText";
 
 interface Props {
-  item?: { id: string; name: string; value: string };
+  readonly item?: { id: string; name: string; value: string };
+}
+
+function isValidName(name: string) {
+  // Regular expression for lowercase alphanumeric with dashes
+  const regex = /^[a-zA-Z0-9-_]+$/;
+
+  // Test the variable name against the regular expression
+  return regex.test(name);
 }
 
 export default function WorkflowVariableForm({ item }: Props) {
@@ -16,14 +24,6 @@ export default function WorkflowVariableForm({ item }: Props) {
       mainInput.current?.input.current?.focus();
     }, 100);
   }, []);
-
-  function isValidName(name: string) {
-    // Regular expression for lowercase alphanumeric with dashes
-    const regex = /^[a-zA-Z0-9-_]+$/;
-
-    // Test the variable name against the regular expression
-    return regex.test(name);
-  }
 
   return (
     <FormGroup id={item?.id} editing={true}>

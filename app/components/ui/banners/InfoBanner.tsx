@@ -9,7 +9,7 @@ interface Props {
   children?: ReactNode;
 }
 
-export default function InfoBanner({ title = "Note", text = "", redirect, children }: Props) {
+export default function InfoBanner({ title = "Note", text = "", redirect, children }: Readonly<Props>) {
   const { t } = useTranslation();
   return (
     <div className="not-prose rounded-md border border-blue-300 bg-blue-50 dark:border-blue-700 dark:bg-blue-900">

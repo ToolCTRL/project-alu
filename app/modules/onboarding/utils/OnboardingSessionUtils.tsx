@@ -24,7 +24,7 @@ function getActivity({ t, item, metadata }: { t: TFunction; item: OnboardingSess
     items.push({
       type: "created-manually",
       createdAt: item.createdAt,
-      description: "Matching filters: " + OnboardingFilterUtils.getStepMatches({ t, matches: item.matches, metadata }),
+      description: `Matching filters: ${matchingFilters}`,
     });
   }
   if (item.startedAt) {

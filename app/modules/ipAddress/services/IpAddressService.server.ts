@@ -6,7 +6,6 @@ import { cachified, clearCacheKey } from "~/utils/cache.server";
 import { db } from "~/utils/db.server";
 import { addBlacklistAttempt, addToBlacklist, findInBlacklist } from "~/utils/db/blacklist.db.server";
 
-// TODO: Test with your own IP address
 const LOCAL_DEV_IP = "189.203.100.82";
 
 async function log(
@@ -52,7 +51,7 @@ async function log(
         success: false,
       },
     });
-    throw Error("Unauthorized.");
+    throw new Error("Unauthorized.");
   } else {
     await db.ipAddressLog.create({
       data: {
@@ -105,7 +104,6 @@ async function getOrCreateIpAddressLookup(ip: string): Promise<IpAddressDto | nu
       };
       return dto;
     } catch (error: any) {
-      // eslint-disable-next-line no-console
       console.error("[getOrCreateIpAddressLookup] Error parsing metadata", error);
       return null;
     }
@@ -132,7 +130,6 @@ async function getOrCreateIpAddressLookup(ip: string): Promise<IpAddressDto | nu
       const response = await fetch(`http://api.ipstack.com/${ip}?access_key=${process.env.IPSTACK_API_KEY}`);
       const data = await response.json();
       if (!response.ok || data.error) {
-        // eslint-disable-next-line no-console
         console.log("[ipstack] Error fetching IP data", {
           status: response.status,
           statusText: response.statusText,
@@ -152,25 +149,21 @@ async function getOrCreateIpAddressLookup(ip: string): Promise<IpAddressDto | nu
         dto.metadata = data;
       }
     } catch (error: any) {
-      // eslint-disable-next-line no-console
       console.error("[ipstack] Error parsing IP data", error);
-      // return null;
     }
   } else if (provider === "ipapi.is") {
     try {
       const response = await fetch(`https://api.ipapi.is/?ip=${ip}&key=${process.env.IPAPIIS_API_KEY}`);
       const data = await response.json();
       if (!response.ok || data.error) {
-        // eslint-disable-next-line no-console
         console.log("[ipapi.is] Error fetching IP data", {
           status: response.status,
           statusText: response.statusText,
           error: data.error,
         });
       } else {
-        let ipapiis: IpApiIsDto = data;
+        const ipapiis: IpApiIsDto = data;
         dto.provider = "ipapi.is";
-        // dto.type = ipapiis.type;
         dto.countryCode = ipapiis.location?.country_code || "";
         dto.countryName = ipapiis.location?.country || "";
         dto.regionCode = ipapiis.rir;
@@ -182,9 +175,7 @@ async function getOrCreateIpAddressLookup(ip: string): Promise<IpAddressDto | nu
         dto.metadata = ipapiis;
       }
     } catch (error: any) {
-      // eslint-disable-next-line no-console
       console.error("[ipapi.is] Error parsing IP data", error);
-      // return null;
     }
   }
 
@@ -218,47 +209,30 @@ function validateIp(ipAddress: IpAddressDto) {
   if (!ipAddress.metadata) {
     return;
   }
-  if (ipAddress.provider === "ipapi.is") {
-    let data: IpApiIsDto = ipAddress.metadata as IpApiIsDto;
-    console.log("[validateIp]", {
-      is_bogon: data.is_bogon,
-      is_mobile: data.is_mobile,
-      is_crawler: data.is_crawler,
-      is_datacenter: data.is_datacenter,
-      is_tor: data.is_tor,
-      is_proxy: data.is_proxy,
-      is_vpn: data.is_vpn,
-      is_abuser: data.is_abuser,
-    });
-    if (data.is_bogon) {
-      // throw Error("Unauthorized.");
-    }
-    if (data.is_mobile) {
-      // throw Error("Unauthorized.");
-    }
-    if (data.is_crawler) {
-      throw Error("Unauthorized.");
-    }
-    if (data.is_datacenter) {
-      // throw Error("Unauthorized.");
-    }
-    if (data.is_tor) {
-      // throw Error("Unauthorized.");
-    }
-    if (data.is_proxy) {
-      // throw Error("Unauthorized.");
-    }
-    if (data.is_vpn) {
-      // throw Error("Unauthorized.");
-    }
-    if (data.is_abuser) {
-      throw Error("Unauthorized.");
-    }
-    if (data.location) {
-      const blockCountryCodes: string[] = [];
-      if (blockCountryCodes.includes(data.location.country_code)) {
-        throw Error("Unauthorized.");
-      }
+  if (ipAddress.provider !== "ipapi.is") {
+    return;
+  }
+
+  const data: IpApiIsDto = ipAddress.metadata as IpApiIsDto;
+  console.log("[validateIp]", {
+    is_bogon: data.is_bogon,
+    is_mobile: data.is_mobile,
+    is_crawler: data.is_crawler,
+    is_datacenter: data.is_datacenter,
+    is_tor: data.is_tor,
+    is_proxy: data.is_proxy,
+    is_vpn: data.is_vpn,
+    is_abuser: data.is_abuser,
+  });
+
+  if (data.is_crawler || data.is_abuser) {
+    throw new Error("Unauthorized.");
+  }
+
+  if (data.location) {
+    const blockCountryCodes: string[] = [];
+    if (blockCountryCodes.length > 0 && blockCountryCodes.includes(data.location.country_code)) {
+      throw new Error("Unauthorized.");
     }
   }
 }

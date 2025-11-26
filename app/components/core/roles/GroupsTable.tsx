@@ -67,7 +67,7 @@ export default function GroupsTable({ items, onNewRoute }: Readonly<Props>): JSX
             name: "name",
             title: t("models.group.name"),
             value: (i) => i.name,
-            formattedValue: (i) => <GroupNameCell item={i} />,
+            formattedValue: GroupNameCell,
           },
           {
             name: "description",
@@ -83,7 +83,7 @@ export default function GroupsTable({ items, onNewRoute }: Readonly<Props>): JSX
           {
             name: "actions",
             title: "",
-            value: (i) => <GroupActionsCell item={i} />,
+            formattedValue: GroupActionsCell,
           },
         ]}
       />

@@ -5,7 +5,7 @@ interface Props {
   items: { route: string; c: boolean; r: boolean; u: boolean; d: boolean }[];
 }
 
-export default function DocLifeCycle({ items }: Props) {
+export default function DocLifeCycle({ items }: Readonly<Props>) {
   return (
     <div className="not-prose flex flex-col">
       <div className="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">

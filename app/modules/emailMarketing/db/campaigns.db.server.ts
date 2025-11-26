@@ -104,7 +104,7 @@ export async function updateCampaign(
     name?: string;
     subject?: string;
     htmlBody?: string;
-    textBody?: string | undefined;
+    textBody?: string;
     status?: string;
     track?: boolean;
     sentAt?: Date;

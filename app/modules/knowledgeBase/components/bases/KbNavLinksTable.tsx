@@ -5,7 +5,7 @@ import { KbNavLinkDto } from "~/modules/knowledgeBase/dtos/KbNavLinkDto";
 export default function KbNavLinksTable({
   items,
   setItems,
-}: {
+}: Readonly<{
   items: KbNavLinkDto[];
   setItems: React.Dispatch<
     React.SetStateAction<
@@ -16,7 +16,7 @@ export default function KbNavLinksTable({
       }[]
     >
   >;
-}) {
+}>) {
   return (
     <div>
       <div className="mb-1 flex items-center justify-between space-x-2 text-xs">

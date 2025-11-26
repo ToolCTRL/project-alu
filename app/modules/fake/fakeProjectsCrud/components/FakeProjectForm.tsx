@@ -12,17 +12,14 @@ import CollapsibleRow from "~/components/ui/tables/CollapsibleRow";
 import { FakeProjectDto } from "../dtos/FakeProjectDto";
 import { FakeTaskDto } from "../dtos/FakeTaskDto";
 
-export default function FakeProjectForm({
-  item,
-  actionData,
-  canDelete,
-  onCancel,
-}: {
-  item?: FakeProjectDto;
-  actionData: { success?: string; error?: string } | undefined;
-  canDelete?: boolean;
-  onCancel?: () => void;
-}) {
+interface FakeProjectFormProps {
+  readonly item?: FakeProjectDto;
+  readonly actionData: { success?: string; error?: string } | undefined;
+  readonly canDelete?: boolean;
+  readonly onCancel?: () => void;
+}
+
+export default function FakeProjectForm({ item, actionData, canDelete, onCancel }: FakeProjectFormProps) {
   const { t } = useTranslation();
   const navigation = useNavigation();
   const submit = useSubmit();
@@ -44,7 +41,7 @@ export default function FakeProjectForm({
       <div className="w-full space-y-2">
         {tasks.map((item, index) => (
           <input
-            key={index}
+            key={`task-${index}-${item.name || 'empty'}`}
             type="hidden"
             name="tasks[]"
             hidden
@@ -59,7 +56,7 @@ export default function FakeProjectForm({
           <h3 className="text-foreground text-sm font-medium leading-3">Tasks</h3>
           {tasks.map((item, index) => (
             <CollapsibleRow
-              key={index}
+              key={`task-row-${index}-${item.name || 'empty'}`}
               title={item.name || "Task #" + (index + 1)}
               value={item.name || "Task #" + (index + 1)}
               initial={!item.name}

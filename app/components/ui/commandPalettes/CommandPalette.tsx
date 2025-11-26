@@ -16,7 +16,7 @@ interface Props {
   actions?: Action[];
 }
 
-export default function CommandPalette({ layout, children, actions }: Props) {
+export default function CommandPalette({ layout, children, actions }: Readonly<Props>) {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const appData = useAppData();
@@ -72,7 +72,6 @@ function RenderResults() {
             </div>
           ) : (
             <div className={clsx("flex w-full cursor-pointer items-center space-x-3 py-4 pl-4 pr-5", active ? "bg-secondary/90" : "")}>
-              {/* {item.icon && <div className="h-10 w-10 p-2">{item.icon}</div>} */}
               <div className="flex w-full items-center justify-between space-x-2">
                 <div className="text-foreground/80 text-sm font-medium">{item.name}</div>
                 <div className="text-muted-foreground truncate text-xs">{item.subtitle}</div>

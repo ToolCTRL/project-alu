@@ -4,7 +4,7 @@ import { getFormattedPriceInCurrency } from "~/utils/helpers/PricingHelper";
 import DateUtils from "~/utils/shared/DateUtils";
 
 interface Props {
-  items: Stripe.UpcomingInvoice[];
+  readonly items: Stripe.UpcomingInvoice[];
 }
 
 export default function MyUpcomingInvoice({ items }: Props) {

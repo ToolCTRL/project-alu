@@ -5,19 +5,19 @@ import TableSimple from "~/components/ui/tables/TableSimple";
 import DateUtils from "~/utils/shared/DateUtils";
 import { IGetMessagesData } from "../services/.server/NotificationService";
 
-export default function NotificationMessagesTable({ items, withPagination = true }: { items: IGetMessagesData | null; withPagination?: boolean }) {
+export default function NotificationMessagesTable({ items, withPagination = true }: { readonly items: IGetMessagesData | null; readonly withPagination?: boolean }) {
   return (
     <TableSimple
       items={items?.data ?? []}
       pagination={
-        !withPagination
-          ? undefined
-          : {
+        withPagination
+          ? {
               page: (items?.page ?? 0) + 1,
               pageSize: items?.pageSize ?? 0,
               totalItems: items?.totalCount ?? 0,
               totalPages: Math.ceil((items?.totalCount ?? 0) / (items?.pageSize ?? 0)),
             }
+          : undefined
       }
       headers={[
         {

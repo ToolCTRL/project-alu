@@ -140,15 +140,15 @@ export default function PricingSubscribedSuccessRoute() {
                   <h1 className="text-left text-2xl font-extrabold">Unexpected Error</h1>
                   <p className="mt-1 text-center text-sm text-red-500">{data.error}</p>
                 </>
-              ) : !data.checkoutSession ? (
-                <>
-                  <h1 className="text-left text-2xl font-extrabold">Error</h1>
-                  <p className="mt-1 text-center text-sm text-red-500">Invalid checkout session</p>
-                </>
-              ) : (
+              ) : data.checkoutSession ? (
                 <>
                   <h1 className="text-left text-2xl font-extrabold">{t("account.register.setup")}</h1>
                   <p className="mt-1 text-center text-sm">Thank you for subscribing to {t(data.checkoutSession.products.map((f) => t(f.title)).join(", "))}</p>
+                </>
+              ) : (
+                <>
+                  <h1 className="text-left text-2xl font-extrabold">Error</h1>
+                  <p className="mt-1 text-center text-sm text-red-500">Invalid checkout session</p>
                 </>
               )}
             </div>

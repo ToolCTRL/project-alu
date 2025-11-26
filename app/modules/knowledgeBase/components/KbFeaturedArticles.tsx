@@ -7,7 +7,7 @@ import type { KnowledgeBaseDto } from "../dtos/KnowledgeBaseDto";
 import EmptyState from "~/components/ui/emptyState/EmptyState";
 import { useTranslation } from "react-i18next";
 
-export default function KbFeaturedArticles({ kb, items }: { kb: KnowledgeBaseDto; items: KbArticleDto[] }) {
+export default function KbFeaturedArticles({ kb, items }: readonly { readonly kb: KnowledgeBaseDto; readonly items: KbArticleDto[] }) {
   const { t } = useTranslation();
   return (
     <div className="space-y-4">
@@ -44,7 +44,7 @@ export default function KbFeaturedArticles({ kb, items }: { kb: KnowledgeBaseDto
   );
 }
 
-function FeaturedArticlesIcon({ color }: { color: Colors }) {
+function FeaturedArticlesIcon({ color }: readonly { readonly color: Colors }) {
   return (
     <svg
       className={clsx("h-5 w-5", ColorTextUtils.getText500(color))}

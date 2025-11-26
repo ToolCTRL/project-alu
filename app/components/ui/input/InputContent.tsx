@@ -3,16 +3,16 @@ import InputText from "./InputText";
 import clsx from "clsx";
 
 interface Props {
-  contentType: "wysiwyg" | "markdown";
-  value: string;
-  onChangeValue: (e: string) => void;
-  onChangeContentType?: (e: "wysiwyg" | "markdown") => void;
-  name?: string;
-  className?: string;
-  editorLanguage?: string;
-  editorTheme?: "vs-dark" | "light";
-  autoFocus?: boolean;
-  disabled?: boolean;
+  readonly contentType: "wysiwyg" | "markdown";
+  readonly value: string;
+  readonly onChangeValue: (e: string) => void;
+  readonly onChangeContentType?: (e: "wysiwyg" | "markdown") => void;
+  readonly name?: string;
+  readonly className?: string;
+  readonly editorLanguage?: string;
+  readonly editorTheme?: "vs-dark" | "light";
+  readonly autoFocus?: boolean;
+  readonly disabled?: boolean;
 }
 export default function InputContent({
   contentType,
@@ -42,7 +42,7 @@ export default function InputContent({
             </div>
           )}
           <input name="contentType" value={contentType} readOnly hidden />
-          {contentType === "wysiwyg" ? (
+          {contentType === "wysiwyg" && (
             <div className={clsx(className)}>
               {name && <input type="hidden" name={name} value={value} hidden readOnly />}
               <NovelEditor
@@ -54,7 +54,8 @@ export default function InputContent({
                 readOnly={disabled}
               />
             </div>
-          ) : contentType === "markdown" ? (
+          )}
+          {contentType === "markdown" && (
             <InputText
               className={clsx(className, "min-h-[500px]")}
               rows={6}
@@ -69,7 +70,7 @@ export default function InputContent({
               disabled={disabled}
               readOnly={disabled}
             />
-          ) : null}
+          )}
         </div>
       </div>
     </div>

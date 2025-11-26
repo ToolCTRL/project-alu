@@ -16,7 +16,9 @@ export const loader: LoaderFunction = async ({ request }) => {
   } else if (myTenants.length > 0) {
     try {
       return redirect("/app/" + encodeURIComponent(myTenants[0].slug) + "/" + redirectTo);
-    } catch (e) {}
+    } catch (e) {
+      // Redirect failed, continue to fallback
+    }
   }
   return redirect("/app");
 };

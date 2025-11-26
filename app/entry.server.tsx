@@ -13,7 +13,6 @@ import { createInstance } from "i18next";
 import { I18nextProvider, initReactI18next } from "react-i18next";
 import { remixI18Next } from "./locale/i18next.server";
 import { i18nConfig } from "./locale/i18n";
-import path from "path";
 import { routes as otherRoutes } from "./other-routes.server";
 
 // const ABORT_DELAY = 5_000;
@@ -48,7 +47,7 @@ export default async function handleRequest(
       lng, // Locale detected above.
       ns, // Namespaces detected above.
       backend: {
-        localePath: path.resolve("./public/locales"),
+        localePath: resolve("./public/locales"),
         loadPath: resolve("./public/locales/{{lng}}/{{ns}}.json"),
       },
     });

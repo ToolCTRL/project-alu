@@ -5,6 +5,7 @@ function parseStepToBlock(step: OnboardingStep) {
   try {
     return JSON.parse(step.block) as OnboardingStepBlockDto;
   } catch (e) {
+    console.error("Failed to parse step block:", e);
     return {
       title: "Undefined",
       links: [],

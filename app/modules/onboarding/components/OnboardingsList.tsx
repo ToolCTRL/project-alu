@@ -5,7 +5,7 @@ import DateUtils from "~/utils/shared/DateUtils";
 import { OnboardingWithDetails } from "../db/onboarding.db.server";
 import OnboardingBadge from "./OnboardingBadge";
 
-export default function OnboardingsList({ items, groupByStatus }: { items: OnboardingWithDetails[]; groupByStatus: { status: string; count: number }[] }) {
+export default function OnboardingsList({ items, groupByStatus }: { readonly items: OnboardingWithDetails[]; readonly groupByStatus: { status: string; count: number }[] }) {
   const { t } = useTranslation();
   return (
     <TableSimple
@@ -16,7 +16,7 @@ export default function OnboardingsList({ items, groupByStatus }: { items: Onboa
           name: "title",
           title: t("onboarding.object.title"),
           className: "w-full",
-          value: (i) => (
+          value: (i: OnboardingWithDetails) => (
             <Link to={`/admin/onboarding/onboardings/${i.id}`} className="group flex flex-col">
               <div className="flex items-center space-x-2">
                 <div className="text-base font-bold group-hover:underline">{i.title}</div>

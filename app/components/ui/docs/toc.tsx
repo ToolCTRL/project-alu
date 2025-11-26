@@ -90,7 +90,7 @@ function Tree({ tree, level = 1, activeItem }: TreeProps) {
     <ul className={clsx("m-0 list-none", { "pl-4": level !== 1 })}>
       {tree.items.map((item, index) => {
         return (
-          <li key={index} className={clsx("mt-0 pt-2")}>
+          <li key={item.url} className={clsx("mt-0 pt-2")}>
             <ButtonEvent
               event={{ action: "click", category: "toc", label: item.title, value: item.url }}
               to={item.url}

@@ -42,7 +42,7 @@ async function importWorkflows(template: WorkflowsTemplateDto, session: { tenant
     const allCredentials = await db.workflowCredential.findMany({
       where: { tenantId: session.tenantId },
     });
-    const missingCredentials = template.credentialsRequired.filter((f) => !allCredentials.find((g) => g.name === f));
+    const missingCredentials = template.credentialsRequired.filter((f) => !allCredentials.some((g) => g.name === f));
     if (missingCredentials.length > 0) {
       throw new Error("To import this workflow, you must create the following credentials first: " + missingCredentials.join(", "));
     }
@@ -58,7 +58,7 @@ async function importWorkflows(template: WorkflowsTemplateDto, session: { tenant
   });
   if (requiredEntities.length > 0) {
     const allEntities = await getAllEntities({ tenantId: session.tenantId });
-    const missingEntities = requiredEntities.filter((f) => !allEntities.find((g) => g.name === f));
+    const missingEntities = requiredEntities.filter((f) => !allEntities.some((g) => g.name === f));
     if (missingEntities.length > 0) {
       throw new Error("To import this workflow, you must create the following entities first: " + missingEntities.join(", "));
     }

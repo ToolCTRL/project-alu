@@ -5,10 +5,10 @@ import CodeGeneratorPropertiesHelper from "../../utils/CodeGeneratorPropertiesHe
 function generate({ entity }: { entity: EntityWithDetails }): string {
   const { capitalized } = CodeGeneratorHelper.getNames(entity);
   const imports: string[] = [];
-  const code: string[] = [];
-
-  code.push("");
-  code.push(`export type ${capitalized}CreateDto = {`);
+  const code: string[] = [
+    "",
+    `export type ${capitalized}CreateDto = {`
+  ];
   entity.properties
     .filter((f) => !f.isDefault && f.showInCreate)
     .forEach((property) => {

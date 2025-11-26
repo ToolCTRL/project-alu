@@ -16,7 +16,7 @@ interface Props {
   className?: string;
 }
 
-export default function WizardSteps({ steps, selectedStep, onSetStep, children, className, breakpoint = "md" }: Props) {
+export default function WizardSteps({ steps, selectedStep, onSetStep, children, className, breakpoint = "md" }: Readonly<Props>) {
   const canGoBack = selectedStep > 0;
   const canGoNext = selectedStep < steps.length - 1;
   const backTitle = canGoBack ? steps[selectedStep - 1].name : "Back";
@@ -75,31 +75,35 @@ export default function WizardSteps({ steps, selectedStep, onSetStep, children, 
         <div className="hidden overflow-auto p-3 md:block md:w-1/4">
           <nav aria-label="Progress">
             <ol className="overflow-hidden">
-              {steps.map((step, stepIdx) => (
-                <li key={step.name} className={clsx(stepIdx !== steps.length - 1 ? "pb-10" : "", "relative")}>
-                  {stepIdx !== steps.length - 1 ? <div className="absolute left-3 top-4 -ml-px mt-0.5 h-full w-0.5 bg-gray-300" aria-hidden="true" /> : null}
-                  <button type="button" onClick={() => onSetStep(stepIdx, undefined)} className="group relative flex items-start text-left">
-                    <span className="flex h-9 items-center" aria-hidden="true">
-                      <span
-                        className={clsx(
-                          "border-border bg-background relative flex h-6 w-6 items-center justify-center rounded-full border-2",
-                          stepIdx === selectedStep ? "border-theme-600 group-hover:border-theme-600" : "group-hover:border-theme-600"
-                        )}
-                      >
-                        {stepIdx === selectedStep ? (
-                          <span className="bg-theme-600 h-2.5 w-2.5 rounded-full" />
-                        ) : (
-                          <span className="group-hover:bg-theme-600 h-2.5 w-2.5 rounded-full bg-gray-400" />
-                        )}
+              {steps.map((step, stepIdx) => {
+                const isLastStep = stepIdx === steps.length - 1;
+                const isSelected = stepIdx === selectedStep;
+                return (
+                  <li key={step.name} className={clsx(isLastStep ? "" : "pb-10", "relative")}>
+                    {isLastStep ? null : <div className="absolute left-3 top-4 -ml-px mt-0.5 h-full w-0.5 bg-gray-300" aria-hidden="true" />}
+                    <button type="button" onClick={() => onSetStep(stepIdx, undefined)} className="group relative flex items-start text-left">
+                      <span className="flex h-9 items-center" aria-hidden="true">
+                        <span
+                          className={clsx(
+                            "border-border bg-background relative flex h-6 w-6 items-center justify-center rounded-full border-2",
+                            isSelected ? "border-theme-600 group-hover:border-theme-600" : "group-hover:border-theme-600"
+                          )}
+                        >
+                          {isSelected ? (
+                            <span className="bg-theme-600 h-2.5 w-2.5 rounded-full" />
+                          ) : (
+                            <span className="group-hover:bg-theme-600 h-2.5 w-2.5 rounded-full bg-gray-400" />
+                          )}
+                        </span>
                       </span>
-                    </span>
-                    <span className="ml-4 flex min-w-0 flex-col">
-                      <span className="text-muted-foreground text-sm font-medium">{step.name}</span>
-                      <span className="text-muted-foreground line-clamp-2 text-sm">{step.description}</span>
-                    </span>
-                  </button>
-                </li>
-              ))}
+                      <span className="ml-4 flex min-w-0 flex-col">
+                        <span className="text-muted-foreground text-sm font-medium">{step.name}</span>
+                        <span className="text-muted-foreground line-clamp-2 text-sm">{step.description}</span>
+                      </span>
+                    </button>
+                  </li>
+                );
+              })}
             </ol>
           </nav>
         </div>

@@ -11,13 +11,13 @@ import RowDisplayHeaderHelper from "~/utils/helpers/RowDisplayHeaderHelper";
 import RowDisplayValueHelper from "~/utils/helpers/RowDisplayValueHelper";
 
 interface Props {
-  entity: EntityWithDetails;
-  item: RowWithDetails;
-  layout: string;
-  columns?: ColumnDto[];
-  allEntities: EntityWithDetails[];
-  routes?: EntitiesApi.Routes;
-  actions?: (row: RowWithDetails) => {
+  readonly entity: EntityWithDetails;
+  readonly item: RowWithDetails;
+  readonly layout: string;
+  readonly columns?: ColumnDto[];
+  readonly allEntities: EntityWithDetails[];
+  readonly routes?: EntitiesApi.Routes;
+  readonly actions?: (row: RowWithDetails) => {
     title?: string;
     href?: string;
     onClick?: () => void;

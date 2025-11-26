@@ -14,7 +14,7 @@ import CollapsibleRow from "~/components/ui/tables/CollapsibleRow";
 import PageBlockUtils from "~/modules/pageBlocks/components/blocks/PageBlockUtils";
 import SocialsBlockForm from "../../shared/socials/SocialsBlockForm";
 
-export default function FooterBlockForm({ item, onUpdate }: { item?: FooterBlockDto; onUpdate: (item: FooterBlockDto) => void }) {
+export default function FooterBlockForm({ item, onUpdate }: { readonly item?: FooterBlockDto; readonly onUpdate: (item: FooterBlockDto) => void }) {
   const { t } = useTranslation();
   const [state, setState] = useState<FooterBlockDto>(item || PageBlockUtils.defaultBlocks.footer!);
   useEffect(() => {
@@ -40,7 +40,7 @@ export default function FooterBlockForm({ item, onUpdate }: { item?: FooterBlock
         <div className="flex flex-col space-y-2">
           {state.sections.map((item, idx) => (
             <SectionForm
-              key={idx}
+              key={`footer-section-${idx}-${item.name}`}
               item={item}
               onUpdate={(item) => setState({ ...state, sections: state.sections?.map((x, i) => (i === idx ? item : x)) })}
               onRemove={() => setState({ ...state, sections: state.sections?.filter((x, i) => i !== idx) })}
@@ -77,10 +77,9 @@ function SectionForm({
   onRemove,
   onUpdate,
 }: {
-  item: FooterSectionDto;
-  onRemove: () => void;
-  onUpdate: (item: FooterSectionDto) => void;
-  isSublink?: boolean;
+  readonly item: FooterSectionDto;
+  readonly onRemove: () => void;
+  readonly onUpdate: (item: FooterSectionDto) => void;
 }) {
   const { t } = useTranslation();
   const [state, setState] = useState<FooterSectionDto>(item);
@@ -93,11 +92,11 @@ function SectionForm({
       <div className="space-y-2">
         <InputText name="title" title="Name" value={item.name} setValue={(e) => setState({ ...state, name: e.toString() })} placeholder="Section name" />
         <div className="space-y-1">
-          <label className="text-muted-foreground flex justify-between space-x-2 text-xs font-medium ">Links</label>
-          <div className="flex flex-col space-y-2">
+          <label htmlFor="links-section" className="text-muted-foreground flex justify-between space-x-2 text-xs font-medium ">Links</label>
+          <div id="links-section" className="flex flex-col space-y-2">
             {state.items?.map((item, index) => (
               <CollapsibleRow
-                key={index}
+                key={`footer-link-${index}-${item.name}`}
                 title={item.name}
                 value={item.name}
                 initial={!item.href}

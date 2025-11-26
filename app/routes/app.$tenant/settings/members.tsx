@@ -395,42 +395,13 @@ export default function () {
 
             {data.pendingInvitations.length > 0 && (
               <div className="space-y-1">
-                <label className="text-foreground/80 block text-sm font-medium">Pending Invitations</label>
+                <div className="text-foreground/80 block text-sm font-medium">Pending Invitations</div>
                 <MemberInvitationsListAndTable items={data.pendingInvitations} canDelete={getUserHasPermission(appData, "app.settings.members.delete")} />
               </div>
             )}
           </div>
         </div>
       </SettingSection>
-
-      {/*Separator */}
-      {/* <div className="block">
-        <div className="py-5">
-          <div className="border-t border-border"></div>{" "}
-        </div>
-      </div> */}
-
-      {/* {getUserHasPermission(appData, "app.settings.roles.view") && (
-        <SettingSection
-        size="lg"
-          title="Roles"
-          description={
-            <div className="flex flex-col space-y-1">
-              <div>Manage user roles</div>
-              <div>
-                {appData.mySubscription?.products && appData.mySubscription.products.length > 0 && (
-                  <button type="button" className="text-left underline" onClick={() => setShowRolesAndPermissions(true)}>
-                    View all roles and permissions
-                  </button>
-                )}
-              </div>
-            </div>
-          }
-          className="p-1"
-        >
-          
-        </SettingSection>
-      )} */}
 
       {rootData.featureFlags?.includes("row-groups") && (
         <Fragment>

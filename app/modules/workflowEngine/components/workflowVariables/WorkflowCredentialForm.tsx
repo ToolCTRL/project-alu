@@ -4,7 +4,15 @@ import FormGroup from "~/components/ui/forms/FormGroup";
 import InputText, { RefInputText } from "~/components/ui/input/InputText";
 
 interface Props {
-  item?: { id: string; name: string; value: string };
+  readonly item?: { id: string; name: string; value: string };
+}
+
+function isValidName(name: string) {
+  // Regular expression for lowercase alphanumeric with dashes
+  const regex = /^[a-zA-Z0-9-_]+$/;
+
+  // Test the variable name against the regular expression
+  return regex.test(name);
 }
 
 export default function WorkflowCredentialForm({ item }: Props) {
@@ -17,14 +25,6 @@ export default function WorkflowCredentialForm({ item }: Props) {
       mainInput.current?.input.current?.focus();
     }, 100);
   }, []);
-
-  function isValidName(name: string) {
-    // Regular expression for lowercase alphanumeric with dashes
-    const regex = /^[a-zA-Z0-9-_]+$/;
-
-    // Test the variable name against the regular expression
-    return regex.test(name);
-  }
 
   return (
     <FormGroup id={item?.id} editing={true} submitDisabled={!name || !value || !isValidName(name)}>
@@ -60,8 +60,7 @@ export default function WorkflowCredentialForm({ item }: Props) {
           security and confidentiality of your information.{" "}
           <a href="https://gist.github.com/AlexandroMtzG/9e0ebd0751f49e3f6d8b1eac3651195b" className="underline" target="_blank" rel="noreferrer">
             Click here to view our encryption/decryption process in the code.
-          </a>
-          .
+          </a>.
         </div>
       </InfoBanner>
     </FormGroup>

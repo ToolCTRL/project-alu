@@ -13,7 +13,7 @@ export enum ModelPropertyType {
   Cuid,
 }
 
-export default function DocPropertiesTable({ items }: Props) {
+export default function DocPropertiesTable({ items }: Readonly<Props>) {
   return (
     <div className="not-prose flex flex-col">
       <div className="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">

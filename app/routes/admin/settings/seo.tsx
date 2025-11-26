@@ -10,7 +10,7 @@ export const meta: MetaFunction<typeof loader> = ({ data }) => [{ title: data?.t
 export const loader = (args: LoaderFunctionArgs) => PageMetaTags_Index.loader(args);
 export const action: ActionFunction = (args) => PageMetaTags_Index.action(args);
 
-export default () => {
+const PageSeoSettings = () => {
   const { t } = useTranslation();
   return (
     <EditPageLayout title={<BackButtonWithTitle href="/admin/settings">{t("pages.seo")}</BackButtonWithTitle>}>
@@ -18,3 +18,5 @@ export default () => {
     </EditPageLayout>
   );
 };
+
+export default PageSeoSettings;

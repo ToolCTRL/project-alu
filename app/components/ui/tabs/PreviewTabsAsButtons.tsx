@@ -16,7 +16,15 @@ export default function PreviewTabsAsButtons() {
         tabs={[{ name: "Tab 1" }, { name: "Tab 2" }, { name: "Tab 3" }]}
       />
       <div className="border-border bg-secondary/90 border p-2">
-        {selectedTab === 0 ? <div>Tab 1 Content...</div> : selectedTab === 1 ? <div>Tab 2 Content...</div> : <div>Tab 3 Content...</div>}
+        {(() => {
+          if (selectedTab === 0) {
+            return <div>Tab 1 Content...</div>;
+          } else if (selectedTab === 1) {
+            return <div>Tab 2 Content...</div>;
+          } else {
+            return <div>Tab 3 Content...</div>;
+          }
+        })()}
       </div>
     </div>
   );

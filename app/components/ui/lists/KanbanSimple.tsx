@@ -17,17 +17,17 @@ export type KanbanColumn<T> = {
 };
 
 interface Props<T> {
-  columns: KanbanColumn<T>[];
-  column: string;
-  items: T[];
-  filterValue: (item: T, column: KanbanColumn<T> | null) => boolean;
-  undefinedColumn?: KanbanColumn<T>;
-  className?: string;
-  renderEmpty?: ReactNode;
-  classNameWidth?: string;
+  readonly columns: readonly KanbanColumn<T>[];
+  readonly column: string;
+  readonly items: readonly T[];
+  readonly filterValue: (item: T, column: KanbanColumn<T> | null) => boolean;
+  readonly undefinedColumn?: KanbanColumn<T>;
+  readonly className?: string;
+  readonly renderEmpty?: ReactNode;
+  readonly classNameWidth?: string;
 }
 
-export default function KanbanSimple<T>({ columns, items, column, filterValue, undefinedColumn, className, renderEmpty, classNameWidth }: Props<T>) {
+export default function KanbanSimple<T>({ columns, items, column, filterValue, undefinedColumn, className, renderEmpty, classNameWidth }: Readonly<Props<T>>) {
   function getItems(column: KanbanColumn<T> | null) {
     return items.filter((f: T) => filterValue(f, column));
   }
@@ -37,11 +37,9 @@ export default function KanbanSimple<T>({ columns, items, column, filterValue, u
         {undefinedColumn && getItems(null).length > 0 && (
           <KanbanColumnCard idx={0} key={column.length} items={getItems(null)} columns={columns} column={undefinedColumn} classNameWidth={classNameWidth} />
         )}
-        <Fragment>
-          {columns.map((column, idx) => {
-            return <KanbanColumnCard idx={idx + 1} key={idx + 1} items={getItems(column)} columns={columns} column={column} classNameWidth={classNameWidth} />;
-          })}
-        </Fragment>
+        {columns.map((column, idx) => {
+          return <KanbanColumnCard idx={idx + 1} key={column.name} items={getItems(column)} columns={columns} column={column} classNameWidth={classNameWidth} />;
+        })}
       </div>
 
       {items.length === 0 && renderEmpty && <Fragment>{renderEmpty}</Fragment>}
@@ -50,28 +48,27 @@ export default function KanbanSimple<T>({ columns, items, column, filterValue, u
 }
 
 interface KanbanColumnCardProps<T> {
-  idx: number;
-  columns: KanbanColumn<T>[];
-  column: KanbanColumn<T>;
-  items: T[];
-  classNameWidth?: string;
+  readonly idx: number;
+  readonly columns: readonly KanbanColumn<T>[];
+  readonly column: KanbanColumn<T>;
+  readonly items: readonly T[];
+  readonly classNameWidth?: string;
 }
-function KanbanColumnCard<T>({ idx, columns, column, items, classNameWidth }: KanbanColumnCardProps<T>) {
+function KanbanColumnCard<T>({ idx, columns, column, items, classNameWidth }: Readonly<KanbanColumnCardProps<T>>) {
   const { t } = useTranslation();
   return (
     <div
       className={clsx(
         "shrink-0 space-y-2 divide-y divide-gray-300 text-sm",
-        classNameWidth
-          ? classNameWidth
-          : clsx(
-              columns.length === 1 && "w-64 lg:w-full",
-              columns.length === 2 && "w-64 lg:w-1/2",
-              columns.length === 3 && "w-64 lg:w-1/3",
-              columns.length === 4 && "w-64 lg:w-1/4",
-              columns.length === 5 && "w-64 lg:w-1/5",
-              columns.length > 5 && "w-64"
-            )
+        classNameWidth ||
+          clsx(
+            columns.length === 1 && "w-64 lg:w-full",
+            columns.length === 2 && "w-64 lg:w-1/2",
+            columns.length === 3 && "w-64 lg:w-1/3",
+            columns.length === 4 && "w-64 lg:w-1/4",
+            columns.length === 5 && "w-64 lg:w-1/5",
+            columns.length > 5 && "w-64"
+          )
       )}
     >
       <div className="flex justify-between space-x-2">
@@ -83,11 +80,6 @@ function KanbanColumnCard<T>({ idx, columns, column, items, classNameWidth }: Ka
           )}
           <div>{column?.title ?? t("shared.undefined")}</div>
         </div>
-        {/* {column.onNew && (
-                <button type="button" onClick={() => column.onNew && column.onNew()}>
-                  <PlusIcon className="h-3 w-3" />
-                </button>
-              )} */}
       </div>
 
       <div
@@ -98,18 +90,16 @@ function KanbanColumnCard<T>({ idx, columns, column, items, classNameWidth }: Ka
         )}
       >
         <div className="space-y-3">
-          {/* {getItems(column.name).length === 0 && (
-                  <div className="p-2 flex justify-center">
-                    <div className="text-muted-foreground">{t("shared.noRecords")}</div>
-                  </div>
-                )} */}
-          {items.map((item, idx) => {
+          {items.map((item) => {
+            const itemKey = typeof item === 'object' && item !== null && 'id' in item
+              ? String((item as any).id)
+              : JSON.stringify(item);
             return (
-              <div key={idx} className="hover:bg-secondary group w-full text-left shadow-2xs">
+              <div key={itemKey} className="hover:bg-secondary group w-full text-left shadow-2xs">
                 {column?.onClickRoute ? (
                   <Link to={column.onClickRoute(item)}>{column.value(item)}</Link>
                 ) : (
-                  <button type="button" onClick={() => column?.onClick && column?.onClick(item)}>
+                  <button type="button" onClick={() => column?.onClick?.(item)}>
                     {column.value(item)}
                   </button>
                 )}

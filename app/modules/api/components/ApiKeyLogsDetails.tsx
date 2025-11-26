@@ -21,12 +21,79 @@ import { useTranslation } from "react-i18next";
 import ApiCallStatusBadge from "./ApiCallStatusBadge";
 
 interface Props {
-  data: {
+  readonly data: {
     items: ApiKeyLogDto[];
     filterableProperties: FilterablePropertyDto[];
     pagination: PaginationDto;
   };
 }
+
+function TenantCell({ item }: { readonly item: ApiKeyLogDto }) {
+  return <FilterableValueLink name="tenantId" value={item.apiKey?.tenant?.name} param={item.apiKey?.tenant?.id} />;
+}
+
+function ApiKeyCell({ item }: { readonly item: ApiKeyLogDto }) {
+  return <FilterableValueLink name="apiKeyId" value={item.apiKey?.alias ?? "{null}"} param={item.apiKeyId ?? "{null}"} />;
+}
+
+function IpCell({ item }: { readonly item: ApiKeyLogDto }) {
+  return <div>{item.ip.length > 0 ? <FilterableValueLink name="ip" value={item.ip} /> : <span className="text-gray-300">?</span>}</div>;
+}
+
+function EndpointCell({ item }: { readonly item: ApiKeyLogDto }) {
+  return <FilterableValueLink name="endpoint" value={item.endpoint} />;
+}
+
+function MethodCell({ item }: { readonly item: ApiKeyLogDto }) {
+  return (
+    <div>
+      <FilterableValueLink name="method" value={item.method}>
+        <SimpleBadge title={item.method} color={ApiUtils.getMethodColor(item.method)} underline />
+      </FilterableValueLink>
+    </div>
+  );
+}
+
+function StatusCell({ item }: { readonly item: ApiKeyLogDto }) {
+  return (
+    <div>
+      {item.status ? (
+        <span>
+          <FilterableValueLink name="status" value={item.status.toString()}>
+            <ApiCallStatusBadge item={item} underline />
+          </FilterableValueLink>
+        </span>
+      ) : (
+        <span className="text-gray-300">?</span>
+      )}
+    </div>
+  );
+}
+
+function DurationCell({ item }: { readonly item: ApiKeyLogDto }) {
+  return item.duration === null ? (
+    <span className="text-muted-foreground text-xs italic">-</span>
+  ) : (
+    <div>{NumberUtils.custom(Number(item.duration), "0,0.001")} ms</div>
+  );
+}
+
+function SpeedCell({ item }: { readonly item: ApiKeyLogDto }) {
+  return item.duration === null ? <span className="text-muted-foreground text-xs italic">-</span> : <ApiCallSpeedBadge duration={Number(item.duration)} />;
+}
+
+function ParamsCell({ item }: { readonly item: ApiKeyLogDto }) {
+  return item.params === "{}" ? (
+    <span className="text-muted-foreground text-xs italic">-</span>
+  ) : (
+    <ShowPayloadModalButton description={item.params} payload={item.params} />
+  );
+}
+
+function ErrorCell({ item }: { readonly item: ApiKeyLogDto }) {
+  return <div className="text-red-500">{item.error}</div>;
+}
+
 export default function ApiKeyLogsDetails({ data }: Props) {
   const { t } = useTranslation();
   const appOrAdminData = useAppOrAdminData();
@@ -99,87 +166,56 @@ export default function ApiKeyLogsDetails({ data }: Props) {
           {
             name: "tenant",
             title: "Tenant",
-            value: (item) => <FilterableValueLink name="tenantId" value={item.apiKey?.tenant?.name} param={item.apiKey?.tenant?.id} />,
+            value: (item) => <TenantCell item={item} />,
             hidden: !!params.tenant,
           },
           {
             name: "apiKeyId",
             title: t("models.apiKey.alias"),
-            value: (item) => <FilterableValueLink name="apiKeyId" value={item.apiKey?.alias ?? "{null}"} param={item.apiKeyId ?? "{null}"} />,
+            value: (item) => <ApiKeyCell item={item} />,
           },
           {
             name: "ip",
             title: t("models.apiKeyLog.ip"),
             value: (item) => item.ip,
-            formattedValue: (item) => (
-              <div>{item.ip.length > 0 ? <FilterableValueLink name="ip" value={item.ip} /> : <span className="text-gray-300">?</span>}</div>
-            ),
+            formattedValue: (item) => <IpCell item={item} />,
           },
           {
             name: "endpoint",
             title: t("models.apiKeyLog.endpoint"),
-            value: (item) => <FilterableValueLink name="endpoint" value={item.endpoint} />,
+            value: (item) => <EndpointCell item={item} />,
           },
           {
             name: "method",
             title: t("models.apiKeyLog.method"),
             value: (item) => item.method,
-            formattedValue: (item) => (
-              <div>
-                <FilterableValueLink name="method" value={item.method}>
-                  <SimpleBadge title={item.method} color={ApiUtils.getMethodColor(item.method)} underline />
-                </FilterableValueLink>
-              </div>
-            ),
+            formattedValue: (item) => <MethodCell item={item} />,
           },
           {
             name: "status",
             title: t("models.apiKeyLog.status"),
             value: (item) => item.status,
-            formattedValue: (item) => (
-              <div>
-                {item.status ? (
-                  <span>
-                    <FilterableValueLink name="status" value={item.status.toString()}>
-                      <ApiCallStatusBadge item={item} underline />
-                    </FilterableValueLink>
-                  </span>
-                ) : (
-                  <span className="text-gray-300">?</span>
-                )}
-              </div>
-            ),
+            formattedValue: (item) => <StatusCell item={item} />,
           },
           {
             name: "duration",
             title: "Duration",
-            value: (item) =>
-              item.duration === null ? (
-                <span className="text-muted-foreground text-xs italic">-</span>
-              ) : (
-                <div>{NumberUtils.custom(Number(item.duration), "0,0.001")} ms</div>
-              ),
+            value: (item) => <DurationCell item={item} />,
           },
           {
             name: "speed",
             title: "Speed",
-            value: (item) =>
-              item.duration === null ? <span className="text-muted-foreground text-xs italic">-</span> : <ApiCallSpeedBadge duration={Number(item.duration)} />,
+            value: (item) => <SpeedCell item={item} />,
           },
           {
             name: "params",
             title: t("models.apiKeyLog.params"),
-            value: (item) =>
-              item.params === "{}" ? (
-                <span className="text-muted-foreground text-xs italic">-</span>
-              ) : (
-                <ShowPayloadModalButton description={item.params} payload={item.params} />
-              ),
+            value: (item) => <ParamsCell item={item} />,
           },
           {
             name: "error",
             title: "Error",
-            value: (item) => <div className="text-red-500">{item.error}</div>,
+            value: (item) => <ErrorCell item={item} />,
           },
         ]}
       />

@@ -190,13 +190,27 @@ const SelectUsers = ({ items, allowSearch, onClosed, onSelected }: Props, ref: R
                                           type="button"
                                           className={clsx(
                                             "inline-flex items-center rounded-full border border-transparent px-3 py-2 focus:outline-hidden",
-                                            !isSelected(item) && "text-foreground bg-secondary/90 hover:bg-teal-200",
-                                            isSelected(item) && "bg-teal-100 text-teal-800 hover:bg-red-200 "
+                                            isSelected(item) ? "bg-teal-100 text-teal-800 hover:bg-red-200 " : "text-foreground bg-secondary/90 hover:bg-teal-200"
                                           )}
                                         >
                                           {/*Heroicon name: solid/plus-sm */}
                                           {(() => {
-                                            if (!isSelected(item)) {
+                                            if (isSelected(item)) {
+                                              return (
+                                                <svg
+                                                  className="-ml-1 mr-0.5 h-4 w-4"
+                                                  xmlns="http://www.w3.org/2000/svg"
+                                                  viewBox="0 0 20 20"
+                                                  fill="currentColor"
+                                                >
+                                                  <path
+                                                    fillRule="evenodd"
+                                                    d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                                                    clipRule="evenodd"
+                                                  />
+                                                </svg>
+                                              );
+                                            } else {
                                               return (
                                                 <svg
                                                   className="-ml-1 mr-0.5 h-5 w-5"
@@ -212,29 +226,14 @@ const SelectUsers = ({ items, allowSearch, onClosed, onSelected }: Props, ref: R
                                                   />
                                                 </svg>
                                               );
-                                            } else {
-                                              return (
-                                                <svg
-                                                  className="-ml-1 mr-0.5 h-4 w-4"
-                                                  xmlns="http://www.w3.org/2000/svg"
-                                                  viewBox="0 0 20 20"
-                                                  fill="currentColor"
-                                                >
-                                                  <path
-                                                    fillRule="evenodd"
-                                                    d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-                                                    clipRule="evenodd"
-                                                  />
-                                                </svg>
-                                              );
                                             }
                                           })()}
 
                                           {(() => {
-                                            if (!isSelected(item)) {
+                                            if (isSelected(item)) {
                                               return (
                                                 <span className="text-foreground text-sm font-medium">
-                                                  {t("shared.add")}
+                                                  {t("shared.remove")}
                                                   <span className="sr-only">
                                                     {item.firstName} - {item.lastName}
                                                   </span>
@@ -243,7 +242,7 @@ const SelectUsers = ({ items, allowSearch, onClosed, onSelected }: Props, ref: R
                                             } else {
                                               return (
                                                 <span className="text-foreground text-sm font-medium">
-                                                  {t("shared.remove")}
+                                                  {t("shared.add")}
                                                   <span className="sr-only">
                                                     {item.firstName} - {item.lastName}
                                                   </span>

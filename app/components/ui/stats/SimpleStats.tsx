@@ -1,13 +1,13 @@
 import clsx from "clsx";
 
 interface Props {
-  items: {
-    name: string;
-    stat: string;
-    hint?: string;
-  }[];
+  readonly items: ReadonlyArray<{
+    readonly name: string;
+    readonly stat: string;
+    readonly hint?: string;
+  }>;
 }
-export default function SimpleStats({ items }: Props) {
+export default function SimpleStats({ items }: Readonly<Props>) {
   return (
     <div>
       <dl

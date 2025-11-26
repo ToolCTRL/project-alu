@@ -5,6 +5,10 @@ import HintTooltip from "../tooltips/HintTooltip";
 import { Colors } from "~/application/enums/shared/Colors";
 import CheckFilledCircleIcon from "../icons/CheckFilledCircleIcon";
 
+function isEqual(a: any, b: any) {
+  return JSON.stringify(a) === JSON.stringify(b);
+}
+
 export default function InputCheckboxCards({
   title,
   name,
@@ -19,18 +23,18 @@ export default function InputCheckboxCards({
   columns,
   display,
 }: {
-  title?: string;
-  name?: string;
-  options: { name: string; value: string | number; color?: Colors; disabled?: boolean }[];
-  value?: (string | number)[];
-  onChange?: (value: (string | number)[]) => void;
-  selectAndClearAll?: boolean;
-  disabled?: boolean;
-  required?: boolean;
-  help?: string;
-  hint?: React.ReactNode;
-  columns?: number;
-  display?: "name" | "value" | "nameAndValue";
+  readonly title?: string;
+  readonly name?: string;
+  readonly options: { name: string; value: string | number; color?: Colors; disabled?: boolean }[];
+  readonly value?: (string | number)[];
+  readonly onChange?: (value: (string | number)[]) => void;
+  readonly selectAndClearAll?: boolean;
+  readonly disabled?: boolean;
+  readonly required?: boolean;
+  readonly help?: string;
+  readonly hint?: React.ReactNode;
+  readonly columns?: number;
+  readonly display?: "name" | "value" | "nameAndValue";
 }) {
   const { t } = useTranslation();
 
@@ -42,15 +46,15 @@ export default function InputCheckboxCards({
       setDisplayType(display);
     } else {
       const hasNames = options.some((item) => item.name);
-      if (!hasNames) {
-        setDisplayType("value");
-      } else {
+      if (hasNames) {
         const namesAreDifferent = options.some((item) => item.name !== item.value.toString());
         if (namesAreDifferent) {
           setDisplayType("nameAndValue");
         } else {
           setDisplayType("name");
         }
+      } else {
+        setDisplayType("value");
       }
     }
   }, [display, options]);
@@ -69,16 +73,11 @@ export default function InputCheckboxCards({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selected]);
 
-  function isEqual(a: any, b: any) {
-    return JSON.stringify(a) === JSON.stringify(b);
-  }
-
   function isChecked(value: string | number) {
     return selected.includes(value);
   }
   return (
     <div>
-      {/* selected: {JSON.stringify(selected)} */}
       <div className="flex justify-between space-x-2">
         <div>
           {title && (
@@ -123,9 +122,6 @@ export default function InputCheckboxCards({
           </div>
         )}
       </div>
-      {/* {selected.map((item) => {
-        return <input key={item} type="hidden" name={name + "[]"} value={JSON.stringify(item)} />;
-      })} */}
       <ul
         className={clsx(
           "grid w-full grid-cols-1 gap-3",
@@ -178,11 +174,7 @@ export default function InputCheckboxCards({
                   </svg> */}
                   <div className="flex w-full justify-between truncate">
                     <div className="truncate">
-                      {["nameAndValue", "name"].includes(displayType) ? (
-                        <div className={clsx("block w-full truncate text-sm", !disabled ? "font-medium" : "")}>{item.name}</div>
-                      ) : (
-                        <div className={clsx("block w-full truncate text-sm", !disabled ? "font-medium" : "")}>{item.name}</div>
-                      )}
+                      <div className={clsx("block w-full truncate text-sm", disabled ? "" : "font-medium")}>{item.name}</div>
                     </div>
 
                     {/* <CheckEmptyCircle className={clsx("shrink-0", !isChecked(item.value) && "invisible", "text-primary h-5 w-5")} aria-hidden="true" /> */}

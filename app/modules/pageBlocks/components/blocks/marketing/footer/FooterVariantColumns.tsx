@@ -8,7 +8,7 @@ import DarkModeToggle from "~/components/ui/toggles/DarkModeToggle";
 import ThemeSelector from "~/components/ui/selectors/ThemeSelector";
 import LocaleSelector from "~/components/ui/selectors/LocaleSelector";
 
-export default function FooterVariantColumns({ item }: { item: FooterBlockDto }) {
+export default function FooterVariantColumns({ item }: { readonly item: FooterBlockDto }) {
   const { t } = useTranslation();
   return (
     <footer aria-labelledby="footer-heading">
@@ -33,7 +33,7 @@ export default function FooterVariantColumns({ item }: { item: FooterBlockDto })
           <div className="mt-12 grid grid-cols-2 gap-x-4 gap-y-8 md:grid-cols-3 lg:grid-cols-4 xl:col-span-2 xl:mt-0">
             {item.sections.map((section, idx) => {
               return (
-                <div key={idx} className={clsx(idx > 0 && "mt-0")}>
+                <div key={`footer-section-${idx}-${section.name}`} className={clsx(idx > 0 && "mt-0")}>
                   <h3 className="text-foreground dark:text-muted-foreground text-sm font-bold uppercase tracking-wider">{t(section.name)}</h3>
                   <ul className="mt-4 space-y-4">
                     {section.items.map((item) => (

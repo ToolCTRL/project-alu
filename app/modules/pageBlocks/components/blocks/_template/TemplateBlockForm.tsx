@@ -7,7 +7,7 @@ import InputText from "~/components/ui/input/InputText";
 import CollapsibleRow from "~/components/ui/tables/CollapsibleRow";
 import { defaultTemplateBlock, TemplateBlockDto, TemplateBlockStyle, TemplateBlockStyles } from "./TemplateBlockUtils";
 
-export default function TemplateBlockForm({ item, onUpdate }: { item?: TemplateBlockDto; onUpdate: (item: TemplateBlockDto) => void }) {
+export default function TemplateBlockForm({ item, onUpdate }: readonly { readonly item?: TemplateBlockDto; readonly onUpdate: (item: TemplateBlockDto) => void }) {
   const { t } = useTranslation();
   const [state, setState] = useState<TemplateBlockDto>(item || defaultTemplateBlock);
   useEffect(() => {
@@ -34,7 +34,7 @@ export default function TemplateBlockForm({ item, onUpdate }: { item?: TemplateB
         <div className="flex flex-col space-y-2">
           {state.items.map((item, index) => (
             <CollapsibleRow
-              key={index}
+              key={item.id ?? index}
               title={item.name}
               value={item.name}
               initial={!item.value}

@@ -10,10 +10,10 @@ interface Props {
   title?: string;
   withLabel?: boolean;
   valueMin?: number | null;
-  defaultValueMin?: number | undefined;
+  defaultValueMin?: number;
   onChangeMin?: (value: number) => void;
   valueMax?: number | null;
-  defaultValueMax?: number | undefined;
+  defaultValueMax?: number;
   onChangeMax?: (value: number) => void;
   className?: string;
   help?: string;
@@ -54,10 +54,6 @@ export default function InputRangeNumber({
   autoFocus,
 }: Readonly<Readonly<Props>>) {
   const { t } = useTranslation();
-
-  // useImperativeHandle(ref, () => ({ inputMin, inputMax }));
-  // const inputMin = useRef<HTMLInputElement>(null);
-  // const inputMax = useRef<HTMLInputElement>(null);
 
   return (
     <div className={clsx(className, "")}>

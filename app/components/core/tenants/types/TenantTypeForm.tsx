@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, Fragment } from "react";
+import { useState, useEffect, useRef } from "react";
 import { getUserHasPermission } from "~/utils/helpers/PermissionsHelper";
 import { useAppOrAdminData } from "~/utils/data/useAppOrAdminData";
 import { useTranslation } from "react-i18next";
@@ -10,7 +10,7 @@ import { SubscriptionProductDto } from "~/application/dtos/subscriptions/Subscri
 import InputCheckboxCards from "~/components/ui/input/InputCheckboxCards";
 import InputCheckboxWithDescription from "~/components/ui/input/InputCheckboxWithDescription";
 
-export function TenantTypeForm({ item, allSubscriptionProducts }: { item?: TenantTypeWithDetails; allSubscriptionProducts: SubscriptionProductDto[] }) {
+export function TenantTypeForm({ item, allSubscriptionProducts }: Readonly<{ item?: TenantTypeWithDetails; allSubscriptionProducts: SubscriptionProductDto[] }>) {
   const { t } = useTranslation();
   const appOrAdminData = useAppOrAdminData();
   const navigate = useNavigate();
@@ -46,7 +46,7 @@ export function TenantTypeForm({ item, allSubscriptionProducts }: { item?: Tenan
           setValue={setIsDefault}
           description="All new tenants will be created with this type."
         />
-        <Fragment>
+        <div>
           {subscriptionProducts?.map((item) => {
             return <input key={item} type="hidden" name={`subscriptionProducts[]`} value={item} />;
           })}
@@ -63,7 +63,7 @@ export function TenantTypeForm({ item, allSubscriptionProducts }: { item?: Tenan
               };
             })}
           />
-        </Fragment>
+        </div>
         <input type="hidden" name="action" value="create" hidden readOnly />
       </div>
     </FormGroup>

@@ -3,7 +3,7 @@ import CollapsibleRow from "~/components/ui/tables/CollapsibleRow";
 import ApiEndpointTitle from "./ApiEndpointTitle";
 import MonacoEditor from "~/components/editors/MonacoEditor";
 
-export default function ApiEndpoint({ item }: { item: ApiEndpointDto }) {
+export default function ApiEndpoint({ item }: { readonly item: ApiEndpointDto }) {
   return (
     <div>
       <CollapsibleRow className="bg-secondary" value={<ApiEndpointTitle item={item} />} title={<ApiEndpointTitle item={item} />}>

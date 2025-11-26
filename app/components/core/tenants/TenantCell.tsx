@@ -1,11 +1,11 @@
 interface Props {
-  item: {
+  readonly item: {
     id: string;
     name: string;
     slug: string;
   } | null;
 }
-export default function TenantCell({ item }: Props) {
+export default function TenantCell({ item }: Readonly<Props>) {
   return (
     <div>
       {item ? (

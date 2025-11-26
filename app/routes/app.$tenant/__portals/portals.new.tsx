@@ -57,8 +57,6 @@ export const action = async ({ request, params }: ActionFunctionArgs) => {
     const isPublished = FormHelper.getBoolean(form, "isPublished");
     const themeColor = form.get("themeColor")?.toString();
     const themeScheme = form.get("themeScheme")?.toString();
-    // const seoTitle = form.get("seoTitle")?.toString();
-    // const seoDescription = form.get("seoDescription")?.toString();
     const seoImage = form.get("seoImage")?.toString();
 
     let isValidSubdomainSyntax = /^[a-z0-9-]+$/i.test(subdomain);
@@ -80,8 +78,6 @@ export const action = async ({ request, params }: ActionFunctionArgs) => {
       properties: appConfiguration.portals?.metadata || [],
       prefix: "metadata",
     });
-
-    // throw Response.json({ error: JSON.stringify(metadata, null, 2) }, { status: 400 });
 
     const item = await createPortal({
       tenantId,
@@ -120,7 +116,7 @@ export const action = async ({ request, params }: ActionFunctionArgs) => {
   }
 };
 
-export default function () {
+export default function NewPortalRoute() {
   const { t } = useTranslation();
   const actionData = useActionData<ActionData>();
   const params = useParams();
@@ -202,10 +198,6 @@ export default function () {
 
               {portalsConfig?.metadata && <JsonPropertyValuesInput prefix="metadata" properties={portalsConfig?.metadata} attributes={{}} />}
             </div>
-
-            {/* {portalsConfig?.domains?.enabled && (
-              <InputText name="domain" title={t("models.portal.domain")} value={item.domain} setValue={(e) => setItem({ ...item, domain: e.toString() })} />
-            )} */}
           </div>
           <div className="flex justify-end">
             <ButtonPrimary type="submit">{t("shared.save")}</ButtonPrimary>

@@ -41,7 +41,11 @@ const binaryOperators: Record<FormulaOperatorType, BinaryOperatorFn> = {
   },
   MULTIPLY: (a: FormulaValueType, b: FormulaValueType) => (a !== null && b !== null ? Number(a) * Number(b) : false),
   DIVIDE: (a: FormulaValueType, b: FormulaValueType) => (a !== null && b !== null && b !== 0 ? Number(a) / Number(b) : false),
-  CONCAT: (a: FormulaValueType, b: FormulaValueType) => (a?.toString() ?? "") + (b?.toString() ?? ""),
+  CONCAT: (a: FormulaValueType, b: FormulaValueType) => {
+    const aStr = a === null || a === undefined ? "" : String(a);
+    const bStr = b === null || b === undefined ? "" : String(b);
+    return aStr + bStr;
+  },
   EQUALS: (a: FormulaValueType, b: FormulaValueType) => {
     if (a === null || b === null) {
       return false;

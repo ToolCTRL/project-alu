@@ -1,4 +1,4 @@
-export default function OptionsIcon({ className = "h-5 w-5" }: { className?: string }) {
+export default function OptionsIcon({ className = "h-5 w-5" }: Readonly<{ className?: string }>) {
   return (
     <div className="hover:bg-secondary hover:border-border text-muted-foreground bg-background inline-flex w-full justify-center rounded-md border border-transparent p-1 text-sm font-medium hover:shadow-2xs focus:outline-hidden">
       <svg className={className} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">

@@ -18,7 +18,7 @@ interface Props {
   onClick?: MouseEventHandler<HTMLButtonElement>;
   className?: string;
 }
-export default function MenuWithPopper({ button, options, size = "sm", onClick, className }: Props) {
+export default function MenuWithPopper({ button, options, size = "sm", onClick, className }: Readonly<Props>) {
   let [trigger, container] = usePopper({
     strategy: "fixed",
   });
@@ -44,10 +44,10 @@ export default function MenuWithPopper({ button, options, size = "sm", onClick, 
             <div className="py-1">
               {options.map((item, idx) => {
                 return (
-                  <Menu.Item key={idx}>
+                  <Menu.Item key={`menu-item-${item.title ?? idx}`}>
                     {({ active, close }) => (
                       <>
-                        {item.render && item.render(active, close)}
+                        {item.render?.(active, close)}
                         {item.onClick && (
                           <button
                             type="button"

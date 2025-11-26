@@ -29,7 +29,7 @@ function TitleCell({ item, t }: Readonly<{ item: TemplateEntityDto; t: (key: str
 }
 
 function ViewsCell({ item }: Readonly<{ item: TemplateEntityDto }>) {
-  return <div>{item.views?.map((i) => i.title + (i.isDefault ? " (default)" : "")).join(", ")}</div>;
+  return <div>{item.views?.map((view) => view.title + (view.isDefault ? " (default)" : "")).join(", ")}</div>;
 }
 
 export default function PreviewEntitiesTemplate({ template }: Readonly<{ template: EntitiesTemplateDto }>) {
@@ -42,17 +42,17 @@ export default function PreviewEntitiesTemplate({ template }: Readonly<{ templat
         {
           name: "name",
           title: "Name",
-          value: (i) => <NameCell item={i} />,
+          value: (item) => <NameCell item={item} />,
         },
         {
           name: "title",
           title: "Title",
-          value: (i) => <TitleCell item={i} t={t} />,
+          value: (item) => <TitleCell item={item} t={t} />,
         },
         {
           name: "properties",
           title: "Properties",
-          value: (i) => i.properties.map((i) => `${i.title}${i.isRequired ? "*" : ""} [${i.type}]`).join(", "),
+          value: (item) => item.properties.map((prop) => `${prop.title}${prop.isRequired ? "*" : ""} [${prop.type}]`).join(", "),
           className: "text-xs",
         },
         {
@@ -60,7 +60,7 @@ export default function PreviewEntitiesTemplate({ template }: Readonly<{ templat
           title: "Parents",
           value: (item) =>
             findChildRelationships(template, item)
-              .map((i) => i.parent)
+              .map((rel) => rel.parent)
               .join(", "),
           className: "text-xs",
         },
@@ -69,7 +69,7 @@ export default function PreviewEntitiesTemplate({ template }: Readonly<{ templat
           title: "Children",
           value: (item) =>
             findParentRelationships(template, item)
-              .map((i) => i.child)
+              .map((rel) => rel.child)
               .join(", "),
           className: "text-xs",
         },

@@ -2,7 +2,7 @@ import { useTranslation } from "react-i18next";
 import { GalleryBlockDto } from "~/modules/pageBlocks/components/blocks/marketing/gallery/GalleryBlockUtils";
 import CustomCarousel from "~/components/ui/images/CustomCarousel";
 
-export default function GalleryVariantCarousel({ item }: { item: GalleryBlockDto }) {
+export default function GalleryVariantCarousel({ item }: Readonly<{ item: GalleryBlockDto }>) {
   const { t } = useTranslation();
   return (
     <div className="relative overflow-hidden py-8">

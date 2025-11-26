@@ -111,8 +111,8 @@ export default () => {
           data.summary.length === 6 && "sm:grid-cols-3"
         )}
       >
-        {data.summary.map((item, idx) => (
-          <div key={idx} className="bg-background overflow-hidden rounded-lg shadow-xs">
+        {data.summary.map((item) => (
+          <div key={item.entity.id} className="bg-background overflow-hidden rounded-lg shadow-xs">
             <div className="p-5">
               <div className="flex items-center">
                 <div className="w-0 flex-1">

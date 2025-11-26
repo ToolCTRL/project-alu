@@ -9,7 +9,7 @@ interface Props {
   btnClassName?: string;
 }
 
-export default function LayoutSelector({ className, btnClassName }: Props) {
+export default function LayoutSelector({ className, btnClassName }: Readonly<Props>) {
   const { t } = useTranslation();
 
   const layouts = [
@@ -24,7 +24,8 @@ export default function LayoutSelector({ className, btnClassName }: Props) {
   ];
 
   function select(value: ApplicationLayout) {
-    // store.dispatch(setLayout(value));
+    // Future implementation: store.dispatch(setLayout(value));
+    void value;
   }
 
   return (
@@ -37,14 +38,13 @@ export default function LayoutSelector({ className, btnClassName }: Props) {
       button={<span>{t("settings.preferences.layouts")}</span>}
       options={
         <div>
-          {layouts.map((layout, index) => {
+          {layouts.map((layout) => {
             return (
-              <Menu.Item key={index}>
+              <Menu.Item key={layout.value}>
                 {({ active }) => (
                   <button
                     type="button"
                     onClick={() => select(layout.value)}
-                    key={index}
                     className={clsx("w-full text-left", active ? "text-foreground bg-secondary/90" : "text-foreground/80", "block px-4 py-2 text-sm")}
                     role="menuitem"
                   >

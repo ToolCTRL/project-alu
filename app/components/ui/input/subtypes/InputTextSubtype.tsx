@@ -1,4 +1,3 @@
-import { Fragment } from "react";
 import InputText from "../InputText";
 import InputEmail from "./InputEmail";
 import InputPhone from "./InputPhone";
@@ -10,8 +9,6 @@ type InputTextSubtypeProps = {
   name?: string;
   title?: string;
   withLabel?: boolean;
-  // value: string | undefined;
-  // setValue: React.Dispatch<React.SetStateAction<string>>;
   className?: string;
   classNameBg?: string;
   minLength?: number;
@@ -42,26 +39,28 @@ type InputTextSubtypeProps = {
   borderless?: boolean;
   editorSize?: "sm" | "md" | "lg" | "auto" | "full" | "screen";
   autoFocus?: boolean;
-  promptFlows?: { rowId: string | undefined; prompts: PromptFlowWithDetails[] } | undefined;
+  promptFlows?: { rowId?: string; prompts: PromptFlowWithDetails[] };
 };
 
-type WithDefaultValue = { defaultValue: string | undefined };
-type WithValueAndSetValue = { value: string | undefined; setValue: React.Dispatch<React.SetStateAction<string>> };
+type WithDefaultValue = { defaultValue?: string };
+type WithValueAndSetValue = { value?: string; setValue: React.Dispatch<React.SetStateAction<string>> };
 
 export default function InputTextSubtype(props: InputTextSubtypeProps & (WithDefaultValue | WithValueAndSetValue)) {
-  return (
-    <>
-      {!props.subtype || props.subtype === "singleLine" ? (
-        <Fragment>
-          <InputText {...props} type={props.password ? "password" : undefined} autoComplete={props.password ? "off" : undefined} />
-        </Fragment>
-      ) : props.subtype === "email" ? (
-        <InputEmail {...props} />
-      ) : props.subtype === "url" ? (
-        <InputUrl {...props} />
-      ) : props.subtype === "phone" ? (
-        <InputPhone {...props} />
-      ) : null}
-    </>
-  );
+  function renderSubtype() {
+    if (!props.subtype || props.subtype === "singleLine") {
+      return <InputText {...props} type={props.password ? "password" : undefined} autoComplete={props.password ? "off" : undefined} />;
+    }
+    if (props.subtype === "email") {
+      return <InputEmail {...props} />;
+    }
+    if (props.subtype === "url") {
+      return <InputUrl {...props} />;
+    }
+    if (props.subtype === "phone") {
+      return <InputPhone {...props} />;
+    }
+    return null;
+  }
+
+  return <>{renderSubtype()}</>;
 }

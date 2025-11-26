@@ -1,6 +1,6 @@
-import fs from "fs";
+import fs from "node:fs";
 import { marked } from "marked";
-import path from "path";
+import path from "node:path";
 
 export async function getMdxContent(fileName: string): Promise<string> {
   const filePath = path.join("./", "./app/blog/" + fileName + ".mdx");

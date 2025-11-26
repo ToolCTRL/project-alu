@@ -2,7 +2,7 @@ import { Fragment } from "react";
 import { Colors } from "~/application/enums/shared/Colors";
 import SimpleBadge from "~/components/ui/badges/SimpleBadge";
 
-export default function ApiCallSpeedBadge({ duration }: { duration: number }) {
+export default function ApiCallSpeedBadge({ duration }: { readonly duration: number }) {
   return (
     <Fragment>
       {duration < 10 && <SimpleBadge title={`Lightning fast`} color={Colors.GREEN} />}

@@ -9,10 +9,7 @@ interface Props {
   darkMode?: boolean;
 }
 
-export default function CurrencyToggle({ className, value, setValue, possibleCurrencies, darkMode }: Props) {
-  // function changeCurrency(currency: string) {
-  //   setValue(currency);
-  // }
+export default function CurrencyToggle({ className, value, setValue, possibleCurrencies, darkMode }: Readonly<Props>) {
   return (
     <Fragment>
       {possibleCurrencies.length === 1 ? null : (

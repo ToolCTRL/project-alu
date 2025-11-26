@@ -9,7 +9,7 @@ interface Props {
   className?: string;
   right?: ReactNode;
 }
-export default function InputGroup({ title, description, icon, children, right, className }: Props) {
+export default function InputGroup({ title, description, icon, children, right, className }: Readonly<Props>) {
   return (
     <div className={clsx("space-y-3")}>
       {(title || right) && (

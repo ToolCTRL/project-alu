@@ -60,18 +60,18 @@ export default function OnboardingVariantModal({
           <div className="truncate text-lg font-bold">{t(block.title)}</div>
           <div className="hidden items-center space-x-1 sm:flex">
             {block.steps.map((step, idx) => {
+              const isCompleted = step.completedAt;
+              const isCurrent = idx === currentStepIdx;
+              const buttonColorClasses = isCompleted
+                ? "text-teal-500 hover:text-teal-600"
+                : isCurrent
+                ? "text-teal-600 hover:text-teal-700"
+                : "hover:text-muted-foreground text-gray-300";
               return (
                 <button
-                  key={idx}
+                  key={`step-${idx}-${step.title}`}
                   onClick={() => setStep(idx)}
-                  className={clsx(
-                    "w-full focus:outline-hidden",
-                    step.completedAt
-                      ? "text-teal-500 hover:text-teal-600"
-                      : idx === currentStepIdx
-                      ? "text-teal-600 hover:text-teal-700"
-                      : "hover:text-muted-foreground text-gray-300"
-                  )}
+                  className={clsx("w-full focus:outline-hidden", buttonColorClasses)}
                 >
                   <svg
                     className={clsx("h-4 w-4")}
@@ -115,7 +115,7 @@ export default function OnboardingVariantModal({
               <div className="divide-border bg-secondary/90 hidden w-1/2 divide-y-2 overflow-y-scroll sm:block">
                 {block.steps.map((step, idx) => {
                   return (
-                    <Fragment key={idx}>
+                    <Fragment key={`step-nav-${idx}-${step.title}`}>
                       <button
                         type="button"
                         className={clsx(
@@ -127,13 +127,17 @@ export default function OnboardingVariantModal({
                         <div className="flex items-center space-x-2">
                           {step.icon && (
                             <>
-                              {step.icon.startsWith("<svg") ? (
-                                <div dangerouslySetInnerHTML={{ __html: step.icon.replace("<svg", `<svg class='${"h-5 w-5"}'`) ?? "" }} />
-                              ) : step.icon.startsWith("http") ? (
-                                <img className="h-5 w-5" src={step.icon} alt={step.title} />
-                              ) : (
-                                <div className="w-5">{step.icon}</div>
-                              )}
+                              {(() => {
+                                const isSvgString = step.icon.startsWith("<svg");
+                                const isHttpUrl = step.icon.startsWith("http");
+                                if (isSvgString) {
+                                  return <div dangerouslySetInnerHTML={{ __html: step.icon.replace("<svg", `<svg class='${"h-5 w-5"}'`) ?? "" }} />;
+                                }
+                                if (isHttpUrl) {
+                                  return <img className="h-5 w-5" src={step.icon} alt={step.title} />;
+                                }
+                                return <div className="w-5">{step.icon}</div>;
+                              })()}
                             </>
                           )}
                           <div>{t(step.title)}</div>
@@ -200,11 +204,11 @@ function OnboardingStep({
   step,
   onLinkClick,
   onUpdate,
-}: {
-  step: OnboardingStepBlockDto;
-  onLinkClick: (link: { text: string; href: string }) => void;
-  onUpdate: (state: { [key: string]: string }) => void;
-}) {
+}: Readonly<{
+  readonly step: OnboardingStepBlockDto;
+  readonly onLinkClick: (link: { text: string; href: string }) => void;
+  readonly onUpdate: (state: { [key: string]: string }) => void;
+}>) {
   const { t } = useTranslation();
   const [state, setState] = useState<{ [key: string]: string }>({});
   useEffect(() => {
@@ -228,7 +232,7 @@ function OnboardingStep({
         <div className="-mx-0.5 flex flex-wrap items-center">
           {step.links.map((link, idx) => {
             return (
-              <div key={idx} className="p-0.5">
+              <div key={`link-${link.href}-${idx}`} className="p-0.5">
                 <button
                   type="button"
                   onClick={() => onLinkClick(link)}
@@ -247,36 +251,13 @@ function OnboardingStep({
       {step.gallery && step.gallery.length > 0 && (
         <div className="flex flex-col justify-center space-y-2">
           <CustomCarousel items={step.gallery} />
-          {/* {step.gallery.map((galleryItem, idx) => {
-            return (
-              <Fragment key={idx}>
-                {galleryItem.type === "image" && (
-                  <img
-                    alt={galleryItem.title && t(galleryItem.title)}
-                    className="rounded-md border border-dashed border-border object-cover shadow-md"
-                    src={galleryItem.src}
-                  />
-                )}
-                {galleryItem.type === "video" && (
-                  <iframe
-                    src={galleryItem?.src}
-                    title={galleryItem?.title ?? ""}
-                    frameBorder="0"
-                    loading="lazy"
-                    className="rounded-md border border-dashed border-border object-cover shadow-md"
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                  ></iframe>
-                )}
-              </Fragment>
-            );
-          })} */}
         </div>
       )}
       {step.input && step.input.length > 0 && (
         <div className={clsx("truncate p-1", GridBlockUtils.getClasses(step.inputGrid ?? { columns: "2", gap: "sm" }))}>
           {step.input.map((input, idx) => {
             return (
-              <div key={idx}>
+              <div key={`input-${input.name}`}>
                 {input.type === "text" && (
                   <InputText
                     name={input.name}

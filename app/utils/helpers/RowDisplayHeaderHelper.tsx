@@ -122,7 +122,7 @@ function addDefaultHeaders(
       title: "ID",
       value: (item) => (
         <div>
-          {onEditClick !== undefined ? (
+          {onEditClick ? (
             <button
               type="button"
               onClick={() => onEditClick(item)}
@@ -170,6 +170,52 @@ function addPropertyHeaders(
     });
 }
 
+function renderParentRows(
+  item: RowWithDetails,
+  relationship: any,
+  parentEntity: EntityWithDetails,
+  onRelatedRowClick: ((item: RowWithDetails) => void) | undefined,
+  routes: EntitiesApi.Routes | undefined,
+  t: TFunction
+) {
+  return item.parentRows
+    ?.filter((f) => f.relationshipId === relationship.id)
+    .map(({ parent }) => (
+      <Fragment key={parent.id}>
+        <RowRelationshipRow
+          entity={parentEntity}
+          item={parent}
+          onRelatedRowClick={onRelatedRowClick ? () => onRelatedRowClick(item) : undefined}
+          routes={routes}
+          t={t}
+        />
+      </Fragment>
+    ));
+}
+
+function renderChildRows(
+  item: RowWithDetails,
+  relationship: any,
+  childEntity: EntityWithDetails,
+  onRelatedRowClick: ((item: RowWithDetails) => void) | undefined,
+  routes: EntitiesApi.Routes | undefined,
+  t: TFunction
+) {
+  return item.childRows
+    ?.filter((f) => f.relationshipId === relationship.id)
+    .map(({ child }) => (
+      <li key={child.id}>
+        <RowRelationshipRow
+          entity={childEntity}
+          item={child}
+          onRelatedRowClick={onRelatedRowClick ? () => onRelatedRowClick(item) : undefined}
+          routes={routes}
+          t={t}
+        />
+      </li>
+    ));
+}
+
 function addRelationshipHeaders(
   headers: RowHeaderDisplayDto<RowWithDetails>[],
   entity: EntityWithDetails,
@@ -192,23 +238,7 @@ function addRelationshipHeaders(
               {!item.parentRows?.length || item.parentRows.length === 0 ? (
                 <div className="px-1 pb-0.5 pt-1 text-center text-sm text-gray-300">-</div>
               ) : (
-                <Fragment>
-                  {item.parentRows
-                    ?.filter((f) => f.relationshipId === relationship.id)
-                    .map(({ parent }) => {
-                      return (
-                        <Fragment key={parent.id}>
-                          <RowRelationshipRow
-                            entity={parentEntity}
-                            item={parent}
-                            onRelatedRowClick={onRelatedRowClick ? () => onRelatedRowClick(item) : undefined}
-                            routes={routes}
-                            t={t}
-                          />
-                        </Fragment>
-                      );
-                    })}
-                </Fragment>
+                <Fragment>{renderParentRows(item, relationship, parentEntity, onRelatedRowClick, routes, t)}</Fragment>
               )}
             </div>
           ),
@@ -235,23 +265,7 @@ function addRelationshipHeaders(
                       <SimpleBadge title={item.childRows?.length.toString()} color={Colors.INDIGO} />
                     </div>
                   ) : (
-                    <Fragment>
-                      {item.childRows
-                        ?.filter((f) => f.relationshipId === relationship.id)
-                        .map(({ child }) => {
-                          return (
-                            <li key={child.id}>
-                              <RowRelationshipRow
-                                entity={childEntity}
-                                item={child}
-                                onRelatedRowClick={onRelatedRowClick ? () => onRelatedRowClick(item) : undefined}
-                                routes={routes}
-                                t={t}
-                              />
-                            </li>
-                          );
-                        })}
-                    </Fragment>
+                    <Fragment>{renderChildRows(item, relationship, childEntity, onRelatedRowClick, routes, t)}</Fragment>
                   )}
                 </Fragment>
               )}

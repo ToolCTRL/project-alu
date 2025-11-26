@@ -5,7 +5,7 @@ import { TiptapExtensions } from "./extensions";
 import { useCompletion } from "../../lib/ai/react/useCompletion";
 import { toast } from "sonner";
 import { EditorBubbleMenu } from "./components";
-import { Editor, EditorOptions, JSONContent } from "@tiptap/core";
+import { Editor, JSONContent } from "@tiptap/core";
 import { PromptFlowWithDetails } from "~/modules/promptBuilder/db/promptFlows.db.server";
 import clsx from "clsx";
 
@@ -20,7 +20,7 @@ interface Props {
   readOnly?: boolean;
   disabled?: boolean;
   className?: string;
-  promptFlows?: { rowId: string | undefined; prompts: PromptFlowWithDetails[] } | undefined;
+  promptFlows?: { rowId: string | undefined; prompts: PromptFlowWithDetails[] };
   autoFocus?: boolean;
   darkMode?: boolean;
   usingLocalStorage?: boolean;
@@ -35,7 +35,7 @@ export default function NovelEditor({
   autoFocus = true,
   darkMode,
   usingLocalStorage,
-}: Props) {
+}: Readonly<Props>) {
   const [saveStatus, setSaveStatus] = useState("Saved");
 
   const [hydrated, setHydrated] = useState(false);
@@ -46,16 +46,12 @@ export default function NovelEditor({
       const html = editor.getHTML();
       const text = editor.getText();
       setSaveStatus("Saving...");
-      // onChange(json);
       onChange({
         json,
         html,
         text,
       });
-      // Simulate a delay in saving.
-      // setTimeout(() => {
       setSaveStatus("Saved");
-      // }, 500);
     },
     [onChange]
   );
@@ -80,7 +76,6 @@ export default function NovelEditor({
               "Give more weight/priority to the later characters than the beginning ones. Make sure to construct complete sentences.",
           },
         });
-        // va.track("Autocomplete Shortcut Used");
       } else {
         debouncedUpdates(e);
       }
@@ -99,8 +94,6 @@ export default function NovelEditor({
     onResponse: (response) => {
       if (response.status === 429) {
         toast.error("You have reached your request limit for the day.");
-        // va.track("Rate Limit Reached");
-        return;
       }
     },
     onFinish: (_prompt, completion) => {
@@ -146,7 +139,7 @@ export default function NovelEditor({
       e.preventDefault();
       e.stopPropagation();
       stop();
-      if (window.confirm("AI writing paused. Continue?")) {
+      if (globalThis.confirm("AI writing paused. Continue?")) {
         complete(editor?.getText() || "", {
           body: {
             systemContent:
@@ -158,14 +151,14 @@ export default function NovelEditor({
     };
     if (isLoading) {
       document.addEventListener("keydown", onKeyDown);
-      window.addEventListener("mousedown", mousedownHandler);
+      globalThis.addEventListener("mousedown", mousedownHandler);
     } else {
       document.removeEventListener("keydown", onKeyDown);
-      window.removeEventListener("mousedown", mousedownHandler);
+      globalThis.removeEventListener("mousedown", mousedownHandler);
     }
     return () => {
       document.removeEventListener("keydown", onKeyDown);
-      window.removeEventListener("mousedown", mousedownHandler);
+      globalThis.removeEventListener("mousedown", mousedownHandler);
     };
   }, [stop, isLoading, editor, complete, completion.length]);
 
@@ -182,13 +175,20 @@ export default function NovelEditor({
   }
   return (
     <div
+      role="button"
+      tabIndex={0}
       onClick={() => {
         editor?.chain().focus().run();
+      }}
+      onKeyDown={(e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          editor?.chain().focus().run();
+        }
       }}
       className={clsx(
         "border-border bg-background relative w-full max-w-(--breakpoint-lg) border p-12 px-8 sm:rounded-lg sm:border sm:px-12 sm:shadow-lg",
         className
-        // darkMode && "dark:border-gray-800 dark:bg-gray-900 dark:text-slate-200"
       )}
     >
       {usingLocalStorage && (

@@ -8,7 +8,7 @@ import clsx from "clsx";
 import ButtonEvent from "~/components/ui/buttons/ButtonEvent";
 import { ExternalLinkIcon } from "lucide-react";
 
-export default function FeaturesList({ item }: { item: FeaturesBlockDto }) {
+export default function FeaturesList({ item }: { readonly item: FeaturesBlockDto }) {
   const { t } = useTranslation();
   return (
     <section id="features" className="body-font">
@@ -47,7 +47,7 @@ export default function FeaturesList({ item }: { item: FeaturesBlockDto }) {
             {item.cta?.map((item, idx) => {
               return (
                 <ButtonEvent
-                  key={idx}
+                  key={`cta-${idx}-${item.href}`}
                   to={item.href}
                   target={item.target}
                   className={clsx(
@@ -68,7 +68,7 @@ export default function FeaturesList({ item }: { item: FeaturesBlockDto }) {
         <div className={clsx(GridBlockUtils.getClasses(item.grid), "mx-auto")}>
           {item.items.map((feature, idx) => {
             return (
-              <div key={idx} className="flex">
+              <div key={`feature-list-${idx}-${feature.name}`} className="flex">
                 <div className="text-primary mb-4 inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full">
                   {feature.icon ? (
                     <>

@@ -1,9 +1,17 @@
 node_modules
+tmp
+scripts
 
+.code
+.bmad
+.vscode
 .cache
 .env*
 .vercel
 .output
+.bmad-shared-status.yaml
+.DS_STORE
+
 
 /build/
 /public/build
@@ -38,3 +46,6 @@ tsconfig.tsbuildinfo
 
 .react-router/
 .cursor
+
+#Ignore vscode AI rules
+.github/instructions/codacy.instructions.md

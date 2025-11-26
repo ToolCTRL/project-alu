@@ -4,7 +4,7 @@ interface Props {
   text: string;
 }
 
-export default function HintTooltip({ text }: Props) {
+export default function HintTooltip({ text }: Readonly<Props>) {
   return (
     <div className="group relative flex flex-col items-center">
       <TooltipProvider>

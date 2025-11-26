@@ -5,7 +5,7 @@ import { RemixI18Next } from "remix-i18next/server";
 import { i18nConfig } from "./i18n";
 
 import Backend from "i18next-fs-backend";
-import path from "path";
+import path from "node:path";
 
 export const i18nCookie = createCookie("_i18n", {
   path: "/",
@@ -44,8 +44,6 @@ export const remixI18Next = new RemixI18Next({
 });
 
 export async function getTranslations(request: Request, namespace = "translations") {
-  // const userInfo = await getUserInfo(request);
-  // const lng = userInfo.lng;
   const t = await remixI18Next.getFixedT(request, namespace);
   let translations: any = {};
   const locale = await remixI18Next.getLocale(request);

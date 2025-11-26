@@ -9,7 +9,9 @@ function rowToDto(block: WorkflowBlockWithDetails, index: number = 0) {
   let input: any = {};
   try {
     input = JSON.parse(block.input);
-  } catch (e) {}
+  } catch {
+    input = {};
+  }
   const workflowBlock: WorkflowBlockDto = {
     id: block.id,
     index,
@@ -56,9 +58,6 @@ function getBlockErrors({ workflow, block }: { workflow: WorkflowDto; block: Wor
     if (block.toBlocks.length === 0) {
       errors.push("Add a next block for this trigger");
     }
-    // if (!block.description) {
-    //   errors.push("Add a description for this trigger");
-    // }
   } else if (block.isBlock) {
     const nodesConnectingToThisBlock = workflow.blocks.filter((f) => {
       return f.toBlocks.find((t) => t.toBlockId === block.id);
@@ -104,7 +103,7 @@ function getBlockErrors({ workflow, block }: { workflow: WorkflowDto; block: Wor
   }
   if (workflowBlock?.inputs) {
     workflowBlock.inputs.forEach((input) => {
-      const { required } = input as WorkflowBlockInput;
+      const { required } = input;
       if (required && !block.input[input.name]) {
         errors.push("Missing required input: " + input.name);
       }
@@ -115,14 +114,12 @@ function getBlockErrors({ workflow, block }: { workflow: WorkflowDto; block: Wor
     const conditionGroups = block.conditionGroups;
     if (conditionGroups.length !== 1) {
       errors.push("At least one condition group is required");
+    } else if (conditionGroups[0].conditions.length === 0) {
+      errors.push("At least one condition is required");
     } else {
-      if (conditionGroups[0].conditions.length === 0) {
-        errors.push("At least one condition is required");
-      } else {
-        const groupErrors = WorkflowConditionUtils.getConditionsErrors(conditionGroups[0].conditions);
-        if (groupErrors.length > 0) {
-          errors.push("Invalid conditions: " + groupErrors.flatMap((f) => f.errors).join(", "));
-        }
+      const groupErrors = WorkflowConditionUtils.getConditionsErrors(conditionGroups[0].conditions);
+      if (groupErrors.length > 0) {
+        errors.push("Invalid conditions: " + groupErrors.flatMap((f) => f.errors).join(", "));
       }
     }
   } else if (workflowBlock?.value === "switch") {

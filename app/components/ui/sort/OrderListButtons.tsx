@@ -6,16 +6,16 @@ interface OrderType {
   order: number;
 }
 interface Props<OrderType> {
-  index: number | undefined;
-  items: OrderType[];
-  editable?: boolean;
-  actionName?: string;
-  formData?: {
-    [key: string]: string;
+  readonly index: number | undefined;
+  readonly items: OrderType[];
+  readonly editable?: boolean;
+  readonly actionName?: string;
+  readonly formData?: {
+    readonly [key: string]: string;
   };
-  onChange?: (items: OrderType[]) => void;
+  readonly onChange?: (items: OrderType[]) => void;
 }
-export default function OrderListButtons({ index, items, editable = true, actionName = "set-orders", formData, onChange }: Props<OrderType>) {
+export default function OrderListButtons({ index, items, editable = true, actionName = "set-orders", formData, onChange }: Readonly<Props<OrderType>>) {
   const submit = useSubmit();
   const navigation = useNavigation();
   const loading = navigation.state === "submitting";
@@ -32,10 +32,8 @@ export default function OrderListButtons({ index, items, editable = true, action
       if (items.length > index + 1) {
         nextItem = items[index + 1];
       }
-    } else {
-      if (index - 1 >= 0) {
-        prevItem = items[index - 1];
-      }
+    } else if (index - 1 >= 0) {
+      prevItem = items[index - 1];
     }
 
     const newOrders = items.map((item, idx) => {

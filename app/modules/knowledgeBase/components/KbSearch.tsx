@@ -16,7 +16,7 @@ import { Colors } from "~/application/enums/shared/Colors";
 import { KbArticleDto } from "../dtos/KbArticleDto";
 import ColorHoverUtils from "~/utils/shared/colors/ColorHoverUtils";
 
-export default function KbSearch({ kb, autoFocus }: { kb: KnowledgeBaseDto; autoFocus: boolean }) {
+export default function KbSearch({ kb, autoFocus }: readonly { readonly kb: KnowledgeBaseDto; readonly autoFocus: boolean }) {
   let data = useLoaderData<
     | {
         search: KbSearchResultDto | undefined;
@@ -121,7 +121,7 @@ export default function KbSearch({ kb, autoFocus }: { kb: KnowledgeBaseDto; auto
   );
 }
 
-function Highlight({ className, color, children, highlightText }: { className: string; color: Colors; children: string; highlightText: string }) {
+function Highlight({ className, color, children, highlightText }: readonly { readonly className: string; readonly color: Colors; readonly children: string; readonly highlightText: string }) {
   const parts = children.split(new RegExp(`(${highlightText})`, "gi"));
   return (
     <span className={clsx(className, " line-clamp-3")}>
@@ -139,7 +139,7 @@ function Highlight({ className, color, children, highlightText }: { className: s
   );
 }
 
-function Card({ kb, item, highlightText }: { kb: KnowledgeBaseDto; item: KbArticleDto; highlightText: string }) {
+function Card({ kb, item, highlightText }: readonly { readonly kb: KnowledgeBaseDto; readonly item: KbArticleDto; readonly highlightText: string }) {
   const contentLines = item.contentPublishedAsText.split("\n");
   const highlightedLines = contentLines
     .map((line, i) => ({ line, isHighlighted: line.toLowerCase().includes(highlightText.toLowerCase()), i }))

@@ -1,4 +1,4 @@
-export default function MegaphoneFilled({ className }: { className?: string }) {
+export default function MegaphoneFilled({ className }: Readonly<{ className?: string }>) {
   return (
     <svg className={className} xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" fill="currentColor" viewBox="0 0 128 128">
       {" "}

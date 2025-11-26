@@ -4,7 +4,7 @@ import { SubscriptionFeatureLimitType } from "~/application/enums/subscriptions/
 import DateUtils from "~/utils/shared/DateUtils";
 
 interface Props {
-  item: PlanFeatureUsageDto | undefined;
+  readonly item: PlanFeatureUsageDto | undefined;
 }
 export default function MyPlanFeatureUsage({ item }: Props) {
   const { t } = useTranslation();

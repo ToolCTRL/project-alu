@@ -46,11 +46,13 @@ function PaginationLink({
   className,
   isActive,
   size = "icon",
+  children,
   ...props
 }: PaginationLinkProps) {
   return (
     <a
       aria-current={isActive ? "page" : undefined}
+      aria-label={!children ? `Page ${props.href || ''}` : undefined}
       data-slot="pagination-link"
       data-active={isActive}
       className={cn(
@@ -61,7 +63,9 @@ function PaginationLink({
         className
       )}
       {...props}
-    />
+    >
+      {children}
+    </a>
   )
 }
 

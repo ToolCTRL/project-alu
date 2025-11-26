@@ -1,6 +1,4 @@
-import { LoaderFunctionArgs } from "react-router";
-import { Link } from "react-router";
-import UnderConstruction from "~/components/ui/misc/UnderConstruction";
+import { LoaderFunctionArgs, Link } from "react-router";
 
 type LoaderData = {};
 export const loader = async ({ params }: LoaderFunctionArgs) => {

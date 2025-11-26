@@ -11,6 +11,20 @@ import { BlockExecutionParamsDto } from "../../dtos/BlockExecutionParamsDto";
 import { WorkflowStatus } from "../../dtos/WorkflowStatus";
 import WorkflowsValidationService from "../WorkflowsValidationService";
 
+function getNestedPropertyHelper(currentObject: any, remainingKeys: string[]): any {
+  if (remainingKeys.length === 0) {
+    return currentObject;
+  }
+
+  const currentKey = remainingKeys[0];
+
+  if (currentObject !== null && typeof currentObject === "object" && currentKey in currentObject) {
+    return getNestedPropertyHelper(currentObject[currentKey], remainingKeys.slice(1));
+  } else {
+    throw new TypeError(`Property not found for key: ${currentKey}`);
+  }
+}
+
 async function execute({
   workflowContext,
   workflowExecutionId,
@@ -108,14 +122,14 @@ async function executeBlockWithErrorHandling(args: BlockExecutionParamsDto): Pro
   try {
     result = await executeBlock(args);
   } catch (e: any) {
-    if (!result) {
+    if (result) {
+      result.error = e.message;
+    } else {
       result = {
         error: e.message,
         output: null,
         toBlockIds: [],
       };
-    } else {
-      result.error = e.message;
     }
   }
   return result;
@@ -306,25 +320,11 @@ async function executeIteratorBlock({
 
   let variableName = block.input.variableName;
   // remove {{ and }} with regex
-  variableName = variableName.replace(/{{/g, "").replace(/}}/g, "");
+  variableName = variableName.replaceAll(/{{/g, "").replaceAll(/}}/g, "");
 
   function getNestedProperty(obj: any, path: string) {
     const keys = path.replace(/^/, "").split(".");
     return getNestedPropertyHelper(obj, keys);
-  }
-
-  function getNestedPropertyHelper(currentObject: any, remainingKeys: string[]): any {
-    if (remainingKeys.length === 0) {
-      return currentObject;
-    }
-
-    const currentKey = remainingKeys[0];
-
-    if (currentObject !== null && typeof currentObject === "object" && currentKey in currentObject) {
-      return getNestedPropertyHelper(currentObject[currentKey], remainingKeys.slice(1));
-    } else {
-      throw new Error(`Property not found for key: ${currentKey}`);
-    }
   }
 
   const array = getNestedProperty(workflowContext, variableName);

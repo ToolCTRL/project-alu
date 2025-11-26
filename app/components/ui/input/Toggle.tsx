@@ -2,9 +2,9 @@ import { Switch } from "@headlessui/react";
 import clsx from "clsx";
 
 interface Props {
-  value: boolean;
-  onChange(checked: boolean): void;
-  disabled?: boolean;
+  readonly value: boolean;
+  readonly onChange: (checked: boolean) => void;
+  readonly disabled?: boolean;
 }
 export default function Toggle({ value, onChange, disabled }: Props) {
   return (

@@ -9,17 +9,16 @@ export default function ShowHtmlModalButton({
   title,
   link,
   size,
-}: {
-  html: string | undefined | null;
+}: Readonly<{
+  html?: string | null;
   title: React.ReactNode;
   link?: {
     href: string;
-    target?: undefined | "_blank";
+    target?: "_blank";
     text?: ReactNode;
   };
-  className?: string;
   size?: "sm" | "md" | "lg" | "xl" | "2xl" | "3xl" | "4xl" | "5xl" | "6xl" | "7xl" | "full";
-}) {
+}>) {
   const [open, setOpen] = useState(false);
   return (
     <>

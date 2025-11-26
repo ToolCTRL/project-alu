@@ -6,11 +6,11 @@ import clsx from "clsx";
 
 interface Props {
   type?: "button" | "submit";
-  to?: string | undefined;
+  to?: string;
   submits?: { action: string; values: { [key: string]: string } };
   children: ReactNode;
   className?: string;
-  target?: undefined | "_blank";
+  target?: "_blank";
   role?: string;
   rel?: string;
   event?: {
@@ -23,7 +23,7 @@ interface Props {
   sendEvent?: boolean;
   disabled?: boolean;
 }
-export default function ButtonSubmitForm({ submits, type, to, target, children, className, role, rel, event, onClick, sendEvent = true, disabled }: Props) {
+export default function ButtonSubmitForm({ submits, type, to, target, children, className, role, rel, event, onClick, sendEvent = true, disabled }: Readonly<Props>) {
   const submit = useSubmit();
   const navigation = useNavigation();
   const [searchParams] = useSearchParams();
@@ -32,15 +32,15 @@ export default function ButtonSubmitForm({ submits, type, to, target, children, 
   const [referral, setReferral] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!(typeof window === "undefined")) {
+    if (typeof globalThis.window !== "undefined") {
       try {
         // @ts-ignore
-        window.rewardful("ready", () => {
+        globalThis.rewardful("ready", () => {
           // @ts-ignore
           // eslint-disable-next-line no-console
-          // console.log("Rewardful ready", window.Rewardful.referral);
+          // console.log("Rewardful ready", globalThis.Rewardful.referral);
           // @ts-ignore
-          setReferral(window.Rewardful.referral);
+          setReferral(globalThis.Rewardful.referral);
         });
       } catch (e: any) {
         // eslint-disable-next-line no-console

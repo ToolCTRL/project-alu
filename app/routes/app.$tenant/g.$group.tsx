@@ -1,6 +1,5 @@
-import { LoaderFunctionArgs, MetaFunction, redirect } from "react-router";
-import { useParams, Outlet } from "react-router";
-import { useState, Fragment, useRef } from "react";
+import { LoaderFunctionArgs, MetaFunction, redirect, useParams, Outlet } from "react-router";
+import { Fragment, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import SidebarIconsLayout, { IconDto } from "~/components/ui/layouts/SidebarIconsLayout";
 import { getTranslations } from "~/locale/i18next.server";
@@ -15,7 +14,7 @@ type LoaderData = {
 export const loader = async ({ request, params }: LoaderFunctionArgs) => {
   const { t } = await getTranslations(request);
   const tenantId = await getTenantIdOrNull({ request, params });
-  const group = await getEntityGroupBySlug(params.group!);
+  const group = await getEntityGroupBySlug(params.group);
   if (!group) {
     throw redirect(tenantId ? UrlUtils.currentTenantUrl(params, "404") : "/404");
   }
@@ -27,7 +26,7 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
 
 export const meta: MetaFunction<typeof loader> = ({ data }) => [{ title: data?.title }];
 
-export default () => {
+export default function GroupRoute() {
   const { t } = useTranslation();
   const appOrAdminData = useAppOrAdminData();
   const params = useParams();

@@ -1,6 +1,5 @@
 import { ActionFunction, LoaderFunctionArgs } from "react-router";
 import { LoaderDataEmails, loaderEmails } from "~/modules/emails/loaders/inbound-emails";
-import InboundEmailsRoute from "~/modules/emails/routes/InboundEmailsRoute";
 import { actionInboundEmails } from "~/modules/emails/actions/inbound-emails";
 import { getTenantIdFromUrl } from "~/utils/services/.server/urlService";
 import { v2MetaFunction } from "~/utils/compat/v2MetaFunction";
@@ -17,4 +16,4 @@ export const action: ActionFunction = async ({ request, params }) => {
 
 export const meta: v2MetaFunction<LoaderDataEmails> = ({ data }) => [{ title: data?.title }];
 
-export default InboundEmailsRoute;
+export { default } from "~/modules/emails/routes/InboundEmailsRoute";

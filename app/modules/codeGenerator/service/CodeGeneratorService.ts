@@ -1,4 +1,4 @@
-import fs from "fs";
+import fs from "node:fs";
 import { EntityWithDetails } from "~/utils/db/entities/entities.db.server";
 import DateUtils from "~/utils/shared/DateUtils";
 import CodeTemplateForm from "../templates/components/CodeTemplate.Form";
@@ -52,18 +52,6 @@ async function generate(options: CodeGeneratorOptions) {
     const routeFiles = getRouteFiles(options);
     await writeFiles(routeFiles, options.routesDirectory);
   }
-
-  // if (options.generateZip) {
-  //   var zipPath = `${options.moduleDirectory}/${options.entity.slug}.zip`;
-  //   var zip = new AdmZip();
-  //   moduleFiles.forEach((file) => {
-  //     zip.addLocalFile(`${options.moduleDirectory}/${file.directory}/${file.file}`, file.directory);
-  //   });
-  //   zip.writeZip(zipPath);
-
-  //   const file = fs.readFileSync(zipPath);
-  //   return file;
-  // }
 
   if (options.deleteFilesOnFinish) {
     fs.rmdirSync(options.moduleDirectory, { recursive: true });
@@ -262,10 +250,11 @@ function getRouteFiles({ type, entity, moduleDirectory }: CodeGeneratorOptions) 
 
 function addTopComments(files: CodeGeneratorFileDto[]) {
   files.forEach((file) => {
-    const comments: string[] = [];
-    comments.push(file.description);
-    comments.push("Date: " + DateUtils.dateYMD(new Date()));
-    comments.push("Version: SaasRock v" + Constants.VERSION);
+    const comments: string[] = [
+      file.description,
+      "Date: " + DateUtils.dateYMD(new Date()),
+      "Version: SaasRock v" + Constants.VERSION
+    ];
     file.content = comments.map((comment) => `// ${comment}`).join("\n") + "\n\n" + file.content;
   });
 }

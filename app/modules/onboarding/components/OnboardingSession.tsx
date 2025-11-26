@@ -3,7 +3,7 @@ import { useAppOrAdminData } from "~/utils/data/useAppOrAdminData";
 import OnboardingBlock from "../blocks/OnboardingBlock";
 import { OnboardingBlockDto, OnboardingBlockStyle, OnboardingHeightDto, OnboardingStepBlockDto } from "../blocks/OnboardingBlockUtils";
 
-export default function OnboardingSession({ open, setOpen }: { open: boolean; setOpen: (open: boolean) => void }) {
+export default function OnboardingSession({ open, setOpen }: Readonly<{ open: boolean; setOpen: (open: boolean) => void }>) {
   const appOrAdminData = useAppOrAdminData();
   const [onboardingBlock, setOnboardingBlock] = useState<OnboardingBlockDto>();
 

@@ -24,7 +24,7 @@ import {
   OnboardingStepBlockDto,
 } from "./OnboardingBlockUtils";
 
-export default function OnboardingBlockForm({ item, onUpdate }: { item?: OnboardingBlockDto; onUpdate: (item: OnboardingBlockDto) => void }) {
+export default function OnboardingBlockForm({ item, onUpdate }: Readonly<{ item?: OnboardingBlockDto; onUpdate: (item: OnboardingBlockDto) => void }>) {
   const { t } = useTranslation();
   const [state, setState] = useState<OnboardingBlockDto>(item || defaultOnboardingBlock);
   useEffect(() => {
@@ -143,7 +143,7 @@ export default function OnboardingBlockForm({ item, onUpdate }: { item?: Onboard
   );
 }
 
-function StepForm({ item, onUpdate }: { item: OnboardingStepBlockDto; onUpdate: (item: OnboardingStepBlockDto) => void }) {
+function StepForm({ item, onUpdate }: Readonly<{ item: OnboardingStepBlockDto; onUpdate: (item: OnboardingStepBlockDto) => void }>) {
   const [state, setState] = useState<OnboardingStepBlockDto>(item || defaultOnboardingStepBlock);
   useEffect(() => {
     onUpdate(state);
@@ -180,7 +180,7 @@ function StepForm({ item, onUpdate }: { item: OnboardingStepBlockDto; onUpdate: 
       <InputGroup title="Links">
         <div className="flex flex-col space-y-2">
           {state.links.map((link, index) => (
-            <div key={index} className="group relative grid grid-cols-4 gap-2">
+            <div key={`link-${index}-${link.text}-${link.href}`} className="group relative grid grid-cols-4 gap-2">
               <button
                 onClick={() => {
                   const links = state.links;
@@ -224,7 +224,7 @@ function StepForm({ item, onUpdate }: { item: OnboardingStepBlockDto; onUpdate: 
         <div className="flex flex-col space-y-2">
           {state.gallery.map((item, index) => (
             <CollapsibleRow
-              key={index}
+              key={`gallery-${index}-${item.title}-${item.src}`}
               title={item.title || "Untitled gallery item"}
               value={item.title || "Untitled gallery item"}
               initial={!item.title}
@@ -241,7 +241,7 @@ function StepForm({ item, onUpdate }: { item: OnboardingStepBlockDto; onUpdate: 
                   setValue={(e) =>
                     setState({
                       ...state,
-                      gallery: state.gallery.map((item, i) => (i === index ? { ...item, type: e?.toString() as "image" | "video" } : item)),
+                      gallery: state.gallery.map((item, i) => (i === index ? { ...item, type: e?.toString() } : item)),
                     })
                   }
                   options={[
@@ -289,7 +289,7 @@ function StepForm({ item, onUpdate }: { item: OnboardingStepBlockDto; onUpdate: 
           <GridBlockForm item={state.inputGrid} onUpdate={(item) => setState({ ...state, inputGrid: item })} />
           {state.input.map((item, index) => (
             <CollapsibleRow
-              key={index}
+              key={`input-${index}-${item.name}-${item.title}`}
               title={item.title || "Untitled input"}
               value={item.title || "Untitled input"}
               initial={!item.title}
@@ -387,7 +387,7 @@ function SelectOptionsForm({ options, setOptions }: { options: OnboardingInputOp
   return (
     <div className="flex flex-col space-y-2">
       {options.map((option, index) => (
-        <div key={index} className="group relative grid grid-cols-2 gap-2">
+        <div key={`option-${index}-${option.value}-${option.name}`} className="group relative grid grid-cols-2 gap-2">
           <button
             onClick={() => {
               const options = state ?? [];

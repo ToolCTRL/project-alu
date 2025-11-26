@@ -20,7 +20,7 @@ interface Props {
   selectedTab?: number;
 }
 
-export default function Tabs({ className = "", breakpoint = "md", tabs = [], asLinks = true, onSelected, exact, selectedTab = 0 }: Props) {
+export default function Tabs({ className = "", breakpoint = "md", tabs = [], asLinks = true, onSelected, exact, selectedTab = 0 }: Readonly<Props>) {
   const { t } = useTranslation();
 
   const navigate = useNavigate();
@@ -44,10 +44,8 @@ export default function Tabs({ className = "", breakpoint = "md", tabs = [], asL
       if (tab?.routePath) {
         navigate(tab.routePath);
       }
-    } else {
-      if (onSelected) {
-        onSelected(idx);
-      }
+    } else if (onSelected) {
+      onSelected(idx);
     }
   }
   function isCurrent(idx: number) {
@@ -55,7 +53,7 @@ export default function Tabs({ className = "", breakpoint = "md", tabs = [], asL
   }
   const currentTab = () => {
     if (asLinks) {
-      if (true) {
+      if (exact) {
         return tabs.find((element) => element.routePath && UrlUtils.stripTrailingSlash(location.pathname) === UrlUtils.stripTrailingSlash(element.routePath));
       } else {
         return tabs.find((element) => element.routePath && (location.pathname + location.search).includes(element.routePath));
@@ -130,10 +128,11 @@ export default function Tabs({ className = "", breakpoint = "md", tabs = [], asL
             return (
               <nav className="flex space-x-4" aria-label="Tabs">
                 {tabs.map((tab, idx) => {
+                  const tabKey = tab.routePath || tab.name || `tab-${idx}`;
                   return (
                     <button
                       type="button"
-                      key={idx}
+                      key={tabKey}
                       onClick={() => selectTab(idx)}
                       className={clsx(
                         "truncate",

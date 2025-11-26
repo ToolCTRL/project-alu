@@ -1,5 +1,7 @@
 import moment from "moment";
 
+type DateOrStringOrNullOrUndefined = Date | string | null | undefined;
+
 export type DateFormatType = "YYYY-MM-DD" | "DD-MM-YYYY" | "MM-DD-YYYY" | "diff";
 export const DateFormats: { name: string; value: DateFormatType }[] = [
   { name: "YYYY-MM-DD", value: "YYYY-MM-DD" },
@@ -8,7 +10,7 @@ export const DateFormats: { name: string; value: DateFormatType }[] = [
   { name: "Diff", value: "diff" },
 ];
 export type DateDisplay = "ymd" | "ago" | "dm" | "mdy" | "hms" | "ymdhms" | "ymdhmsms";
-const dateAgo = (value: Date | string | null | undefined): string => {
+const dateAgo = (value: DateOrStringOrNullOrUndefined): string => {
   const today = moment(new Date());
   const at = moment(value);
   const days = Math.abs(today.diff(at, "days"));
@@ -26,34 +28,34 @@ const dateAgo = (value: Date | string | null | undefined): string => {
     return moment(at).format("YYYY-MM-DD");
   }
 };
-const dateYMD = (value: Date | string | null | undefined): string => {
+const dateYMD = (value: DateOrStringOrNullOrUndefined): string => {
   return moment(value).format("YYYY-MM-DD");
 };
-const dateDMY = (value: Date | string | null | undefined): string => {
+const dateDMY = (value: DateOrStringOrNullOrUndefined): string => {
   return moment(value).format("DD-MM-YYYY");
 };
-const dateMDY = (value: Date | string | null | undefined): string => {
+const dateMDY = (value: DateOrStringOrNullOrUndefined): string => {
   return moment(value).format("MM-DD-YYYY");
 };
-const dateLL = (value: Date | string | null | undefined): string => {
+const dateLL = (value: DateOrStringOrNullOrUndefined): string => {
   return moment(value).format("YYYY-MM-DD");
 };
-const dateYMDHMS = (value: Date | string | null | undefined): string => {
+const dateYMDHMS = (value: DateOrStringOrNullOrUndefined): string => {
   return moment(value).format("YYYY-MM-DD HH:mm:ss");
 };
-const dateYMDHMSMS = (value: Date | string | null | undefined): string => {
+const dateYMDHMSMS = (value: DateOrStringOrNullOrUndefined): string => {
   return moment(value).format("YYYY-MM-DD HH:mm:ss.SSS");
 };
-const dateMonthName = (value: Date | string | null | undefined): string => {
+const dateMonthName = (value: DateOrStringOrNullOrUndefined): string => {
   return moment(value).format("MMMM YYYY");
 };
-const dateDM = (value: Date | string | null | undefined): string => {
+const dateDM = (value: DateOrStringOrNullOrUndefined): string => {
   return moment(value).format("D MMM");
 };
-const dateMonthDayYear = (value: Date | string | null | undefined): string => {
+const dateMonthDayYear = (value: DateOrStringOrNullOrUndefined): string => {
   return moment(value).format("MMMM D, YYYY");
 };
-const dateHMS = (value: Date | string | null | undefined): string => {
+const dateHMS = (value: DateOrStringOrNullOrUndefined): string => {
   return moment(value).format("HH:mm:ss");
 };
 
@@ -92,9 +94,7 @@ const isCurrentMonth = (year: number, month: number): boolean => {
 
 const gteFromFilter = (filter: string, from?: Date) => {
   let gte: Date | undefined = undefined;
-  if (!from) {
-    from = new Date();
-  }
+  from ??= new Date();
 
   if (filter === "last-24-hours") {
     gte = daysFromDate(from, 1 * -1);

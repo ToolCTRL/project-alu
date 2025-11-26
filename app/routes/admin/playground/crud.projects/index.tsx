@@ -63,7 +63,7 @@ export const action: ActionFunction = async ({ request }) => {
       const taskId = form.get("task-id")?.toString() ?? "";
       // randomize success or error - Testing/demo purposes only, not for security
       if (Math.random() > 0.5) {
-        throw Error("Could not complete task: Example error (try again)");
+        throw new Error("Could not complete task: Example error (try again)");
       }
       await FakeProjectService.completeTask(projectId, taskId);
       return Response.json({ success: "Task completed" });
@@ -75,7 +75,52 @@ export const action: ActionFunction = async ({ request }) => {
   }
 };
 
-export default function () {
+interface ProjectNameCellProps {
+  item: FakeProjectDto;
+}
+
+function ProjectNameCell({ item }: ProjectNameCellProps) {
+  return (
+    <div className="max-w-sm truncate">
+      <Link to={`${item.id}`} className="hover:underline">
+        <div className="flex flex-col truncate">
+          <div className="truncate">{item.name}</div>
+          <div className="text-muted-foreground truncate text-xs">{item.description}</div>
+        </div>
+      </Link>
+    </div>
+  );
+}
+
+interface ProjectActiveCellProps {
+  item: FakeProjectDto;
+}
+
+function ProjectActiveCell({ item }: ProjectActiveCellProps) {
+  return item.active ? <SimpleBadge title="Active" color={Colors.GREEN} /> : <SimpleBadge title="Archived" color={Colors.GRAY} />;
+}
+
+interface ProjectTasksCellProps {
+  item: FakeProjectDto;
+}
+
+function ProjectTasksCell({ item }: ProjectTasksCellProps) {
+  return (
+    <div>
+      {item.tasks.filter((f) => f.completed).length}/{item.tasks.length} completed
+    </div>
+  );
+}
+
+interface ProjectDateCellProps {
+  item: FakeProjectDto;
+}
+
+function ProjectDateCell({ item }: ProjectDateCellProps) {
+  return <DateCell displays={["ymd"]} date={item.createdAt} />;
+}
+
+export default function ProjectsPage() {
   const { t } = useTranslation();
   const data = useLoaderData<LoaderData>();
   const actionData = useActionData<ActionData>();
@@ -125,35 +170,22 @@ export default function () {
             name: "name",
             title: "Name",
             className: "w-full",
-            value: (item) => (
-              <div className="max-w-sm truncate">
-                <Link to={`${item.id}`} className="hover:underline">
-                  <div className="flex flex-col truncate">
-                    <div className="truncate">{item.name}</div>
-                    <div className="text-muted-foreground truncate text-xs">{item.description}</div>
-                  </div>
-                </Link>
-              </div>
-            ),
+            value: (item) => <ProjectNameCell item={item} />,
           },
           {
             name: "active",
             title: "Active",
-            value: (item) => (item.active ? <SimpleBadge title="Active" color={Colors.GREEN} /> : <SimpleBadge title="Archived" color={Colors.GRAY} />),
+            value: (item) => <ProjectActiveCell item={item} />,
           },
           {
             name: "tasks",
             title: "Tasks",
-            value: (item) => (
-              <div>
-                {item.tasks.filter((f) => f.completed).length}/{item.tasks.length} completed
-              </div>
-            ),
+            value: (item) => <ProjectTasksCell item={item} />,
           },
           {
             name: "date",
             title: "Created at",
-            value: (item) => <DateCell displays={["ymd"]} date={item.createdAt} />,
+            value: (item) => <ProjectDateCell item={item} />,
           },
         ]}
       />
@@ -169,20 +201,16 @@ export default function () {
         }}
         className="sm:max-w-sm"
         buttons={
-          <>
-            <Link
-              to={`${overviewItem?.id}`}
-              className="hover:text-muted-foreground text-muted-foreground bg-background rounded-md focus:outline-hidden focus:ring-2 focus:ring-gray-500 focus:ring-offset-2"
-            >
-              <span className="sr-only">Close panel</span>
-              <ExternalLinkEmptyIcon className="h-6 w-6" aria-hidden="true" />
-            </Link>
-          </>
+          <Link
+            to={`${overviewItem?.id}`}
+            className="hover:text-muted-foreground text-muted-foreground bg-background rounded-md focus:outline-hidden focus:ring-2 focus:ring-gray-500 focus:ring-offset-2"
+          >
+            <span className="sr-only">Close panel</span>
+            <ExternalLinkEmptyIcon className="h-6 w-6" aria-hidden="true" />
+          </Link>
         }
       >
-        {!overviewItem ? (
-          <div>{t("shared.loading")}...</div>
-        ) : (
+        {overviewItem ? (
           <FakeProjectOverview
             item={overviewItem}
             actionData={actionData}
@@ -199,6 +227,8 @@ export default function () {
               });
             }}
           />
+        ) : (
+          <div>{t("shared.loading")}...</div>
         )}
       </SlideOverWideEmpty>
     </IndexPageLayout>

@@ -1,4 +1,4 @@
-import { ReactNode, useEffect, useRef, useState } from "react";
+import { ReactNode, useRef, useState } from "react";
 import clsx from "~/utils/shared/ClassesUtils";
 import HintTooltip from "../tooltips/HintTooltip";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "../select";
@@ -7,31 +7,33 @@ import { useTranslation } from "react-i18next";
 import { Input } from "../input";
 import { cn } from "~/lib/utils";
 
+type OptionValue = string | number | undefined;
+
 interface Props {
-  name?: string;
-  title?: string;
-  withLabel?: boolean;
-  options: {
+  readonly name?: string;
+  readonly title?: string;
+  readonly withLabel?: boolean;
+  readonly options: {
     name: string | ReactNode;
-    value: string | number | undefined;
+    value: OptionValue;
     disabled?: boolean;
     component?: ReactNode;
     color?: number;
   }[];
-  value?: string | number | undefined;
-  setValue?: React.Dispatch<React.SetStateAction<string | number | undefined>>;
-  defaultValue?: string | number | undefined;
-  className?: string;
-  required?: boolean;
-  disabled?: boolean;
-  help?: string;
-  hint?: ReactNode;
-  borderless?: boolean;
-  autoFocus?: boolean;
-  placeholder?: string;
-  withColors?: boolean;
-  withSearch?: boolean;
-  selectClassName?: string;
+  readonly value?: OptionValue;
+  readonly setValue?: React.Dispatch<React.SetStateAction<OptionValue>>;
+  readonly defaultValue?: OptionValue;
+  readonly className?: string;
+  readonly required?: boolean;
+  readonly disabled?: boolean;
+  readonly help?: string;
+  readonly hint?: ReactNode;
+  readonly borderless?: boolean;
+  readonly autoFocus?: boolean;
+  readonly placeholder?: string;
+  readonly withColors?: boolean;
+  readonly withSearch?: boolean;
+  readonly selectClassName?: string;
 }
 export default function InputSelect({
   name,
@@ -127,9 +129,9 @@ export default function InputSelect({
                   <div className="text-center text-gray-400">{t("shared.noRecords")}</div>
                 </SelectItem>
               )}
-              {filteredOptions().map((item, idx) => {
+              {filteredOptions().map((item) => {
                 return (
-                  <SelectItem key={idx} disabled={item.disabled} value={item.value?.toString() ?? ""}>
+                  <SelectItem key={item.value} disabled={item.disabled} value={item.value?.toString() ?? ""}>
                     {item.component || (
                       <div className="flex items-center space-x-2">
                         {withColors && <ColorBadge color={item.color} />}

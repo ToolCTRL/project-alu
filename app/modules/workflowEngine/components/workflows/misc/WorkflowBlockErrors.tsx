@@ -1,4 +1,4 @@
-export default function WorkflowBlockErrors({ errors }: { errors: string[] }) {
+export default function WorkflowBlockErrors({ errors }: Readonly<{ errors: string[] }>) {
   return (
     <div className="space-y-1 text-sm">
       {errors.map((error) => {

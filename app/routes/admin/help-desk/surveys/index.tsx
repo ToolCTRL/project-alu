@@ -1,5 +1,4 @@
-import { LoaderFunctionArgs, useLoaderData } from "react-router";
-import { Link } from "react-router";
+import { LoaderFunctionArgs, useLoaderData, Link } from "react-router";
 import { useTranslation } from "react-i18next";
 import ButtonPrimary from "~/components/ui/buttons/ButtonPrimary";
 import ButtonSecondary from "~/components/ui/buttons/ButtonSecondary";
@@ -34,7 +33,28 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
   return data;
 };
 
-export default function () {
+const SurveyTitle = ({ item }: { item: SurveyWithDetails }) => (
+  <div>
+    <Link to={`${item.id}`} className="font-medium hover:underline">
+      {" "}
+      {item.title}
+    </Link>
+  </div>
+);
+
+const SurveyPublicStatus = ({ item }: { item: SurveyWithDetails }) =>
+  item.isPublic ? <CheckIcon className="h-5 w-5 text-teal-500" /> : <XIcon className="text-muted-foreground h-5 w-5" />;
+
+const SurveyEnabledStatus = ({ item }: { item: SurveyWithDetails }) =>
+  item.isEnabled ? <CheckIcon className="h-5 w-5 text-teal-500" /> : <XIcon className="text-muted-foreground h-5 w-5" />;
+
+const SurveySubmissions = ({ item }: { item: SurveyWithDetails }) => (
+  <Link to={`/admin/help-desk/surveys/${item.id}/submissions`}>{NumberUtils.intFormat(item._count.submissions)}</Link>
+);
+
+const SurveyCreatedAt = ({ item }: { item: SurveyWithDetails }) => <DateCell date={item.createdAt} />;
+
+export default function SurveysIndexPage() {
   const { t } = useTranslation();
   const data = useLoaderData<LoaderData>();
   return (
@@ -81,34 +101,27 @@ export default function () {
             name: "survey",
             title: "Survey",
             className: "w-full",
-            value: (item) => (
-              <div>
-                <Link to={`${item.id}`} className="font-medium hover:underline">
-                  {" "}
-                  {item.title}
-                </Link>
-              </div>
-            ),
+            value: (item) => <SurveyTitle item={item} />,
           },
           {
             name: "isPublic",
             title: "Public",
-            value: (item) => (item.isPublic ? <CheckIcon className="h-5 w-5 text-teal-500" /> : <XIcon className="text-muted-foreground h-5 w-5" />),
+            value: (item) => <SurveyPublicStatus item={item} />,
           },
           {
             name: "isEnabled",
             title: "Enabled",
-            value: (item) => (item.isEnabled ? <CheckIcon className="h-5 w-5 text-teal-500" /> : <XIcon className="text-muted-foreground h-5 w-5" />),
+            value: (item) => <SurveyEnabledStatus item={item} />,
           },
           {
             name: "submissions",
             title: "Submissions",
-            value: (item) => <Link to={`/admin/help-desk/surveys/${item.id}/submissions`}>{NumberUtils.intFormat(item._count.submissions)}</Link>,
+            value: (item) => <SurveySubmissions item={item} />,
           },
           {
             name: "createdAt",
             title: "Created At",
-            value: (item) => <DateCell date={item.createdAt} />,
+            value: (item) => <SurveyCreatedAt item={item} />,
           },
         ]}
       />

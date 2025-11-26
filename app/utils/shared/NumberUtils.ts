@@ -14,6 +14,7 @@ const numberFormat = (value: number): string => {
   try {
     return numeral(value).format("0,0");
   } catch (e) {
+    console.error("Error formatting number:", e);
     return value?.toString() ?? "";
   }
 };

@@ -173,15 +173,15 @@ export default function CodeGeneratorFiles() {
         </div>
 
         <div>
-          <label className="text-muted-foreground mb-1 flex justify-between space-x-2 truncate text-xs font-medium">Files</label>
+          <div className="text-muted-foreground mb-1 flex justify-between space-x-2 truncate text-xs font-medium">Files</div>
           <div className="border-border bg-background my-1 h-[calc(100vh-270px)] overflow-hidden rounded-md border p-2">
             <div className="flex flex-col space-y-2 md:flex-row md:space-x-2 md:space-y-0">
               <div className="md:w-5/12">
                 <div className="hidden space-y-2 overflow-y-auto p-1 md:block">
                   <InputText placeholder={`Search in ${files.length} files...`} value={searchInput} setValue={(e) => setSearchInput(e.toString() ?? "")} />
                   <ul className="bg-background border-border divide-border h-[calc(100vh-325px)] divide-y overflow-y-scroll rounded-md border">
-                    {filteredItems().map((file, idx) => (
-                      <li key={idx}>
+                    {filteredItems().map((file) => (
+                      <li key={file.file}>
                         <button
                           type="button"
                           onClick={() => {
@@ -204,7 +204,13 @@ export default function CodeGeneratorFiles() {
                             </div>
 
                             <div>
-                              <ColorBadge color={file.type === "module" ? Colors.BLUE : file.type === "route" ? Colors.RED : Colors.VIOLET} />
+                              <ColorBadge
+                                color={(() => {
+                                  if (file.type === "module") return Colors.BLUE;
+                                  if (file.type === "route") return Colors.RED;
+                                  return Colors.VIOLET;
+                                })()}
+                              />
                             </div>
                           </div>
                         </button>

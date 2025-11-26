@@ -121,11 +121,7 @@ export function useCompletion({
         });
 
         if (onResponse) {
-          try {
-            await onResponse(res);
-          } catch (err) {
-            throw err;
-          }
+          await onResponse(res);
         }
 
         if (!res.ok) {

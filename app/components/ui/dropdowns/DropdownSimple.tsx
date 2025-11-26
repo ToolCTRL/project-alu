@@ -13,7 +13,7 @@ interface Props {
     | {
         label: string;
         href: string;
-        target?: "_blank" | string;
+        target?: string;
       }
   )[];
   button?: ReactNode;
@@ -23,7 +23,7 @@ interface Props {
   right?: boolean;
 }
 
-export default function DropdownSimple({ items, button, disabled, className, right, width = "w-48" }: Props) {
+export default function DropdownSimple({ items, button, disabled, className, right, width = "w-48" }: Readonly<Props>) {
   return (
     <Menu as="div" className={clsx(className, "relative inline-block text-left")}>
       <div>
@@ -49,7 +49,7 @@ export default function DropdownSimple({ items, button, disabled, className, rig
           <div className="py-1">
             {items?.map((item, i) => {
               return (
-                <Menu.Item key={i}>
+                <Menu.Item key={`dropdown-item-${item.label}-${i}`}>
                   {({ active, close }) => {
                     return (
                       <Fragment>

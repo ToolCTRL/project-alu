@@ -27,7 +27,6 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
   }
   const { t } = await getTranslations(request);
   const title = `${t("surveys.title")} | ${getDefaultSiteTags().title}`;
-  // const image = "https://yahooder.sirv.com/saasrock/templates/cover.png";
   const description = t("surveys.description");
   const data: LoaderData = {
     metatags: [
@@ -48,7 +47,7 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
   return data;
 };
 
-export default function () {
+export default function SurveysIndex() {
   const { t } = useTranslation();
   const data = useLoaderData<LoaderData>();
   return (

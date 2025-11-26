@@ -52,22 +52,22 @@ export default function MyPaymentMethods({ items, onAdd, onDelete }: Readonly<Pr
             {
               name: "brand",
               title: t("app.subscription.paymentMethods.brand"),
-              value: (i) => <PaymentMethodBrand brand={i.card?.brand} />,
+              formattedValue: PaymentMethodBrand,
             },
             {
               name: "country",
               title: t("app.subscription.paymentMethods.country"),
-              value: (i) => <PaymentMethodCountry country={i.card?.country} />,
+              formattedValue: PaymentMethodCountry,
             },
             {
               name: "expiration",
               title: t("app.subscription.paymentMethods.expiration"),
-              value: (i) => <PaymentMethodExpiration expMonth={i.card?.exp_month} expYear={i.card?.exp_year} />,
+              formattedValue: PaymentMethodExpiration,
             },
             {
               name: "last4",
               title: t("app.subscription.paymentMethods.last4"),
-              value: (i) => <PaymentMethodLast4 last4={i.card?.last4} />,
+              formattedValue: PaymentMethodLast4,
             },
           ]}
         />

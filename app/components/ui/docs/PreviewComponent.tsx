@@ -34,7 +34,7 @@ export default function PreviewComponent({ title, description, variants, classNa
           <p className="text-muted-foreground mt-1 text-lg">{description}</p>
         </div>
         {variants.map((variant, index) => (
-          <div key={index} className="space-y-2">
+          <div key={tab.id} className="space-y-2">
             <div className="space-y-1">
               <h3 id={variant.id} className="text-xl font-bold tracking-tight">
                 {variant.title}

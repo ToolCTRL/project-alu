@@ -364,8 +364,8 @@ export async function createStripeUsageBasedPrice(productId: string, data: Subsc
       }
       return {
         up_to,
-        unit_amount_decimal: tier.perUnitPrice !== undefined ? (Number(tier.perUnitPrice) * 100)?.toString() : undefined,
-        flat_amount_decimal: tier.flatFeePrice !== undefined ? (Number(tier.flatFeePrice) * 100)?.toString() : undefined,
+        unit_amount_decimal: tier.perUnitPrice === undefined ? undefined : (Number(tier.perUnitPrice) * 100)?.toString(),
+        flat_amount_decimal: tier.flatFeePrice === undefined ? undefined : (Number(tier.flatFeePrice) * 100)?.toString(),
       };
     });
 
@@ -516,18 +516,15 @@ export async function getStripeRevenueByProductPriceCurrency(): Promise<StripeRe
     }
     const invoice = payment.invoice;
     if (typeof invoice === "string") {
-      throw new Error("invoice is string");
+      throw new TypeError("invoice is string");
     }
     const lines = invoice?.lines?.data[0];
     const plan = lines?.plan;
-    // const price = lines?.price;
     const amount = payment.amount / 100;
     const currency = payment.currency;
-    // const interval = plan?.interval;
     const priceId = plan?.id;
 
     const productId = plan?.product;
-    // const priceType = price?.type;
 
     const product = allProducts.find((x) => x.stripeId === productId);
     let productName = "?";

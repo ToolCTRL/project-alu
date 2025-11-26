@@ -33,13 +33,13 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
     return Response.json({ enabled: false });
   }
   if (!affiliatesConfig?.provider.rewardfulApiKey) {
-    throw Error("[Affiliates] Rewardful API key is not set.");
+    throw new Error("[Affiliates] Rewardful API key is not set.");
   } else if (!affiliatesConfig?.percentage) {
-    throw Error("[Affiliates] Percentage is not set.");
+    throw new Error("[Affiliates] Percentage is not set.");
   } else if (!affiliatesConfig?.plans || affiliatesConfig.plans.length === 0) {
-    throw Error("[Affiliates] Plans are not set.");
+    throw new Error("[Affiliates] Plans are not set.");
   } else if (!affiliatesConfig?.signUpLink) {
-    throw Error("[Affiliates] SignUp link is not set.");
+    throw new Error("[Affiliates] SignUp link is not set.");
   }
   const data: LoaderData = {
     metatags: [{ title: `${t("affiliates.program")} | ${getDefaultSiteTags().title}` }, { description: t("affiliates.description") }, ...getLinkTags(request)],
@@ -54,7 +54,7 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
   return data;
 };
 
-export default function () {
+export default function AffiliateProgramPage() {
   const { t } = useTranslation();
   const data = useLoaderData<LoaderData>();
   if ("enabled" in data && !data.enabled) {
@@ -101,8 +101,7 @@ export default function () {
                         If you have any questions, contact us at{" "}
                         <a href={`mailto:${data.contactEmail}`} className="text-primary">
                           {data.contactEmail}
-                        </a>
-                        .
+                        </a>.
                       </p>
                     </Fragment>
                   )}
@@ -121,10 +120,10 @@ function AffiliatesCalculator({
   percentage,
   plans,
 }: {
-  percentage: number;
-  plans: {
-    title: string;
-    price: number;
+  readonly percentage: number;
+  readonly plans: {
+    readonly title: string;
+    readonly price: number;
   }[];
 }) {
   const [customers, setCustomers] = useState(10);
@@ -165,7 +164,7 @@ function AffiliatesCalculator({
           min="1"
           max="50"
           value={customers}
-          onChange={(e) => setCustomers(parseInt(e.target.value))}
+          onChange={(e) => setCustomers(Number.parseInt(e.target.value))}
           className="bg-secondary text-secondary-foreground h-4 w-full appearance-none overflow-hidden rounded-lg focus:outline-hidden"
         />
       </div>

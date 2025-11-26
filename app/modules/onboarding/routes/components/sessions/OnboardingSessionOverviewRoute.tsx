@@ -1,7 +1,7 @@
 import { useLoaderData } from "react-router";
 import { OnboardingSessionOverviewApi } from "../../api/sessions/OnboardingSessionOverviewApi.server";
 
-export default function () {
+export default function OnboardingSessionOverviewRoute() {
   const data = useLoaderData<OnboardingSessionOverviewApi.LoaderData>();
   return (
     <div>

@@ -19,7 +19,7 @@ export namespace OnboardingSessionOverviewApi {
     await verifyUserHasPermission(request, "admin.onboarding.view");
     const { t } = await getTranslations(request);
     const item = await getOnboardingSession(params.id!);
-    if (!item) {
+    if (item === null || item === undefined) {
       throw redirect("/onboarding/sessions");
     }
     const data: LoaderData = {
@@ -38,7 +38,7 @@ export namespace OnboardingSessionOverviewApi {
     const form = await request.formData();
     const action = form.get("action");
     const item = await getOnboardingSession(params.id!);
-    if (!item) {
+    if (item === null || item === undefined) {
       return redirect("/onboarding/sessions");
     }
     if (action === "update") {

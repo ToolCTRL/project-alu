@@ -6,15 +6,13 @@ import { allApplicationCookies, allCookieCategories } from "~/application/cookie
 import { CookieCategory } from "~/application/cookies/CookieCategory";
 import InputCheckbox from "../ui/input/InputCheckbox";
 
-export default function CookiesList({
-  selectedCookies,
-  toggle,
-  editing,
-}: {
+interface Props {
   selectedCookies?: CookieCategory[];
   toggle?: (category: CookieCategory) => void;
   editing?: boolean;
-}) {
+}
+
+export default function CookiesList({ selectedCookies, toggle, editing }: Readonly<Props>) {
   const { t } = useTranslation();
   const [openCategories, setOpenCategories] = useState<CookieCategory[]>([]);
   function isCategoryOpen(category: CookieCategory) {

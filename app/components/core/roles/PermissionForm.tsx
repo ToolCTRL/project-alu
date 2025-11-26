@@ -23,13 +23,12 @@ export default function PermissionForm({ item, roles, onCancel, canUpdate = true
   const { t } = useTranslation();
   const appOrAdminData = useAppOrAdminData();
 
-  const [permissionRoles, setRoles] = useState<string[]>([]);
+  const [permissionRoles, setPermissionRoles] = useState<string[]>([]);
   const [type, setType] = useState<string | number>(item?.type ?? "admin");
-
   const [searchInput, setSearchInput] = useState("");
 
   useEffect(() => {
-    setRoles([]);
+    setPermissionRoles([]);
   }, [type]);
 
   useEffect(() => {
@@ -39,7 +38,7 @@ export default function PermissionForm({ item, roles, onCancel, canUpdate = true
         permissionRoles.push(item.role.name);
       });
     }
-    setRoles(permissionRoles);
+    setPermissionRoles(permissionRoles);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -49,9 +48,9 @@ export default function PermissionForm({ item, roles, onCancel, canUpdate = true
 
   function setPermission(role: RoleWithPermissions, add: any) {
     if (add) {
-      setRoles([...permissionRoles, role.name]);
+      setPermissionRoles([...permissionRoles, role.name]);
     } else {
-      setRoles(permissionRoles.filter((f) => f !== role.name));
+      setPermissionRoles(permissionRoles.filter((f) => f !== role.name));
     }
   }
 
@@ -103,11 +102,11 @@ export default function PermissionForm({ item, roles, onCancel, canUpdate = true
           </div>
           <div>
             {filteredItems().length === permissionRoles.length ? (
-              <Button type="button" variant="ghost" size="sm" disabled={!canUpdate} onClick={() => setRoles([])}>
+              <Button type="button" variant="ghost" size="sm" disabled={!canUpdate} onClick={() => setPermissionRoles([])}>
                 {t("shared.clear")}
               </Button>
             ) : (
-              <Button type="button" variant="ghost" size="sm" disabled={!canUpdate} onClick={() => setRoles(filteredItems().map((f) => f.name))}>
+              <Button type="button" variant="ghost" size="sm" disabled={!canUpdate} onClick={() => setPermissionRoles(filteredItems().map((f) => f.name))}>
                 {t("shared.selectAll")}
               </Button>
             )}

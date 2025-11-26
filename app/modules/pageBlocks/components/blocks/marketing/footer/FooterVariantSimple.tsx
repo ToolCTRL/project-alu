@@ -6,7 +6,7 @@ import DarkModeToggle from "~/components/ui/toggles/DarkModeToggle";
 import ThemeSelector from "~/components/ui/selectors/ThemeSelector";
 import LocaleSelector from "~/components/ui/selectors/LocaleSelector";
 
-export default function FooterVariantSimple({ item }: { item: FooterBlockDto }) {
+export default function FooterVariantSimple({ item }: { readonly item: FooterBlockDto }) {
   const { t } = useTranslation();
   return (
     <footer className="bg-blueprint-bg-base border-t border-blueprint-border-subtle">

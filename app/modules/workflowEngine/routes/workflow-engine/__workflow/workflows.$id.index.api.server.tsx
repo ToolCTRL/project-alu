@@ -17,7 +17,7 @@ export namespace WorkflowsIdIndexApi {
   export const loader = async ({ request, params }: LoaderFunctionArgs) => {
     await requireAuth({ request, params });
     const tenantId = await getTenantIdOrNull({ request, params });
-    const item = await WorkflowsService.get(params.id!, { tenantId });
+    const item = await WorkflowsService.get(params.id, { tenantId });
     if (!item) {
       throw redirect(UrlUtils.getModulePath(params, `workflow-engine/workflows`));
     }
@@ -37,7 +37,7 @@ export namespace WorkflowsIdIndexApi {
     const tenantId = await getTenantIdOrNull({ request, params });
     const form = await request.formData();
     const action = form.get("action")?.toString();
-    const item = await WorkflowsService.get(params.id!, { tenantId });
+    const item = await WorkflowsService.get(params.id, { tenantId });
     if (!item) {
       throw redirect(UrlUtils.getModulePath(params, `workflow-engine/workflows`));
     }
@@ -45,7 +45,7 @@ export namespace WorkflowsIdIndexApi {
       try {
         const workflow = JSON.parse(form.get("workflow")?.toString() ?? "{}") as WorkflowDto;
         const redirectTo = form.get("redirectTo")?.toString();
-        await WorkflowsService.update(params.id!, workflow, { tenantId });
+        await WorkflowsService.update(params.id, workflow, { tenantId });
         if (redirectTo) {
           return redirect(redirectTo);
         }

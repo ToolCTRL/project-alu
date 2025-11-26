@@ -9,52 +9,64 @@ interface NodeSelectorProps {
   setIsOpen: (isOpen: boolean) => void;
 }
 
+export interface BubbleMenuItemWithId extends BubbleMenuItem {
+  id: string;
+}
+
 export const NodeSelector: React.FC<NodeSelectorProps> = ({ editor, isOpen, setIsOpen }) => {
-  const items: BubbleMenuItem[] = [
+  const items: BubbleMenuItemWithId[] = [
     {
+      id: "text",
       name: "Text",
       icon: TextIcon,
       command: () => editor.chain().focus().toggleNode("paragraph", "paragraph").run(),
-      // I feel like there has to be a more efficient way to do this – feel free to PR if you know how!
+      // I feel like there has to be a more efficient way to do this – feel free to PR if you know how!
       isActive: () => editor.isActive("paragraph") && !editor.isActive("bulletList") && !editor.isActive("orderedList"),
     },
     {
+      id: "heading-1",
       name: "Heading 1",
       icon: Heading1,
       command: () => editor.chain().focus().toggleHeading({ level: 1 }).run(),
       isActive: () => editor.isActive("heading", { level: 1 }),
     },
     {
+      id: "heading-2",
       name: "Heading 2",
       icon: Heading2,
       command: () => editor.chain().focus().toggleHeading({ level: 2 }).run(),
       isActive: () => editor.isActive("heading", { level: 2 }),
     },
     {
+      id: "heading-3",
       name: "Heading 3",
       icon: Heading3,
       command: () => editor.chain().focus().toggleHeading({ level: 3 }).run(),
       isActive: () => editor.isActive("heading", { level: 3 }),
     },
     {
+      id: "bullet-list",
       name: "List (•)",
       icon: ListOrdered,
       command: () => editor.chain().focus().toggleBulletList().run(),
       isActive: () => editor.isActive("bulletList"),
     },
     {
+      id: "ordered-list",
       name: "List (1.)",
       icon: ListOrdered,
       command: () => editor.chain().focus().toggleOrderedList().run(),
       isActive: () => editor.isActive("orderedList"),
     },
     {
+      id: "quote",
       name: "Quote",
       icon: TextQuote,
       command: () => editor.chain().focus().toggleNode("paragraph", "paragraph").toggleBlockquote().run(),
       isActive: () => editor.isActive("blockquote"),
     },
     {
+      id: "code",
       name: "Code",
       icon: Code,
       command: () => editor.chain().focus().toggleCodeBlock().run(),
@@ -62,7 +74,7 @@ export const NodeSelector: React.FC<NodeSelectorProps> = ({ editor, isOpen, setI
     },
   ];
 
-  const activeItem = items.filter((item) => item.isActive()).pop() ?? {
+  const activeItem = items.findLast((item) => item.isActive()) ?? {
     name: "Multiple",
   };
 
@@ -80,10 +92,10 @@ export const NodeSelector: React.FC<NodeSelectorProps> = ({ editor, isOpen, setI
 
       {isOpen && (
         <section className="animate-in fade-in slide-in-from-top-1 bg-background fixed top-full z-99999 mt-1 flex w-48 flex-col overflow-hidden rounded border border-stone-200 p-1 shadow-xl">
-          {items.map((item, index) => (
+          {items.map(({ id, ...item }) => (
             <button
               type="button"
-              key={index}
+              key={id}
               onClick={() => {
                 item.command();
                 setIsOpen(false);

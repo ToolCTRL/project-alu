@@ -13,16 +13,16 @@ import { TenantType } from "@prisma/client";
 import InputCombobox from "~/components/ui/input/InputCombobox";
 
 interface Props {
-  tenant: TenantWithDetails;
-  disabled: boolean;
-  tenantSettingsEntity: EntityWithDetails | null;
-  tenantTypes?: TenantType[];
-  options?: {
+  readonly tenant: TenantWithDetails;
+  readonly disabled: boolean;
+  readonly tenantSettingsEntity: EntityWithDetails | null;
+  readonly tenantTypes?: TenantType[];
+  readonly options?: {
     canChangeType: boolean;
   };
 }
 
-export default function UpdateTenantDetailsForm({ tenant, disabled, tenantSettingsEntity, tenantTypes, options }: Props) {
+export default function UpdateTenantDetailsForm({ tenant, disabled, tenantSettingsEntity, tenantTypes, options }: Readonly<Props>) {
   const { t } = useTranslation();
 
   const [slug, setSlug] = useState<string | undefined>(tenant?.slug ?? "");

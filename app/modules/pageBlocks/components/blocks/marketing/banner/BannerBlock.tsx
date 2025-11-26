@@ -4,7 +4,7 @@ import BannerVariantBottom from "./BannerVariantBottom";
 import { defaultBanner } from "~/modules/pageBlocks/utils/defaultBanner";
 import { useTranslation } from "react-i18next";
 
-export default function BannerBlock({ item }: { item?: BannerBlockDto }) {
+export default function BannerBlock({ item }: readonly { readonly item?: BannerBlockDto }) {
   const { t } = useTranslation();
   const banner = item ?? defaultBanner({ t });
   return (

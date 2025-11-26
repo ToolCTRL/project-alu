@@ -25,15 +25,15 @@ export default function PageBlocks({
   onChange,
   className = "overflow-hidden",
 }: {
-  page?: PageConfiguration;
-  items: PageBlockDto[];
-  editor?: { add?: boolean; edit?: boolean; remove?: boolean; move?: boolean; download?: boolean; ai?: boolean };
-  onChange?: (items: PageBlockDto[]) => void;
-  className?: string;
+  readonly page?: PageConfiguration;
+  readonly items: PageBlockDto[];
+  readonly editor?: { add?: boolean; edit?: boolean; remove?: boolean; move?: boolean; download?: boolean; ai?: boolean };
+  readonly onChange?: (items: PageBlockDto[]) => void;
+  readonly className?: string;
 }) {
   const { userSession } = useRootData();
-  const [editingBlockIndex, setEditingBlockIndex] = useState(-1);
-  const [editingBlock, setEditingBlock] = useState<PageBlockDto>();
+  const [editingBlockIndex, setEditingBlockIndex] = useState<number>(-1);
+  const [editingBlock, setEditingBlock] = useState<PageBlockDto | undefined>();
   const [editinBlockType, setEditingBlockType] = useState<string>("");
 
   const [blocksLoading, setBlocksLoading] = useState<number[]>([]);
@@ -138,16 +138,12 @@ export default function PageBlocks({
 
   return (
     <Fragment>
-      {editor?.download && <PageBlockEditMode page={page} items={items} onSetBlocks={(e) => onChange && onChange(e)} />}
-      <div className={clsx("relative", className, editor && "")}>
-        {/* {editMode && items.length > 0 && <AddBlockButton className={"py-8"} onAdd={(type) => addBlock(type, 0)} />} */}
-
+      {editor?.download && <PageBlockEditMode page={page} items={items} onSetBlocks={(e) => onChange?.(e)} />}
+      <div className={clsx("relative", className)}>
         {items?.map((item, idx) => {
           return (
-            <Fragment key={idx}>
+            <Fragment key={item.id ?? idx}>
               <div className={clsx("group relative", item.header && "z-10")}>
-                {/* {editMode && idx === 0 && <AddBlockButton onAdd={(type) => addBlock(type, 0)} />} */}
-
                 {editor && (
                   <div
                     className={clsx(
@@ -184,7 +180,6 @@ export default function PageBlocks({
                             block={item}
                             onGenerated={(newBlock) => onGenerated(idx, newBlock)}
                             onLoading={(isLoading) => {
-                              // console.log("onLoading", isLoading, idx);
                               if (isLoading) {
                                 setBlocksLoading([...blocksLoading, idx]);
                               } else {
@@ -215,10 +210,10 @@ export default function PageBlocks({
                   <PageBlock item={item} userSession={userSession} />
                 </div>
 
-                {editor?.add && idx !== items.length - 1 && (
+                {editor?.add && (
                   <AddBlockButton
                     disabled={isGeneratingAnyBlock()}
-                    className={clsx("absolute bottom-0 z-10 -mb-4 hidden w-full group-hover:block", items.length === 0 && "py-8")}
+                    className={clsx("absolute bottom-0 z-10 -mb-4 hidden w-full group-hover:block", idx === items.length - 1 && "py-8")}
                     onAdd={(type) => addBlock(type, idx + 1)}
                   />
                 )}
@@ -240,7 +235,7 @@ export default function PageBlocks({
   );
 }
 
-function AddBlockButton({ onAdd, className, disabled }: { onAdd: (type: string) => void; className?: string; disabled?: boolean }) {
+function AddBlockButton({ onAdd, className, disabled }: { readonly onAdd: (type: string) => void; readonly className?: string; readonly disabled?: boolean }) {
   const { t } = useTranslation();
   const [adding, setAdding] = useState(false);
 

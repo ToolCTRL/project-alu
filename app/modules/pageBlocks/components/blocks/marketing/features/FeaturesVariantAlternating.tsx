@@ -67,11 +67,9 @@ function ConnectorLine({ index }: { index: number }) {
 function FeatureCard({
   feature,
   accent,
-  isEven,
 }: {
-  feature: FeatureDto;
-  accent: (typeof accentClasses)["primary"];
-  isEven: boolean;
+  readonly feature: FeatureDto;
+  readonly accent: (typeof accentClasses)["primary"];
 }) {
   const { t } = useTranslation();
   const [rotateX, setRotateX] = useState(0);
@@ -149,7 +147,7 @@ function FeatureCard({
   );
 }
 
-export default function FeaturesVariantAlternating({ item }: Props) {
+export default function FeaturesVariantAlternating({ item }: readonly Props) {
   const { t } = useTranslation();
 
   return (
@@ -249,39 +247,11 @@ export default function FeaturesVariantAlternating({ item }: Props) {
                       </p>
                     )}
 
-                    {/* Link - REMOVED per UX Designer requirement */}
-                    {/* {feature.link && (
-                      <ButtonEvent
-                        to={feature.link.href}
-                        target={feature.link.target}
-                        className="inline-flex items-center gap-2 text-blueprint-accent font-semibold hover:gap-3 transition-all"
-                        event={{
-                          action: "click",
-                          category: "features",
-                          label: t(feature.name),
-                        }}
-                      >
-                        {t(feature.link.text || "shared.learnMore")}
-                        <svg
-                          className="w-5 h-5"
-                          fill="none"
-                          viewBox="0 0 24 24"
-                          stroke="currentColor"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M17 8l4 4m0 0l-4 4m4-4H3"
-                          />
-                        </svg>
-                      </ButtonEvent>
-                    )} */}
                   </div>
 
                   {/* Image/Illustration with 3D Tilt */}
                   <div className={`${isEven ? "lg:order-2" : "lg:order-1"}`}>
-                    <FeatureCard feature={feature} accent={accent} isEven={isEven} />
+                    <FeatureCard feature={feature} accent={accent} />
                   </div>
                 </div>
               </ScrollReveal>

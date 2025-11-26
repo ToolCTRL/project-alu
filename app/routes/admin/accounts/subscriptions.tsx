@@ -1,5 +1,4 @@
-import { LoaderFunctionArgs, MetaFunction, useLoaderData } from "react-router";
-import { Link, useNavigate, useOutlet } from "react-router";
+import { LoaderFunctionArgs, MetaFunction, useLoaderData, Link, useNavigate, useOutlet } from "react-router";
 import { useTranslation } from "react-i18next";
 import { FilterablePropertyDto } from "~/application/dtos/data/FilterablePropertyDto";
 import { PaginationDto } from "~/application/dtos/data/PaginationDto";
@@ -11,7 +10,6 @@ import EditPageLayout from "~/components/ui/layouts/EditPageLayout";
 import SlideOverWideEmpty from "~/components/ui/slideOvers/SlideOverWideEmpty";
 import TableSimple from "~/components/ui/tables/TableSimple";
 import { getTranslations } from "~/locale/i18next.server";
-import { createMetrics } from "~/modules/metrics/services/.server/MetricTracker";
 import SubscriptionUtils from "~/utils/app/SubscriptionUtils";
 import { getAllSubscriptionProducts } from "~/utils/db/subscriptionProducts.db.server";
 import { TenantSubscriptionProductWithTenant, getAllTenantSubscriptionProducts } from "~/utils/db/subscriptions/tenantSubscriptionProducts.db.server";
@@ -84,7 +82,82 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
   return data;
 };
 
-export default function () {
+const TenantCell = ({ item }: { item: TenantSubscriptionProductWithTenant }) => <TenantBadge item={item.tenantSubscription.tenant} />;
+
+const SubscriptionProductCell = ({ product }: { product: TenantSubscriptionProductWithTenant }) => {
+  const { t } = useTranslation();
+  return (
+    <span>
+      <div key={product.id}>
+        <div>
+          {t(product.subscriptionProduct.title)}{" "}
+          {product.prices
+            .map(
+              (f) =>
+                `$${NumberUtils.decimalFormat(Number(f.subscriptionPrice?.price ?? 0))} - ${SubscriptionUtils.getBillingPeriodDescription(
+                  t,
+                  f.subscriptionPrice?.billingPeriod ?? 0
+                )}`
+            )
+            .join(", ")}
+        </div>
+      </div>
+    </span>
+  );
+};
+
+const PeriodCell = ({ item }: { item: TenantSubscriptionProductWithTenant }) => (
+  <div>
+    {item.currentPeriodStart && item.currentPeriodEnd ? (
+      <div className="flex items-center space-x-1">
+        <DateCell date={item.currentPeriodStart} displays={["mdy"]} />
+        <div>-</div>
+        <DateCell date={item.currentPeriodEnd} displays={["mdy"]} />
+      </div>
+    ) : (
+      <div>-</div>
+    )}
+  </div>
+);
+
+const CancelledAtCell = ({ item }: { item: TenantSubscriptionProductWithTenant }) => {
+  const { t } = useTranslation();
+  return <div>{item.cancelledAt ? <DateCell date={item.cancelledAt} displays={["mdy"]} /> : "-"}</div>;
+};
+
+const EndsAtCell = ({ item }: { item: TenantSubscriptionProductWithTenant }) => {
+  const { t } = useTranslation();
+  return (
+    <div>
+      {item.endsAt ? (
+        <div>
+          {new Date() < new Date(item.endsAt) ? (
+            <div className="text-red-500">
+              {t("settings.subscription.ends")} {DateUtils.dateMonthDayYear(item.endsAt)}
+            </div>
+          ) : (
+            <div className="text-red-500">
+              {t("settings.subscription.endedAt")} {DateUtils.dateMonthDayYear(item.endsAt)}
+            </div>
+          )}
+        </div>
+      ) : (
+        "-"
+      )}
+    </div>
+  );
+};
+
+const ActionsCell = ({ item }: { item: TenantSubscriptionProductWithTenant }) => {
+  const { t } = useTranslation();
+  return (
+    <Link to={`${item.id}`} className="hover:underline">
+      {t("shared.edit")}
+    </Link>
+  );
+};
+
+export default function SubscriptionsPage() {
   const { t } = useTranslation();
   const data = useLoaderData<LoaderData>();
   const outlet = useOutlet();
@@ -93,11 +166,7 @@ export default function () {
   return (
     <EditPageLayout
       title={t("models.subscription.plural")}
-      buttons={
-        <>
-          <InputFilters filters={data.filterableProperties} withSearch={false} />
-        </>
-      }
+      buttons={<InputFilters filters={data.filterableProperties} withSearch={false} />}
     >
       <TableSimple
         items={data.items}
@@ -106,85 +175,34 @@ export default function () {
           {
             name: "tenant",
             title: t("models.tenant.object"),
-            value: (i) => <TenantBadge item={i.tenantSubscription.tenant} />,
+            value: (i) => <TenantCell item={i} />,
           },
           {
             name: "subscriptionProduct",
             title: t("models.subscriptionProduct.object"),
             value: (i) => "",
             className: "w-full",
-            formattedValue: (product) => (
-              <span>
-                <div key={product.id}>
-                  <div>
-                    {t(product.subscriptionProduct.title)}{" "}
-                    {product.prices
-                      .map(
-                        (f) =>
-                          `$${NumberUtils.decimalFormat(Number(f.subscriptionPrice?.price ?? 0))} - ${SubscriptionUtils.getBillingPeriodDescription(
-                            t,
-                            f.subscriptionPrice?.billingPeriod ?? 0
-                          )}`
-                      )
-                      .join(", ")}
-                  </div>
-                </div>
-              </span>
-            ),
+            formattedValue: (product) => <SubscriptionProductCell product={product} />,
           },
           {
             name: "period",
             title: t("models.subscription.period"),
-            value: (i) => (
-              <div>
-                {i.currentPeriodStart && i.currentPeriodEnd ? (
-                  <div className="flex items-center space-x-1">
-                    <DateCell date={i.currentPeriodStart} displays={["mdy"]} />
-                    <div>-</div>
-                    <DateCell date={i.currentPeriodEnd} displays={["mdy"]} />
-                  </div>
-                ) : (
-                  <div>-</div>
-                )}
-              </div>
-            ),
+            value: (i) => <PeriodCell item={i} />,
           },
           {
             name: "cancelledAt",
             title: t("models.subscription.cancelledAt"),
-            value: (i) => <div>{i.cancelledAt ? <DateCell date={i.cancelledAt} displays={["mdy"]} /> : "-"}</div>,
+            value: (i) => <CancelledAtCell item={i} />,
           },
           {
             name: "endsAt",
             title: t("models.subscription.endsAt"),
-            value: (i) => (
-              <div>
-                {i.endsAt ? (
-                  <div>
-                    {new Date() < new Date(i.endsAt) ? (
-                      <div className="text-red-500">
-                        {t("settings.subscription.ends")} {DateUtils.dateMonthDayYear(i.endsAt)}
-                      </div>
-                    ) : (
-                      <div className="text-red-500">
-                        {t("settings.subscription.endedAt")} {DateUtils.dateMonthDayYear(i.endsAt)}
-                      </div>
-                    )}
-                  </div>
-                ) : (
-                  "-"
-                )}
-              </div>
-            ),
+            value: (i) => <EndsAtCell item={i} />,
           },
           {
             name: "actions",
             title: "",
-            value: (i) => (
-              <Link to={`${i.id}`} className="hover:underline">
-                {t("shared.edit")}
-              </Link>
-            ),
+            value: (i) => <ActionsCell item={i} />,
           },
         ]}
       />

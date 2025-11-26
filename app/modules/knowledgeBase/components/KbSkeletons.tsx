@@ -1,9 +1,10 @@
-export default function KbSkeletons({ n = 5 }: { n?: number }) {
+export default function KbSkeletons({ n = 5 }: readonly { readonly n?: number }) {
   return (
     <div className="space-y-3">
       {Array.from({ length: n }).map((_, i) => {
+        const skeletonId = `skeleton-${Math.random()}-${i}`;
         return (
-          <div key={`skeleton-${i}`} className="border-border hover:border-theme-500 bg-background group rounded-md border">
+          <div key={skeletonId} className="border-border hover:border-theme-500 bg-background group rounded-md border">
             <div className="w-full">
               <div className="flex items-center space-x-8 p-6">
                 <div className="shrink-0">

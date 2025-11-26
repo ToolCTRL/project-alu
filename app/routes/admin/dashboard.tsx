@@ -261,11 +261,11 @@ function AdminDashboardRefresh({ data, t, searchParams, setSearchParams, userNam
                     title={stat.name}
                     value={stat.stat}
                     subtitle={stat.hint}
-                    badge={index === 0 ? "Aufträge" : index === 1 ? "Pipeline" : "Service"}
+                    badge={index === 0 ? "Aufträge" : (index === 1 ? "Pipeline" : "Service")}
                     icon={[<ClipboardList key="kpi-0" className="h-5 w-5" />, <Hammer key="kpi-1" className="h-5 w-5" />, <Sparkles key="kpi-2" className="h-5 w-5" />][index % 3]}
                     delta={{
                       value: stat.change ?? "0%",
-                      direction: stat.changeType === StatChange.Decrease ? "down" : stat.changeType === StatChange.Equal ? "flat" : "up",
+                      direction: stat.changeType === StatChange.Decrease ? "down" : (stat.changeType === StatChange.Equal ? "flat" : "up"),
                       label: "vs. vorher",
                     }}
                     sparkline={[14, 18, 17, 20, 24, 23, 28].slice(index, index + 5)}
@@ -359,12 +359,14 @@ function AdminDashboardRefresh({ data, t, searchParams, setSearchParams, userNam
   );
 }
 
-function TopCustomersCard({ tenants, className }: { tenants: TenantWithUsage[]; className?: string }) {
+function TopCustomersCard({ tenants, className }: Readonly<{ tenants: TenantWithUsage[]; className?: string }>) {
   const { handleMouseMove, handleMouseLeave } = use3DTilt({ maxAngle: 2 });
   const topTenants = tenants.slice(0, 5);
   const maxRows = Math.max(...topTenants.map((tenant) => tenant._count?.rows ?? 0), 1);
   return (
     <section
+      role="region"
+      aria-label="Top Kunden"
       className={clsx(
         "relative overflow-hidden rounded-[var(--radius-lg,1.25rem)] border border-white/10 bg-gradient-to-br from-white/10 via-white/5 to-white/0 p-6 shadow-[0px_18px_36px_rgba(7,12,20,0.35)] transition-transform duration-200 will-change-transform",
         className
@@ -372,6 +374,7 @@ function TopCustomersCard({ tenants, className }: { tenants: TenantWithUsage[]; 
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
       style={{ transformStyle: "preserve-3d" }}
+      tabIndex={0}
     >
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_20%_0%,rgba(59,130,246,0.15),transparent_45%),radial-gradient(circle_at_90%_20%,rgba(249,115,22,0.18),transparent_40%)]" />
       <div className="relative flex items-center justify-between">
@@ -429,7 +432,7 @@ function TopCustomersCard({ tenants, className }: { tenants: TenantWithUsage[]; 
   );
 }
 
-function TenantAvatar({ tenant }: { tenant: TenantWithUsage }) {
+function TenantAvatar({ tenant }: Readonly<{ tenant: TenantWithUsage }>) {
   const initials = tenant.name
     .split(" ")
     .map((word) => word[0])
@@ -443,7 +446,7 @@ function TenantAvatar({ tenant }: { tenant: TenantWithUsage }) {
 }
 
 type SignalPillProps = { label: string; value: string; detail: string; icon?: ReactNode; tone?: "accent" | "warning" | "positive" };
-function SignalPill({ label, value, detail, icon, tone = "accent" }: SignalPillProps) {
+function SignalPill({ label, value, detail, icon, tone = "accent" }: Readonly<SignalPillProps>) {
   const toneClasses: Record<NonNullable<SignalPillProps["tone"]>, string> = {
     accent: "border-white/10 bg-white/5",
     warning: "border-amber-300/30 bg-amber-500/10",

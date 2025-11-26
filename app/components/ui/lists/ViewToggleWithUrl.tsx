@@ -5,10 +5,10 @@ import TableIcon from "../icons/TableIcon";
 import ViewBoardsIcon from "../icons/ViewBoardsIcon";
 
 interface Props {
-  defaultView?: "table" | "board";
-  className?: string;
+  readonly defaultView?: "table" | "board";
+  readonly className?: string;
 }
-export default function ViewToggleWithUrl({ defaultView, className }: Props) {
+export default function ViewToggleWithUrl({ defaultView, className }: Readonly<Props>) {
   const [searchParams, setSearchParams] = useSearchParams();
   const [view, setView] = useState(searchParams.get("view") ?? defaultView ?? "table");
 
@@ -18,11 +18,6 @@ export default function ViewToggleWithUrl({ defaultView, className }: Props) {
       setView(view);
     }
   }, [searchParams]);
-
-  // useEffect(() => {
-  //   searchParams.set("view", view);
-  //   setSearchParams(searchParams);
-  // }, [view]);
 
   function onChange(value: "table" | "board") {
     searchParams.set("view", value);

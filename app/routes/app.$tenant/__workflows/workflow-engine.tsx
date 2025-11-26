@@ -5,9 +5,10 @@ import WorkflowEngineView from "~/modules/workflowEngine/routes/workflow-engine.
 
 export const meta: MetaFunction<typeof loader> = ({ data }) => data?.metatags || [];
 export const loader = (args: LoaderFunctionArgs) => WorkflowEngineApi.loader(args);
-// export const action = (args: ActionFunctionArgs) => WorkflowEngineApi.action(args);
 
-export default () => <WorkflowEngineView />;
+export default function WorkflowEngineRoute() {
+  return <WorkflowEngineView />;
+}
 
 export function ErrorBoundary() {
   return <ServerError />;

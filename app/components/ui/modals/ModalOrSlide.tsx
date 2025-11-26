@@ -27,7 +27,7 @@ export default function ModalOrSlide({
   padding = "sm",
   position = 5,
   buttons,
-}: Props) {
+}: Readonly<Props>) {
   if (type === "modal") {
     return (
       <Modal title={title} className={className} open={open} setOpen={setOpen} size={size} padding={padding} position={position}>

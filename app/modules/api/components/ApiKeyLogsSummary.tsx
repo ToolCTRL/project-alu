@@ -19,12 +19,58 @@ import ApiCallSpeedBadge from "./ApiCallSpeedBadge";
 import { useTranslation } from "react-i18next";
 
 interface Props {
-  data: {
+  readonly data: {
     items: ApiCallSummaryDto[];
     allTenants: { id: string; name: string }[];
     filterableProperties: FilterablePropertyDto[];
   };
 }
+
+function MethodCell({ item }: { readonly item: ApiCallSummaryDto }) {
+  return (
+    <FilterableValueLink name="method" value={item.method}>
+      <SimpleBadge title={item.method} color={ApiUtils.getMethodColor(item.method)} underline />
+    </FilterableValueLink>
+  );
+}
+
+function EndpointCell({ item }: { readonly item: ApiCallSummaryDto }) {
+  return <FilterableValueLink name="endpoint" value={item.endpoint} />;
+}
+
+function ParamsCell({ item }: { readonly item: ApiCallSummaryDto }) {
+  return <FilterableValueLink name="params" value={item.params} />;
+}
+
+function StatusCell({ item }: { readonly item: ApiCallSummaryDto }) {
+  return (
+    <FilterableValueLink name="status" value={item.status?.toString() ?? "{null}"}>
+      <SimpleBadge title={item.status?.toString() ?? "?"} color={item.status?.toString().startsWith("4") ? Colors.RED : Colors.GREEN} />
+    </FilterableValueLink>
+  );
+}
+
+function TenantCell({ item, allTenants }: { readonly item: ApiCallSummaryDto; readonly allTenants: { id: string; name: string }[] }) {
+  const tenant = allTenants.find((x) => x.id === item.tenantId);
+  return <FilterableValueLink name="tenantId" value={tenant?.name ?? ""} />;
+}
+
+function DurationCell({ item }: { readonly item: ApiCallSummaryDto }) {
+  return item._avg.duration === null ? (
+    <span className="text-muted-foreground text-xs italic">-</span>
+  ) : (
+    <div>{NumberUtils.custom(Number(item._avg.duration), "0,0.001")} ms</div>
+  );
+}
+
+function SpeedCell({ item }: { readonly item: ApiCallSummaryDto }) {
+  return item._avg.duration === null ? (
+    <span className="text-muted-foreground text-xs italic">-</span>
+  ) : (
+    <ApiCallSpeedBadge duration={Number(item._avg.duration)} />
+  );
+}
+
 export default function ApiKeyLogsSummary({ data }: Props) {
   const { t } = useTranslation();
   const params = useParams();
@@ -35,7 +81,7 @@ export default function ApiKeyLogsSummary({ data }: Props) {
 
   useEffect(() => {
     const sortedGroupBy = ApiKeyLogUtils.getGroupByValues(searchParams).sort((a, b) => a.localeCompare(b));
-    const sortedCurrentGroupBy = [...groupBy].sort((a, b) => a.localeCompare(b));
+    const sortedCurrentGroupBy = groupBy.slice().sort((a, b) => a.localeCompare(b));
     if (sortedGroupBy.join(",") !== sortedCurrentGroupBy.join(",")) {
       searchParams.delete("groupBy");
       groupBy.forEach((by) => {
@@ -52,12 +98,8 @@ export default function ApiKeyLogsSummary({ data }: Props) {
     if (currentGroupBy.length === 0) {
       currentGroupBy = ApiKeyLogsConstants.DEFAULT_GROUP_BY;
     }
-    const getTenant = (item: ApiCallSummaryDto) => {
-      return data.allTenants.find((x) => x.id === item.tenantId);
-    };
     const getCountLink = (item: ApiCallSummaryDto) => {
       const searchParams = new URLSearchParams();
-      // searchParams.set("pageSize", "100");
       currentGroupBy.forEach((groupBy) => {
         if (groupBy === "method") {
           searchParams.append("method", item.method);
@@ -75,87 +117,70 @@ export default function ApiKeyLogsSummary({ data }: Props) {
       headers.push({
         name: "method",
         title: "Method",
-        value: (item) => (
-          <FilterableValueLink name="method" value={item.method}>
-            <SimpleBadge title={item.method} color={ApiUtils.getMethodColor(item.method)} underline />
-          </FilterableValueLink>
-        ),
+        value: (item) => <MethodCell item={item} />,
       });
     }
     if (groupBy.includes("endpoint")) {
       headers.push({
         name: "endpoint",
         title: "Endpoint",
-        value: (item) => <FilterableValueLink name="endpoint" value={item.endpoint} />,
+        value: (item) => <EndpointCell item={item} />,
       });
     }
     if (groupBy.includes("params")) {
       headers.push({
         name: "params",
         title: "Params",
-        value: (item) => <FilterableValueLink name="params" value={item.params} />,
+        value: (item) => <ParamsCell item={item} />,
       });
     }
     if (groupBy.includes("status")) {
       headers.push({
         name: "status",
         title: "Status",
-        value: (item) => (
-          <FilterableValueLink name="status" value={item.status?.toString() ?? "{null}"}>
-            <SimpleBadge title={item.status?.toString() ?? "?"} color={item.status?.toString().startsWith("4") ? Colors.RED : Colors.GREEN} />
-          </FilterableValueLink>
-        ),
+        value: (item) => <StatusCell item={item} />,
       });
     }
     if (groupBy.includes("tenantId")) {
       headers.push({
         name: "tenantId",
         title: "Tenant",
-        value: (item) => <FilterableValueLink name="tenantId" value={getTenant(item)?.name ?? ""} />,
+        value: (item) => <TenantCell item={item} allTenants={data.allTenants} />,
       });
     }
-    headers.push({
-      name: "apiCalls",
-      title: "API calls",
-      align: "right",
-      value: (item) => (
-        <div className="flex justify-end text-right">
+    headers.push(
+      {
+        name: "apiCalls",
+        title: "API calls",
+        align: "right",
+        value: (item) => (
+          <div className="flex justify-end text-right">
+            <Link to={getCountLink(item)} className="hover:underline">
+              {NumberUtils.intFormat(Number(item._count._all))} {item._count._all === 1 ? "call" : "calls"}
+            </Link>
+          </div>
+        ),
+      },
+      {
+        name: "duration",
+        title: "Avg. duration",
+        value: (item) => <DurationCell item={item} />,
+      },
+      {
+        name: "speed",
+        title: "Speed",
+        value: (item) => <SpeedCell item={item} />,
+      },
+      {
+        name: "actions",
+        title: "",
+        value: (item) => (
           <Link to={getCountLink(item)} className="hover:underline">
-            {NumberUtils.intFormat(Number(item._count._all))} {item._count._all === 1 ? "call" : "calls"}
+            {t("shared.details")} <span className="ml-1">&rarr;</span>
           </Link>
-        </div>
-      ),
-    });
-
-    headers.push({
-      name: "duration",
-      title: "Avg. duration",
-      value: (item) =>
-        item._avg.duration === null ? (
-          <span className="text-muted-foreground text-xs italic">-</span>
-        ) : (
-          <div>{NumberUtils.custom(Number(item._avg.duration), "0,0.001")} ms</div>
         ),
-    });
-    headers.push({
-      name: "speed",
-      title: "Speed",
-      value: (item) =>
-        item._avg.duration === null ? (
-          <span className="text-muted-foreground text-xs italic">-</span>
-        ) : (
-          <ApiCallSpeedBadge duration={Number(item._avg.duration)} />
-        ),
-    });
-    headers.push({
-      name: "actions",
-      title: "",
-      value: (item) => (
-        <Link to={getCountLink(item)} className="hover:underline">
-          {t("shared.details")} <span className="ml-1">&rarr;</span>
-        </Link>
-      ),
-    });
+      }
+    );
 
     setHeaders(headers);
   }, [data, groupBy, params, t]);
@@ -179,7 +204,7 @@ export default function ApiKeyLogsSummary({ data }: Props) {
             setGroupBy(value as string[]);
           }}
         />
-        <div className="grow">{/* <InputSearchWithURL /> */}</div>
+        <div className="grow"></div>
         <InputFilters filters={data.filterableProperties} />
       </div>
       {groupBy.length === 0 ? (

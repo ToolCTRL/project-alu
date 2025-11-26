@@ -10,7 +10,7 @@ interface Props {
   children?: ReactNode;
 }
 
-export default function SuccessBanner({ title, text = "", redirect, children }: Props) {
+export default function SuccessBanner({ title, text = "", redirect, children }: Readonly<Props>) {
   const { t } = useTranslation();
   return (
     <div className="not-prose rounded-md border border-teal-300 bg-teal-50 dark:border-teal-700 dark:bg-teal-900">

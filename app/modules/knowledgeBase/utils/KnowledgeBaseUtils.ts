@@ -30,9 +30,6 @@ function getAvailableArticleSlug({ allArticles, initialSlug }: { allArticles: Kn
     if (!existingWithSlug) {
       break;
     }
-    // if (number > 10) {
-    //   throw Error("Too many duplicates");
-    // }
     number++;
   } while (true);
 
@@ -102,14 +99,14 @@ function getCategoryArticlesBySections({ kb, category }: { kb: KnowledgeBaseDto;
     }
   });
   sections.forEach((item) => {
-    item.articles = item.articles.sort((a, b) => {
+    item.articles = item.articles.toSorted((a, b) => {
       if (a.order && b.order) {
         return a.order - b.order;
       }
       return 0;
     });
   });
-  sections = sections.sort((a, b) => {
+  sections = sections.toSorted((a, b) => {
     if (a.section?.order && b.section?.order) {
       return a.section.order - b.section.order;
     }

@@ -17,8 +17,8 @@ import PencilIcon from "~/components/ui/icons/PencilIcon";
 import ConfirmModal, { RefConfirmModal } from "~/components/ui/modals/ConfirmModal";
 
 interface Props {
-  item: JsonPropertyDto | null;
-  onClose: () => void;
+  readonly item: JsonPropertyDto | null;
+  readonly onClose: () => void;
 }
 export default function JsonPropertyForm({ item, onClose }: Props) {
   const { t } = useTranslation();
@@ -118,6 +118,16 @@ export default function JsonPropertyForm({ item, onClose }: Props) {
     });
   }
 
+  function getSlideOverTitle(): string {
+    if (selectedOption === null) {
+      return t("shared.new");
+    }
+    if (selectedOption === undefined) {
+      return "";
+    }
+    return t("shared.edit");
+  }
+
   return (
     <div>
       <Form onSubmit={onSubmit}>
@@ -143,9 +153,10 @@ export default function JsonPropertyForm({ item, onClose }: Props) {
           </div>
           {(type === "select" || type === "multiselect") && (
             <div className="space-y-1">
-              <label className="text-xs font-medium">Options</label>
+              <label htmlFor="options" className="text-xs font-medium">Options</label>
               <div>
                 <TableSimple
+                  id="options"
                   items={options}
                   actions={[
                     {
@@ -203,7 +214,7 @@ export default function JsonPropertyForm({ item, onClose }: Props) {
         </div>
       </Form>
       <SlideOverWideEmpty
-        title={selectedOption === null ? t("shared.new") : selectedOption === undefined ? "" : t("shared.edit")}
+        title={getSlideOverTitle()}
         open={selectedOption !== undefined}
         onClose={() => setSelectedOption(undefined)}
         size="sm"
@@ -238,11 +249,11 @@ function PropertyOptionForm({
   onUpdate,
   onAdd,
   onClose,
-}: {
-  item: { name: string; value: string } | null;
-  onUpdate: (option: { name: string; value: string }) => void;
-  onAdd: (option: { name: string; value: string }) => void;
-  onClose: () => void;
+}: readonly {
+  readonly item: { name: string; value: string } | null;
+  readonly onUpdate: (option: { name: string; value: string }) => void;
+  readonly onAdd: (option: { name: string; value: string }) => void;
+  readonly onClose: () => void;
 }) {
   const { t } = useTranslation();
 

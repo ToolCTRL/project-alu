@@ -6,10 +6,10 @@ import UrlUtils from "~/utils/app/UrlUtils";
 import { useTranslation } from "react-i18next";
 
 interface Props {
-  item: PlanFeatureUsageDto | undefined;
-  children: ReactNode;
-  hideContent?: boolean;
-  showRemaining?: boolean;
+  readonly item: PlanFeatureUsageDto | undefined;
+  readonly children: ReactNode;
+  readonly hideContent?: boolean;
+  readonly showRemaining?: boolean;
 }
 export default function CheckPlanFeatureLimit({ item, children, hideContent = true, showRemaining }: Props) {
   const params = useParams();

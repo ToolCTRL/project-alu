@@ -13,10 +13,11 @@ export interface RefInputSelectorDarkMode {
 }
 
 type GroupDto = { name: string; items: ItemDto[] };
+type ValueType = string | number | undefined;
 type ItemDto = {
   group?: string;
   name: string | ReactNode;
-  value: string | number | undefined;
+  value: ValueType;
   color?: Colors;
   disabled?: boolean;
   link?: string;
@@ -25,10 +26,10 @@ type ItemDto = {
 interface Props {
   name?: string;
   title?: string;
-  value?: string | number | undefined;
+  value?: ValueType;
   disabled?: boolean;
   options: ItemDto[];
-  setValue?: React.Dispatch<React.SetStateAction<string | number | undefined>>;
+  setValue?: React.Dispatch<React.SetStateAction<ValueType>>;
   className?: string;
   withSearch?: boolean;
   withLabel?: boolean;
@@ -76,7 +77,7 @@ const InputSelectorDarkMode = (
   const button = useRef<HTMLButtonElement>(null);
   const inputSearch = useRef<HTMLInputElement>(null);
 
-  const [selected, setSelected] = useState<{ name: string | ReactNode; value: string | number | undefined; color?: Colors }>();
+  const [selected, setSelected] = useState<{ name: string | ReactNode; value: ValueType; color?: Colors }>();
   const [searchInput, setSearchInput] = useState("");
 
   useEffect(() => {
@@ -251,9 +252,7 @@ const InputSelectorDarkMode = (
                         value={group}
                       >
                         {({ selected, active }) => (
-                          <Fragment>
-                            <span className={clsx("text-muted-foreground text-xs font-medium", selected ? "font-semibold" : "font-normal")}>{group.name}</span>
-                          </Fragment>
+                          <span className={clsx("text-muted-foreground text-xs font-medium", selected ? "font-semibold" : "font-normal")}>{group.name}</span>
                         )}
                       </Listbox.Option>
                     )}
@@ -274,11 +273,11 @@ const InputSelectorDarkMode = (
   );
 };
 
-function Item({ item, selected, active, withColors = true }: { item: ItemDto; selected: boolean; active: boolean; withColors?: boolean }) {
+function Item({ item, selected, active, withColors = true }: { readonly item: ItemDto; readonly selected: boolean; readonly active: boolean; readonly withColors?: boolean }) {
   return (
     <Fragment>
       <div className="flex items-center space-x-2 truncate pr-3">
-        {item.img && item.img}
+        {item.img}
         <div className="flex items-center space-x-2 truncate">
           {withColors && item.color !== undefined && <ColorBadge color={item.color} />}
           <div className={clsx(selected ? "font-medium" : "font-normal", "truncate")}>{item.name}</div>

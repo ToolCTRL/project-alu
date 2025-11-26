@@ -10,7 +10,7 @@ export interface RefLoadingButton {
 
 interface Props {
   className?: string;
-  type?: "button" | "submit" | "reset" | undefined;
+  type?: "button" | "submit" | "reset";
   disabled?: boolean;
   children: ReactNode;
   onClick?: MouseEventHandler<HTMLButtonElement>;
@@ -55,8 +55,6 @@ const LoadingButton = ({ className, type = "button", children, disabled, onClick
       onClick={onClick}
       to={to}
     >
-      {/* {checkIsLoading() && <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />} */}
-
       {children}
     </ButtonPrimary>
   );

@@ -2,10 +2,10 @@ import { useTranslation } from "react-i18next";
 import { useAppData } from "~/utils/data/useAppData";
 
 interface Props {
-  item: { id: string; name: string; slug: string };
-  showCurrent?: boolean;
+  readonly item: { id: string; name: string; slug: string };
+  readonly showCurrent?: boolean;
 }
-export default function TenantBadge({ item, showCurrent }: Props) {
+export default function TenantBadge({ item, showCurrent }: Readonly<Props>) {
   const { t } = useTranslation();
   const appData = useAppData();
   function isCurrent() {

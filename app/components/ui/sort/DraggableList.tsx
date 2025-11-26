@@ -3,13 +3,13 @@ import { ReactNode, useEffect, useState } from "react";
 import { DragDropContext, Droppable, Draggable, DropResult } from "react-beautiful-dnd";
 
 interface Props<T> {
-  items: T[];
-  actionName?: string;
-  render: (item: T, idx: number) => ReactNode;
-  className?: string;
+  readonly items: T[];
+  readonly actionName?: string;
+  readonly render: (item: T, idx: number) => ReactNode;
+  readonly className?: string;
 }
 
-export default function DraggableList<T extends { id: string; order: number }>({ items, actionName, render, className }: Props<T>) {
+export default function DraggableList<T extends { id: string; order: number }>({ items, actionName, render, className }: Readonly<Props<T>>) {
   const submit = useSubmit();
   const [draggedItems, setDraggedItems] = useState<T[]>(items);
 

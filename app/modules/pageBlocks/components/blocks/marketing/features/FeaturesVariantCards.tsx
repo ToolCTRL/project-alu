@@ -8,7 +8,7 @@ import clsx from "clsx";
 import { ExternalLinkIcon } from "lucide-react";
 import { Link } from "react-router";
 
-export default function FeaturesVariantCards({ item }: { item: FeaturesBlockDto }) {
+export default function FeaturesVariantCards({ item }: { readonly item: FeaturesBlockDto }) {
   const { t } = useTranslation();
   const featuresOnly = item.headline !== "+25 Built-in Features";
   return (
@@ -88,7 +88,7 @@ export default function FeaturesVariantCards({ item }: { item: FeaturesBlockDto 
           <div className={GridBlockUtils.getClasses(item.grid)}>
             {item.items.map((feature, idx) => {
               return (
-                <Fragment key={idx}>
+                <Fragment key={`feature-card-${idx}-${feature.name}`}>
                   {feature.link ? (
                     <ButtonEvent
                       to={feature.link.href}
@@ -113,7 +113,7 @@ export default function FeaturesVariantCards({ item }: { item: FeaturesBlockDto 
   );
 }
 
-function FeatureCard({ feature }: { feature: FeatureDto }) {
+function FeatureCard({ feature }: { readonly feature: FeatureDto }) {
   const { t } = useTranslation();
   return (
     <>

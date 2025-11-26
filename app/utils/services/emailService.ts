@@ -95,12 +95,11 @@ export async function getAvailableTenantInboundAddress(name: string) {
         address,
       },
     });
-    if (existingAddress !== null) {
-      address = slugWithDots + tries.toString();
-      tries++;
-    } else {
+    if (existingAddress === null) {
       break;
     }
+    address = slugWithDots + tries.toString();
+    tries++;
   } while (true);
   return address;
 }

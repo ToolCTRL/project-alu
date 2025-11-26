@@ -61,6 +61,39 @@ export const action = async ({ request, params }: ActionFunctionArgs) => {
   }
 };
 
+function KnowledgeBaseStatus({ item, onToggle }: { item: KnowledgeBaseDto; onToggle: (item: KnowledgeBaseDto, enabled: boolean) => void }) {
+  return <InputCheckbox asToggle value={item.enabled} setValue={(checked) => onToggle(item, Boolean(checked))} />;
+}
+
+function KnowledgeBaseTitle({ item, params }: { item: KnowledgeBaseDto; params: any }) {
+  return (
+    <div className="flex flex-col">
+      <div className="flex items-center space-x-2">
+        <div className="text-base font-bold">{item.title}</div>
+
+        <SimpleBadge color={item.color}>
+          <a target="_blank" rel="noreferrer" href={KnowledgeBaseUtils.getKbUrl({ kb: item, params })} className="hover:underline">
+            {KnowledgeBaseUtils.getKbUrl({ kb: item, params })}
+          </a>
+        </SimpleBadge>
+      </div>
+      <div className="text-muted-foreground flex items-center space-x-2 text-sm">
+        <Link to={`${item.slug}/articles`} className="hover:underline">
+          {item.count.articles} articles
+        </Link>
+        <div>•</div>
+        <Link to={`${item.slug}/categories`} className="hover:underline">
+          {item.count.categories} categories
+        </Link>
+      </div>
+    </div>
+  );
+}
+
+function KnowledgeBaseUpdatedAt({ date }: { date: Date | null }) {
+  return <DateCell date={date} />;
+}
+
 export default function () {
   const { t } = useTranslation();
   const data = useLoaderData<LoaderData>();
@@ -169,36 +202,13 @@ export default function () {
           {
             name: "status",
             title: "Status",
-            value: (i) => {
-              return <InputCheckbox asToggle value={i.enabled} setValue={(checked) => onToggle(i, Boolean(checked))} />;
-            },
+            value: (i) => <KnowledgeBaseStatus item={i} onToggle={onToggle} />,
           },
           {
             name: "title",
             title: "Title",
             className: "w-full",
-            value: (i) => (
-              <div className="flex flex-col">
-                <div className="flex items-center space-x-2">
-                  <div className="text-base font-bold">{i.title}</div>
-
-                  <SimpleBadge color={i.color}>
-                    <a target="_blank" rel="noreferrer" href={KnowledgeBaseUtils.getKbUrl({ kb: i, params })} className="hover:underline">
-                      {KnowledgeBaseUtils.getKbUrl({ kb: i, params })}
-                    </a>
-                  </SimpleBadge>
-                </div>
-                <div className="text-muted-foreground flex items-center space-x-2 text-sm">
-                  <Link to={`${i.slug}/articles`} className="hover:underline">
-                    {i.count.articles} articles
-                  </Link>
-                  <div>•</div>
-                  <Link to={`${i.slug}/categories`} className="hover:underline">
-                    {i.count.categories} categories
-                  </Link>
-                </div>
-              </div>
-            ),
+            value: (i) => <KnowledgeBaseTitle item={i} params={params} />,
           },
           {
             name: "views",
@@ -208,7 +218,7 @@ export default function () {
           {
             name: "updatedAt",
             title: "Updated at",
-            value: (i) => <DateCell date={i.updatedAt} />,
+            value: (i) => <KnowledgeBaseUpdatedAt date={i.updatedAt} />,
           },
         ]}
         noRecords={

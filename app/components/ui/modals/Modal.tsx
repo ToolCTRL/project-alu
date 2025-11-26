@@ -1,5 +1,5 @@
 import { ReactNode, Fragment } from "react";
-import { Dialog, DialogBackdrop, DialogPanel, Transition, TransitionChild } from "@headlessui/react";
+import { Dialog, DialogBackdrop, DialogPanel, TransitionChild } from "@headlessui/react";
 import clsx from "clsx";
 
 interface Props {
@@ -41,7 +41,7 @@ function getSizeClass(size: string): string {
   return SIZE_CLASSES[size] ?? "sm:max-w-3xl";
 }
 
-export default function Modal({ className, children, open, setOpen, size = "3xl", padding = "sm", position = 5, title }: Props) {
+export default function Modal({ className, children, open, setOpen, size = "3xl", padding = "sm", position = 5, title }: Readonly<Props>) {
   const positionClass = getPositionClass(position);
   function onClose() {
     setOpen(false);

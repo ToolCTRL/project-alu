@@ -1,5 +1,4 @@
-import { LoaderFunctionArgs, MetaFunction } from "react-router";
-import { Outlet } from "react-router";
+import { LoaderFunctionArgs, MetaFunction, Outlet } from "react-router";
 import IncreaseIcon from "~/components/ui/icons/crm/IncreaseIcon";
 import IncreaseIconFilled from "~/components/ui/icons/crm/IncreaseIconFilled";
 import SettingsIcon from "~/components/ui/icons/crm/SettingsIcon";
@@ -23,7 +22,7 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
 
 export const meta: MetaFunction<typeof loader> = ({ data }) => [{ title: data?.title }];
 
-export default () => {
+export default function AdminHelpDeskRoute() {
   return (
     <SidebarIconsLayout
       label={{ align: "right" }}
@@ -59,4 +58,4 @@ export default () => {
       <Outlet />
     </SidebarIconsLayout>
   );
-};
+}

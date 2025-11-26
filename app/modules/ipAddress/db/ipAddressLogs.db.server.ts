@@ -3,7 +3,7 @@ import Constants from "~/application/Constants";
 import { PaginationDto } from "~/application/dtos/data/PaginationDto";
 import { db } from "~/utils/db.server";
 
-type IpAddressLogWithDetails = IpAddressLog & {};
+type IpAddressLogWithDetails = IpAddressLog;
 export async function getAllIpAddressLogs(pagination?: {
   page: number;
   pageSize: number;

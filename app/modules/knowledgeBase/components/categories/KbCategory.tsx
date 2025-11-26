@@ -9,7 +9,7 @@ import ColorTextUtils from "~/utils/shared/colors/ColorTextUtils";
 import ColorGroupHoverUtils from "~/utils/shared/colors/ColorGroupHoverUtils";
 import { useTranslation } from "react-i18next";
 
-export default function KbCategory({ kb, item, allCategories }: { kb: KnowledgeBaseDto; item: KbCategoryDto; allCategories: KbCategoryDto[] }) {
+export default function KbCategory({ kb, item, allCategories }: Readonly<{ kb: KnowledgeBaseDto; item: KbCategoryDto; allCategories: KbCategoryDto[] }>) {
   const { t } = useTranslation();
   const params = useParams();
   return (

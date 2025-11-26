@@ -1,6 +1,5 @@
 import { useEffect } from "react";
-import { LoaderFunctionArgs } from "react-router";
-import { Outlet, useLocation, useNavigate } from "react-router";
+import { LoaderFunctionArgs, Outlet, useLocation, useNavigate } from "react-router";
 import AppLayout from "~/components/app/AppLayout";
 import UrlUtils from "~/utils/app/UrlUtils";
 import { loadAdminData } from "~/utils/data/.server/adminData";

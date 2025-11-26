@@ -1,5 +1,4 @@
-import { ActionFunction, LoaderFunctionArgs, redirect, useLoaderData } from "react-router";
-import { Form, useNavigate, useSearchParams } from "react-router";
+import { ActionFunction, LoaderFunctionArgs, redirect, useLoaderData, Form, useNavigate, useSearchParams } from "react-router";
 import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import EntityViewForm from "~/components/entities/views/EntityViewForm";
@@ -26,7 +25,7 @@ type LoaderData = {
 export const loader = async ({ request, params }: LoaderFunctionArgs) => {
   await verifyUserHasPermission(request, "admin.entities.view");
   const entity = await findEntityByName({ tenantId: null, name: params.entity! });
-  if (!entity || !entity.hasViews) {
+  if (!entity?.hasViews) {
     return redirect(`/admin/entities/views`);
   }
   const data: LoaderData = {
@@ -66,7 +65,7 @@ export const action: ActionFunction = async ({ request, params }) => {
   }
 };
 
-export default function () {
+export default function AdminEntityViewNewRoute() {
   const { t } = useTranslation();
   const data = useLoaderData<LoaderData>();
   const navigate = useNavigate();
@@ -145,7 +144,16 @@ export default function () {
 
   return (
     <div>
-      {!viewType ? (
+      {viewType ? (
+        <EntityViewForm
+          entity={data.entity}
+          tenantId={viewType.tenantId}
+          userId={viewType.userId}
+          isSystem={viewType.isSystem}
+          onClose={() => navigate(`/admin/entities/views`)}
+          showViewType={true}
+        />
+      ) : (
         <Form onSubmit={handleSubmit} className="space-y-3">
           <InputGroup title={t("models.view.type")}>
             <div className="space-y-1">
@@ -227,15 +235,6 @@ export default function () {
 
           {error && <ErrorBanner title={t("shared.error")} text={error} />}
         </Form>
-      ) : (
-        <EntityViewForm
-          entity={data.entity}
-          tenantId={viewType.tenantId}
-          userId={viewType.userId}
-          isSystem={viewType.isSystem}
-          onClose={() => navigate(`/admin/entities/views`)}
-          showViewType={true}
-        />
       )}
 
       <ErrorModal ref={errorModal} />

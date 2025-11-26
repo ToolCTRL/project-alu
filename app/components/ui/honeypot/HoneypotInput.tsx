@@ -1,4 +1,4 @@
-export default function HoneypotInput({ name = "codeId" }: { name?: string }) {
+export default function HoneypotInput({ name = "codeId" }: Readonly<{ name?: string }>) {
   return (
     <div style={{ opacity: 0, position: "absolute", top: 0, left: 0, height: 0, width: 0, zIndex: -1 }}>
       <label htmlFor={name} className="text-foreground block text-sm font-medium dark:text-slate-500">

@@ -63,10 +63,8 @@ export namespace BlogRoutesEditApi {
     const addingCategoryName = toText(form.get("new-category"));
     let category: BlogCategory | null = null;
     if (addingCategoryName) {
-      category = await BlogApi.getCategory({ tenantId, idOrName: { name: addingCategoryName } });
-      if (category == null) {
-        category = await BlogApi.createCategory({ tenantId, name: addingCategoryName });
-      }
+      category ??= await BlogApi.getCategory({ tenantId, idOrName: { name: addingCategoryName } });
+      category ??= await BlogApi.createCategory({ tenantId, name: addingCategoryName });
     }
 
     const authorId = blogPost.authorId ?? userInfo.userId;

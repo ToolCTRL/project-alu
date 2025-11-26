@@ -18,6 +18,21 @@ interface Props {
   onDroppedFiles?: (fileBase64: FileBase64[], files: any[]) => void;
 }
 
+function getBase64(file: File): Promise<string> {
+  const reader = new FileReader();
+  return new Promise((resolve) => {
+    reader.onload = (ev) => {
+      const result = ev?.target?.result;
+      if (typeof result === "string") {
+        resolve(result);
+      } else {
+        resolve("");
+      }
+    };
+    reader.readAsDataURL(file);
+  });
+}
+
 export default function UploadDocuments({
   name = "uploadmyfile",
   className,
@@ -31,7 +46,7 @@ export default function UploadDocuments({
   onDroppedFiles,
   uploadText,
   autoFocus,
-}: Props) {
+}: Readonly<Props>) {
   const { t } = useTranslation();
 
   const [isDragging, setIsDragging] = useState(false);
@@ -47,21 +62,7 @@ export default function UploadDocuments({
   function dragLeave() {
     setIsDragging(false);
   }
-  // async function compressFile(imageFile: File): Promise<File> {
-  //   const options = {
-  //     maxSizeMB: 0.5,
-  //     maxWidthOrHeight: 1920 / 2,
-  //     useWebWorker: true,
-  //   };
-  //   try {
-  //     return await imageCompression(imageFile, options);
-  //   } catch (error) {
-  //     return await Promise.reject(error);
-  //   }
-  // }
-  // async function compressFileNotImage(imageFile: File): Promise<File> {
-  //   return Promise.resolve(imageFile);
-  // }
+
   async function drop(e: any) {
     try {
       e.preventDefault();
@@ -71,11 +72,6 @@ export default function UploadDocuments({
     const files: File[] = await Promise.all(
       [...e.dataTransfer.files].map(async (element: File) => {
         return element;
-        // if (element.type.includes("image")) {
-        //   return await compressFile(element);
-        // } else {
-        //   return await compressFileNotImage(element);
-        // }
       })
     );
     const filesArray: FileBase64[] = [];
@@ -101,15 +97,6 @@ export default function UploadDocuments({
     const src = document.querySelector("#" + name);
     drop({ dataTransfer: src });
   }
-  function getBase64(file: File): Promise<string> {
-    const reader = new FileReader();
-    return new Promise((resolve) => {
-      reader.onload = (ev) => {
-        resolve(ev?.target?.result?.toString() ?? "");
-      };
-      reader.readAsDataURL(file);
-    });
-  }
 
   useEffect(() => {
     setCustomClasses(isDragging && !loading && !disabled ? "border-2 border-border border-dashed" : "");
@@ -125,6 +112,13 @@ export default function UploadDocuments({
       onDragOver={dragOver}
       onDragLeave={dragLeave}
       onDrop={drop}
+      role="button"
+      tabIndex={0}
+      onKeyDown={(e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          document.getElementById(name)?.click();
+        }
+      }}
     >
       {(() => {
         if (loading) {
@@ -140,16 +134,12 @@ export default function UploadDocuments({
                     <label
                       htmlFor={name}
                       className={clsx(
-                        " text-foreground focus-within:ring-ring relative cursor-pointer rounded-md font-medium focus-within:outline-hidden focus-within:ring-2 focus-within:ring-offset-2",
-                        !disabled && ""
+                        " text-foreground focus-within:ring-ring relative cursor-pointer rounded-md font-medium focus-within:outline-hidden focus-within:ring-2 focus-within:ring-offset-2"
                       )}
                     >
-                      <span></span>
-                      <label htmlFor={name}>
-                        <p className={clsx("text-sm font-semibold underline", !disabled ? "cursor-pointer" : "cursor-not-allowed")}>
-                          {uploadText ?? <span>{t("app.shared.buttons.uploadDocument")}</span>}
-                        </p>
-                      </label>
+                      <p className={clsx("text-sm font-semibold underline", disabled ? "cursor-not-allowed" : "cursor-pointer")}>
+                        {uploadText ?? <span>{t("app.shared.buttons.uploadDocument")}</span>}
+                      </p>
                       <input
                         className="uploadmyfile"
                         disabled={disabled}
@@ -159,11 +149,9 @@ export default function UploadDocuments({
                         multiple={multiple}
                         onChange={requestUploadFile}
                         autoFocus={autoFocus}
+                        aria-label={title || t("app.shared.buttons.uploadDocument")}
                       />
                     </label>
-                    {/* <p className="pl-1 lowercase">
-                      {t("shared.or")} {t("shared.dragAndDrop")}
-                    </p> */}
                   </div>
                   <p className="text-muted-foreground text-xs">
                     {description ?? (

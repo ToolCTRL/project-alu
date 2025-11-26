@@ -6,7 +6,7 @@ import ExternalLinkEmptyIcon from "~/components/ui/icons/ExternalLinkEmptyIcon";
 import GitHubIcon from "~/components/ui/icons/GitHubIcon";
 import { BannerBlockDto } from "~/modules/pageBlocks/components/blocks/marketing/banner/BannerBlockUtils";
 
-export default function BannerVariantTop({ item, onClose }: { item: BannerBlockDto; onClose?: () => void }) {
+export default function BannerVariantTop({ item, onClose }: readonly { readonly item: BannerBlockDto; readonly onClose?: () => void }) {
   const { t } = useTranslation();
   const [open, setOpen] = useState(true);
 
@@ -16,7 +16,7 @@ export default function BannerVariantTop({ item, onClose }: { item: BannerBlockD
         <div className="border-border bg-primary text-primary-foreground border-b-2">
           <div className="mx-auto max-w-7xl px-3 py-1.5 sm:px-6 sm:py-3 lg:px-8">
             <div className="flex w-full items-center space-x-3 lg:w-auto lg:justify-end">
-              <div className={clsx("flex grow", item.cta ? "justify-start" : "justify-center")}>
+              <div className={clsx("flex grow", item.cta && item.cta.length > 0 ? "justify-start" : "justify-center")}>
                 <div className="flex items-center space-x-2">
                   {item.icon === "sale" && (
                     <svg className="h-10 w-10" xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="48" height="48" viewBox="0 0 48 48">
@@ -60,12 +60,12 @@ export default function BannerVariantTop({ item, onClose }: { item: BannerBlockD
                   )}
                 </div>
               </div>
-              {item.cta && (
+              {item.cta && item.cta.length > 0 && (
                 <div className="order-2 mt-0 flex w-auto shrink-0 space-x-1 md:space-x-2">
-                  {item.cta.map((cta) => {
+                  {item.cta.map((cta, idx) => {
                     return (
                       <ButtonEvent
-                        key={cta.href}
+                        key={cta.id ?? idx}
                         to={cta.href}
                         target={cta.target}
                         className={clsx(

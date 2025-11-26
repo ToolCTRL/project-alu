@@ -21,7 +21,7 @@ export namespace KbRoutesIndexApi {
     isAdmin: boolean;
   };
   export const loader = async ({ request, params }: LoaderFunctionArgs, { kbSlug }: { kbSlug?: string } = {}) => {
-    if (params.lang && !KnowledgeBaseUtils.supportedLanguages.find((f) => f.value === params.lang)) {
+    if (params.lang && !KnowledgeBaseUtils.supportedLanguages.some((f) => f.value === params.lang)) {
       RedirectsService.findAndRedirect({ request });
     }
     const kb = await KnowledgeBaseService.get({ slug: kbSlug ?? params.slug!, enabled: true, request });

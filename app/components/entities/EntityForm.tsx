@@ -66,17 +66,6 @@ export default function EntityForm({ item }: Props) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // useEffect(() => {
-  //   if (!item) {
-  //     const slug = UrlUtils.slugify(t(titlePlural));
-  //     setSlug(slug);
-  //     if (titlePlural.length >= 3) {
-  //       setPrefix(t(titlePlural).substring(0, 3).toUpperCase());
-  //     }
-  //   }
-  //   // eslint-disable-next-line react-hooks/exhaustive-deps
-  // }, [titlePlural]);
-
   return (
     <FormGroup id={item?.id} onCancel={() => navigate("/admin/entities")} editing={true} canDelete={false}>
       <InputGroup title="Entity">

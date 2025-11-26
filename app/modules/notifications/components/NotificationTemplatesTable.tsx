@@ -12,9 +12,9 @@ export default function NotificationTemplatesTable({
   onDelete,
   onSendPreview,
 }: {
-  items: IGetTemplatesData | null;
-  onDelete: (id: string) => void;
-  onSendPreview: (item: NotificationChannelDto) => void;
+  readonly items: IGetTemplatesData | null;
+  readonly onDelete: (id: string) => void;
+  readonly onSendPreview: (item: NotificationChannelDto) => void;
 }) {
   const { t } = useTranslation();
   function getCreated(i: NotificationChannelDto) {
@@ -42,13 +42,13 @@ export default function NotificationTemplatesTable({
           title: "Name",
           value: (i) => (
             <>
-              {!isValid(i, items) ? (
+              {isValid(i, items) ? (
+                <div>{i.name}</div>
+              ) : (
                 <div className="flex items-center space-x-1 text-red-600">
                   <ExclamationTriangleIcon className="h-5 w-5 text-red-600" />
                   <div>{i.name}</div>
                 </div>
-              ) : (
-                <div>{i.name}</div>
               )}
             </>
           ),
@@ -59,7 +59,7 @@ export default function NotificationTemplatesTable({
           className: "w-full",
           value: (i) => (
             <div className="text-muted-foreground max-w-xs overflow-x-auto">
-              <div className={clsx(!isValid(i, items) && "text-red-600")}>{i.description}</div>
+              <div className={clsx(isValid(i, items) ? "" : "text-red-600")}>{i.description}</div>
             </div>
           ),
         },
@@ -100,14 +100,6 @@ export default function NotificationTemplatesTable({
             <div>{(getCreated(i)?.steps ?? []).length > 0 ? <CheckIcon className="text-theme-500 h-4 w-4" /> : <XIcon className="h-4 w-4 text-red-600" />}</div>
           ),
         },
-        // {
-        //   name: "tags",
-        //   title: "Tags",
-        //   value: (i) =>
-        //     getCreated(i)
-        //       ?.tags.map((f) => f)
-        //       .join(", "),
-        // },
         {
           name: "_id",
           title: "_id",
@@ -135,23 +127,6 @@ export default function NotificationTemplatesTable({
             </>
           ),
         },
-        // {
-        //   name: "delete",
-        //   title: "Delete",
-        //   value: (i) => (
-        //     <div className="flex items-center justify-center">
-        //       {i._id !== undefined && (
-        //         <button
-        //           type="button"
-        //           onClick={() => onDelete(i._id ?? "")}
-        //           className="mr-2 flex h-4 w-4 items-center justify-center text-muted-foreground hover:text-red-600"
-        //         >
-        //           <TrashIcon className="h-4 w-4" />
-        //         </button>
-        //       )}
-        //     </div>
-        //   ),
-        // },
       ]}
     ></TableSimple>
   );

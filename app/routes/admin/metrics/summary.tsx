@@ -105,7 +105,7 @@ function getGroupByValues(searchParams: URLSearchParams) {
   return groupBy.length > 0 ? groupBy.map((x) => x.toString()) : defaultGroupBy;
 }
 
-export default function () {
+export default function MetricsSummary() {
   const data = useLoaderData<LoaderData>();
   const [searchParams, setSearchParams] = useSearchParams();
   const [groupBy, setGroupBy] = useState<string[]>(getGroupByValues(searchParams));
@@ -211,32 +211,33 @@ export default function () {
         value: (item) => <FilterableValueLink name="tenantId" value={getTenant(item)?.name ?? ""} />,
       });
     }
-    headers.push({
-      name: "count",
-      title: "Count",
-      value: (item) => (
-        <Link to={getCountLink(item)} className="hover:underline">
-          {NumberUtils.intFormat(Number(item._count._all))}
-        </Link>
-      ),
-    });
-    headers.push({
-      name: "speed",
-      title: "Speed",
-      value: (item) => <SpeedBadge duration={Number(item._avg.duration)} />,
-    });
-    headers.push({
-      name: "duration",
-      title: "Avg. duration",
-      value: (item) => <div>{NumberUtils.custom(Number(item._avg.duration), "0,0.001")} ms</div>,
-    });
+    headers.push(
+      {
+        name: "count",
+        title: "Count",
+        value: (item) => (
+          <Link to={getCountLink(item)} className="hover:underline">
+            {NumberUtils.intFormat(Number(item._count._all))}
+          </Link>
+        ),
+      },
+      {
+        name: "speed",
+        title: "Speed",
+        value: (item) => <SpeedBadge duration={Number(item._avg.duration)} />,
+      },
+      {
+        name: "duration",
+        title: "Avg. duration",
+        value: (item) => <div>{NumberUtils.custom(Number(item._avg.duration), "0,0.001")} ms</div>,
+      }
+    );
 
     setHeaders(headers);
   }, [data, groupBy]);
 
   return (
-    <>
-      <EditPageLayout
+    <EditPageLayout
         tabs={[
           {
             name: "Summary",
@@ -282,7 +283,6 @@ export default function () {
           )}
         </div>
       </EditPageLayout>
-    </>
   );
 }
 

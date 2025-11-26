@@ -1,18 +1,18 @@
 import clsx from "~/utils/shared/ClassesUtils";
 
-export default function RatingBadge({ value, size = 4, starsCount = 5 }: { value: number; size?: number; starsCount?: number }) {
+export default function RatingBadge({ value, size = 4, starsCount = 5 }: Readonly<{ value: number; size?: number; starsCount?: number }>) {
   return (
     <div>
       <div className="flex items-center">
         {Array.from({ length: starsCount }).map((_, index) => (
-          <Star key={index} size={size} color={index < value ? "yellow" : "gray"} />
+          <Star key={`star-${index}`} size={size} color={index < value ? "yellow" : "gray"} />
         ))}
       </div>
     </div>
   );
 }
 
-function Star({ color, size = 5 }: { color: "gray" | "yellow"; size?: number }) {
+function Star({ color, size = 5 }: Readonly<{ color: "gray" | "yellow"; size?: number }>) {
   return (
     <svg
       aria-hidden="true"

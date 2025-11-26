@@ -10,19 +10,6 @@ export const handleImageUpload = (file: File, view: EditorView, event: Clipboard
   } else if (file.size / 1024 / 1024 > 50) {
     toast.error("File size too big (max 50MB).");
   } else {
-    // const reader = new FileReader();
-    // reader.onload = (e) => {
-    //   const { schema } = view.state;
-    //   const node = schema.nodes.image.create({
-    //     src: e.target?.result,
-    //     alt: file,
-    //     title: file.name,
-    //   }); // creates the image element
-    //   const transaction = view.state.tr.replaceSelectionWith(node);
-    //   view.dispatch(transaction);
-    // };
-    // reader.readAsDataURL(file);
-
     // upload to Vercel Blob
     toast.promise(
       fetch("/api/ai/upload", {
@@ -66,44 +53,28 @@ export const handleImageUpload = (file: File, view: EditorView, event: Clipboard
   }
 
   const insertImage = (url: string) => {
+    const imageNode = view.state.schema.nodes.image.create({
+      src: url,
+      alt: file.name,
+      title: file.name,
+    });
+
     // for paste events
     if (event instanceof ClipboardEvent) {
-      return view.dispatch(
-        view.state.tr.replaceSelectionWith(
-          view.state.schema.nodes.image.create({
-            src: url,
-            alt: file.name,
-            title: file.name,
-          })
-        )
-      );
+      return view.dispatch(view.state.tr.replaceSelectionWith(imageNode));
 
       // for drag and drop events
     } else if (event instanceof DragEvent) {
-      const { schema } = view.state;
       const coordinates = view.posAtCoords({
         left: event.clientX,
         top: event.clientY,
       });
-      const node = schema.nodes.image.create({
-        src: url,
-        alt: file.name,
-        title: file.name,
-      }); // creates the image element
-      const transaction = view.state.tr.insert(coordinates?.pos || 0, node); // places it in the correct position
+      const transaction = view.state.tr.insert(coordinates?.pos || 0, imageNode);
       return view.dispatch(transaction);
 
       // for input upload events
     } else if (event instanceof Event) {
-      return view.dispatch(
-        view.state.tr.replaceSelectionWith(
-          view.state.schema.nodes.image.create({
-            src: url,
-            alt: file.name,
-            title: file.name,
-          })
-        )
-      );
+      return view.dispatch(view.state.tr.replaceSelectionWith(imageNode));
     }
   };
 };

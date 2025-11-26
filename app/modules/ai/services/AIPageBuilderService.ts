@@ -59,10 +59,6 @@ ${info}
     blockContext = FooterBlockPrompt;
   } else if (block.content) {
     blockContext = ContentBlockPrompt;
-  } else {
-    // // Block not supported
-    // var blockName = Object.keys(block).join(", ");
-    // throw Error("Block not supported for AI generation: " + blockName);
   }
 
   if (blockContext) {
@@ -100,13 +96,14 @@ async function fillBlock({ block, info }: { block: PageBlockDto; info: string })
 
 function parseChatGptContentToBlock(content: string | undefined) {
   // remove new lines & trailing commas
-  content = content?.replace(/\n/g, "");
-  content = content?.replace(/,(?!\s*?[{["'\w])/g, ""); // remove all trailing commas (`input` variable holds the erroneous JSON)
+  content = content?.replaceAll(/\n/g, "");
+  content = content?.replaceAll(/,(?!\s*?[{["'\w])/g, ""); // remove all trailing commas (`input` variable holds the erroneous JSON)
   // eslint-disable-next-line no-console
   console.log({ content });
   let jsonContent = content ?? "";
+  const jsonRegex = /```json(.*)```/s;
   if (content?.includes("```json")) {
-    jsonContent = content?.match(/```json(.*)```/s)?.[1] ?? "";
+    jsonContent = jsonRegex.exec(content)?.[1] ?? "";
   } else if (content?.includes("```")) {
     jsonContent = content.split("```")[1] ?? "";
   }

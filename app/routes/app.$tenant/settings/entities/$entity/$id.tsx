@@ -76,10 +76,10 @@ async function handleEditProperty(params: any, form: FormData, existing: Propert
   const showInCreate = Boolean(form.get("show-in-create"));
   let formulaId = form.get("formula-id")?.toString() ?? null;
 
-  if (type !== PropertyType.FORMULA) {
-    formulaId = null;
-  } else {
+  if (type === PropertyType.FORMULA) {
     isRequired = false;
+  } else {
+    formulaId = null;
   }
 
   const validationError = await validatePropertyData(name, title, type, formulaId, entity, existing);
@@ -95,10 +95,12 @@ async function handleEditProperty(params: any, form: FormData, existing: Propert
   }
 
   const options: { order: number; value: string; name?: string; color?: Colors }[] = form.getAll("options[]").map((f: FormDataEntryValue) => {
-    return JSON.parse(f.toString());
+    const value = typeof f === "string" ? f : String(f);
+    return JSON.parse(value);
   });
   const attributes: { name: string; value: string }[] = form.getAll("attributes[]").map((f: FormDataEntryValue) => {
-    return JSON.parse(f.toString());
+    const value = typeof f === "string" ? f : String(f);
+    return JSON.parse(value);
   });
 
   try {

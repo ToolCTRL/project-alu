@@ -7,10 +7,9 @@ import NewSidebarMenu from "./NewSidebarMenu";
 interface Props {
   layout: "app" | "admin" | "docs";
   children: ReactNode;
-  className?: string;
 }
 
-export default function NewSidebarLayout({ layout, children }: Props) {
+export default function NewSidebarLayout({ layout, children }: Readonly<Props>) {
   const { query } = useKBar();
   const params = useParams();
   const [onboardingModalOpen, setOnboardingModalOpen] = useState(false);
@@ -19,8 +18,9 @@ export default function NewSidebarLayout({ layout, children }: Props) {
     try {
       // @ts-ignore
       $crisp?.push(["do", "chat:hide"]);
-    } catch (e) {
-      // ignore
+    } catch (error) {
+      // Crisp chat widget not available, continuing without it
+      console.debug("Crisp chat widget not available:", error);
     }
   }, []);
 

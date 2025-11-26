@@ -4,7 +4,7 @@ import { JsonPropertyDto } from "../dtos/JsonPropertyTypeDto";
 import CheckIcon from "~/components/ui/icons/CheckIcon";
 import XIcon from "~/components/ui/icons/XIcon";
 
-export default function JsonPropertyValueCell({ property, value }: { property: JsonPropertyDto; value: JsonValue | undefined }) {
+export default function JsonPropertyValueCell({ property, value }: readonly { readonly property: JsonPropertyDto; readonly value: JsonValue | undefined }) {
   if (value === null || value === undefined) {
     return null;
   }
@@ -20,9 +20,8 @@ export default function JsonPropertyValueCell({ property, value }: { property: J
       }
       if (booleanValue) {
         return <CheckIcon className="h-4 w-4" />;
-      } else {
-        return <XIcon className="h-4 w-4" />;
       }
+      return <XIcon className="h-4 w-4" />;
     }
     case "image":
       if (!value) {
@@ -37,28 +36,27 @@ export default function JsonPropertyValueCell({ property, value }: { property: J
         const date = new Date(value as string);
         return <div>{<DateCell date={date} />}</div>;
       } catch (e) {
-        return <div className="text-muted-foreground">{value?.toString()}</div>;
+        const stringValue = String(value);
+        return <div className="text-muted-foreground">{stringValue}</div>;
       }
     case "select":
-      if (!property.options) {
-        return value as string;
-      } else {
+      if (property.options) {
         const option = property.options.find((o) => o.value === value);
         return option?.name || (value as string);
       }
+      return value as string;
     case "multiselect":
       if (!Array.isArray(value)) {
         return null;
       }
-      if (!property.options) {
-        return <div className="text-muted-foreground">{value.join(", ")}</div>;
-      } else {
+      if (property.options) {
         const values = value.map((v) => {
           const option = property.options?.find((o) => o.value === v);
           return option?.name || v;
         });
         return values.join(", ");
       }
+      return <div className="text-muted-foreground">{value.join(", ")}</div>;
     default:
       return value as string;
   }

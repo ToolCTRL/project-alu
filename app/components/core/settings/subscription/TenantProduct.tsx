@@ -148,7 +148,7 @@ export default function TenantProduct({ item, onCancel }: Readonly<Props>) {
                             )}
                             {tier.flatFeePrice && (
                               <div>
-                                <>+{getFormattedPriceInCurrency({ price: Number(tier.flatFeePrice), currency: price.subscriptionUsageBasedPrice?.currency })}</>
+                                +{getFormattedPriceInCurrency({ price: Number(tier.flatFeePrice), currency: price.subscriptionUsageBasedPrice?.currency })}
                               </div>
                             )}
                           </div>

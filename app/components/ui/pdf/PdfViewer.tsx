@@ -22,7 +22,7 @@ declare global {
   }
 }
 
-export default function PdfViewer({ className, file, onRemoveFile, fileName = "", editing = false, canDownload = true, size, scale = 0.49 }: Props) {
+export default function PdfViewer({ className, file, onRemoveFile, fileName = "", editing = false, canDownload = true, size, scale = 0.49 }: Readonly<Props>) {
   const { t } = useTranslation();
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const renderTaskRef = useRef<any>(null);
@@ -36,8 +36,8 @@ export default function PdfViewer({ className, file, onRemoveFile, fileName = ""
     const script = document.createElement("script");
     script.src = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.9.359/pdf.min.js";
     script.onload = () => {
-      if (window.pdfjsLib.GlobalWorkerOptions) {
-        window.pdfjsLib.GlobalWorkerOptions.workerSrc = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.9.359/pdf.worker.min.js";
+      if (globalThis.pdfjsLib.GlobalWorkerOptions) {
+        globalThis.pdfjsLib.GlobalWorkerOptions.workerSrc = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.9.359/pdf.worker.min.js";
       }
     };
     document.body.appendChild(script);
@@ -88,7 +88,7 @@ export default function PdfViewer({ className, file, onRemoveFile, fileName = ""
 
     const initPdf = async () => {
       try {
-        const PDFJS = window.pdfjsLib;
+        const PDFJS = globalThis.pdfjsLib;
         const loadingTask = PDFJS.getDocument(file);
         const loadedPdf = await loadingTask.promise;
         setPdfRef(loadedPdf);
@@ -97,11 +97,11 @@ export default function PdfViewer({ className, file, onRemoveFile, fileName = ""
       }
     };
 
-    if (window.pdfjsLib) {
+    if (globalThis.pdfjsLib) {
       initPdf();
     } else {
       const intervalId = setInterval(() => {
-        if (window.pdfjsLib) {
+        if (globalThis.pdfjsLib) {
           clearInterval(intervalId);
           initPdf();
         }
@@ -121,22 +121,20 @@ export default function PdfViewer({ className, file, onRemoveFile, fileName = ""
     currentPage > 1 && setCurrentPage(currentPage - 1);
   };
 
-  return (
-    <div
-      id="pdf-viewer"
-      className={clsx(className, "border-border text-muted-foreground bg-background items-center overflow-hidden rounded-md border border-dashed")}
-      style={{
-        height: size?.height ?? "auto",
-        width: size?.width ?? "auto",
-      }}
-    >
-      {error ? (
-        <div className="text-red-500">{error}</div>
-      ) : !pdfRef ? (
+  const renderContent = () => {
+    if (error) {
+      return <div className="text-red-500">{error}</div>;
+    }
+
+    if (!pdfRef) {
+      return (
         <div className={clsx("flex items-center justify-center", size ? "h-full p-12" : "h-64 p-12")}>
           <div className="base-spinner text-muted-foreground flex justify-center p-12 text-sm italic"></div>
         </div>
-      ) : (
+      );
+    }
+
+    return (
         <>
           <div className="flex items-center justify-between p-2">
             <div className="flex items-center space-x-2">
@@ -144,6 +142,13 @@ export default function PdfViewer({ className, file, onRemoveFile, fileName = ""
                 onClick={(e) => {
                   e.preventDefault();
                 }}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                  }
+                }}
+                role="button"
+                tabIndex={0}
                 className="left-0 top-0 ml-1 mt-1 flex origin-top-left cursor-default items-center space-x-2"
               >
                 <span className="relative z-0 inline-flex rounded-md shadow-2xs">
@@ -234,7 +239,19 @@ export default function PdfViewer({ className, file, onRemoveFile, fileName = ""
             <canvas ref={canvasRef}></canvas>
           </div>
         </>
-      )}
+    );
+  };
+
+  return (
+    <div
+      id="pdf-viewer"
+      className={clsx(className, "border-border text-muted-foreground bg-background items-center overflow-hidden rounded-md border border-dashed")}
+      style={{
+        height: size?.height ?? "auto",
+        width: size?.width ?? "auto",
+      }}
+    >
+      {renderContent()}
     </div>
   );
 }

@@ -8,6 +8,6 @@ interface Props {
   }[];
 }
 
-export default function DocCarousel({ items }: Props) {
+export default function DocCarousel({ items }: Readonly<Props>) {
   return <CustomCarousel items={items} />;
 }

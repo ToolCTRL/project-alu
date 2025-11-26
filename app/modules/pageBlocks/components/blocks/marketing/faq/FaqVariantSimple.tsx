@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "~/components/ui/accordion";
 import { FaqBlockDto } from "~/modules/pageBlocks/components/blocks/marketing/faq/FaqBlockUtils";
 
-export default function FaqVariantSimple({ item }: { item: FaqBlockDto }) {
+export default function FaqVariantSimple({ item }: { readonly item: FaqBlockDto }) {
   const { t } = useTranslation();
   return (
     <div className="mx-auto w-full max-w-3xl space-y-8 px-4 py-12 sm:px-6 sm:py-16 lg:px-8">
@@ -13,7 +13,7 @@ export default function FaqVariantSimple({ item }: { item: FaqBlockDto }) {
       </div>
       <Accordion type="single" collapsible>
         {item.items.map((item, index) => (
-          <AccordionItem key={index} value={"item-" + (index + 1)}>
+          <AccordionItem key={`faq-${index}-${item.question}`} value={"item-" + (index + 1)}>
             <AccordionTrigger className="text-base">{t(item.question)}</AccordionTrigger>
             <AccordionContent className="text-base">
               {t(item.answer)}{" "}

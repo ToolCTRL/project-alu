@@ -2,7 +2,7 @@ import { Fragment } from "react";
 import { Colors } from "~/application/enums/shared/Colors";
 import SimpleBadge from "~/components/ui/badges/SimpleBadge";
 
-export default function SpeedBadge({ duration }: { duration: number }) {
+export default function SpeedBadge({ duration }: { readonly duration: number }) {
   // Lightning fast: Green (e.g. #4CAF50), <10 ms
   // Fast: Light green (e.g. #8BC34A), 11 - 100 ms
   // Average: Yellow (e.g. #FFC107), 101 - 500 ms

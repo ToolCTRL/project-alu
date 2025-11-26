@@ -5,15 +5,28 @@ export default function ShowMoreLinesText({
   lines = "1",
   children,
   className,
-}: {
+}: Readonly<{
   lines?: "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8";
   children?: React.ReactNode;
   className?: string;
-}) {
+}>) {
   const [expanded, setExpanded] = useState(false);
+
+  const handleToggle = () => setExpanded(!expanded);
+
+  const handleKeyDown = (event: React.KeyboardEvent) => {
+    if (event.key === "Enter" || event.key === " ") {
+      event.preventDefault();
+      handleToggle();
+    }
+  };
+
   return (
     <div
-      onClick={() => setExpanded(!expanded)}
+      role="button"
+      tabIndex={0}
+      onClick={handleToggle}
+      onKeyDown={handleKeyDown}
       className={clsx(
         className,
         "cursor-pointer",

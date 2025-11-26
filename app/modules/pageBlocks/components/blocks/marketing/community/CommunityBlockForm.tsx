@@ -12,7 +12,7 @@ import PageBlockUtils from "~/modules/pageBlocks/components/blocks/PageBlockUtil
 import GridBlockForm from "../../shared/grid/GridBlockForm";
 import { CommunityBlockDto, CommunityBlockStyle, CommunityBlockStyles } from "./CommunityBlockUtils";
 
-export default function CommunityBlockForm({ item, onUpdate }: { item?: CommunityBlockDto; onUpdate: (item: CommunityBlockDto) => void }) {
+export default function CommunityBlockForm({ item, onUpdate }: readonly { readonly item?: CommunityBlockDto; readonly onUpdate: (item: CommunityBlockDto) => void }) {
   const { t } = useTranslation();
   const [state, setState] = useState<CommunityBlockDto>(item || PageBlockUtils.defaultBlocks.community!);
   useEffect(() => {
@@ -65,7 +65,7 @@ export default function CommunityBlockForm({ item, onUpdate }: { item?: Communit
           {state.type === "manual" && (
             <div className="flex flex-col space-y-2">
               {state.data?.members?.map((member, index) => (
-                <div key={index} className="group relative grid grid-cols-2 gap-2">
+                <div key={member.user || index} className="group relative grid grid-cols-2 gap-2">
                   <button
                     onClick={() => {
                       const members = state.data?.members ?? [];
@@ -138,7 +138,7 @@ export default function CommunityBlockForm({ item, onUpdate }: { item?: Communit
       <InputGroup title="CTA">
         <div className="flex flex-col space-y-2">
           {state.cta.map((cta, index) => (
-            <div key={index} className="group relative grid grid-cols-2 gap-2">
+            <div key={`cta-${index}-${cta.href}`} className="group relative grid grid-cols-2 gap-2">
               <button
                 onClick={() => {
                   const cta = state.cta;

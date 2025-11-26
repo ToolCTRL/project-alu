@@ -2,9 +2,9 @@ import { motion, useInView } from "framer-motion";
 import { useRef } from "react";
 
 interface ScrollRevealProps {
-  children: React.ReactNode;
-  delay?: number;
-  className?: string;
+  readonly children: React.ReactNode;
+  readonly delay?: number;
+  readonly className?: string;
 }
 
 export default function ScrollReveal({

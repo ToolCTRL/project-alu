@@ -42,6 +42,8 @@ function getClient(apiKey?: string) {
   try {
     return new postmark.ServerClient(apiKey ?? process.env.POSTMARK_SERVER_TOKEN?.toString() ?? "");
   } catch (e) {
+    // eslint-disable-next-line no-console
+    console.error("Failed to initialize Postmark client:", e);
     return null;
   }
 }
@@ -211,7 +213,7 @@ export async function sendBroadcast({
 }) {
   const client = getClient(sender.apiKey);
   if (!client) {
-    throw Error("Invalid Postmark API key");
+    throw new Error("Invalid Postmark API key");
   }
   return await client.sendEmail({
     From: sender.fromEmail,

@@ -1,5 +1,4 @@
-import { ActionFunction, LoaderFunctionArgs, MetaFunction, redirect, useLoaderData } from "react-router";
-import { useActionData, useSubmit } from "react-router";
+import { ActionFunction, LoaderFunctionArgs, MetaFunction, redirect, useLoaderData, useActionData, useSubmit } from "react-router";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { MetaTagsDto } from "~/application/dtos/seo/MetaTagsDto";
@@ -40,7 +39,7 @@ type LoaderData = {
 export const loader = async ({ request, params }: LoaderFunctionArgs) => {
   await verifyUserHasPermission(request, "admin.onboarding.update");
   const { t } = await getTranslations(request);
-  const item = await getOnboarding(params.id!);
+  const item = await getOnboarding(params.id);
   if (!item) {
     throw redirect("/admin/onboarding/onboardings");
   }
@@ -62,7 +61,7 @@ export const action: ActionFunction = async ({ request, params }) => {
   const { t } = await getTranslations(request);
   const form = await request.formData();
   const action = form.get("action");
-  const item = await getOnboarding(params.id!);
+  const item = await getOnboarding(params.id);
   if (!item) {
     throw redirect("/admin/onboarding/onboardings");
   }
@@ -108,7 +107,7 @@ export const action: ActionFunction = async ({ request, params }) => {
   }
 };
 
-export default function () {
+export default function OnboardingFiltersPage() {
   const { t } = useTranslation();
   const data = useLoaderData<LoaderData>();
   const actionData = useActionData<ActionData>();
@@ -146,10 +145,10 @@ export default function () {
   }
   function onSaveFilter(item: OnboardingFilterDto) {
     const idx = showModal?.idx;
-    if (idx !== undefined) {
-      filters[idx] = item;
-    } else {
+    if (idx === undefined) {
       filters.push(item);
+    } else {
+      filters[idx] = item;
     }
     setFilters([...filters]);
     setShowModal(undefined);
@@ -194,7 +193,7 @@ export default function () {
             {filters.map((filter, idx) => {
               return (
                 <button
-                  key={idx}
+                  key={`${filter.type}-${filter.value}`}
                   type="button"
                   disabled={data.item.active}
                   onClick={() => setShowModal({ item: filter, idx })}
@@ -263,22 +262,18 @@ export default function () {
             {
               name: "tenant",
               title: t("models.tenant.object"),
-              value: (item) => <TenantCell item={item.tenant} />,
+              value: renderTenantCell,
             },
             {
               name: "user",
               title: t("models.user.object"),
-              value: (i) => <UserBadge item={i.user} />,
+              value: renderUserBadge,
             },
             {
               name: "matchingFilters",
               title: t("onboarding.filter.matching"),
-              value: (i) => (
-                <div className="flex flex-col">
-                  {i.matchingFilters.length === 0 && <div className="text-muted-foreground italic">No filters - All users are candidates</div>}
-                  {i.matchingFilters.map((filter, idx) => {
-                    return (
-                      <div key={idx} className="text-sm">
+              value: renderMatchingFilters,
+            },
                         <div className="flex items-center space-x-2">
                           <div className="font-medium">{filter.type}</div>
                           {filter.value !== null && (

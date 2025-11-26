@@ -94,9 +94,7 @@ export default function NewSidebarMenu({ layout, children, onOpenCommandPalette,
     menu.forEach((group) => {
       group.items?.forEach((element) => {
         if (element.open || isCurrent(element) || currentIsChild(element)) {
-          // expanded.push(element.path);
-        } else {
-          // setExpanded(expanded.filter((f) => f !== element.path));
+          // Track expanded items if needed in the future
         }
       });
     });
@@ -207,8 +205,7 @@ export default function NewSidebarMenu({ layout, children, onOpenCommandPalette,
   }
 
   return (
-    <>
-      <div>
+    <div>
         <OnboardingSession open={onboardingModalOpen} setOpen={setOnboardingModalOpen} />
 
         <Dialog
@@ -217,7 +214,7 @@ export default function NewSidebarMenu({ layout, children, onOpenCommandPalette,
           className={clsx(
             "text-foreground relative z-50 lg:hidden",
 
-            layout === "admin" ? "dark" : "dark"
+layout === "admin" ? "dark" : ""
           )}
         >
           <DialogBackdrop transition className="bg-foreground/50 fixed inset-0 transition-opacity duration-300 ease-linear data-closed:opacity-0" />
@@ -253,80 +250,34 @@ export default function NewSidebarMenu({ layout, children, onOpenCommandPalette,
                         <div id={group.title} className="mt-1">
                           <h3 className="text-muted-foreground px-1 text-xs font-medium uppercase leading-4 tracking-wider">{t(group.title || "")}</h3>
                         </div>
-                        {group.items.map((menuItem) => {
-                          return (
-                            <Link
-                              key={menuItem.path}
-                              prefetch="intent"
-                              id={UrlUtils.slugify(getPath(menuItem))}
-                              to={menuItem.redirectTo ?? getPath(menuItem)}
-                              className={clsx(
-                                isCurrent(menuItem)
-                                  ? "bg-secondary text-primary dark:text-secondary-foreground"
-                                  : "hover:bg-secondary hover:text-secondary-foreground text-secondary-foreground/70",
-                                "group flex gap-x-3 rounded-md p-2 text-sm leading-5"
-                              )}
-                              onClick={onSelected}
-                            >
-                              {(menuItem.icon !== undefined || menuItem.entityIcon !== undefined) && <SidebarIcon className="h-5 w-5 " item={menuItem} />}
-                              <div>{t(menuItem.title)}</div>
-                            </Link>
-                          );
-                        })}
+                        <nav>
+                          {group.items.map((menuItem) => {
+                            return (
+                              <Link
+                                key={menuItem.path}
+                                prefetch="intent"
+                                id={UrlUtils.slugify(getPath(menuItem))}
+                                to={menuItem.redirectTo ?? getPath(menuItem)}
+                                className={clsx(
+                                  isCurrent(menuItem)
+                                    ? "bg-secondary text-primary dark:text-secondary-foreground"
+                                    : "hover:bg-secondary hover:text-secondary-foreground text-secondary-foreground/70",
+                                  "group flex gap-x-3 rounded-md p-2 text-sm leading-5"
+                                )}
+                                onClick={onSelected}
+                              >
+                                {(menuItem.icon !== undefined || menuItem.entityIcon !== undefined) && <SidebarIcon className="h-5 w-5 " item={menuItem} />}
+                                <div>{t(menuItem.title)}</div>
+                              </Link>
+                            );
+                          })}
+                        </nav>
                       </div>
                     );
                   })}
-                  <ul role="list" className="flex flex-1 flex-col gap-y-7">
-                    {/* <li>
-                      <ul role="list" className="-mx-2 space-y-1">
-                        {navigation.map((item) => (
-                          <li key={item.name}>
-                            <a
-                              href={item.href}
-                              className={classNames(
-                                item.current ? "bg-foreground/90 text-white" : "text-muted-foreground hover:bg-foreground/90 hover:text-white",
-                                "group flex gap-x-3 rounded-md p-2 text-sm leading-5"
-                              )}
-                            >
-                              <item.icon aria-hidden="true" className="h-6 w-6 shrink-0" />
-                              {item.name}
-                            </a>
-                          </li>
-                        ))}
-                      </ul>
-                    </li> */}
-                    {/* <li>
-                      <div className="text-xs font-medium leading-6 text-muted-foreground">Your teams</div>
-                      <ul role="list" className="-mx-2 mt-2 space-y-1">
-                        {teams.map((team) => (
-                          <li key={team.name}>
-                            <a
-                              href={team.href}
-                              className={classNames(
-                                team.current ? "bg-foreground/90 text-white" : "text-muted-foreground hover:bg-foreground/90 hover:text-white",
-                                "group flex gap-x-3 rounded-md p-2 text-sm leading-5"
-                              )}
-                            >
-                              <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-lg border border-gray-700 bg-foreground/90 text-[0.625rem] font-medium text-muted-foreground group-hover:text-white">
-                                {team.initial}
-                              </span>
-                              <span className="truncate">{team.name}</span>
-                            </a>
-                          </li>
-                        ))}
-                      </ul>
-                    </li> */}
-                    <li className="mt-auto">
-                      {layout == "app" && <NewTenantSelect onOpenCommandPalette={onOpenCommandPalette} />}
-                      {/* <a
-                        href="#"
-                        className="group -mx-2 flex gap-x-3 rounded-md p-2 text-sm leading-5 text-muted-foreground hover:bg-foreground/90 hover:text-white"
-                      >
-                        <Cog6ToothIcon aria-hidden="true" className="h-6 w-6 shrink-0" />
-                        Settings
-                      </a> */}
-                    </li>
-                  </ul>
+                  <div className="mt-auto">
+                    {layout === "app" && <NewTenantSelect onOpenCommandPalette={onOpenCommandPalette} />}
+                  </div>
                 </nav>
               </div>
             </DialogPanel>
@@ -338,7 +289,7 @@ export default function NewSidebarMenu({ layout, children, onOpenCommandPalette,
           className={clsx(
             "text-foreground hidden lg:fixed lg:inset-y-0 lg:z-50 lg:flex lg:w-64 lg:flex-col",
 
-            layout === "admin" ? "dark" : "dark"
+layout === "admin" ? "dark" : ""
           )}
         >
           {/* Sidebar component, swap this element with another sidebar if you like */}
@@ -359,9 +310,9 @@ export default function NewSidebarMenu({ layout, children, onOpenCommandPalette,
               </Link>
             </div>
             <nav className="flex flex-1 flex-col">
-              <ul role="list" className="flex flex-1 flex-col gap-y-7">
-                <li>
-                  <ul role="list" className="-mx-2 space-y-1">
+              <div className="flex flex-1 flex-col gap-y-7">
+                <div>
+                  <div className="-mx-2 space-y-1">
                     {layout === "app" && <div>{appData?.currentTenant && <NewTenantSelector key={params.tenant} />}</div>}
 
                     {getMenu().map((group) => {
@@ -455,41 +406,12 @@ export default function NewSidebarMenu({ layout, children, onOpenCommandPalette,
                         </div>
                       );
                     })}
-                  </ul>
-                </li>
-                {/* <li>
-                  <div className="text-xs font-medium leading-6 text-muted-foreground">Your teams</div>
-                  <ul role="list" className="-mx-2 mt-2 space-y-1">
-                    {teams.map((team) => (
-                      <li key={team.name}>
-                        <a
-                          href={team.href}
-                          className={classNames(
-                            team.current ? "bg-foreground/90 text-white" : "text-muted-foreground hover:bg-foreground/90 hover:text-white",
-                            "group flex gap-x-3 rounded-md p-2 text-sm leading-5"
-                          )}
-                        >
-                          <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-lg border border-gray-700 bg-foreground/90 text-[0.625rem] font-medium text-muted-foreground group-hover:text-white">
-                            {team.initial}
-                          </span>
-                          <span className="truncate">{team.name}</span>
-                        </a>
-                      </li>
-                    ))}
-                  </ul>
-                </li> */}
-                <li className="mt-auto">
-                  {layout == "app" && <NewTenantSelect onOpenCommandPalette={onOpenCommandPalette} />}
-
-                  {/* <a
-                    href="#"
-                    className="group -mx-2 flex gap-x-3 rounded-md p-2 text-sm leading-5 text-muted-foreground hover:bg-foreground/90 hover:text-white"
-                  >
-                    <Cog6ToothIcon aria-hidden="true" className="h-6 w-6 shrink-0" />
-                    Settings
-                  </a> */}
-                </li>
-              </ul>
+                  </div>
+                </div>
+                <div className="mt-auto">
+                  {layout === "app" && <NewTenantSelect onOpenCommandPalette={onOpenCommandPalette} />}
+                </div>
+              </div>
             </nav>
           </div>
         </div>
@@ -524,13 +446,12 @@ export default function NewSidebarMenu({ layout, children, onOpenCommandPalette,
             </div>
           </div>
 
-          <main ref={mainElement} className="bg-secondary/50 flex-1 focus:outline-hidden" tabIndex={0}>
+          <main ref={mainElement} className="bg-secondary/50 flex-1 focus:outline-hidden">
             <div key={params.tenant} className="pb-20 sm:pb-0">
               {children}
             </div>
           </main>
         </div>
       </div>
-    </>
   );
 }

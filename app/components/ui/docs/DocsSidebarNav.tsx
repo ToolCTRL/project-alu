@@ -2,13 +2,13 @@ import { Link, useLocation } from "react-router";
 import clsx from "clsx";
 import { SideBarItem } from "~/application/sidebar/SidebarItem";
 
-export function DocsSidebarNav({ items }: { items: SideBarItem[] }) {
+export function DocsSidebarNav({ items }: Readonly<{ items: SideBarItem[] }>) {
   return (
     <div>
       {items.length > 0 ? (
         <div className="w-full">
-          {items.map((item, index) => (
-            <div key={index} className={clsx(item.items && item.items.length > 0 && "pb-4")}>
+          {items.map((item) => (
+            <div key={item.path || item.title} className={clsx(item.items && item.items.length > 0 && "pb-4")}>
               {item.path ? (
                 <Link to={item.path} className="hover:underline">
                   <h4 className="mb-1 rounded-md px-2 py-1 font-semibold">{item.title}</h4>
@@ -33,7 +33,7 @@ function DocsSidebarNavItems({ items }: { items: SideBarItem[] }) {
       {items.map((item, index) =>
         item.path ? (
           <Link
-            key={index}
+            key={item.path || item.title}
             to={item.path}
             className={clsx(
               "group flex w-full items-center rounded-md border border-transparent px-2 py-1 text-sm hover:underline",
@@ -53,7 +53,7 @@ function DocsSidebarNavItems({ items }: { items: SideBarItem[] }) {
           </Link>
         ) : (
           <span
-            key={index}
+            key={item.path || item.title}
             className={clsx(
               "text-muted-foreground flex w-full cursor-not-allowed items-center rounded-md p-2 hover:underline",
               item.disabled && "cursor-not-allowed opacity-60"

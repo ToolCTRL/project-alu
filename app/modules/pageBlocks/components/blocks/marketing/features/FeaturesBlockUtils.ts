@@ -29,7 +29,7 @@ export interface FeatureDto {
   link?: {
     text?: string;
     href: string;
-    target?: undefined | "_blank";
+    target?: "_blank";
   };
   subFeatures?: {
     name: string;

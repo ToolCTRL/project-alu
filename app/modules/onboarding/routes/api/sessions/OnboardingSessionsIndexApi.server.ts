@@ -71,7 +71,7 @@ export namespace OnboardingSessionsIndexApi {
       pagination: currentPagination,
       where: {
         onboardingId: params.id,
-        tenantId: tenantId === "null" ? null : tenantId ?? undefined,
+        tenantId: tenantId === "null" ? null : tenantId,
       },
     });
     const data: LoaderData = {

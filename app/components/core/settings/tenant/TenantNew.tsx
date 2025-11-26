@@ -8,7 +8,7 @@ import RowProperties from "~/components/entities/rows/RowProperties";
 import { EntityWithDetails } from "~/utils/db/entities/entities.db.server";
 import InputText, { RefInputText } from "~/components/ui/input/InputText";
 
-export default function TenantNew({ tenantSettingsEntity }: { tenantSettingsEntity: EntityWithDetails | null }) {
+export default function TenantNew({ tenantSettingsEntity }: Readonly<{ tenantSettingsEntity: EntityWithDetails | null }>) {
   const actionData = useActionData<{ tenantId?: string; error?: string; success?: string }>();
   const { t } = useTranslation();
   const submit = useSubmit();

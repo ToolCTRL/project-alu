@@ -1,4 +1,4 @@
-import { Radio, RadioGroup, RadioGroupOption } from "@headlessui/react";
+import { Radio, RadioGroup } from "@headlessui/react";
 import clsx from "clsx";
 import HintTooltip from "../tooltips/HintTooltip";
 import { useState, useEffect, ReactNode } from "react";
@@ -13,6 +13,23 @@ type ItemDto = {
   disabled?: boolean;
   renderName?: React.ReactNode;
 };
+
+interface Props {
+  readonly title?: string;
+  readonly name?: string;
+  readonly options: ItemDto[];
+  readonly defaultValue?: string;
+  readonly value?: string;
+  readonly onChange?: (value: string) => void;
+  readonly required?: boolean;
+  readonly disabled?: boolean;
+  readonly help?: string;
+  readonly hint?: React.ReactNode;
+  readonly columns?: number;
+  readonly className?: string;
+  readonly display?: "name" | "value" | "nameAndValue";
+}
+
 export default function InputRadioGroupCards({
   title,
   name,
@@ -27,21 +44,7 @@ export default function InputRadioGroupCards({
   columns,
   className,
   display,
-}: {
-  title?: string;
-  name?: string;
-  options: ItemDto[];
-  defaultValue?: string;
-  value?: string;
-  onChange?: (value: string) => void;
-  required?: boolean;
-  disabled?: boolean;
-  help?: string;
-  hint?: React.ReactNode;
-  columns?: number;
-  className?: string;
-  display?: "name" | "value" | "nameAndValue";
-}) {
+}: Props) {
   const [displayType, setDisplayType] = useState<"name" | "value" | "nameAndValue">("name");
 
   const [actualValue, setActualValue] = useState<string | undefined>(value || defaultValue);
@@ -58,15 +61,15 @@ export default function InputRadioGroupCards({
       setDisplayType(display);
     } else {
       const hasNames = options.some((item) => item.name);
-      if (!hasNames) {
-        setDisplayType("value");
-      } else {
+      if (hasNames) {
         const namesAreDifferent = options.some((item) => item.name !== item.value.toString());
         if (namesAreDifferent) {
           setDisplayType("nameAndValue");
         } else {
           setDisplayType("name");
         }
+      } else {
+        setDisplayType("value");
       }
     }
   }, [display, options]);
@@ -126,7 +129,7 @@ export default function InputRadioGroupCards({
                       <div className="flex w-full justify-center truncate">{item.icon}</div>
                     ) : (
                       <>
-                        <RadioGroup.Label as="span" className={clsx("block truncate text-sm", !disabled ? "font-medium" : "")}>
+                        <RadioGroup.Label as="span" className={clsx("block truncate text-sm", disabled ? "" : "font-medium")}>
                           {["name", "nameAndValue"].includes(displayType) ? <span>{item.renderName ? item.renderName : item.name}</span> : item.value}
                         </RadioGroup.Label>
                         {["nameAndValue", "value"].includes(displayType) && (
@@ -138,11 +141,10 @@ export default function InputRadioGroupCards({
                     )}
                   </span>
                 </span>
-                <CheckFilledCircleIcon className={clsx("shrink-0", !checked ? "invisible hidden" : "flex", "text-primary h-5 w-5")} aria-hidden="true" />
+                <CheckFilledCircleIcon className={clsx("shrink-0", checked ? "flex" : "invisible hidden", "text-primary h-5 w-5")} aria-hidden="true" />
                 <span
                   className={clsx(
                     checked || focus ? "ring-ring border-transparent ring-2" : "",
-                    // checked ? "border-border" : "border-transparent",
                     "pointer-events-none absolute -inset-px rounded-lg"
                   )}
                   aria-hidden="true"

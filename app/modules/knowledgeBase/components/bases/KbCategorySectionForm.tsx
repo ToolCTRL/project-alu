@@ -14,13 +14,13 @@ export default function KbCategorySectionForm({
   language,
   item,
   onDelete,
-}: {
+}: Readonly<{
   knowledgeBase: KnowledgeBaseDto;
   category: KnowledgeBaseCategoryWithDetails;
   language: string;
   item?: KnowledgeBaseCategorySectionWithDetails;
   onDelete?: () => void;
-}) {
+}>) {
   const navigation = useNavigation();
   const navigate = useNavigate();
 

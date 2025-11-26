@@ -154,12 +154,11 @@ async function updatePlan(portalId: string, plan: SubscriptionProductDto, featur
   await deletePortalSubscriptionFeatures(portalId, plan.id ?? "");
   await PortalSubscriptionServer.clearSubscriptionsCache(portalId);
 
+  const sortedFeatures = features.toSorted((a, b) => a.order - b.order);
   return await Promise.all(
-    features
-      .sort((a, b) => a.order - b.order)
-      .map(async (feature) => {
-        return await createPortalSubscriptionFeature(portalId, plan.id ?? "", feature);
-      })
+    sortedFeatures.map(async (feature) => {
+      return await createPortalSubscriptionFeature(portalId, plan.id ?? "", feature);
+    })
   );
 }
 

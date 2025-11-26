@@ -1,5 +1,4 @@
-import { ActionFunction, ActionFunctionArgs, LoaderFunctionArgs, MetaFunction } from "react-router";
-import { Form, useActionData, useLoaderData, useSubmit, useNavigation } from "react-router";
+import { ActionFunction, ActionFunctionArgs, LoaderFunctionArgs, MetaFunction, Form, useActionData, useLoaderData, useSubmit, useNavigation } from "react-router";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Colors } from "~/application/enums/shared/Colors";
@@ -110,7 +109,7 @@ export const action = async ({ request, params }: ActionFunctionArgs) => {
 };
 
 type SupabaseBucketDto = { id: string; name: string; public: boolean };
-export default function () {
+export default function BucketsList() {
   const { t } = useTranslation();
   const data = useLoaderData<LoaderData>();
   const actionData = useActionData<ActionData>();
@@ -190,19 +189,19 @@ export default function () {
   );
 }
 
-function BucketForm({ item }: { item?: SupabaseBucketDto }) {
+function BucketForm({ item }: { readonly item?: SupabaseBucketDto }) {
   const submit = useSubmit();
   const navigation = useNavigation();
   const actionData = useActionData<ActionData>();
 
-  function onDelete() {
+  function onDeleteBucket() {
     if (!item || !confirm("Are you sure?")) {
       return;
     }
-    const form = new FormData();
-    form.set("action", "bucket-delete");
-    form.set("id", item.id);
-    submit(form, {
+    const formData = new FormData();
+    formData.set("action", "bucket-delete");
+    formData.set("id", item.id);
+    submit(formData, {
       method: "post",
     });
   }
@@ -230,7 +229,7 @@ function BucketForm({ item }: { item?: SupabaseBucketDto }) {
       <div className="flex justify-between space-x-2">
         <div>
           {item && (
-            <ButtonSecondary disabled={navigation.state !== "idle"} destructive onClick={onDelete}>
+            <ButtonSecondary disabled={navigation.state !== "idle"} destructive onClick={onDeleteBucket}>
               Delete
             </ButtonSecondary>
           )}

@@ -6,20 +6,20 @@ import HintTooltip from "~/components/ui/tooltips/HintTooltip";
 import { Checkbox } from "../checkbox";
 
 interface Props {
-  name?: string;
-  title?: string;
-  withLabel?: boolean;
-  value?: boolean | undefined;
-  setValue?: React.Dispatch<React.SetStateAction<boolean>>;
-  className?: string;
-  required?: boolean;
-  disabled?: boolean;
-  asToggle?: boolean;
-  readOnly?: boolean;
-  hint?: ReactNode;
-  help?: string;
-  icon?: string;
-  autoFocus?: boolean;
+  readonly name?: string;
+  readonly title?: string;
+  readonly withLabel?: boolean;
+  readonly value?: boolean;
+  readonly setValue?: React.Dispatch<React.SetStateAction<boolean>>;
+  readonly className?: string;
+  readonly required?: boolean;
+  readonly disabled?: boolean;
+  readonly asToggle?: boolean;
+  readonly readOnly?: boolean;
+  readonly hint?: ReactNode;
+  readonly help?: string;
+  readonly icon?: string;
+  readonly autoFocus?: boolean;
 }
 
 export default function InputCheckbox({
@@ -38,9 +38,6 @@ export default function InputCheckbox({
   icon,
   autoFocus,
 }: Props) {
-  // useImperativeHandle(ref, () => ({ input }));
-  // const input = useRef<HTMLInputElement>(null);
-
   const [actualValue, setActualValue] = useState(value ?? false);
 
   useEffect(() => {

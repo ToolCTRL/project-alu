@@ -13,7 +13,7 @@ export default function SettingSection({
   children,
   className = "border border-border dark:border-border/50 shadow-2xs px-4 py-5 bg-background sm:p-6 rounded-md",
   size = "md",
-}: Props) {
+}: Readonly<Props>) {
   return (
     <div
       className={clsx(

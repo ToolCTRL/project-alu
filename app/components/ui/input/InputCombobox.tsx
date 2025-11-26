@@ -14,6 +14,10 @@ export interface RefInputCombobox {
   focus: () => void;
 }
 
+function isEqual(a: any, b: any) {
+  return JSON.stringify(a) === JSON.stringify(b);
+}
+
 interface Props {
   name?: string;
   title?: string;
@@ -93,10 +97,6 @@ const InputCombobox = (
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selected]);
 
-  function isEqual(a: any, b: any) {
-    return JSON.stringify(a) === JSON.stringify(b);
-  }
-
   useImperativeHandle(ref, () => ({ focus }));
   function focus() {
     setTimeout(() => {
@@ -123,12 +123,6 @@ const InputCombobox = (
     <Combobox multiple value={selected} onChange={setSelected} disabled={disabled || readOnly}>
       {({ open }) => (
         <div>
-          {/* {renderHiddenInputValue && <>
-            {selected?.map((item, idx) => {
-            return <input key={idx} type="hidden" name={name + `[]`} value={JSON.stringify(item)} />;
-          })}
-          </>} */}
-
           {withLabel && title && (
             <Label htmlFor={name} className="mb-1 flex justify-between space-x-2 text-xs font-medium">
               <div className="flex items-center space-x-1">
@@ -171,9 +165,7 @@ const InputCombobox = (
               )}
 
               <div className="inline-flex w-full items-center space-x-2 truncate">
-                {/* {withColors && selected && <ColorBadge color={selected?.color ?? Colors.UNDEFINED} />} */}
                 <div className="truncate">
-                  {/* {JSON.stringify(selected)} */}
                   {selected.length > 0 ? (
                     <span className="truncate">
                       {prefix ?? ""}
@@ -251,9 +243,9 @@ const InputCombobox = (
                   </div>
                 )}
 
-                {filteredItems().map((item, idx) => (
+                {filteredItems().map((item) => (
                   <ComboboxOption
-                    key={idx}
+                    key={item.value}
                     disabled={item.disabled}
                     className={({ focus, selected }) =>
                       cn(
@@ -273,19 +265,12 @@ const InputCombobox = (
                       <div className="flex items-center justify-between space-x-2">
                         <div className="flex items-center space-x-2 truncate">
                           {withColors && item.color !== undefined && <ColorBadge color={item.color} />}
-                          <div className={cn(selected ? "font-normal" : "font-normal", "truncate")}>{item.name || item.value}</div>
+                          <div className="truncate font-normal">{item.name || item.value}</div>
                         </div>
 
                         {selected ? (
-                          <div className={cn(active ? "" : "", "absolute inset-y-0 right-0 flex items-center pr-4")}>
+                          <div className="absolute inset-y-0 right-0 flex items-center pr-4">
                             <CheckIcon className="h-4 w-4" />
-                            {/* <svg xmlns="http://www.w3.org/2000/svg" className="text-foreground h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
-                              <path
-                                fillRule="evenodd"
-                                d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                                clipRule="evenodd"
-                              />
-                            </svg> */}
                           </div>
                         ) : null}
                       </div>

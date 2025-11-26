@@ -7,7 +7,9 @@ export const meta: MetaFunction<typeof loader> = ({ data }) => data?.meta || [];
 export const loader = (args: LoaderFunctionArgs) => OnboardingSessionOverviewApi.loader(args);
 export const action: ActionFunction = (args) => OnboardingSessionOverviewApi.action(args);
 
-export default () => <OnboardingSessionOverviewRoute />;
+export default function AdminOnboardingSessionsDetail() {
+  return <OnboardingSessionOverviewRoute />;
+}
 
 export function ErrorBoundary() {
   return <ServerError />;

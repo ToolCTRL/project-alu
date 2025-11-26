@@ -1,5 +1,4 @@
-import { ActionFunction, LoaderFunctionArgs, useLoaderData } from "react-router";
-import { Link } from "react-router";
+import { ActionFunction, LoaderFunctionArgs, useLoaderData, Link } from "react-router";
 import { getTranslations } from "~/locale/i18next.server";
 import { EntityWithDetails, getAllEntities } from "~/utils/db/entities/entities.db.server";
 import { RowWithDetails } from "~/utils/db/entities/rows.db.server";
@@ -79,6 +78,15 @@ export const action: ActionFunction = async ({ request, params }) => {
   return badRequest({ error: t("shared.invalidForm") });
 };
 
+function formatCreatedAt(item: RowWithDetails) {
+  return (
+    <div className="flex flex-col">
+      <div>{DateUtils.dateYMD(item.createdAt)}</div>
+      <div className="text-xs">{DateUtils.dateAgo(item.createdAt)}</div>
+    </div>
+  );
+}
+
 export default function AdminEntityRowsRoute() {
   const { t } = useTranslation();
   const data = useLoaderData<LoaderData>();
@@ -101,29 +109,22 @@ export default function AdminEntityRowsRoute() {
           {
             name: "object",
             title: "Object",
-            value: (item) => (
-              <div>
-                <ShowPayloadModalButton title="Details" description={"Details"} payload={JSON.stringify(item)} />
-              </div>
-            ),
+            value: (item) => <ShowPayloadModalButton title="Details" description={"Details"} payload={JSON.stringify(item)} />,
           },
           {
             name: "tenant",
             title: t("models.tenant.object"),
-            value: (item) => (
-              <div>
-                {item.tenant ? (
-                  <Link
-                    to={`/app/${item.tenant?.slug}`}
-                    className="focus:bg-secondary/90 hover:border-border rounded-md border-b border-dashed border-transparent"
-                  >
-                    {item.tenant.name}
-                  </Link>
-                ) : (
-                  <div>-</div>
-                )}
-              </div>
-            ),
+            value: (item) =>
+              item.tenant ? (
+                <Link
+                  to={`/app/${item.tenant?.slug}`}
+                  className="focus:bg-secondary/90 hover:border-border rounded-md border-b border-dashed border-transparent"
+                >
+                  {item.tenant.name}
+                </Link>
+              ) : (
+                <div>-</div>
+              ),
             breakpoint: "sm",
           },
           {
@@ -134,7 +135,7 @@ export default function AdminEntityRowsRoute() {
           {
             name: "folio",
             title: t("models.row.folio"),
-            value: (i) => RowHelper.getRowFolio(findEntity(i)!, i),
+            value: (i) => RowHelper.getRowFolio(findEntity(i), i),
           },
           {
             name: "description",
@@ -145,7 +146,7 @@ export default function AdminEntityRowsRoute() {
             name: "logs",
             title: t("models.log.plural"),
             value: (item) => (
-              <Link to={"/admin/entities/logs?rowId=" + item.id}>
+              <Link to={`/admin/entities/logs?rowId=${item.id}`}>
                 <ActivityHistoryIcon className="hover:text-theme-800 text-muted-foreground h-4 w-4" />
               </Link>
             ),
@@ -161,12 +162,7 @@ export default function AdminEntityRowsRoute() {
             name: "createdAt",
             title: t("shared.createdAt"),
             value: (item) => DateUtils.dateAgo(item.createdAt),
-            formattedValue: (item) => (
-              <div className="flex flex-col">
-                <div>{DateUtils.dateYMD(item.createdAt)}</div>
-                <div className="text-xs">{DateUtils.dateAgo(item.createdAt)}</div>
-              </div>
-            ),
+            formattedValue: formatCreatedAt,
             className: "text-muted-foreground text-xs",
             breakpoint: "sm",
             sortable: true,

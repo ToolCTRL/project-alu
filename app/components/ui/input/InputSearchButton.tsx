@@ -1,15 +1,13 @@
 import clsx from "clsx";
 import { useTranslation } from "react-i18next";
-import ButtonPrimary from "../buttons/ButtonPrimary";
-import { Input } from "../input";
 import { cn } from "~/lib/utils";
 import { Button } from "../button";
 
 interface Props {
-  size?: "xs" | "sm" | "md";
-  onClick: () => void;
-  className?: string;
-  placeholder?: string;
+  readonly size?: "xs" | "sm" | "md";
+  readonly onClick: () => void;
+  readonly className?: string;
+  readonly placeholder?: string;
 }
 
 export default function InputSearchButton({ size = "md", onClick, className, placeholder }: Props) {

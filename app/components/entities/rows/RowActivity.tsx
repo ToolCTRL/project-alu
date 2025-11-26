@@ -16,12 +16,12 @@ import clsx from "clsx";
 import { Button } from "~/components/ui/button";
 
 interface Props {
-  items: LogWithDetails[];
-  hasActivity?: boolean;
-  hasComments?: boolean;
-  onSubmit?: (formData: FormData) => void;
-  withTitle?: boolean;
-  autoFocus?: boolean;
+  readonly items: LogWithDetails[];
+  readonly hasActivity?: boolean;
+  readonly hasComments?: boolean;
+  readonly onSubmit?: (formData: FormData) => void;
+  readonly withTitle?: boolean;
+  readonly autoFocus?: boolean;
 }
 
 function getActionDescription(item: LogWithDetails) {
@@ -70,7 +70,7 @@ export default function RowActivity({ items, hasActivity = true, hasComments, on
     e.stopPropagation();
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
-    if (onSubmit !== undefined) {
+    if (onSubmit) {
       onSubmit(formData);
     } else {
       submit(formData, {
@@ -97,7 +97,7 @@ export default function RowActivity({ items, hasActivity = true, hasComments, on
                 {sortedItems().map((item, idx) => (
                   <li key={item.id}>
                     <div className="relative">
-                      {idx !== sortedItems().length - 1 ? <span className="absolute left-5 top-5 -ml-px h-full w-0.5 bg-gray-200" aria-hidden="true" /> : null}
+                      {idx < sortedItems().length - 1 && <span className="absolute left-5 top-5 -ml-px h-full w-0.5 bg-gray-200" aria-hidden="true" />}
                       <div className="relative flex items-start space-x-3">
                         {item.comment ? (
                           <>{hasComments && <RowLogComment item={item} />}</>
@@ -126,7 +126,7 @@ export default function RowActivity({ items, hasActivity = true, hasComments, on
                                   </div>
                                 </span>
 
-                                <span className="mr-0.5" title={JSON.stringify(item.details) !== JSON.stringify("{}") ? item.details?.toString() : ""}>
+                                <span className="mr-0.5" title={JSON.stringify(item.details) === JSON.stringify("{}") ? "" : item.details?.toString()}>
                                   {getActionDescription(item)}
                                 </span>
                                 <span className="whitespace-nowrap pt-1">

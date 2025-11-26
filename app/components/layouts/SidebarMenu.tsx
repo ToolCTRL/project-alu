@@ -70,8 +70,9 @@ function MobileMenuItem({ menuItem, onSelected, cssStates, isCurrent, getPath, m
 
   return (
     <div>
-      <div
-        className="group mt-1 flex items-center justify-between rounded-sm px-4 py-2 text-base leading-5 text-slate-200 transition duration-150 ease-in-out hover:bg-slate-800 hover:text-white focus:bg-slate-800 focus:text-gray-50 focus:outline-hidden"
+      <button
+        type="button"
+        className="group mt-1 flex w-full items-center justify-between rounded-sm px-4 py-2 text-base leading-5 text-slate-200 transition duration-150 ease-in-out hover:bg-slate-800 hover:text-white focus:bg-slate-800 focus:text-gray-50 focus:outline-hidden"
         onClick={() => toggleMenuItem(menuItem.path)}
       >
         <div className="flex items-center space-x-4 truncate">
@@ -93,7 +94,7 @@ function MobileMenuItem({ menuItem, onSelected, cssStates, isCurrent, getPath, m
         >
           <path d="M6 6L14 10L6 14V6Z" fill="currentColor" />
         </svg>
-      </div>
+      </button>
       {menuItemIsExpanded(menuItem.path) && (
         <div className="mt-1">
           {menuItem.items.map((subItem) => (

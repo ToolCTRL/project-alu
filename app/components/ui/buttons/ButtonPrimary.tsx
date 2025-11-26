@@ -8,9 +8,9 @@ import clsx from "clsx";
 
 interface Props {
   className?: string;
-  type?: "button" | "submit" | "reset" | undefined;
+  type?: "button" | "submit" | "reset";
   to?: string;
-  target?: undefined | "_blank";
+  target?: "_blank";
   rel?: string;
   disabled?: boolean;
   destructive?: boolean;
@@ -38,17 +38,7 @@ export default function ButtonPrimary({
   children,
   event,
   sendEvent = true,
-}: Props) {
-  // const combinedClassName = clsx(
-  //   className,
-  //   "inline-flex items-center space-x-2 px-4 py-2 border border-transparent shadow-2xs text-sm font-medium rounded-md text-white focus:outline-hidden focus:ring-2 focus:ring-accent-300",
-  //   disabled && "cursor-not-allowed opacity-75",
-  //   !destructive && "bg-primary",
-  //   destructive && "bg-red-600",
-  //   !disabled && !destructive && !className && "hover:bg-accent-900 focus:ring-ring hover:text-accent-100",
-  //   !disabled && destructive && "hover:bg-red-700 focus:ring-red-500"
-  // );
-
+}: Readonly<Props>) {
   let location = useLocation();
   const rootData = useRootData();
   const matches = useMatches();

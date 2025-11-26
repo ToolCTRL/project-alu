@@ -1,11 +1,10 @@
 "use client";
-import { ReactNode } from "react";
+import React, { ReactNode } from "react";
 import { motion, Variants } from "motion/react";
-import React from "react";
 
 export type PresetType = "fade" | "slide" | "scale" | "blur-xs" | "blur-slide" | "zoom" | "flip" | "bounce" | "rotate" | "swing";
 
-export type AnimatedGroupProps = {
+export type AnimatedGroupProps = Readonly<{
   children: ReactNode;
   className?: string;
   variants?: {
@@ -15,7 +14,7 @@ export type AnimatedGroupProps = {
   preset?: PresetType;
   as?: React.ElementType;
   asChild?: React.ElementType;
-};
+}>;
 
 const defaultContainerVariants: Variants = {
   visible: {
@@ -104,11 +103,14 @@ function AnimatedGroup({ children, className, variants, preset, as = "div", asCh
 
   return (
     <MotionComponent initial="hidden" animate="visible" variants={containerVariants} className={className}>
-      {React.Children.map(children, (child, index) => (
-        <MotionChild key={index} variants={itemVariants}>
-          {child}
-        </MotionChild>
-      ))}
+      {React.Children.map(children, (child, index) => {
+        const key = React.isValidElement(child) && child.key != null ? child.key : `animated-group-item-${index}`;
+        return (
+          <MotionChild key={key} variants={itemVariants}>
+            {child}
+          </MotionChild>
+        );
+      })}
     </MotionComponent>
   );
 }

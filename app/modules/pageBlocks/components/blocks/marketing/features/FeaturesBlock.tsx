@@ -4,7 +4,7 @@ import FeaturesVariantList from "./FeaturesVariantList";
 import FeaturesVariantGroups from "./FeaturesVariantGroups";
 import FeaturesVariantAlternating from "./FeaturesVariantAlternating";
 
-export default function FeaturesBlock({ item }: { item: FeaturesBlockDto }) {
+export default function FeaturesBlock({ item }: { readonly item: FeaturesBlockDto }) {
   return (
     <>
       {item.style === "cards" && <FeaturesVariantCards item={item} />}

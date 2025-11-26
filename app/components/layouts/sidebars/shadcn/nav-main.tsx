@@ -72,30 +72,7 @@ export function NavMain({
           <SidebarMenu>
             {group.items.map((item, idx) => (
               <Fragment key={item.path || idx}>
-                {!item.items?.length ? (
-                  <SidebarMenuItem>
-                    {(() => {
-                      const isSettingsHub = item.path === "/admin/settings";
-                      if (isSettingsHub) {
-                        return (
-                          <Link to={item.path} className="nav-gear-floating" aria-label={item.title}>
-                            <div className="nav-gear-glow" />
-                            <Settings className="nav-gear-icon" />
-                            <span className="nav-gear-label">Einstellungen</span>
-                          </Link>
-                        );
-                      }
-                      return (
-                        <SidebarMenuButton asChild>
-                          <Link to={item.path}>
-                            {(item.icon !== undefined || item.entityIcon !== undefined) && <SidebarIcon className="size-4" item={item} />}
-                            <span>{item.title}</span>
-                          </Link>
-                        </SidebarMenuButton>
-                      );
-                    })()}
-                  </SidebarMenuItem>
-                ) : (
+                {item.items?.length ? (
                   <Collapsible asChild defaultOpen={item.isActive} className="group/collapsible">
                     <SidebarMenuItem>
                       <CollapsibleTrigger asChild>
@@ -134,6 +111,29 @@ export function NavMain({
                       ) : null}
                     </SidebarMenuItem>
                   </Collapsible>
+                ) : (
+                  <SidebarMenuItem>
+                    {(() => {
+                      const isSettingsHub = item.path === "/admin/settings";
+                      if (isSettingsHub) {
+                        return (
+                          <Link to={item.path} className="nav-gear-floating" aria-label={item.title}>
+                            <div className="nav-gear-glow" />
+                            <Settings className="nav-gear-icon" />
+                            <span className="nav-gear-label">Einstellungen</span>
+                          </Link>
+                        );
+                      }
+                      return (
+                        <SidebarMenuButton asChild>
+                          <Link to={item.path}>
+                            {(item.icon !== undefined || item.entityIcon !== undefined) && <SidebarIcon className="size-4" item={item} />}
+                            <span>{item.title}</span>
+                          </Link>
+                        </SidebarMenuButton>
+                      );
+                    })()}
+                  </SidebarMenuItem>
                 )}
               </Fragment>
             ))}

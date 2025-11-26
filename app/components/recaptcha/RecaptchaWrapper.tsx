@@ -3,8 +3,8 @@ import { useRootData } from "~/utils/data/useRootData";
 import { GoogleReCaptchaProvider } from "react-google-recaptcha-ultimate";
 
 interface Props {
-  children: React.ReactNode;
-  enabled: boolean;
+  readonly children: React.ReactNode;
+  readonly enabled: boolean;
 }
 export default function RecaptchaWrapper({ children, enabled }: Props) {
   const rootData = useRootData();
@@ -13,12 +13,12 @@ export default function RecaptchaWrapper({ children, enabled }: Props) {
     <Fragment>
       {enabled ? (
         <Fragment>
-          {!siteKey ? (
-            children
-          ) : (
+          {siteKey ? (
             <GoogleReCaptchaProvider type="v3" siteKey={siteKey}>
               {children}
             </GoogleReCaptchaProvider>
+          ) : (
+            children
           )}
         </Fragment>
       ) : (

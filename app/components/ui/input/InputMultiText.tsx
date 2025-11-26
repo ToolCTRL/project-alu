@@ -24,7 +24,6 @@ interface Props {
   disabled?: boolean;
   required?: boolean;
   autoComplete?: string;
-  translationParams?: string[];
   placeholder?: string;
   pattern?: string;
   rows?: number;
@@ -99,7 +98,7 @@ const InputMultiText = (
     }
 
     if (e.key === "Backspace" && inputValue === "") {
-      setActualValue?.((prevTags) => prevTags.slice(0, prevTags.length - 1));
+      setActualValue?.((prevTags) => prevTags.slice(0, -1));
     }
   };
 
@@ -125,7 +124,7 @@ const InputMultiText = (
       {actualValue.map((item, idx) => {
         return (
           <input
-            key={idx}
+            key={`${item}-${idx}`}
             type="hidden"
             name={name + `[]`}
             value={JSON.stringify({
@@ -144,7 +143,7 @@ const InputMultiText = (
         )}
         <div className="flex w-full flex-wrap items-center">
           {actualValue?.map((tag, index) => (
-            <div key={index} className="border-border bg-secondary m-0.5 flex items-center rounded border px-2 py-2 text-sm">
+            <div key={`${tag}-${index}`} className="border-border bg-secondary m-0.5 flex items-center rounded border px-2 py-2 text-sm">
               <span>{tag}</span>
               {!disabled && !readOnly && (
                 <button

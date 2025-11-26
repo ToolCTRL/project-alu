@@ -92,12 +92,6 @@ export async function getPermissionsByUser(userId: string, tenantId: string | nu
       }
     });
   });
-  // console.log({
-  //   userId,
-  //   tenantId,
-  //   roles,
-  //   permissions: names,
-  // });
   return names;
 }
 
@@ -118,12 +112,6 @@ export async function findPermissionByUser(persmissionName: string, userId: stri
       }
     });
   });
-  // console.log({
-  //   userId,
-  //   tenantId,
-  //   roles,
-  //   permissions: names,
-  // });
   return names.length > 0 ? names[0] : null;
 }
 

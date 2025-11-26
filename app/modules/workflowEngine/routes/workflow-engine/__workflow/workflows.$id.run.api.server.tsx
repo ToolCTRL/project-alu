@@ -17,7 +17,7 @@ export namespace WorkflowsIdRunApiApi {
   export const loader = async ({ request, params }: LoaderFunctionArgs) => {
     await requireAuth({ request, params });
     const tenantId = await getTenantIdOrNull({ request, params });
-    const workflow = await WorkflowsService.get(params.id!, {
+    const workflow = await WorkflowsService.get(params.id, {
       tenantId,
     });
     if (!workflow) {
@@ -48,7 +48,7 @@ export namespace WorkflowsIdRunApiApi {
         throw new Error(`No API key found`);
       }
     } else {
-      const apiKeys = await getApiKeys(tenantId!);
+      const apiKeys = await getApiKeys(tenantId);
       const validApiKey = apiKeys.find((f) => f.active && (f.expires === null || f.expires > new Date()));
       if (!validApiKey) {
         throw new Error(`No valid API key found`);

@@ -7,7 +7,7 @@ export type PresetType = "blur-xs" | "fade-in-blur" | "scale" | "fade" | "slide"
 
 export type PerType = "word" | "char" | "line";
 
-export type TextEffectProps = {
+export type TextEffectProps = Readonly<{
   children: string;
   per?: PerType;
   as?: keyof React.JSX.IntrinsicElements;
@@ -27,7 +27,7 @@ export type TextEffectProps = {
   containerTransition?: Transition;
   segmentTransition?: Transition;
   style?: React.CSSProperties;
-};
+}>;
 
 const defaultStaggerTimes: Record<PerType, number> = {
   char: 0.03,
@@ -105,16 +105,22 @@ const AnimationComponent: React.FC<{
   per: "line" | "word" | "char";
   segmentWrapperClassName?: string;
 }> = React.memo(({ segment, variants, per, segmentWrapperClassName }) => {
-  const content =
-    per === "line" ? (
+  let content: React.ReactNode;
+
+  if (per === "line") {
+    content = (
       <motion.span variants={variants} className="block">
         {segment}
       </motion.span>
-    ) : per === "word" ? (
+    );
+  } else if (per === "word") {
+    content = (
       <motion.span aria-hidden="true" variants={variants} className="inline-block whitespace-pre">
         {segment}
       </motion.span>
-    ) : (
+    );
+  } else {
+    content = (
       <motion.span className="inline-block whitespace-pre">
         {segment.split("").map((char, charIndex) => (
           <motion.span key={`char-${charIndex}`} aria-hidden="true" variants={variants} className="inline-block whitespace-pre">
@@ -123,6 +129,7 @@ const AnimationComponent: React.FC<{
         ))}
       </motion.span>
     );
+  }
 
   if (!segmentWrapperClassName) {
     return content;
@@ -188,7 +195,7 @@ export function TextEffect({
   style,
 }: TextEffectProps) {
   const segments = splitText(children, per);
-  const MotionTag = motion[as as keyof typeof motion] as typeof motion.div;
+  const MotionTag = motion[as as keyof typeof motion];
 
   const baseVariants = preset ? presetVariants[preset] : { container: defaultContainerVariants, item: defaultItemVariants };
 
@@ -197,11 +204,11 @@ export function TextEffect({
   const baseDuration = 0.3 / speedSegment;
 
   const customStagger = hasTransition(variants?.container?.visible ?? {})
-    ? (variants?.container?.visible as TargetAndTransition).transition?.staggerChildren
+    ? variants?.container?.visible.transition?.staggerChildren
     : undefined;
 
   const customDelay = hasTransition(variants?.container?.visible ?? {})
-    ? (variants?.container?.visible as TargetAndTransition).transition?.delayChildren
+    ? variants?.container?.visible.transition?.delayChildren
     : undefined;
 
   const computedVariants = {
@@ -233,7 +240,7 @@ export function TextEffect({
           onAnimationStart={onAnimationStart}
           style={style}
         >
-          {per !== "line" ? <span className="sr-only">{children}</span> : null}
+          {per === "line" ? null : <span className="sr-only">{children}</span>}
           {segments.map((segment, index) => (
             <AnimationComponent
               key={`${per}-${index}-${segment}`}

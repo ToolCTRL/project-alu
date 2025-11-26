@@ -13,12 +13,12 @@ export default function OnboardingBlock({
   item,
   open,
   onClose,
-}: {
+}: Readonly<{
   session?: OnboardingSessionWithDetails | null;
   item: OnboardingBlockDto;
   open: boolean;
   onClose: () => void;
-}) {
+}>) {
   const { t } = useTranslation();
   const fetcher = useFetcher();
   const navigate = useNavigate();

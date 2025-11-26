@@ -4,10 +4,10 @@ import MyPlanFeatureUsage from "./MyPlanFeatureUsage";
 import { PlanFeatureUsageDto } from "~/application/dtos/subscriptions/PlanFeatureUsageDto";
 
 interface Props {
-  features: PlanFeatureUsageDto[];
-  className?: string;
-  withCurrentPlan: boolean;
-  cols?: string;
+  readonly features: PlanFeatureUsageDto[];
+  readonly className?: string;
+  readonly withCurrentPlan: boolean;
+  readonly cols?: string;
 }
 
 export default function MySubscriptionFeatures({
@@ -28,31 +28,29 @@ export default function MySubscriptionFeatures({
       {features.length === 0 ? (
         <div className="text-muted-foreground text-sm italic">{t("settings.subscription.noSubscription")}</div>
       ) : (
-        <>
-          <dl
-            className={clsx(
-              "grid gap-2",
-              withCurrentPlan && "mt-2 ",
-              features.length === 1 && "grid-cols-1 md:grid-cols-1 xl:grid-cols-1",
-              features.length === 2 && "grid-cols-1 md:grid-cols-1 xl:grid-cols-2",
-              features.length === 3 && "grid-cols-1 md:grid-cols-1 xl:grid-cols-1",
-              features.length === 4 && "grid-cols-1 md:grid-cols-1 xl:grid-cols-2",
-              features.length === 5 && "grid-cols-1 md:grid-cols-1 xl:grid-cols-1",
-              features.length === 6 && "grid-cols-1 md:grid-cols-3 xl:grid-cols-2"
-            )}
-          >
-            {features.map((item) => {
-              return (
-                <div key={item.name} className="border-border bg-background rounded-lg border p-4 shadow-2xs">
-                  <dt className="text-muted-foreground truncate text-xs uppercase tracking-wide">{getTitle(item)}</dt>
-                  <dd className="mt-1">
-                    <span>{<MyPlanFeatureUsage item={item} />}</span>
-                  </dd>
-                </div>
-              );
-            })}
-          </dl>
-        </>
+        <dl
+          className={clsx(
+            "grid gap-2",
+            withCurrentPlan && "mt-2 ",
+            features.length === 1 && "grid-cols-1 md:grid-cols-1 xl:grid-cols-1",
+            features.length === 2 && "grid-cols-1 md:grid-cols-1 xl:grid-cols-2",
+            features.length === 3 && "grid-cols-1 md:grid-cols-1 xl:grid-cols-1",
+            features.length === 4 && "grid-cols-1 md:grid-cols-1 xl:grid-cols-2",
+            features.length === 5 && "grid-cols-1 md:grid-cols-1 xl:grid-cols-1",
+            features.length === 6 && "grid-cols-1 md:grid-cols-3 xl:grid-cols-2"
+          )}
+        >
+          {features.map((item) => {
+            return (
+              <div key={item.name} className="border-border bg-background rounded-lg border p-4 shadow-2xs">
+                <dt className="text-muted-foreground truncate text-xs uppercase tracking-wide">{getTitle(item)}</dt>
+                <dd className="mt-1">
+                  <MyPlanFeatureUsage item={item} />
+                </dd>
+              </div>
+            );
+          })}
+        </dl>
       )}
     </div>
   );

@@ -120,16 +120,9 @@ export const AppSidebar = ({ t, tenantId, entities, entityGroups, appConfigurati
         {
           title: t("app.sidebar.settings"),
           icon: SvgIcon.SETTINGS,
-          // tenantUserTypes: [TenantUserType.OWNER, TenantUserType.ADMIN],
           path: `${currentTenantUrl}/settings`,
           redirectTo: `${currentTenantUrl}/settings/profile`,
         },
-        // {
-        //   title: t("app.sidebar.logs"),
-        //   icon: SvgIcon.LOGS,
-        //   tenantUserTypes: [TenantUserType.OWNER, TenantUserType.ADMIN],
-        //   path: `${currentTenantUrl}/logs`,
-        // },
         {
           title: t("admin.switchToAdmin"),
           path: "/admin/dashboard",

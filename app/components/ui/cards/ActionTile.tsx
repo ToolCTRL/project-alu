@@ -18,7 +18,8 @@ export type ActionTileProps = {
 };
 
 export function ActionTile({ title, description, hint, icon, tone = "accent", onClick, href, actionLabel = "Öffnen", className, disableTilt }: Readonly<ActionTileProps>) {
-  const tilt = disableTilt ? null : use3DTilt({ maxAngle: 8 });
+  const tilt = use3DTilt({ maxAngle: 8 });
+  const useTilt = !disableTilt;
   const baseContent = (
     <div className="flex w-full items-start gap-4 text-left pr-4">
       <div className="flex-1 space-y-2">
@@ -49,9 +50,9 @@ export function ActionTile({ title, description, hint, icon, tone = "accent", on
       <a
         href={href}
       className={commonClasses}
-      onMouseMove={tilt ? tilt.handleMouseMove : undefined}
-      onMouseLeave={tilt ? tilt.handleMouseLeave : undefined}
-      style={tilt ? { transformStyle: "preserve-3d" } : undefined}
+      onMouseMove={useTilt ? tilt.handleMouseMove : undefined}
+      onMouseLeave={useTilt ? tilt.handleMouseLeave : undefined}
+      style={useTilt ? { transformStyle: "preserve-3d" } : undefined}
     >
       {baseContent}
       <span className="text-xs font-semibold uppercase tracking-[0.3em] text-white/80">{actionLabel}</span>
@@ -64,9 +65,9 @@ export function ActionTile({ title, description, hint, icon, tone = "accent", on
       type="button"
       className={commonClasses}
       onClick={onClick}
-      onMouseMove={tilt ? tilt.handleMouseMove : undefined}
-      onMouseLeave={tilt ? tilt.handleMouseLeave : undefined}
-      style={tilt ? { transformStyle: "preserve-3d" } : undefined}
+      onMouseMove={useTilt ? tilt.handleMouseMove : undefined}
+      onMouseLeave={useTilt ? tilt.handleMouseLeave : undefined}
+      style={useTilt ? { transformStyle: "preserve-3d" } : undefined}
     >
       {baseContent}
       <span className="text-xs font-semibold uppercase tracking-[0.3em] text-white/80">{actionLabel}</span>

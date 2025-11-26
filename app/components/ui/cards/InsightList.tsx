@@ -24,10 +24,10 @@ const toneClasses: Record<InsightTone, string> = {
   neutral: "text-slate-300",
 };
 
-export function InsightList({ items, title, description, className }: { items: InsightListItem[]; title?: string; description?: string; className?: string }) {
+export function InsightList({ items, title, description, className }: Readonly<{ items: InsightListItem[]; title?: string; description?: string; className?: string }>) {
   const { handleMouseMove, handleMouseLeave } = use3DTilt({ maxAngle: 6 });
   return (
-    <section
+    <div
       className={clsx(
         "space-y-4 rounded-[var(--radius-lg,1.25rem)] border border-white/5 bg-card/80 p-5 text-card-foreground transition-transform duration-200 will-change-transform",
         className
@@ -90,7 +90,7 @@ export function InsightList({ items, title, description, className }: { items: I
           </li>
         ))}
       </ul>
-    </section>
+    </div>
   );
 }
 

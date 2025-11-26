@@ -3,7 +3,7 @@ import { ReactNode } from "react";
 interface Props {
   children: ReactNode;
 }
-export default function Divider({ children }: Props) {
+export default function Divider({ children }: Readonly<Props>) {
   return (
     <div className="relative">
       <div className="absolute inset-0 flex items-center" aria-hidden="true">

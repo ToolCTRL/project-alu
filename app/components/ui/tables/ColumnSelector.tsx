@@ -10,13 +10,13 @@ import DotsHorizontalFilledIcon from "../icons/DotsHorizontalFilledIcon";
 import InputCheckboxInline from "../input/InputCheckboxInline";
 
 interface Props {
-  items: ColumnDto[];
-  setItems: React.Dispatch<React.SetStateAction<ColumnDto[]>>;
-  onClear: () => void;
-  className?: string;
+  readonly items: ColumnDto[];
+  readonly setItems: React.Dispatch<React.SetStateAction<ColumnDto[]>>;
+  readonly onClear: () => void;
+  readonly className?: string;
 }
 
-export default function ColumnSelector({ items, setItems, onClear, className }: Props) {
+export default function ColumnSelector({ items, setItems, onClear, className }: Readonly<Props>) {
   const { t } = useTranslation();
 
   const [opened, setOpened] = useState(false);

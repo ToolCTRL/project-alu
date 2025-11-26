@@ -8,7 +8,7 @@ import OnboardingSessionsTable from "~/modules/onboarding/components/OnboardingS
 import { OnboardingSessionWithDetails } from "~/modules/onboarding/db/onboardingSessions.db.server";
 import { OnboardingSessionsIndexApi } from "../../api/sessions/OnboardingSessionsIndexApi.server";
 
-export default function () {
+export default function OnboardingSessionsIndexRoute() {
   const { t } = useTranslation();
   const data = useLoaderData<OnboardingSessionsIndexApi.LoaderData>();
   const actionData = useActionData<OnboardingSessionsIndexApi.ActionData>();

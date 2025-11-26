@@ -7,7 +7,7 @@ interface Props {
   onClose: () => void;
   className?: string;
 }
-export default function OpenModal({ children, onClose, className = "sm:max-w-3xl" }: Props) {
+export default function OpenModal({ children, onClose, className = "sm:max-w-3xl" }: Readonly<Props>) {
   return (
     <Transition show={true} as={Fragment}>
       <Dialog as="div" className="fixed inset-0 z-50 overflow-y-auto" onClose={onClose}>

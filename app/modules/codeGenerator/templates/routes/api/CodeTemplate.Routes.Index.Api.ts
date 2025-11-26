@@ -3,8 +3,8 @@ import { EntityWithDetails } from "~/utils/db/entities/entities.db.server";
 
 function generate({ entity }: { entity: EntityWithDetails }): string {
   const { capitalized, name, title } = CodeGeneratorHelper.getNames(entity);
-  const imports: string[] = [];
-  imports.push(`import { LoaderFunctionArgs } from "react-router";
+  const imports: string[] = [
+    `import { LoaderFunctionArgs } from "react-router";
 import { FilterablePropertyDto } from "~/application/dtos/data/FilterablePropertyDto";
 import { PaginationDto } from "~/application/dtos/data/PaginationDto";
 import { getTranslations } from "~/locale/i18next.server";
@@ -12,9 +12,10 @@ import { getEntityByName } from "~/utils/db/entities/entities.db.server";
 import EntityHelper from "~/utils/helpers/EntityHelper";
 import { getTenantIdOrNull } from "~/utils/services/.server/urlService";
 import { getUserInfo } from "~/utils/session.server";
-import { MetaTagsDto } from "~/application/dtos/seo/MetaTagsDto";`);
-  imports.push(`import { ${capitalized}Dto } from "../../dtos/${capitalized}Dto";
-import { ${capitalized}Service } from "../../services/${capitalized}Service";`);
+import { MetaTagsDto } from "~/application/dtos/seo/MetaTagsDto";`,
+    `import { ${capitalized}Dto } from "../../dtos/${capitalized}Dto";
+import { ${capitalized}Service } from "../../services/${capitalized}Service";`
+  ];
 
   let template = `
 export namespace ${capitalized}RoutesIndexApi {

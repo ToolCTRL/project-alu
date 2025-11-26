@@ -1,9 +1,8 @@
-import React, { useState, useRef, useEffect, KeyboardEvent, ReactNode, RefObject, Ref, forwardRef, useImperativeHandle } from "react";
+import React, { useState, useRef, KeyboardEvent, ReactNode, RefObject, Ref, forwardRef, useImperativeHandle } from "react";
 import clsx from "clsx";
 import HintTooltip from "../tooltips/HintTooltip";
 import EntityIcon from "~/components/layouts/icons/EntityIcon";
 import { useTranslation } from "react-i18next";
-import { RowValueMultipleDto } from "~/application/dtos/entities/RowValueMultipleDto";
 import { SeparatorFormatType } from "~/utils/shared/SeparatorUtils";
 import { Input } from "../input";
 
@@ -25,7 +24,6 @@ interface Props {
   disabled?: boolean;
   required?: boolean;
   autoComplete?: string;
-  translationParams?: string[];
   placeholder?: string;
   pattern?: string;
   rows?: number;
@@ -91,7 +89,7 @@ const InputMultipleText = (
     }
 
     if (e.key === "Backspace" && inputValue === "") {
-      onChange(value.slice(0, value.length - 1));
+      onChange(value.slice(0, -1));
     }
   };
 
@@ -115,7 +113,7 @@ const InputMultipleText = (
       )}
 
       {value.map((item, idx) => {
-        return <input key={idx} type="hidden" name={name} value={item} />;
+        return <input key={`${item}-${idx}`} type="hidden" name={name} value={item} />;
       })}
 
       <div className={clsx("relative flex w-full rounded-md")}>
@@ -126,7 +124,7 @@ const InputMultipleText = (
         )}
         <div className="flex w-full flex-wrap items-center">
           {value.map((tag, index) => (
-            <div key={index} className="border-border bg-secondary m-0.5 flex items-center rounded border px-2 py-2 text-sm">
+            <div key={`${tag}-${index}`} className="border-border bg-secondary m-0.5 flex items-center rounded border px-2 py-2 text-sm">
               <span>{tag}</span>
               {!disabled && !readOnly && (
                 <button

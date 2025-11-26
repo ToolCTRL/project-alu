@@ -14,7 +14,12 @@ import { getUserHasPermission } from "~/utils/helpers/PermissionsHelper";
 import InputCheckboxWithDescription from "~/components/ui/input/InputCheckboxWithDescription";
 import FormulaComponentBadge from "./FormulaComponentBadge";
 
-export default function FormulaForm({ item, onDelete }: { item?: FormulaDto; onDelete?: () => void }) {
+interface FormulaFormProps {
+  readonly item?: FormulaDto;
+  readonly onDelete?: () => void;
+}
+
+export default function FormulaForm({ item, onDelete }: FormulaFormProps) {
   const { t } = useTranslation();
   const appOrAdminData = useAppOrAdminData();
   const navigation = useNavigation();
@@ -59,7 +64,7 @@ export default function FormulaForm({ item, onDelete }: { item?: FormulaDto; onD
       <Form method="post" className="inline-block w-full overflow-hidden p-1 text-left align-bottom sm:align-middle">
         <input type="hidden" name="action" value={getActionName()} hidden readOnly />
         {components.map((component, index) => {
-          return <input type="hidden" name="components[]" value={JSON.stringify(component)} key={index} hidden readOnly />;
+          return <input type="hidden" name="components[]" value={JSON.stringify(component)} key={`component-${index}-${component.order}`} hidden readOnly />;
         })}
 
         <div className="grid grid-cols-2 gap-2">
@@ -77,7 +82,7 @@ export default function FormulaForm({ item, onDelete }: { item?: FormulaDto; onD
 
           <InputSelect
             name="calculationTrigger"
-            title={"Calculation trigger"}
+            title="Calculation trigger"
             value={calculationTrigger}
             setValue={(e) => setCalculationTrigger(FormulaHelpers.getCalculationTrigger(e?.toString() ?? ""))}
             options={FormulaCalculationTriggerTypes.map((item) => {
@@ -96,17 +101,17 @@ export default function FormulaForm({ item, onDelete }: { item?: FormulaDto; onD
 
           <div className="col-span-2">
             <div className="mb-1 flex items-center justify-between space-x-2 text-xs">
-              <label className="text-muted-foreground font-medium">Components</label>
+              <label htmlFor="components" className="text-muted-foreground font-medium">Components</label>
               <button type="button" onClick={() => setComponents([])} className="text-muted-foreground hover:text-foreground/80">
                 {t("shared.clear")}
               </button>
             </div>
 
-            <div className="text-foreground flex flex-wrap">
+            <div id="components" className="text-foreground flex flex-wrap">
               {components.map((item, idx) => {
                 return (
                   <button
-                    key={idx}
+                    key={`comp-${idx}-${item.order}`}
                     type="button"
                     onClick={() => setShowModal({ item, idx: idx })}
                     className="border-border hover:border-border relative m-1 block rounded-lg border-2 border-dashed p-1 text-center text-sm focus:outline-hidden focus:ring-2 focus:ring-gray-500 focus:ring-offset-2"

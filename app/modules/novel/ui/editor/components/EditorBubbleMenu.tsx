@@ -94,8 +94,8 @@ export const EditorBubbleMenu: React.FC<EditorBubbleMenuProps> = (props) => {
               setIsColorSelectorOpen(false);
             }}
           />
-          {items.map((item, index) => (
-            <button key={index} onClick={item.command} type="button" className="p-2 text-stone-600 hover:bg-stone-100 active:bg-stone-200">
+          {items.map((item) => (
+            <button key={item.name} onClick={item.command} type="button" className="p-2 text-stone-600 hover:bg-stone-100 active:bg-stone-200">
               <item.icon
                 className={clsx("h-4 w-4", {
                   "text-blue-500": item.isActive(),

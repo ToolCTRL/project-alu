@@ -13,7 +13,7 @@ import { adminGetAllUsersNames } from "~/utils/db/users.db.server";
 import { useTranslation } from "react-i18next";
 import { motion } from "framer-motion";
 import { Badge } from "~/components/ui/badge";
-import { Activity, Filter, Sparkles } from "lucide-react";
+import { Activity, Filter } from "lucide-react";
 
 type LoaderData = {
   title: string;

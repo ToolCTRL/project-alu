@@ -5,7 +5,7 @@ import { KnowledgeBaseArticleWithDetails } from "~/modules/knowledgeBase/db/kbAr
 import NovelEditor from "~/modules/novel/ui/editor";
 import useLocalStorage from "~/utils/hooks/use-local-storage";
 
-export default function KbArticleForm({ item }: { item: KnowledgeBaseArticleWithDetails }) {
+export default function KbArticleForm({ item }: Readonly<{ item: KnowledgeBaseArticleWithDetails }>) {
   const [content, setContent] = useLocalStorage(item.id, item.contentDraft);
   const [contentType, setContentType] = useState(item?.contentType ?? "wysiwyg");
 

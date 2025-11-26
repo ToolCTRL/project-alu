@@ -2,7 +2,7 @@ import clsx from "clsx";
 import { ReactNode, useState } from "react";
 import Modal from "../modals/Modal";
 
-export default function ShowModalButton({ title, children, className = "sm:max-w-md" }: { title: ReactNode; children?: ReactNode; className?: string }) {
+export default function ShowModalButton({ title, children, className = "sm:max-w-md" }: Readonly<{ title: ReactNode; children?: ReactNode; className?: string }>) {
   const [open, setOpen] = useState(false);
   return (
     <>

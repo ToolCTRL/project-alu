@@ -11,7 +11,7 @@ interface Props {
   items: TenantUserInvitation[];
   canDelete: boolean;
 }
-export default function MemberInvitationsListAndTable({ items, canDelete }: Props) {
+export default function MemberInvitationsListAndTable({ items, canDelete }: Readonly<Props>) {
   const { t } = useTranslation();
   const { appConfiguration } = useRootData();
   const submit = useSubmit();

@@ -53,7 +53,7 @@ import ValuesBlockForm from "./marketing/values/ValuesBlockForm";
 import StatsBlock from "./marketing/stats/StatsBlock";
 import StatsBlockForm from "./marketing/stats/StatsBlockForm";
 
-export function PageBlock({ item, userSession }: { item: PageBlockDto; userSession?: UserSession }) {
+export function PageBlock({ item, userSession }: { readonly item: PageBlockDto; readonly userSession?: UserSession }) {
   return (
     <>
       <PageBlockBoundary item={item} />
@@ -90,10 +90,10 @@ export function PageBlockForm({
   onUpdate,
   onUpdateLayout,
 }: {
-  type: string;
-  item?: PageBlockDto;
-  onUpdate: (item: PageBlockDto) => void;
-  onUpdateLayout: (layout?: PageBlockDto["layout"]) => void;
+  readonly type: string;
+  readonly item?: PageBlockDto;
+  readonly onUpdate: (item: PageBlockDto) => void;
+  readonly onUpdateLayout: (layout?: PageBlockDto["layout"]) => void;
 }) {
   let block: ReactNode | null = null;
   if (type === "heading") {
@@ -146,7 +146,7 @@ export function PageBlockForm({
     block = <ErrorBanner title="TODO" text={"TODO BLOCK FORM FOR TYPE: " + type} />;
   }
 
-  const [selectedTab, selectTab] = useState(0);
+  const [selectedTab, selectTab] = useState<number>(0);
   return (
     <div className="space-y-4">
       <Tabs asLinks={false} onSelected={(index) => selectTab(index)} tabs={[{ name: `Block` }, { name: `JSON` }]} />

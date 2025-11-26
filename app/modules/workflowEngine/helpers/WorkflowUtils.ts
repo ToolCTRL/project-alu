@@ -6,7 +6,6 @@ import { WorkflowBlockTypes } from "../dtos/WorkflowBlockTypes";
 
 function canRun(workflow: WorkflowDto) {
   return true;
-  // return workflow.status === "live";
 }
 
 function canRunManually(workflow: WorkflowDto) {
@@ -83,8 +82,6 @@ function isReady(workflow: WorkflowDto) {
 function getVariables({ workflow, currentBlock, onlyInBlock }: { workflow: WorkflowDto; currentBlock: WorkflowBlockDto; onlyInBlock?: boolean }) {
   const triggerNode = workflow.blocks.find((f) => f.isTrigger);
   if (!triggerNode) return [];
-  // const paths = buildPaths(workflow, triggerNode.id, [], {});
-  // const currentPath = paths[currentBlock.id] || [];
 
   const variables: { group: string; name: string; label: string }[] = [];
 
@@ -97,7 +94,6 @@ function getVariables({ workflow, currentBlock, onlyInBlock }: { workflow: Workf
   }
 
   workflow.blocks.forEach((block, idxBlock) => {
-    // if (!currentPath.includes(block.id)) return;
     if (onlyInBlock && block.id !== currentBlock.id) return;
 
     const workflowBlock = WorkflowBlockTypes.find((f) => f.value === block.type);
@@ -132,21 +128,21 @@ function getVariableName({ workflow, currentBlock }: { workflow: WorkflowDto; cu
     order.push(blockId);
 
     const orders = ["true", "false", "default", "case", "loopNext", "loopEnd"];
-    block.toBlocks
-      .sort((a, b) => {
-        if (!a.condition) {
-          return -1;
-        }
-        if (!b.condition) {
-          return 1;
-        }
-        const aOrder = orders.findIndex((f) => a.condition?.startsWith(f));
-        const bOrder = orders.findIndex((f) => b.condition?.startsWith(f));
-        return aOrder - bOrder;
-      })
-      .forEach((toBlock) => {
-        buildExecutionOrder(toBlock.toBlockId, order, visited);
-      });
+    const sortedToBlocks = [...block.toBlocks].sort((a, b) => {
+      if (!a.condition) {
+        return -1;
+      }
+      if (!b.condition) {
+        return 1;
+      }
+      const aOrder = orders.findIndex((f) => a.condition?.startsWith(f));
+      const bOrder = orders.findIndex((f) => b.condition?.startsWith(f));
+      return aOrder - bOrder;
+    });
+
+    sortedToBlocks.forEach((toBlock) => {
+      buildExecutionOrder(toBlock.toBlockId, order, visited);
+    });
 
     return order;
   }

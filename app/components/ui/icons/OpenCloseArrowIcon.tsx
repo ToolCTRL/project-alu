@@ -2,7 +2,7 @@ interface Props {
   open: boolean;
   setOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }
-export default function OpenCloseArrowIcon({ open, setOpen }: Props) {
+export default function OpenCloseArrowIcon({ open, setOpen }: Readonly<Props>) {
   return (
     <button
       type="button"

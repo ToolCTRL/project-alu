@@ -7,7 +7,7 @@ import { KnowledgeBaseDto } from "../../dtos/KnowledgeBaseDto";
 import ColorGroupHoverUtils from "~/utils/shared/colors/ColorGroupHoverUtils";
 import { useTranslation } from "react-i18next";
 
-export default function KbCategoriesList({ kb, items }: { kb: KnowledgeBaseDto; items: KbCategoryDto[] }) {
+export default function KbCategoriesList({ kb, items }: Readonly<{ kb: KnowledgeBaseDto; items: KbCategoryDto[] }>) {
   const { t } = useTranslation();
   return (
     <div className="space-y-4">

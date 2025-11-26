@@ -1,5 +1,4 @@
-import { ActionFunctionArgs, LoaderFunctionArgs, MetaFunction, redirect, useLoaderData } from "react-router";
-import { useSubmit } from "react-router";
+import { ActionFunctionArgs, LoaderFunctionArgs, MetaFunction, redirect, useLoaderData, useSubmit } from "react-router";
 import { useRef } from "react";
 import { MetaTagsDto } from "~/application/dtos/seo/MetaTagsDto";
 import ConfirmModal, { RefConfirmModal } from "~/components/ui/modals/ConfirmModal";
@@ -42,9 +41,9 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
   if (!knowledgeBase) {
     throw redirect("/admin/knowledge-base/bases");
   }
-  const item = await getKbArticleById(params.id!);
+  const item = await getKbArticleById(params.id);
   if (!item) {
-    throw redirect(`/admin/knowledge-base/bases/${params.slug!}/articles`);
+    throw redirect(`/admin/knowledge-base/bases/${params.slug}/articles`);
   }
   const allCategories = await getAllKnowledgeBaseCategoriesSimple();
   let allArticles = await getAllKnowledgeBaseArticlesSimple();
@@ -137,7 +136,7 @@ export const action = async ({ request, params }: ActionFunctionArgs) => {
   const form = await request.formData();
   const action = form.get("action")?.toString() ?? "";
 
-  const item = await getKbArticleById(params.id!);
+  const item = await getKbArticleById(params.id);
   if (item == null) {
     return Response.json({ error: "Article not found" }, { status: 400 });
   }
@@ -150,7 +149,7 @@ export const action = async ({ request, params }: ActionFunctionArgs) => {
   return Response.json({ error: "Invalid action" }, { status: 400 });
 };
 
-export default function () {
+export default function ArticleSettings() {
   const data = useLoaderData<LoaderData>();
   const submit = useSubmit();
 

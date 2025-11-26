@@ -1,7 +1,6 @@
-import { forwardRef, Fragment, Ref, useEffect, useImperativeHandle, useState } from "react";
-import { Dialog, DialogBackdrop, DialogPanel, Transition, TransitionChild } from "@headlessui/react";
+import { forwardRef, useEffect, useImperativeHandle, useState, Ref } from "react";
+import { Dialog, DialogBackdrop, DialogPanel } from "@headlessui/react";
 import { useTranslation } from "react-i18next";
-import clsx from "~/utils/shared/ClassesUtils";
 
 export interface RefErrorModal {
   show: (title?: string, description?: string) => void;

@@ -8,7 +8,6 @@ import { Input } from "../input";
 export interface RefInputNumber {
   input: RefObject<HTMLInputElement | null>;
 }
-// type WithoutValue = {};
 type WithDefaultValue = { defaultValue: number | undefined };
 type WithValueAndSetValue = { value: number | undefined; setValue: React.Dispatch<React.SetStateAction<number | undefined>> };
 
@@ -27,7 +26,6 @@ type Props = (WithDefaultValue | WithValueAndSetValue) & {
   step?: string;
   placeholder?: string;
   icon?: string;
-  borderless?: boolean;
   autoFocus?: boolean;
   canUnset?: boolean;
 };

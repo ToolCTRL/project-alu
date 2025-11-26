@@ -178,14 +178,9 @@ export async function unsubscribeCampaignRecipient(
     unsubscribedAt: Date;
   }
 ) {
-  const item = await db.outboundEmail.update({
-    where: {
-      id,
-    },
-    data,
+  return await updateOutboundEmail(id, {
+    unsubscribedAt: data.unsubscribedAt,
   });
-
-  return item;
 }
 
 export async function countOutboundEmails(

@@ -41,6 +41,18 @@ function PermissionOrderCell({ item, idx, items }: { readonly item: PermissionWi
   );
 }
 
+function PermissionNameCellFormatted(item: PermissionWithRoles) {
+  return <PermissionNameCell item={item} />;
+}
+
+function PermissionRolesCellFormatted(item: PermissionWithRoles) {
+  return <PermissionRolesCell item={item} />;
+}
+
+function PermissionOrderCellFormatted(item: PermissionWithRoles, idx: number, items: PermissionWithRoles[]) {
+  return <PermissionOrderCell item={item} idx={idx} items={items} />;
+}
+
 export default function PermissionsTable({ items, className, canCreate, canUpdate = true, tenantId, canReorder }: Readonly<Props>): JSX.Element {
   const { t } = useTranslation();
 
@@ -64,7 +76,7 @@ export default function PermissionsTable({ items, className, canCreate, canUpdat
         name: "name",
         title: t("models.permission.name"),
         value: (i) => i.name,
-        formattedValue: (i) => <PermissionNameCell item={i} />,
+        formattedValue: PermissionNameCellFormatted,
         className: "max-w-xs truncate",
       },
       {
@@ -77,7 +89,7 @@ export default function PermissionsTable({ items, className, canCreate, canUpdat
         name: "roles",
         title: t("models.permission.inRoles"),
         value: (i) => i.inRoles.length,
-        formattedValue: (i) => <PermissionRolesCell item={i} />,
+        formattedValue: PermissionRolesCellFormatted,
         className: canUpdate ? "max-w-xs truncate" : "",
       },
     ];
@@ -86,7 +98,7 @@ export default function PermissionsTable({ items, className, canCreate, canUpdat
       headers.unshift({
         name: "order",
         title: t("shared.order"),
-        value: (_item, idx) => <PermissionOrderCell item={_item} idx={idx} items={items} />,
+        formattedValue: PermissionOrderCellFormatted,
       });
     }
 

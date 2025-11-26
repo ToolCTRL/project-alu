@@ -1,7 +1,7 @@
 import { createCookieSessionStorage, redirect, Session } from "react-router";
-import { URLSearchParams } from "url";
+import { URLSearchParams } from "node:url";
 import { getMyTenants, getTenant } from "./db/tenants.db.server";
-import { randomBytes } from "crypto";
+import { randomBytes } from "node:crypto";
 import { getUser } from "./db/users.db.server";
 
 export type UserSession = {

@@ -5,9 +5,5 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
   return Response.json({});
 };
 export default function Route404() {
-  return (
-    <>
-      <Page404 />
-    </>
-  );
+  return <Page404 />;
 }

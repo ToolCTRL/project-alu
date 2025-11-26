@@ -82,8 +82,6 @@ async function getFilterableProperties() {
 }
 async function getFilters({ request }: { request: Request }) {
   const filterableProperties = await getFilterableProperties();
-  // const searchParams = new URL(request.url).searchParams;
-  // const current = getPaginationFromCurrentUrl(searchParams);
   const filters = getFiltersFromCurrentUrl(request, filterableProperties);
   const q = filters.query || "";
 

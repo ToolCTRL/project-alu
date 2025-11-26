@@ -8,7 +8,7 @@ interface Props {
   intervalInSeconds?: number;
   className?: string;
 }
-export default function PollButton({ status, statusToPoll, intervalInSeconds = 10, className }: Props) {
+export default function PollButton({ status, statusToPoll, intervalInSeconds = 10, className }: Readonly<Props>) {
   const navigation = useNavigation();
   const submit = useSubmit();
 
@@ -53,7 +53,7 @@ export default function PollButton({ status, statusToPoll, intervalInSeconds = 1
           setCountdown(intervalInSeconds);
         }}
       >
-        {navigation.state !== "idle" ? "Refreshing..." : <span>Refreshing in {countdown}...</span>}
+        {navigation.state === "idle" ? <span>Refreshing in {countdown}...</span> : "Refreshing..."}
       </button>
     </div>
   );

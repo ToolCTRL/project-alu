@@ -3,12 +3,12 @@ import FooterBlock from "~/modules/pageBlocks/components/blocks/marketing/footer
 import Logo from "~/components/brand/Logo";
 
 interface Props {
-  title?: string;
-  withLogo?: boolean;
-  withFooter?: boolean;
-  withGoBack?: boolean;
-  customBackButton?: React.ReactNode;
-  logo?: string | undefined;
+  readonly title?: string;
+  readonly withLogo?: boolean;
+  readonly withFooter?: boolean;
+  readonly withGoBack?: boolean;
+  readonly customBackButton?: React.ReactNode;
+  readonly logo?: string;
 }
 export default function Page404({ title, withLogo = true, withFooter = true, withGoBack = true, customBackButton, logo }: Props) {
   const navigate = useNavigate();

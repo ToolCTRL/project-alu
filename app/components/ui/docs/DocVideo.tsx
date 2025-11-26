@@ -3,7 +3,7 @@ interface Props {
   src: string;
 }
 
-export default function DocVideo({ title, src }: Props) {
+export default function DocVideo({ title, src }: Readonly<Props>) {
   return (
     <div className="border-border h-full border-2 border-dashed">
       <iframe

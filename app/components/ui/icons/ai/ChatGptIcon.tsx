@@ -1,4 +1,4 @@
-export default function ChatGptIcon({ className }: { className?: string }) {
+export default function ChatGptIcon({ className }: Readonly<{ className?: string }>) {
   return (
     <svg className={className} xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="64" height="64" viewBox="0 0 64 64">
       <linearGradient id="9yv_OTO3P9eepfu7Rtqera_kTuxVYRKeKEY_gr1" x1="32" x2="32" y1="7" y2="58" gradientUnits="userSpaceOnUse">

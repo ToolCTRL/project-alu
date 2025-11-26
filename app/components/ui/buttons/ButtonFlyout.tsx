@@ -27,7 +27,7 @@ export default function ButtonFlyout({ title, className, disabled, children }: P
           >
             <span>{title}</span>
             <ChevronDownIcon
-              className={clsx(open ? "text-muted-foreground" : "text-muted-foreground", "group-hover:text-muted-foreground h-5 w-5")}
+              className={clsx("text-muted-foreground group-hover:text-muted-foreground h-5 w-5")}
               aria-hidden="true"
             />
           </Popover.Button>

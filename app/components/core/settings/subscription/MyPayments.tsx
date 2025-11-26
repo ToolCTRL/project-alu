@@ -2,7 +2,6 @@ import { useTranslation } from "react-i18next";
 import Stripe from "stripe";
 import { Colors } from "~/application/enums/shared/Colors";
 import SimpleBadge from "~/components/ui/badges/SimpleBadge";
-import DownloadIcon from "~/components/ui/icons/DownloadIcon";
 import TableSimple from "~/components/ui/tables/TableSimple";
 import DateUtils from "~/utils/shared/DateUtils";
 import NumberUtils from "~/utils/shared/NumberUtils";
@@ -54,24 +53,24 @@ export default function MyPayments({ items }: Readonly<Props>) {
             {
               name: "paidAt",
               title: t("app.subscription.invoices.paidAt"),
-              value: (i) => <PaymentPaidAtCell created={i.created} />,
+              formattedValue: PaymentPaidAtCell,
             },
             {
               name: "amount",
               title: t("app.subscription.invoices.amount"),
-              value: (i) => <PaymentAmountCell amount={i.amount} currency={i.currency} />,
+              formattedValue: PaymentAmountCell,
             },
             {
               name: "status",
               title: t("shared.status"),
-              value: (i) => <PaymentStatusCell status={i.status} t={t} />,
+              formattedValue: PaymentStatusCell,
             },
             {
               className: "w-full",
               name: "date",
               title: t("shared.createdAt"),
               value: (i) => DateUtils.dateYMD(new Date(i.created * 1000)),
-              formattedValue: (item) => <PaymentCreatedAtCell created={item.created} />,
+              formattedValue: PaymentCreatedAtCell,
             },
           ]}
           actions={[]}

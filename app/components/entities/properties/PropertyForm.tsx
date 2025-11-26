@@ -236,7 +236,7 @@ export default function PropertyForm({ item, properties, entities, formulas }: R
 
             {[PropertyType.SELECT, PropertyType.MULTI_SELECT].includes(type) && (
               <div className="w-full">
-                <label className="text-foreground/80 block text-sm font-medium">Options</label>
+                <label htmlFor="options-display" className="text-foreground/80 block text-sm font-medium">Options</label>
                 <div className="mt-1 flex rounded-md shadow-2xs">
                   <div className="relative flex grow items-stretch focus-within:z-10">
                     <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
@@ -246,6 +246,7 @@ export default function PropertyForm({ item, properties, entities, formulas }: R
                       return <input key={option.order} hidden readOnly type="text" id="options[]" name="options[]" value={JSON.stringify(option)} />;
                     })}
                     <input
+                      id="options-display"
                       disabled
                       className="focus:border-border focus:ring-ring border-border text-foreground bg-secondary/90 block w-full rounded-none rounded-l-md border pl-10 sm:text-sm"
                       value={options.length === 0 ? "No dropdown values defined" : options.map((f) => f.value).join(", ")}

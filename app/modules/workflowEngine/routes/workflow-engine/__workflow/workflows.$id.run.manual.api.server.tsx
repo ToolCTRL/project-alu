@@ -17,7 +17,7 @@ export namespace WorkflowsIdRunManualApi {
   export const loader = async ({ request, params }: LoaderFunctionArgs) => {
     await requireAuth({ request, params });
     const tenantId = await getTenantIdOrNull({ request, params });
-    const workflow = await WorkflowsService.get(params.id!, {
+    const workflow = await WorkflowsService.get(params.id, {
       tenantId,
     });
     if (!workflow) {
@@ -52,10 +52,10 @@ export namespace WorkflowsIdRunManualApi {
           try {
             inputData = JSON.parse(input);
           } catch {
-            throw Error("Input data is not valid JSON: " + input);
+            throw new Error("Input data is not valid JSON: " + input);
           }
         }
-        const execution = await WorkflowsExecutionsService.execute(params.id!, {
+        const execution = await WorkflowsExecutionsService.execute(params.id, {
           type: "manual",
           input: inputData,
           session: {

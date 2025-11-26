@@ -11,11 +11,10 @@ interface Props {
   paddingY?: string;
   content?: ReactNode;
   footer?: ReactNode;
-  children?: ReactNode;
   onClose: () => void;
 }
 
-export default function SlideOver({ title = "", size = "md", paddingContent = "px-4 sm:px-6", paddingY = "py-6", onClose, content, footer }: Props) {
+export default function SlideOver({ title = "", size = "md", paddingContent = "px-4 sm:px-6", paddingY = "py-6", onClose, content, footer }: Readonly<Props>) {
   const [open] = useState(true);
 
   useEscapeKeypress(onClose);

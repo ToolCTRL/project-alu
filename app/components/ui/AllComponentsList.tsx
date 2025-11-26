@@ -13,13 +13,12 @@ import PreviewUploadersDocument from "./uploaders/PreviewUploadersDocument";
 import PreviewPdfViewers from "./pdf/PreviewPdfViewers";
 import PreviewLoaders from "./loaders/PreviewLoaders";
 import PreviewInputs from "./input/PreviewInputs";
-// import PreviewDatepickers from "./datepickers/PreviewDatepickers";
 import PreviewDropdowns from "./dropdowns/PreviewDropdowns";
 import PreviewTabs from "./tabs/PreviewTabs";
 
 interface Props {
-  className?: string;
-  withSlideOvers?: boolean;
+  readonly className?: string;
+  readonly withSlideOvers?: boolean;
 }
 
 export default function AllComponentsList({ className, withSlideOvers }: Props) {

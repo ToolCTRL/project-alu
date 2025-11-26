@@ -4,8 +4,8 @@ import { EntityWithDetails } from "~/utils/db/entities/entities.db.server";
 
 function generate({ entity }: { entity: EntityWithDetails }): string {
   const { capitalized, plural } = CodeGeneratorHelper.getNames(entity);
-  const imports: string[] = [];
-  imports.push(`import { useActionData, useLoaderData, useSearchParams, Link } from "react-router";
+  const imports: string[] = [
+    `import { useActionData, useLoaderData, useSearchParams, Link } from "react-router";
 import { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import RowCreatedByCell from "~/components/entities/rows/cells/RowCreatedByCell";
@@ -16,10 +16,11 @@ import ExternalLinkEmptyIcon from "~/components/ui/icons/ExternalLinkEmptyIcon";
 import InputFilters from "~/components/ui/input/InputFilters";
 import IndexPageLayout from "~/components/ui/layouts/IndexPageLayout";
 import SlideOverWideEmpty from "~/components/ui/slideOvers/SlideOverWideEmpty";
-import TableSimple from "~/components/ui/tables/TableSimple";`);
-  imports.push(`import ${capitalized}Form from "../../components/${capitalized}Form";
+import TableSimple from "~/components/ui/tables/TableSimple";`,
+    `import ${capitalized}Form from "../../components/${capitalized}Form";
 import { ${capitalized}Dto } from "../../dtos/${capitalized}Dto";
-import { ${capitalized}RoutesIndexApi } from "../api/${capitalized}Routes.Index.Api";`);
+import { ${capitalized}RoutesIndexApi } from "../api/${capitalized}Routes.Index.Api";`
+  ];
 
   let template = `
 export default function ${capitalized}RoutesIndexView() {

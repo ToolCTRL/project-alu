@@ -21,7 +21,7 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
 
 export const action: ActionFunction = async ({ request, params }) => PageBlockService.action({ request, params });
 
-export default function () {
+export default function AccountPageRoute() {
   const { t } = useTranslation();
   const data = useLoaderData<PageLoaderData>();
   return (

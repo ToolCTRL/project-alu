@@ -9,6 +9,6 @@ interface Props {
   children?: React.ReactNode;
 }
 
-export default function TextColor({ title, color, className, children }: Props) {
+export default function TextColor({ title, color, className, children }: Readonly<Props>) {
   return <div className={clsx(className, getTextColor(color))}>{title ?? children}</div>;
 }

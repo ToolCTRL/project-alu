@@ -24,10 +24,10 @@ export default function OnboardingSessionsTable({
   metadata,
   withOnboarding = true,
 }: {
-  items: OnboardingSessionWithDetails[];
-  onDelete?: (item: OnboardingSessionWithDetails) => void;
-  metadata: OnboardingFilterMetadataDto;
-  withOnboarding?: boolean;
+  readonly items: OnboardingSessionWithDetails[];
+  readonly onDelete?: (item: OnboardingSessionWithDetails) => void;
+  readonly metadata: OnboardingFilterMetadataDto;
+  readonly withOnboarding?: boolean;
 }) {
   const { t } = useTranslation();
   const [selected, setSelected] = useState<OnboardingSessionWithDetails>();
@@ -39,12 +39,12 @@ export default function OnboardingSessionsTable({
       {
         name: "status",
         title: t("onboarding.session.status"),
-        value: (i) => <OnboardingSessionBadge item={i} />,
+        value: (i: OnboardingSessionWithDetails) => <OnboardingSessionBadge item={i} />,
       },
       {
         name: "user",
         title: t("models.user.object"),
-        value: (i) => (
+        value: (i: OnboardingSessionWithDetails) => (
           <div>
             <UserBadge item={i.user} />
             <TenantCell item={i.tenant} />
@@ -60,7 +60,7 @@ export default function OnboardingSessionsTable({
       {
         name: "activity",
         title: t("onboarding.session.activity"),
-        value: (i) => (
+        value: (i: OnboardingSessionWithDetails) => (
           <div>
             <button type="button" onClick={() => setSelected(i)} className="hover:border-theme-400 border-border border-b border-dotted hover:border-dashed">
               {OnboardingSessionUtils.getActivity({ t, item: i, metadata }).length} activities
@@ -71,7 +71,7 @@ export default function OnboardingSessionsTable({
       {
         name: "steps",
         title: t("onboarding.session.steps"),
-        value: (i) => (
+        value: (i: OnboardingSessionWithDetails) => (
           <div>
             <button type="button" onClick={() => setSelected(i)} className="hover:border-theme-400 border-border border-b border-dotted hover:border-dashed">
               {i.sessionSteps.filter((f) => f.completedAt).length}/{i.sessionSteps.length} {t("shared.completed").toLowerCase()}
@@ -82,29 +82,29 @@ export default function OnboardingSessionsTable({
       {
         name: "actions",
         title: t("onboarding.session.actions"),
-        value: (i) => <ShowPayloadModalButton title="Actions" description={`${i.actions.length} actions`} payload={JSON.stringify(i.actions)} />,
+        value: (i: OnboardingSessionWithDetails) => <ShowPayloadModalButton title="Actions" description={`${i.actions.length} actions`} payload={JSON.stringify(i.actions)} />,
       },
       {
         name: "createdAt",
         title: t("shared.createdAt"),
-        value: (i) => <div className="flex justify-center">{i.createdAt ? <DateCell date={i.createdAt} /> : <XIcon className="h-4 w-4 text-red-500" />}</div>,
+        value: (i: OnboardingSessionWithDetails) => <div className="flex justify-center">{i.createdAt ? <DateCell date={i.createdAt} /> : <XIcon className="h-4 w-4 text-red-500" />}</div>,
       },
       {
         name: "startedAt",
         title: t("onboarding.session.startedAt"),
-        value: (i) => <div className="flex justify-center">{i.startedAt ? <DateCell date={i.startedAt} /> : <XIcon className="h-4 w-4 text-red-500" />}</div>,
+        value: (i: OnboardingSessionWithDetails) => <div className="flex justify-center">{i.startedAt ? <DateCell date={i.startedAt} /> : <XIcon className="h-4 w-4 text-red-500" />}</div>,
       },
       {
         name: "dismissedAt",
         title: t("onboarding.session.dismissedAt"),
-        value: (i) => (
+        value: (i: OnboardingSessionWithDetails) => (
           <div className="flex justify-center">{i.dismissedAt ? <DateCell date={i.dismissedAt} /> : <XIcon className="h-4 w-4 text-red-500" />}</div>
         ),
       },
       {
         name: "completedAt",
         title: t("onboarding.session.completedAt"),
-        value: (i) => (
+        value: (i: OnboardingSessionWithDetails) => (
           <div className="flex justify-center">{i.completedAt ? <DateCell date={i.completedAt} /> : <XIcon className="h-4 w-4 text-red-500" />}</div>
         ),
       },
@@ -113,7 +113,7 @@ export default function OnboardingSessionsTable({
       headers.unshift({
         name: "onboarding",
         title: t("onboarding.title"),
-        value: (i) => (
+        value: (i: OnboardingSessionWithDetails) => (
           <div className="flex items-center space-x-2">
             <div className="text-base font-bold">{i.onboarding.title}</div>
             <div>
@@ -126,7 +126,7 @@ export default function OnboardingSessionsTable({
     headers.push({
       name: "actions",
       title: t("shared.actions"),
-      value: (i) => (
+      value: (i: OnboardingSessionWithDetails) => (
         <div className="flex items-center space-x-2">
           {onDelete && (
             <ButtonTertiary disabled={!getUserHasPermission(appOrAdminData, "admin.onboarding.delete")} destructive type="button" onClick={() => onDelete(i)}>
@@ -166,10 +166,10 @@ function SessionModal({
   onClose,
   metadata,
 }: {
-  item?: OnboardingSessionWithDetails;
-  open: boolean;
-  onClose: () => void;
-  metadata: OnboardingFilterMetadataDto;
+  readonly item?: OnboardingSessionWithDetails;
+  readonly open: boolean;
+  readonly onClose: () => void;
+  readonly metadata: OnboardingFilterMetadataDto;
 }) {
   const { t } = useTranslation();
   const [items, setItems] = useState<OnboardingSessionActivityDto[]>([]);

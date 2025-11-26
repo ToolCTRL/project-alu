@@ -42,10 +42,10 @@ const TitleCell = ({ title }: { title: string | null }) => <div>{title}</div>;
 export default function EntityRelationshipsTable({
   items,
   editable,
-}: {
+}: Readonly<{
   items: (EntityRelationshipWithDetails & { _count: { rows: number } })[];
   editable: boolean;
-}) {
+}>) {
   const { t } = useTranslation();
   return (
     <TableSimple

@@ -11,7 +11,7 @@ import TabsWithIcons from "~/components/ui/tabs/TabsWithIcons";
 import OnboardingsList from "../../../components/OnboardingsList";
 import { OnboardingIndexApi } from "../../api/onboardings/OnboardingsIndexApi.server";
 
-export default function () {
+export default function OnboardingsIndexRoute() {
   const { t } = useTranslation();
   const data = useLoaderData<OnboardingIndexApi.LoaderData>();
   const [searchParams] = useSearchParams();
@@ -36,17 +36,17 @@ export default function () {
           <TabsWithIcons
             tabs={[
               {
-                name: `${t("shared.all")} ${countStatus() ? `(${countStatus()})` : ""}`,
+                name: `${t("shared.all")} ${countStatus() > 0 ? `(${countStatus()})` : ""}`,
                 href: "?",
                 current: !searchParams.get("status") || searchParams.get("status") === "all",
               },
               {
-                name: `${t("shared.active")} ${countStatus("active") ? `(${countStatus("active")})` : ""}`,
+                name: `${t("shared.active")} ${countStatus("active") > 0 ? `(${countStatus("active")})` : ""}`,
                 href: "?status=active",
                 current: searchParams.get("status") === "active",
               },
               {
-                name: `${t("shared.inactive")} ${countStatus("inactive") ? `(${countStatus("inactive")})` : ""}`,
+                name: `${t("shared.inactive")} ${countStatus("inactive") > 0 ? `(${countStatus("inactive")})` : ""}`,
                 href: "?status=inactive",
                 current: searchParams.get("status") === "inactive",
               },
@@ -68,7 +68,7 @@ export default function () {
   );
 }
 
-function AddOnboardingModal({ open, onClose }: { open: boolean; onClose: () => void }) {
+function AddOnboardingModal({ open, onClose }: { readonly open: boolean; readonly onClose: () => void }) {
   const { t } = useTranslation();
   const [title, setTitle] = useState("");
   return (

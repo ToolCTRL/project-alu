@@ -10,10 +10,8 @@ export async function requireAuth({ request, params }: { request: Request; param
   const userInfo = await getUserInfo(request);
   const currentPath = new URL(request.url).pathname.toLowerCase();
   if (currentPath.startsWith("/admin")) {
-    // console.log("[requireAuth.admin]", currentPath);
     return await requireSuperAdmin({ request });
   } else if (currentPath.startsWith("/app") && currentPath !== "/app") {
-    // console.log("[requireAuth.app]", currentPath);
     const tenantId = await getTenantIdFromUrl(params);
     if (!userInfo.userId || !tenantId) {
       throw Response.json("Unauthorized", { status: 401 });
@@ -25,10 +23,7 @@ export async function requireAuth({ request, params }: { request: Request; param
         throw Response.json("Unauthorized", { status: 401 });
       }
     }
-  } else {
-    // console.log("[requireAuth.none]", currentPath);
   }
-  // console.log("member", TenantUserType[member.type]);
   return { ...userInfo };
 }
 
@@ -38,7 +33,6 @@ export async function requireSuperAdmin({ request }: { request: Request }) {
     throw Response.json("Unauthorized", { status: 401 });
   }
   const isSuperAdmin = await db.adminUser.findUnique({ where: { userId: userInfo.userId } });
-  // console.log("isAdmin", isAdmin);
   if (!isSuperAdmin) {
     throw Response.json("Unauthorized", { status: 401 });
   }

@@ -5,7 +5,7 @@ import { KnowledgeBaseDto } from "../../dtos/KnowledgeBaseDto";
 import ColorTextUtils from "~/utils/shared/colors/ColorTextUtils";
 import ColorGroupHoverUtils from "~/utils/shared/colors/ColorGroupHoverUtils";
 
-export default function KbCategoriesGrid({ kb, items, columns }: { kb: KnowledgeBaseDto; items: KbCategoryDto[]; columns: number }) {
+export default function KbCategoriesGrid({ kb, items, columns }: Readonly<{ kb: KnowledgeBaseDto; items: KbCategoryDto[]; columns: number }>) {
   return (
     <div
       className={clsx(

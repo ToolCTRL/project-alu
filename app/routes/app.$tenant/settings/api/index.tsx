@@ -1,6 +1,4 @@
-import { LoaderFunctionArgs, useLoaderData } from "react-router";
-import { Link, useParams } from "react-router";
-import { Fragment } from "react";
+import { LoaderFunctionArgs, useLoaderData, Link, useParams } from "react-router";
 import { useTranslation } from "react-i18next";
 import { FilterablePropertyDto } from "~/application/dtos/data/FilterablePropertyDto";
 import ErrorBanner from "~/components/ui/banners/ErrorBanner";
@@ -27,7 +25,7 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
   try {
     const appConfiguration = await getAppConfiguration({ request });
     if (!appConfiguration.app.features.tenantApiKeys) {
-      throw Error("API keys are not enabled");
+      throw new Error("API keys are not enabled");
     }
     const { items, filterableProperties } = await ApiKeyLogService.getSummary({ request, params });
     const data: LoaderData = {
@@ -41,7 +39,7 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
   }
 };
 
-export default function () {
+export default function ApiIndexRoute() {
   const { t } = useTranslation();
   const data = useLoaderData<LoaderData>();
   const params = useParams();
@@ -73,9 +71,7 @@ export default function () {
           </Link>
         </ErrorBanner>
       ) : (
-        <Fragment>
-          <ApiKeyLogsSummary data={data} />
-        </Fragment>
+        <ApiKeyLogsSummary data={data} />
       )}
     </EditPageLayout>
   );

@@ -1,6 +1,5 @@
-import { redirect } from "react-router";
+import { redirect, Params } from "react-router";
 import { deleteEmail } from "~/utils/db/email/emails.db.server";
-import { Params } from "react-router";
 import { getTranslations } from "~/locale/i18next.server";
 import { requireAuth } from "~/utils/loaders.middleware";
 

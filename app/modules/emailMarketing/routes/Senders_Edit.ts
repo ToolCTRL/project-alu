@@ -11,7 +11,7 @@ export namespace Senders_Edit {
   export const loader = async ({ request, params }: LoaderFunctionArgs) => {
     await requireAuth({ request, params });
     const tenantId = await getTenantIdOrNull({ request, params });
-    const item = await getEmailSenderWithoutApiKey(params.id!, tenantId);
+    const item = await getEmailSenderWithoutApiKey(params.id, tenantId);
     if (!item) {
       return redirect(params.tenant ? `/app/${params.tenant}/email-marketing/senders` : "/admin/email-marketing/senders");
     }

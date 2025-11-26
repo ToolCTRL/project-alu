@@ -1,6 +1,5 @@
 import { useEffect } from "react";
-import { LoaderFunctionArgs, redirect } from "react-router";
-import { Outlet, useLocation, useNavigate, useParams } from "react-router";
+import { LoaderFunctionArgs, redirect, Outlet, useLocation, useNavigate, useParams } from "react-router";
 import AppLayout from "~/components/app/AppLayout";
 import { useAppData } from "~/utils/data/useAppData";
 import { loadAppData } from "~/utils/data/.server/appData";
@@ -15,9 +14,9 @@ import ServerError from "~/components/ui/errors/ServerError";
 import { createUniqueTenantIpAddress } from "~/utils/db/tenants/tenantIpAddress.db.server";
 import { getClientIPAddress } from "~/utils/server/IpUtils";
 import { createMetrics } from "~/modules/metrics/services/.server/MetricTracker";
-import { serverTimingHeaders } from "~/modules/metrics/utils/defaultHeaders.server";
 import { getTranslations } from "~/locale/i18next.server";
-export { serverTimingHeaders as headers };
+
+export { serverTimingHeaders as headers } from "~/modules/metrics/utils/defaultHeaders.server";
 
 export const loader = async ({ request, params }: LoaderFunctionArgs) => {
   const { time, getServerTimingHeader } = await createMetrics({ request, params }, "app.$tenant");
@@ -70,7 +69,6 @@ export default function AppTenantRoute() {
   const location = useLocation();
   const params = useParams();
   const { appConfiguration } = useRootData();
-  // const [showChat, setShowChat] = useState(false);
 
   useEffect(() => {
     if (!appData.currentTenant) {
