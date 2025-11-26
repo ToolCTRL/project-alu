@@ -195,13 +195,15 @@ export const action: ActionFunction = async ({ request, params }) => {
   const form = await request.formData();
   const action = form.get("action");
 
-  const firstName = form.get("firstName")?.toString();
-  const lastName = form.get("lastName")?.toString() ?? "";
-  const avatar = form.get("avatar")?.toString() ?? "";
+  const toSafeString = (value: FormDataEntryValue | null) => (typeof value === "string" ? value : "");
 
-  const passwordCurrent = form.get("passwordCurrent")?.toString();
-  const passwordNew = form.get("passwordNew")?.toString();
-  const passwordNewConfirm = form.get("passwordNewConfirm")?.toString();
+  const firstName = toSafeString(form.get("firstName"));
+  const lastName = toSafeString(form.get("lastName"));
+  const avatar = toSafeString(form.get("avatar"));
+
+  const passwordCurrent = toSafeString(form.get("passwordCurrent")) || undefined;
+  const passwordNew = toSafeString(form.get("passwordNew")) || undefined;
+  const passwordNewConfirm = toSafeString(form.get("passwordNewConfirm")) || undefined;
 
   if (typeof action !== "string") {
     return Response.json({ error: `Form not submitted correctly.` }, { status: 400 });

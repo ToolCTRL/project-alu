@@ -62,6 +62,8 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
 type ActionData = {
   error?: string;
 };
+
+const stringOrEmpty = (value: FormDataEntryValue | null) => (typeof value === "string" ? value : "");
 async function handleSetOrders(form: FormData) {
   const items: { id: string; order: number }[] = form.getAll("orders[]").map((f: FormDataEntryValue) => {
     return JSON.parse(f.toString());
@@ -109,7 +111,7 @@ async function handleSetArticleOrders(form: FormData) {
 
 async function handleDeleteCategory(request: Request, form: FormData) {
   await verifyUserHasPermission(request, "admin.kb.delete");
-  const id = String(form.get("id") ?? "");
+  const id = stringOrEmpty(form.get("id"));
   const existing = await getKbCategoryById(id);
   if (!existing) {
     return Response.json({ error: "Category not found" }, { status: 400 });
@@ -120,7 +122,7 @@ async function handleDeleteCategory(request: Request, form: FormData) {
 
 async function handleDeleteSection(request: Request, form: FormData) {
   await verifyUserHasPermission(request, "admin.kb.delete");
-  const id = String(form.get("id") ?? "");
+  const id = stringOrEmpty(form.get("id"));
   const existing = await getKbCategorySectionById(id);
   if (!existing) {
     return Response.json({ error: "Section not found" }, { status: 400 });
@@ -131,7 +133,7 @@ async function handleDeleteSection(request: Request, form: FormData) {
 
 async function handleDeleteArticle(request: Request, form: FormData) {
   await verifyUserHasPermission(request, "admin.kb.delete");
-  const id = String(form.get("id") ?? "");
+  const id = stringOrEmpty(form.get("id"));
   const existing = await getKbArticleById(id);
   if (!existing) {
     return Response.json({ error: "Article not found" }, { status: 400 });
@@ -143,7 +145,7 @@ async function handleDeleteArticle(request: Request, form: FormData) {
 async function handleDuplicateCategory(request: Request, kb: KnowledgeBaseDto, params: any, form: FormData) {
   await verifyUserHasPermission(request, "admin.kb.create");
   try {
-    const categoryId = String(form.get("id") ?? "");
+    const categoryId = stringOrEmpty(form.get("id"));
     await KnowledgeBaseService.duplicateCategory({ kb, language: params.lang!, categoryId });
     return Response.json({ duplicated: true });
   } catch (e: any) {
@@ -154,11 +156,11 @@ async function handleDuplicateCategory(request: Request, kb: KnowledgeBaseDto, p
 async function handleNewArticle(request: Request, kb: KnowledgeBaseDto, params: any, userInfo: any, form: FormData) {
   await verifyUserHasPermission(request, "admin.kb.create");
   try {
-    const categoryId = String(form.get("categoryId") ?? "");
-    const sectionId = String(form.get("sectionId") ?? "");
-    const position = String(form.get("position") ?? "");
-    const title = String(form.get("title") ?? "");
-    const slug = String(form.get("slug") ?? "");
+    const categoryId = stringOrEmpty(form.get("categoryId"));
+    const sectionId = stringOrEmpty(form.get("sectionId"));
+    const position = stringOrEmpty(form.get("position"));
+    const title = stringOrEmpty(form.get("title"));
+    const slug = stringOrEmpty(form.get("slug"));
     await KnowledgeBaseService.newArticle({
       kb,
       params,
@@ -177,8 +179,8 @@ async function handleNewArticle(request: Request, kb: KnowledgeBaseDto, params: 
 
 async function handleUpdateArticleTitle(kb: KnowledgeBaseDto, params: any, form: FormData) {
   try {
-    const id = String(form.get("id") ?? "");
-    const title = String(form.get("title") ?? "");
+    const id = stringOrEmpty(form.get("id"));
+    const title = stringOrEmpty(form.get("title"));
     const slug = UrlUtils.slugify(title);
     const existing = await getKbArticleBySlug({
       knowledgeBaseId: kb.id,

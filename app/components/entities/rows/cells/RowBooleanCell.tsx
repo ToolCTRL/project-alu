@@ -43,19 +43,18 @@ function getFormatLabels(format: BooleanFormatType, t?: TFunction): { trueLabel:
 }
 
 export function getBooleanAsStringValue({ value, format, t }: { value?: boolean; format?: BooleanFormatType; t?: TFunction }) {
-  const effectiveFormat = format || "yesNo";
+  const effectiveFormat = format ?? "yesNo";
   const labels = getFormatLabels(effectiveFormat, t);
   return value ? labels.trueLabel : labels.falseLabel;
 }
 export default function RowBooleanCell({ value, format }: Readonly<{ value?: boolean; format?: BooleanFormatType }>) {
   const { t } = useTranslation();
+  if (!format) {
+    return <div>{value ? <CheckIcon className="h-4 w-4 text-teal-500" /> : <XIcon className="text-muted-foreground h-4 w-4" />}</div>;
+  }
+  const title = getBooleanAsStringValue({ value, format, t });
+  const color = value ? Colors.GREEN : Colors.GRAY;
   return (
-    <>
-      {format ? (
-        <SimpleBadge title={getBooleanAsStringValue({ value, format, t })} color={value ? Colors.GREEN : Colors.GRAY} />
-      ) : (
-        <div>{value ? <CheckIcon className="h-4 w-4 text-teal-500" /> : <XIcon className="text-muted-foreground h-4 w-4" />}</div>
-      )}
-    </>
+    <SimpleBadge title={title} color={color} />
   );
 }

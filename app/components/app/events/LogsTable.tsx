@@ -9,9 +9,9 @@ import { Link } from "react-router";
 import LogDetailsButton from "./LogDetailsButton";
 
 interface Props {
-  items: LogWithDetails[];
-  withTenant: boolean;
-  pagination: PaginationDto;
+  readonly items: LogWithDetails[];
+  readonly withTenant: boolean;
+  readonly pagination: PaginationDto;
 }
 
 function TenantCell({ item }: { readonly item: LogWithDetails }) {

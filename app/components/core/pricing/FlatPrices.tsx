@@ -14,11 +14,11 @@ import TableSimple from "~/components/ui/tables/TableSimple";
 import { updateItemByIdx } from "~/utils/shared/ObjectUtils";
 
 interface Props {
-  model: PricingModel;
-  prices: SubscriptionPriceDto[];
-  setPrices: React.Dispatch<React.SetStateAction<SubscriptionPriceDto[]>>;
-  disabled: boolean;
-  isPortalPlan?: boolean;
+  readonly model: PricingModel;
+  readonly prices: SubscriptionPriceDto[];
+  readonly setPrices: React.Dispatch<React.SetStateAction<SubscriptionPriceDto[]>>;
+  readonly disabled: boolean;
+  readonly isPortalPlan?: boolean;
 }
 
 // Extracted component definitions

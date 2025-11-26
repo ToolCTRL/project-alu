@@ -15,20 +15,20 @@ import { useAdminData } from "~/utils/data/useAdminData";
 import TenantSelector from "./selectors/TenantSelector";
 
 interface Props {
-  layout: "app" | "admin" | "docs";
-  onSelected?: () => void;
-  menuItems?: SideBarItem[];
+  readonly layout: "app" | "admin" | "docs";
+  readonly onSelected?: () => void;
+  readonly menuItems?: SideBarItem[];
 }
 
 interface MenuItemProps {
-  menuItem: SideBarItem;
-  onSelected?: () => void;
-  cssStates: () => { selected: string };
-  isCurrent: (menuItem: SideBarItem) => boolean | undefined;
-  getPath: (item: SideBarItem) => string;
-  menuItemIsExpanded: (path: string) => boolean;
-  toggleMenuItem: (path: string) => void;
-  t: (key: string) => string;
+  readonly menuItem: SideBarItem;
+  readonly onSelected?: () => void;
+  readonly cssStates: () => { selected: string };
+  readonly isCurrent: (menuItem: SideBarItem) => boolean | undefined;
+  readonly getPath: (item: SideBarItem) => string;
+  readonly menuItemIsExpanded: (path: string) => boolean;
+  readonly toggleMenuItem: (path: string) => void;
+  readonly t: (key: string) => string;
 }
 
 function MobileMenuItem({ menuItem, onSelected, cssStates, isCurrent, getPath, menuItemIsExpanded, toggleMenuItem, t }: Readonly<MenuItemProps>): JSX.Element {
@@ -96,8 +96,17 @@ function MobileMenuItem({ menuItem, onSelected, cssStates, isCurrent, getPath, m
       </div>
       {menuItemIsExpanded(menuItem.path) && (
         <div className="mt-1">
-          {menuItem.items.map((subItem, idx) => (
-            <MobileSubMenuItem key={`${subItem.path}-${idx}`} subItem={subItem} menuItem={menuItem} onSelected={onSelected} cssStates={cssStates} isCurrent={isCurrent} getPath={getPath} t={t} />
+          {menuItem.items.map((subItem) => (
+            <MobileSubMenuItem
+              key={`${menuItem.path}-${subItem.path}`}
+              subItem={subItem}
+              menuItem={menuItem}
+              onSelected={onSelected}
+              cssStates={cssStates}
+              isCurrent={isCurrent}
+              getPath={getPath}
+              t={t}
+            />
           ))}
         </div>
       )}
@@ -221,8 +230,17 @@ function DesktopMenuItem({ menuItem, onSelected, cssStates, isCurrent, getPath, 
       </button>
       {menuItemIsExpanded(menuItem.path) && (
         <div className="mt-1">
-          {menuItem.items.map((subItem, idx) => (
-            <DesktopSubMenuItem key={`${subItem.path}-${idx}`} subItem={subItem} menuItem={menuItem} onSelected={onSelected} cssStates={cssStates} isCurrent={isCurrent} getPath={getPath} t={t} />
+          {menuItem.items.map((subItem) => (
+            <DesktopSubMenuItem
+              key={`${menuItem.path}-${subItem.path}`}
+              subItem={subItem}
+              menuItem={menuItem}
+              onSelected={onSelected}
+              cssStates={cssStates}
+              isCurrent={isCurrent}
+              getPath={getPath}
+              t={t}
+            />
           ))}
         </div>
       )}

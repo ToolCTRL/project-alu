@@ -193,12 +193,12 @@ export default function UsageBasedPricesUnit({ item, onUpdate, disabled }: Reado
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [item, tiersMode, allTiers, prices]);
 
-  function setPerUnitPrice(idx: number, currency: string, perUnitPrice: number) {
-    const newPrices = [...prices];
-    const existingPrice = getCurrencyPrice(idx, currency);
-    if (existingPrice) {
-      existingPrice.perUnitPrice = perUnitPrice;
-    } else {
+function setPerUnitPrice(idx: number, currency: string, perUnitPrice: number) {
+  const newPrices = [...prices];
+  const existingPrice = getCurrencyPrice(idx, currency);
+  if (existingPrice) {
+    existingPrice.perUnitPrice = perUnitPrice;
+  } else {
       newPrices.push({
         currency,
         from: allTiers[idx].from,
@@ -209,12 +209,12 @@ export default function UsageBasedPricesUnit({ item, onUpdate, disabled }: Reado
     setPrices(newPrices);
   }
 
-  function setFlatFeePrice(idx: number, currency: string, flatFeePrice: number) {
-    const newPrices = [...prices];
-    const existingPrice = getCurrencyPrice(idx, currency);
-    if (existingPrice) {
-      existingPrice.flatFeePrice = flatFeePrice;
-    } else {
+function setFlatFeePrice(idx: number, currency: string, flatFeePrice: number) {
+  const newPrices = [...prices];
+  const existingPrice = getCurrencyPrice(idx, currency);
+  if (existingPrice) {
+    existingPrice.flatFeePrice = flatFeePrice;
+  } else {
       newPrices.push({
         currency,
         from: allTiers[idx].from,
@@ -225,13 +225,14 @@ export default function UsageBasedPricesUnit({ item, onUpdate, disabled }: Reado
     setPrices(newPrices);
   }
 
-  function getCurrencyPrice(idx: number, currency: string) {
-    if (allTiers.length > idx) {
-      const { from, to } = allTiers[idx];
-      const existingPrice = prices.find((f) => f.currency === currency && f.from === from && f.to === to);
-      return existingPrice;
-    }
+function getCurrencyPrice(idx: number, currency: string) {
+  if (allTiers.length <= idx) {
+    return undefined;
   }
+  const { from, to } = allTiers[idx];
+  const existingPrice = prices.find((f) => f.currency === currency && f.from === from && f.to === to);
+  return existingPrice;
+}
 
   function updateTier(idx: number, from: number) {
     const newTiers = [...allTiers];

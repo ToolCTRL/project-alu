@@ -108,7 +108,7 @@ function parseSimpleValue(
         return null;
       }
       const errorMessage = t ? `${t(property.title)}: required` : `${property.name}: required`;
-      throw Error(errorMessage);
+      throw new Error(errorMessage);
     }
   }
   validatePropertyValue({ t, property, value: jsonValue });

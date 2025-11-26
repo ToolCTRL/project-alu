@@ -12,15 +12,15 @@ import { PaginationDto } from "~/application/dtos/data/PaginationDto";
 import { RowHeaderActionDto } from "~/application/dtos/data/RowHeaderActionDto";
 
 interface Props {
-  items: UserWithDetails[];
-  canImpersonate: boolean;
-  canChangePassword: boolean;
-  canSetUserRoles?: boolean;
-  canDelete: boolean;
-  pagination?: PaginationDto;
-  lastLogs?: { userId: string; log: Log }[];
+  readonly items: UserWithDetails[];
+  readonly canImpersonate: boolean;
+  readonly canChangePassword: boolean;
+  readonly canSetUserRoles?: boolean;
+  readonly canDelete: boolean;
+  readonly pagination?: PaginationDto;
+  readonly lastLogs?: { userId: string; log: Log }[];
 }
-export default function UsersTable({ items, canImpersonate, canChangePassword, canSetUserRoles, canDelete, pagination, lastLogs }: Props) {
+export default function UsersTable({ items, canImpersonate, canChangePassword, canSetUserRoles, canDelete, pagination, lastLogs }: Readonly<Props>) {
   const { t } = useTranslation();
   const submit = useSubmit();
 
@@ -34,7 +34,7 @@ export default function UsersTable({ items, canImpersonate, canChangePassword, c
     user.roles
       .filter((f) => (tenantId ? f.tenantId === tenantId && f.role.type === "app" : f.role.type === "admin"))
       .forEach((role) => {
-        if (roles.find((f) => f.name === role.role.name) === undefined) {
+        if (!roles.some((f) => f.name === role.role.name)) {
           roles.push(role.role);
         }
       });

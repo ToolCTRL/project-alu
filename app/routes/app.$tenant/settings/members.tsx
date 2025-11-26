@@ -88,7 +88,7 @@ type ActionData = {
 const badRequest = (data: ActionData) => Response.json(data, { status: 400 });
 
 async function handleDeleteInvitation(form: FormData) {
-  const invitationId = String(form.get("invitation-id") ?? "");
+  const invitationId = typeof form.get("invitation-id") === "string" ? (form.get("invitation-id") as string) : "";
   const invitation = await getUserInvitation(invitationId);
   if (!invitation) {
     return badRequest({ error: "Invitation not found" });
@@ -131,13 +131,14 @@ async function removeRole(userId: string, roleId: string, tenantId: string, requ
 }
 
 async function handleEditRole(form: FormData, request: Request, tenantId: string, userInfo: UserSimple, fromUser: User) {
-  const userId = String(form.get("user-id") ?? "");
-  const roleId = String(form.get("role-id") ?? "");
-  const add = String(form.get("add") ?? "") === "true";
+  const toSafeString = (value: FormDataEntryValue | null) => (typeof value === "string" ? value : "");
+  const userId = toSafeString(form.get("user-id"));
+  const roleId = toSafeString(form.get("role-id"));
+  const add = toSafeString(form.get("add")) === "true";
 
   const tenant = await getTenant(tenantId);
-  const user = await getUser(userId);
-  const role = await getRole(roleId);
+  const user = userId ? await getUser(userId) : null;
+  const role = roleId ? await getRole(roleId) : null;
 
   if (role?.name === DefaultAppRoles.SuperUser) {
     const validationError = await validateSuperAdminRole(tenantId, userInfo.userId, userId, add);

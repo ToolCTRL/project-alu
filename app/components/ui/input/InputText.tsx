@@ -1,5 +1,5 @@
 import clsx from "clsx";
-import { forwardRef, Fragment, ReactNode, Ref, RefObject, useEffect, useImperativeHandle, useRef, useState } from "react";
+import { forwardRef, ReactNode, Ref, RefObject, useEffect, useImperativeHandle, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import EntityIcon from "~/components/layouts/icons/EntityIcon";
 import HintTooltip from "~/components/ui/tooltips/HintTooltip";
@@ -57,8 +57,6 @@ export type InputTextProps = (WithDefaultValue | WithValueAndSetValue) & {
   pattern?: string;
   rows?: number;
   button?: ReactNode;
-  // lowercase?: boolean;
-  // uppercase?: boolean;
   type?: string;
   darkMode?: boolean;
   hint?: ReactNode;
@@ -75,8 +73,6 @@ export type InputTextProps = (WithDefaultValue | WithValueAndSetValue) & {
   borderless?: boolean;
   editorSize?: EditorSize;
   autoFocus?: boolean;
-  isError?: boolean;
-  isSuccess?: boolean;
   promptFlows?: { rowId: string | undefined; prompts: PromptFlowWithDetails[] } | undefined;
   hideChars?: boolean;
   onPaste?: (e: React.ClipboardEvent<HTMLInputElement>) => void;
@@ -103,8 +99,6 @@ const InputText = (props: InputTextProps, ref: Ref<RefInputText>) => {
     hint,
     rows,
     button,
-    // lowercase,
-    // uppercase,
     type = "text",
     darkMode,
     icon,
@@ -335,23 +329,5 @@ const InputText = (props: InputTextProps, ref: Ref<RefInputText>) => {
     </div>
   );
 };
-
-// function ChangeEditorSize({ value, onChange }: { value: string; onChange: (value: EditorSize) => void }) {
-//   const sizes: EditorSize[] = ["sm", "md", "lg", "auto", "screen"];
-//   return (
-//     <div className="flex items-center space-x-1">
-//       {sizes.map((size, idx) => {
-//         return (
-//           <Fragment key={idx}>
-//             <button type="button" onClick={() => onChange(size)} className="text-xs text-muted-foreground hover:underline">
-//               <div className={clsx(value === size ? "font-bold" : "")}>{size}</div>
-//             </button>
-//             {idx !== sizes.length - 1 && <div>•</div>}
-//           </Fragment>
-//         );
-//       })}
-//     </div>
-//   );
-// }
 
 export default forwardRef(InputText);

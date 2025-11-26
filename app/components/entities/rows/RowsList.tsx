@@ -139,9 +139,7 @@ export default function RowsList(props: Props & { entity: EntityWithDetails | st
     setGroupBy(result.groupBy);
   }, [appOrAdminData.entities, props]);
 
-  if (!entity) {
-    return null;
-  } else if (columns.length === 0) {
+  if (entity == null || columns.length === 0) {
     return null;
   }
 

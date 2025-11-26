@@ -7,7 +7,7 @@ import { createTenant, createTenantUser, getTenantBySlug } from "../db/tenants.d
 import { getUserByEmail, register } from "../db/users.db.server";
 import { sendEmail } from "~/modules/emails/services/EmailService";
 import { createStripeCustomer } from "../stripe.server";
-import crypto from "crypto";
+import crypto from "node:crypto";
 import { createRegistration, getRegistrationByEmail, updateRegistration } from "../db/registration.db.server";
 import { getClientIPAddress } from "~/utils/server/IpUtils";
 import { addBlacklistAttempt, findInBlacklist } from "../db/blacklist.db.server";
@@ -18,9 +18,9 @@ import EventsService from "../../modules/events/services/.server/EventsService";
 import { AccountCreatedDto } from "~/modules/events/dtos/AccountCreatedDto";
 import { autosubscribeToTrialOrFreePlan } from "./.server/pricingService";
 import IpAddressServiceServer from "~/modules/ipAddress/services/IpAddressService.server";
-import { getTenantIdFromUrl } from "./.server/urlService";
-import { db } from "../db.server";
 import EmailTemplates from "~/modules/emails/utils/EmailTemplates";
+
+const toSafeString = (value: FormDataEntryValue | null) => (typeof value === "string" ? value : "");
 
 export type RegistrationData = {
   email?: string;
@@ -34,20 +34,20 @@ export type RegistrationData = {
 
 export async function getRegistrationFormData(request: Request): Promise<RegistrationData> {
   const formData = await request.formData();
-  const email = formData.get("email")?.toString().toLowerCase().trim();
-  const password = formData.get("password")?.toString();
-  const company = formData.get("company")?.toString();
-  const firstName = formData.get("first-name")?.toString();
-  const lastName = formData.get("last-name")?.toString();
-  const slug = formData.get("slug")?.toString();
+  const email = toSafeString(formData.get("email")).toLowerCase().trim();
+  const password = toSafeString(formData.get("password"));
+  const company = toSafeString(formData.get("company"));
+  const firstName = toSafeString(formData.get("first-name"));
+  const lastName = toSafeString(formData.get("last-name"));
+  const slug = toSafeString(formData.get("slug"));
 
   const ipError = await IpAddressServiceServer.log(request, {
     action: "register",
-    description: email ?? "{empty email}",
+    description: email || "{empty email}",
     metadata: { email, company, firstName, lastName, slug },
   }).catch((e) => e.message);
   if (ipError) {
-    throw Error(ipError);
+    throw new Error(ipError);
   }
 
   return { email, password, company, firstName, lastName, slug };
@@ -60,28 +60,41 @@ function validateRegistrationInputs(
   githubId?: string,
   googleId?: string
 ) {
-  const { email, password, company, firstName, lastName, slug } = registrationData;
+  const { email, password, company, firstName, lastName } = registrationData;
+  const shouldValidateCredentials = !githubId && !googleId;
 
   if (!email || !UserUtils.validateEmail(email)) {
-    throw Error(t("account.register.errors.invalidEmail"));
+    throw new Error(t("account.register.errors.invalidEmail"));
   }
 
-  if (!githubId && !googleId) {
-    if (!appConfiguration.auth.requireEmailVerification && !UserUtils.validatePassword(password)) {
-      throw Error(t("account.register.errors.passwordRequired"));
-    } else if (appConfiguration.auth.requireOrganization && typeof company !== "string") {
-      throw Error(t("account.register.errors.organizationRequired"));
-    } else if (appConfiguration.auth.requireName && (typeof firstName !== "string" || typeof lastName !== "string")) {
-      throw Error(t("account.register.errors.nameRequired"));
-    }
+  if (
+    shouldValidateCredentials &&
+    !appConfiguration.auth.requireEmailVerification &&
+    !UserUtils.validatePassword(password)
+  ) {
+    throw new Error(t("account.register.errors.passwordRequired"));
+  }
+
+  if (shouldValidateCredentials && appConfiguration.auth.requireOrganization && typeof company !== "string") {
+    throw new Error(t("account.register.errors.organizationRequired"));
+  }
+
+  if (
+    shouldValidateCredentials &&
+    appConfiguration.auth.requireName &&
+    (typeof firstName !== "string" || typeof lastName !== "string")
+  ) {
+    throw new Error(t("account.register.errors.nameRequired"));
   }
 
   if (company && company.length > 100) {
-    throw Error("Maximum length for company name is 100 characters");
-  } else if (firstName && firstName.length > 50) {
-    throw Error("Maximum length for first name is 50 characters");
-  } else if (lastName && lastName.length > 50) {
-    throw Error("Maximum length for last name is 50 characters");
+    throw new Error("Maximum length for company name is 100 characters");
+  }
+  if (firstName && firstName.length > 50) {
+    throw new Error("Maximum length for first name is 50 characters");
+  }
+  if (lastName && lastName.length > 50) {
+    throw new Error("Maximum length for last name is 50 characters");
   }
 }
 
@@ -89,31 +102,33 @@ async function checkBlacklists(email: string, ipAddress: string, t: any) {
   const blacklistedEmail = await findInBlacklist("email", email);
   if (blacklistedEmail) {
     await addBlacklistAttempt(blacklistedEmail);
-    throw Error(t("account.register.errors.blacklist.email"));
+    throw new Error(t("account.register.errors.blacklist.email"));
   }
 
   const domain = email.substring(email.lastIndexOf("@") + 1);
   const blacklistedDomain = await findInBlacklist("domain", domain);
   if (blacklistedDomain) {
     await addBlacklistAttempt(blacklistedDomain);
-    throw Error(t("account.register.errors.blacklist.domain"));
+    throw new Error(t("account.register.errors.blacklist.domain"));
   }
 
   const blacklistedIp = await findInBlacklist("ip", ipAddress);
   if (blacklistedIp) {
     await addBlacklistAttempt(blacklistedIp);
-    throw Error(t("account.register.errors.blacklist.ip"));
+    throw new Error(t("account.register.errors.blacklist.ip"));
   }
 }
 
 async function validateSlug(slug: string | undefined, appConfiguration: any) {
   if (appConfiguration.auth.slug?.require) {
     if (!slug) {
-      throw Error(appConfiguration.auth.slug.type === "tenant" ? "Slug is required" : "Username is required");
+      throw new Error(appConfiguration.auth.slug.type === "tenant" ? "Slug is required" : "Username is required");
     }
     const existingTenant = await getTenantBySlug(slug);
     if (existingTenant) {
-      throw Error(appConfiguration.auth.slug.type === "tenant" ? "Slug is already taken" : "Username is already taken");
+      throw new Error(
+        appConfiguration.auth.slug.type === "tenant" ? "Slug is already taken" : "Username is already taken"
+      );
     }
   }
 }
@@ -149,7 +164,7 @@ export async function validateRegistration({
 
   const existingUser = await getUserByEmail(email);
   if (existingUser) {
-    throw Error(t("api.errors.userAlreadyRegistered"));
+    throw new Error(t("api.errors.userAlreadyRegistered"));
   }
 
   await validateSlug(slug, appConfiguration);
@@ -195,29 +210,28 @@ export async function createRegistrationForm({ request, email, company, firstNam
   const registration = await getRegistrationByEmail(email);
   if (registration) {
     if (registration.createdTenantId) {
-      throw Error("api.errors.userAlreadyRegistered");
-    } else {
-      if (recreateToken) {
-        const newToken = crypto.randomBytes(20).toString("hex");
-        await updateRegistration(registration.id, {
-          firstName,
-          lastName,
-          company,
-          token: newToken,
-        });
-        await sendEmail({
-          request,
-          to: email,
-          alias: "email-verification",
-          ...EmailTemplates.VERIFICATION_EMAIL.parse({
-            appConfiguration: await getAppConfiguration({ request }),
-            data: {
-              action_url: getBaseURL(request) + `/verify/` + newToken,
-              name: firstName ?? "",
-            },
-          }),
-        });
-      }
+      throw new Error("api.errors.userAlreadyRegistered");
+    }
+    if (recreateToken) {
+      const newToken = crypto.randomBytes(20).toString("hex");
+      await updateRegistration(registration.id, {
+        firstName,
+        lastName,
+        company,
+        token: newToken,
+      });
+      await sendEmail({
+        request,
+        to: email,
+        alias: "email-verification",
+        ...EmailTemplates.VERIFICATION_EMAIL.parse({
+          appConfiguration: await getAppConfiguration({ request }),
+          data: {
+            action_url: getBaseURL(request) + `/verify/` + newToken,
+            name: firstName ?? "",
+          },
+        }),
+      });
     }
   } else {
     const token = crypto.randomBytes(20).toString("hex");
@@ -278,13 +292,13 @@ export async function createUserAndTenant({
   if (!stripeCustomerId && process.env.STRIPE_SK) {
     const stripeCustomer = await createStripeCustomer(email, tenantName);
     if (!stripeCustomer) {
-      throw Error("Could not create Stripe customer");
+      throw new Error("Could not create Stripe customer");
     }
     stripeCustomerId = stripeCustomer.id;
   }
   const tenant = await createTenant({ name: tenantName, subscriptionCustomerId: stripeCustomerId, slug });
   if (!tenant) {
-    throw Error("Could not create tenant");
+    throw new Error("Could not create tenant");
   }
   const user = await register({
     email: email,
@@ -298,7 +312,7 @@ export async function createUserAndTenant({
     defaultTenantId: tenant.id,
   });
   if (!user) {
-    throw Error("Could not create user");
+    throw new Error("Could not create user");
   }
   const roles = await getAllRoles("app");
   await createTenantUser(

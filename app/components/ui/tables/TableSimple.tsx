@@ -14,21 +14,21 @@ import ConfirmModal, { RefConfirmModal } from "../modals/ConfirmModal";
 import { Checkbox } from "../checkbox";
 
 interface Props<T> {
-  headers: RowHeaderDisplayDto<T>[];
-  items: T[];
-  actions?: RowHeaderActionDto<T>[];
-  pagination?: PaginationDto;
-  onClickRoute?: (idx: number, item: T) => string | undefined;
-  selectedRows?: T[];
-  onSelected?: (item: T[]) => void;
-  className?: (idx: number, item: T) => string;
-  padding?: string;
-  noRecords?: ReactNode;
-  emptyState?: { title: string; description: string; icon?: ReactNode };
-  darkMode?: boolean;
+  readonly headers: ReadonlyArray<RowHeaderDisplayDto<T>>;
+  readonly items: ReadonlyArray<T>;
+  readonly actions?: ReadonlyArray<RowHeaderActionDto<T>>;
+  readonly pagination?: PaginationDto;
+  readonly onClickRoute?: (idx: number, item: T) => string | undefined;
+  readonly selectedRows?: ReadonlyArray<T>;
+  readonly onSelected?: (item: T[]) => void;
+  readonly className?: (idx: number, item: T) => string;
+  readonly padding?: string;
+  readonly noRecords?: ReactNode;
+  readonly emptyState?: { title: string; description: string; icon?: ReactNode };
+  readonly darkMode?: boolean;
 }
 
-export default function TableSimple<T>(props: Props<T>) {
+export default function TableSimple<T>(props: Readonly<Props<T>>) {
   const [showChild, setShowChild] = useState(false);
 
   // Wait until after client-side hydration to show
@@ -57,7 +57,7 @@ function Table<T>({
   noRecords,
   emptyState,
   darkMode,
-}: Props<T>) {
+}: Readonly<Props<T>>) {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
@@ -75,22 +75,14 @@ function Table<T>({
     });
     setSortBy(sortObject);
   }, [searchParams]);
-  // const [selectedRows, setSelectedRows] = useState<T[]>([]);
-
-  // useEffect(() => {
-  //   if (onSelected) {
-  //     onSelected(selectedRows);
-  //   }
-  // }, [selectedRows]);
 
   function toggleSelected(_: number, item: T) {
-    if (!selectedRows || !onSelected) {
-      return;
-    }
-    if (selectedRows.includes(item)) {
-      onSelected(selectedRows.filter((i) => i !== item));
-    } else {
-      onSelected([...selectedRows, item]);
+    if (selectedRows && onSelected) {
+      if (selectedRows.includes(item)) {
+        onSelected(selectedRows.filter((i) => i !== item));
+      } else {
+        onSelected([...selectedRows, item]);
+      }
     }
   }
 
@@ -99,24 +91,22 @@ function Table<T>({
   const [indeterminate, setIndeterminate] = useState(false);
 
   useLayoutEffect(() => {
-    if (!selectedRows || !onSelected) {
-      return;
+    if (selectedRows && onSelected) {
+      const isIndeterminate = selectedRows.length > 0 && selectedRows.length < items.length;
+      setChecked(selectedRows.length === items.length && items.length > 0);
+      setIndeterminate(isIndeterminate);
+      // @ts-ignore
+      checkbox.current.indeterminate = isIndeterminate;
     }
-    const isIndeterminate = selectedRows.length > 0 && selectedRows.length < items.length;
-    setChecked(selectedRows.length === items.length && items.length > 0);
-    setIndeterminate(isIndeterminate);
-    // @ts-ignore
-    checkbox.current.indeterminate = isIndeterminate;
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [onSelected, selectedRows]);
 
   function toggleAll() {
-    if (!selectedRows || !onSelected) {
-      return;
+    if (selectedRows && onSelected) {
+      onSelected(checked || indeterminate ? [] : items);
+      setChecked(!checked && !indeterminate);
+      setIndeterminate(false);
     }
-    onSelected(checked || indeterminate ? [] : items);
-    setChecked(!checked && !indeterminate);
-    setIndeterminate(false);
   }
 
   function onHeaderClick(header: RowHeaderDisplayDto<T>) {
@@ -149,7 +139,7 @@ function Table<T>({
         <table className="whitespace-no-wrap w-full">
           <thead className={clsx("", darkMode && "")}>
             <tr className={clsx("border-border text-muted-foreground border-b text-left text-xs font-semibold tracking-wide", darkMode && "")}>
-              {actions.filter((f) => f.firstColumn).length > 0 && <th scope="col" className="px-2 py-1"></th>}
+              {actions.some((f) => f.firstColumn) && <th scope="col" className="px-2 py-1"></th>}
               {onSelected && (
                 <th scope="col" className="relative w-10 px-6 py-5 sm:w-12 sm:px-6">
                   <Checkbox
@@ -164,14 +154,22 @@ function Table<T>({
               )}
               {headers
                 .filter((f) => !f.hidden)
-                .map((header, idxHeader) => {
+                .map((header) => {
+                  const alignment =
+                    header.align === "right"
+                      ? "justify-end"
+                      : header.align === "center"
+                      ? "justify-center"
+                      : header.align === "left"
+                      ? "justify-start"
+                      : "justify-between";
                   return (
                     <th
-                      key={idxHeader}
+                      key={header.name ?? header.title}
                       scope="col"
                       onClick={() => onHeaderClick(header)}
                       className={clsx(
-                        idxHeader === 0 && actions.filter((f) => f.firstColumn).length === 0 && "pl-3",
+                        actions.some((f) => f.firstColumn) ? "" : "pl-3",
                         "whitespace-nowrap px-2 py-2 tracking-wider",
                         header.breakpoint === "sm" && "hidden sm:table-cell",
                         header.breakpoint === "md" && "mg:table-cell hidden",
@@ -182,13 +180,7 @@ function Table<T>({
                       )}
                     >
                       <div
-                        className={clsx(
-                          "group flex space-x-2",
-                          !header.align && "justify-between",
-                          header.align === "right" && "justify-end",
-                          header.align === "center" && "justify-center",
-                          header.align === "left" && "justify-start"
-                        )}
+                        className={clsx("group flex space-x-2", alignment)}
                       >
                         <div className={clsx(header.className, "select-none truncate")}>{t(header.title)}</div>
                         {header.sortBy && (
@@ -204,25 +196,24 @@ function Table<T>({
                     </th>
                   );
                 })}
-              {actions.filter((f) => !f.firstColumn).length > 0 && <th scope="col" className="px-2 py-1"></th>}
+              {actions.some((f) => !f.firstColumn) && <th scope="col" className="px-2 py-1"></th>}
             </tr>
           </thead>
           <tbody className={clsx("divide-divide divide-y", darkMode && "")}>
             {items.length === 0 ? (
               <tr className={clsx("", darkMode && "")}>
                 <td colSpan={headers.filter((f) => !f.hidden).length + actions.length + (onSelected ? 1 : 0)} className="text-center">
-                  {noRecords ?? (
-                    <div className="text-muted-foreground p-3 text-sm">
-                      {!emptyState ? (
+                  {noRecords ??
+                    (emptyState ? (
+                      <div className="space-y-1">
+                        <div className="font-medium">{emptyState.title}</div>
+                        <div>{emptyState.description}</div>
+                      </div>
+                    ) : (
+                      <div className="text-muted-foreground p-3 text-sm">
                         <span>{t("shared.noRecords")}</span>
-                      ) : (
-                        <div className="space-y-1">
-                          <div className="font-medium">{emptyState.title}</div>
-                          <div>{emptyState.description}</div>
-                        </div>
-                      )}
-                    </div>
-                  )}
+                      </div>
+                    ))}
                 </td>
               </tr>
             ) : (
@@ -230,7 +221,11 @@ function Table<T>({
                 const href = onClickRoute?.(idxRow, item);
                 return (
                   <tr
-                    key={idxRow}
+                    key={
+                      (item as { id?: string | number; key?: string | number })?.id ??
+                      (item as { key?: string | number })?.key ??
+                      JSON.stringify(item)
+                    }
                     onClick={
                       href
                         ? (e) => {
@@ -263,12 +258,12 @@ function Table<T>({
                     )}
                     {headers
                       .filter((f) => !f.hidden)
-                      .map((header, idxHeader) => {
+                      .map((header) => {
                         return (
                           <td
-                            key={idxHeader}
+                            key={`${header.name ?? header.title}-value`}
                             className={clsx(
-                              idxHeader === 0 && actions.filter((f) => f.firstColumn).length === 0 && "pl-4",
+                              actions.some((f) => f.firstColumn) ? "" : "pl-4",
                               "whitespace-nowrap text-sm",
                               darkMode && "",
                               header.className,
@@ -278,7 +273,7 @@ function Table<T>({
                               header.breakpoint === "lg" && "hidden lg:table-cell",
                               header.breakpoint === "xl" && "hidden xl:table-cell",
                               header.breakpoint === "2xl" && "hidden 2xl:table-cell",
-                              className && className(idxRow, item)
+                              className?.(idxRow, item)
                             )}
                           >
                             {RowDisplayValueHelper.displayRowValue(t, header, item, idxRow)}
@@ -291,13 +286,6 @@ function Table<T>({
               })
             )}
 
-            {/* {[...Array(pageSize - items.length)].map((_, i) => (
-                  <tr key={i}>
-                    <td colSpan={headers.length + 1} className="whitespace-nowrap text-sm text-muted-foreground">
-                      <div className="px-2 py-2.5 invisible">No row</div>
-                    </td>
-                  </tr>
-                ))} */}
           </tbody>
         </table>
       </div>
@@ -313,12 +301,12 @@ function ActionsCells<T>({
   actions,
   idxRow,
   className,
-}: {
+}: Readonly<{
   item: T;
   actions: RowHeaderActionDto<T>[];
   idxRow: number;
   className?: (idx: number, item: T) => string;
-}) {
+}>) {
   const { t } = useTranslation();
   const refConfirm = useRef<RefConfirmModal>(null);
   function onConfirmed({ action, item }: { action: RowHeaderActionDto<T>; item: T }) {
@@ -329,15 +317,15 @@ function ActionsCells<T>({
   return (
     <>
       {actions && actions.length > 0 && (
-        <td className={clsx("whitespace-nowrap px-2 py-1", className && className(idxRow, item))}>
+        <td className={clsx("whitespace-nowrap px-2 py-1", className?.(idxRow, item))}>
           <div className="flex space-x-2">
             {actions
-              .filter((f) => !f.hidden || !f.hidden(item))
-              .map((action, idx) => {
+              .filter((f) => (f.hidden ? f.hidden(item) === false : true))
+              .map((action) => {
                 return (
                   <ButtonTertiary
                     disabled={action.disabled !== undefined ? action.disabled(item) : action.disabled}
-                    key={idx}
+                    key={(action.title && action.title.toString()) || action.onClick?.name || action.onClickRouteTarget || "action"}
                     destructive={action.renderIsDestructive !== undefined ? action.renderIsDestructive(item) : action.destructive}
                     prefetch={action.prefetch}
                     onClick={(e) => {
@@ -357,7 +345,7 @@ function ActionsCells<T>({
                         }
                       }
                     }}
-                    to={action.onClickRoute && action.onClickRoute(idxRow, item)}
+                    to={action.onClickRoute?.(idxRow, item)}
                     target={action.onClickRouteTarget}
                   >
                     {action.renderTitle ? action.renderTitle(item) : action.title}
