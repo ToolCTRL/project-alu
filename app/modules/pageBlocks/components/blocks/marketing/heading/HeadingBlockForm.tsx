@@ -4,7 +4,7 @@ import InputRadioGroup from "~/components/ui/input/InputRadioGroup";
 import InputText from "~/components/ui/input/InputText";
 import { defaultHeadingBlock, HeadingBlockDto, HeadingBlockStyle, HeadingBlockStyles } from "./HeadingBlockUtils";
 
-export default function HeadingBlockForm({ item, onUpdate }: { item?: HeadingBlockDto; onUpdate: (item: HeadingBlockDto) => void }) {
+export default function HeadingBlockForm({ item, onUpdate }: { readonly item?: HeadingBlockDto; readonly onUpdate: (item: HeadingBlockDto) => void }) {
   const [state, setState] = useState<HeadingBlockDto>(item || defaultHeadingBlock);
   useEffect(() => {
     onUpdate(state);

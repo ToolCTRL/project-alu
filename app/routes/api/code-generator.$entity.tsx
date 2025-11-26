@@ -9,10 +9,7 @@ export const action = async ({ request, params }: ActionFunctionArgs) => {
   }
   try {
     const body = (await request.json()) as CodeGeneratorOptions;
-    const file = await CodeGeneratorService.generate(body);
-    // if (!file) {
-    //   return Response.json({ success: "Files generated successfully." }, { status: 200 });
-    // }
+    await CodeGeneratorService.generate(body);
     return new Response(null, {
       headers: {
         "Content-Type": "application/zip",

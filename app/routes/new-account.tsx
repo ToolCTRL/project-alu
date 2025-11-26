@@ -1,6 +1,5 @@
-import { Link, useActionData, useLoaderData, useNavigate, useNavigation } from "react-router";
+import { Link, useActionData, useLoaderData, useNavigate, useNavigation, type ActionFunction, type LoaderFunctionArgs, redirect } from "react-router";
 import { useTranslation } from "react-i18next";
-import { ActionFunction, LoaderFunctionArgs, redirect } from "react-router";
 import { TenantUserType } from "~/application/enums/tenants/TenantUserType";
 import TenantNew from "~/components/core/settings/tenant/TenantNew";
 import { getAllRoles } from "~/utils/db/permissions/roles.db.server";

@@ -126,10 +126,10 @@ export default function RowsList(props: Props & { entity: EntityWithDetails | st
     const view = props.currentView ?? systemView;
 
     let result;
-    if (!view) {
-      result = processDefaultView(entity, undefined);
-    } else {
+    if (view) {
       result = processViewWithLayout(entity, view, undefined);
+    } else {
+      result = processDefaultView(entity, undefined);
     }
 
     let finalColumns = props.columns ?? result.columns;
@@ -220,18 +220,11 @@ function RowsListWrapped({
             />
           ) : (
             <div className="space-y-2">
-              {/* {pagination && (
-            <GridPagination
-              defaultPageSize={currentView?.pageSize ?? undefined}
-              totalItems={pagination.totalItems}
-              totalPages={pagination.totalPages}
-              page={pagination.page}
-              pageSize={pagination.pageSize}
-            />
-          )} */}
               <GridContainer {...(currentView ? EntityViewHelper.getGridLayout(currentView) : { columns: 3, gap: "xs" })}>
                 {items.map((item) => {
-                  const href = onClickRoute ? onClickRoute(item) : EntityHelper.getRoutes({ routes, entity, item })?.overview ?? undefined;
+                  const href = onClickRoute
+                    ? onClickRoute(item)
+                    : (EntityHelper.getRoutes({ routes, entity, item })?.overview ?? undefined);
                   if (onSelected && selectedRows !== undefined) {
                     return (
                       <ButtonSelectWrapper key={item.id} item={item} onSelected={onSelected} selectedRows={selectedRows}>
@@ -269,22 +262,11 @@ function RowsListWrapped({
                   ) : (
                     card
                   );
-                  // return (
-                  //   <Fragment key={item.id}>
-                  //     <Link to={item.id}>
-                  //       <div className="group w-full truncate rounded-md border border-border bg-background p-3 text-left shadow-2xs hover:bg-secondary">
-                  //         <RenderCard layout={view} item={item} entity={entity} columns={columns} allEntities={appOrAdminData.entities} routes={routes} actions={actions} />
-                  //       </div>
-                  //     </Link>
-                  //   </Fragment>
-                  // );
                 })}
                 {items.length === 0 ? (
-                  <Fragment>{readOnly ? <EmptyCard className="w-full" /> : <AddMoreCard entity={entity} routes={routes} />}</Fragment>
+                  readOnly ? <EmptyCard className="w-full" /> : <AddMoreCard entity={entity} routes={routes} />
                 ) : (
-                  <Fragment>
-                    <RowsLoadMoreCard pagination={pagination} currentView={currentView} />
-                  </Fragment>
+                  <RowsLoadMoreCard pagination={pagination} currentView={currentView} />
                 )}
               </GridContainer>
             </div>
@@ -391,7 +373,7 @@ function AdvancedBoard({
 }) {
   const fetcher = useFetcher();
   const columnWidth = 240;
-  const portal = typeof document === "undefined" ? null : document.body;
+  const portal = document === undefined ? null : document.body;
 
   function applyOverrides(list: RowWithDetails[], map: Record<string, RowWithDetails>) {
     return list.map((row) => map[row.id] ?? row);
@@ -567,7 +549,7 @@ function AdvancedBoard({
     const sum = rows.reduce((acc, row) => {
       const val = RowHelper.getPropertyValue({ entity, item: row, property: resolveAggregateProperty });
       const num = typeof val === "number" ? val : Number(val ?? 0);
-      return acc + (isNaN(num) ? 0 : num);
+      return acc + (Number.isNaN(num) ? 0 : num);
     }, 0);
     return { count, sum };
   }

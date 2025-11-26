@@ -1,6 +1,5 @@
 import { useTranslation } from "react-i18next";
-import { ActionFunction, LoaderFunctionArgs, MetaFunction, redirect, useLoaderData } from "react-router";
-import { useActionData, useSubmit } from "react-router";
+import { ActionFunction, LoaderFunctionArgs, MetaFunction, redirect, useLoaderData, useActionData, useSubmit } from "react-router";
 import { useAppData } from "~/utils/data/useAppData";
 import { getTranslations } from "~/locale/i18next.server";
 import { TenantWithDetails, getTenant, getTenantBySlug, updateTenant } from "~/utils/db/tenants.db.server";
@@ -38,7 +37,7 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
   const tenantSettingsEntity = await findEntityByName({ tenantId, name: "tenantSettings" });
   const tenant = await getTenant(tenantId);
   if (!tenant) {
-    throw Error(t("shared.notFound"));
+    throw new Error(t("shared.notFound"));
   }
   const data: LoaderData = {
     title: `${t("models.tenant.object")} | ${process.env.APP_NAME}`,
@@ -88,9 +87,9 @@ async function updateTenantSettings(tenantId: string, form: FormData, existing: 
 }
 
 async function handleEditAction(request: Request, params: any, form: FormData, tenantId: string, t: any) {
-  const name = form.get("name")?.toString() ?? "";
-  const slug = form.get("slug")?.toString().toLowerCase() ?? "";
-  const icon = form.get("icon")?.toString() ?? "";
+  const name = String(form.get("name") ?? "");
+  const slug = String(form.get("slug") ?? "").toLowerCase();
+  const icon = String(form.get("icon") ?? "");
 
   const validationError = await validateEditForm(name, slug);
   if (validationError) {

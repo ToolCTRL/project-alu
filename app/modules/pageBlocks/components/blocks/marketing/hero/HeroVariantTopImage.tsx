@@ -6,7 +6,7 @@ import ButtonEvent from "~/components/ui/buttons/ButtonEvent";
 import { HeroBlockDto } from "~/modules/pageBlocks/components/blocks/marketing/hero/HeroBlockUtils";
 import ProductHuntBadge from "../launch/ProductHuntBadge";
 
-export default function HeroVariantTopImage({ item }: { item: HeroBlockDto }) {
+export default function HeroVariantTopImage({ item }: { readonly item: HeroBlockDto }) {
   const { t } = useTranslation();
   return (
     <section className="body-font">
@@ -35,21 +35,21 @@ export default function HeroVariantTopImage({ item }: { item: HeroBlockDto }) {
           {item.description && <p className="text-muted-foreground mb-8 leading-relaxed">{t(item.description)}</p>}
 
           <div className="flex flex-wrap justify-center gap-4">
-            {item.cta.map((item, idx) => {
+            {item.cta.map((ctaItem, idx) => {
               return (
-                <Fragment key={idx}>
+                <Fragment key={`cta-${ctaItem.text}-${idx}`}>
                   <ButtonEvent
-                    key={idx}
-                    event={{ action: "click", category: "hero", label: item.text ?? "", value: item.href ?? "" }}
-                    to={item.href}
+                    
+                    event={{ action: "click", category: "hero", label: ctaItem.text ?? "", value: ctaItem.href ?? "" }}
+                    to={ctaItem.href}
                     className={clsx(
                       "w-full sm:w-auto",
-                      item.isPrimary
+                      ctaItem.isPrimary
                         ? "bg-primary hover:bg-primary/95 text-primary-foreground inline-flex justify-center rounded-md border-0 px-4 py-3 text-lg shadow-2xs focus:outline-hidden"
                         : " bg-secondary hover:bg-secondary/95 text-secondary-foreground inline-flex justify-center rounded-md border-0 px-4 py-3 text-lg shadow-2xs focus:outline-hidden"
                     )}
                   >
-                    {t(item.text)}
+                    {t(ctaItem.text)}
                   </ButtonEvent>
                 </Fragment>
               );

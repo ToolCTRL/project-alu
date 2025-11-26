@@ -3,12 +3,12 @@ export type BannerBlockDto = {
   text?: string;
   textMd?: string;
   href?: string;
-  target?: undefined | "_blank";
+  target?: "_blank";
   icon?: string;
   cta: readonly {
     text: string;
     href: string;
-    target?: undefined | "_blank";
+    target?: "_blank";
     isPrimary?: boolean;
     icon?: string;
   }[];

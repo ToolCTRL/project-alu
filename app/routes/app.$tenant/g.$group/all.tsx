@@ -1,4 +1,4 @@
-import { LoaderFunctionArgs, MetaFunction, redirect, useLoaderData } from "react-router";
+import { LoaderFunctionArgs, MetaFunction, redirect, useLoaderData, Link, useParams } from "react-router";
 import { useTranslation } from "react-i18next";
 import IndexPageLayout from "~/components/ui/layouts/IndexPageLayout";
 import { getTranslations } from "~/locale/i18next.server";
@@ -8,7 +8,6 @@ import { getAllEntities } from "~/utils/db/entities/entities.db.server";
 import { getEntityGroupBySlug } from "~/utils/db/entities/entityGroups.db.server";
 import { getTenantIdOrNull } from "~/utils/services/.server/urlService";
 import RowsList from "~/components/entities/rows/RowsList";
-import { Link, useParams } from "react-router";
 import { EntitiesApi } from "~/utils/api/.server/EntitiesApi";
 import { useAppOrAdminData } from "~/utils/data/useAppOrAdminData";
 import { requireAuth } from "~/utils/loaders.middleware";
@@ -22,7 +21,7 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
   await requireAuth({ request, params });
   const { t } = await getTranslations(request);
   const tenantId = await getTenantIdOrNull({ request, params });
-  const group = await getEntityGroupBySlug(params.group!);
+  const group = await getEntityGroupBySlug(params.group);
   if (!group) {
     throw redirect(tenantId ? UrlUtils.currentTenantUrl(params, "404") : "/404");
   }
@@ -57,7 +56,7 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
 
 export const meta: MetaFunction<typeof loader> = ({ data }) => [{ title: data?.title }];
 
-export default () => {
+export default function GroupAll() {
   const { t } = useTranslation();
   const data = useLoaderData<LoaderData>();
   const appOrAdminData = useAppOrAdminData();

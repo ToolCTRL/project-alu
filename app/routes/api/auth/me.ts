@@ -10,7 +10,7 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
       return Response.json({ error: "No token provided" }, { status: 401 });
     }
 
-    const decoded: any = jwt.verify(token, process.env.JWT_SECRET!);
+    const decoded: any = jwt.verify(token, process.env.JWT_SECRET);
     const user = await getUser(decoded.userId);
     return Response.json({ user });
   } catch (e: any) {

@@ -86,7 +86,7 @@ export default function WorkflowExecutionsSidebar({ workflow, selectedBlock, sel
                 <div className="text-foreground/80 text-sm font-medium">Workflow Params</div>
                 <div className="space-y-1">
                   <div className="overflow-hidden">
-                    {typeof window !== "undefined" && (
+                    {typeof globalThis.window !== "undefined" && (
                       <Editor
                         value={selectedExecution.input ? JSON.stringify(selectedExecution.input, null, 2) : "{}"}
                         language="json"

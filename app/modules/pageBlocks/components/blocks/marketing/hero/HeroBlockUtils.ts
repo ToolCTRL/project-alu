@@ -9,7 +9,7 @@ export type HeroBlockDto = {
     text: string;
     href: string;
     isPrimary: boolean;
-    target?: undefined | "_blank";
+    target?: "_blank";
   }[];
   bottomText?: TextWithLinkDto;
 };
@@ -28,7 +28,7 @@ interface TextWithLinkDto {
   link?: {
     text?: string;
     href?: string;
-    target?: undefined | "_blank";
+    target?: "_blank";
   };
 }
 

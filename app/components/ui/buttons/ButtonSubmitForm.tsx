@@ -32,7 +32,7 @@ export default function ButtonSubmitForm({ submits, type, to, target, children, 
   const [referral, setReferral] = useState<string | null>(null);
 
   useEffect(() => {
-    if (typeof globalThis.window !== "undefined") {
+    if (globalThis.window !== undefined) {
       try {
         // @ts-ignore
         globalThis.rewardful("ready", () => {

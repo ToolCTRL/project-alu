@@ -1,19 +1,14 @@
 import FooterBlock from "~/modules/pageBlocks/components/blocks/marketing/footer/FooterBlock";
 import HeaderBlock from "~/modules/pageBlocks/components/blocks/marketing/header/HeaderBlock";
-import { useEffect } from "react";
 import { ActionFunction, LoaderFunctionArgs, useLoaderData } from "react-router";
-import { useActionData } from "react-router";
 import { useTranslation } from "react-i18next";
 import { getTranslations } from "~/locale/i18next.server";
 import ServerError from "~/components/ui/errors/ServerError";
 import { PageLoaderData } from "~/modules/pageBlocks/dtos/PageBlockData";
-import { PricingBlockDto } from "~/modules/pageBlocks/components/blocks/marketing/pricing/PricingBlockUtils";
 import { MetaTagsDto } from "~/application/dtos/seo/MetaTagsDto";
-import toast from "react-hot-toast";
 import HeadingBlock from "~/modules/pageBlocks/components/blocks/marketing/heading/HeadingBlock";
 import BlogPostsVariantSimple from "~/modules/pageBlocks/components/blocks/marketing/blog/posts/BlogPostsVariantSimple";
 import { v2MetaFunction } from "~/utils/compat/v2MetaFunction";
-import { PricingBlockService } from "~/modules/pageBlocks/components/blocks/marketing/pricing/PricingBlockService.server";
 import { BlogPostsBlockDto } from "~/modules/pageBlocks/components/blocks/marketing/blog/posts/BlogPostsBlockUtils";
 import { BlogPostsBlockService } from "~/modules/pageBlocks/components/blocks/marketing/blog/posts/BlogPostsBlockService.server";
 
@@ -33,7 +28,7 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
   return Response.json(data);
 };
 
-export default function () {
+export default function BlogRoute() {
   const { t } = useTranslation();
   const data = useLoaderData<LoaderData>();
 

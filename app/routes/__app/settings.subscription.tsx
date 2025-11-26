@@ -27,8 +27,7 @@ import Tabs from "~/components/ui/tabs/Tabs";
 import Stripe from "stripe";
 import { PlanFeatureUsageDto } from "~/application/dtos/subscriptions/PlanFeatureUsageDto";
 import { getAppConfiguration } from "~/utils/db/appConfiguration.db.server";
-import { serverTimingHeaders } from "~/modules/metrics/utils/defaultHeaders.server";
-export { serverTimingHeaders as headers };
+export { serverTimingHeaders as headers } from "~/modules/metrics/utils/defaultHeaders.server";
 
 export const meta: MetaFunction<typeof loader> = ({ data }) => [{ title: data?.title }];
 

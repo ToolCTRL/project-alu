@@ -20,9 +20,9 @@ type LoaderData = {
 export const loader = async ({ request, params }: LoaderFunctionArgs) => {
   const { t } = await getTranslations(request);
   if (!process.env.NOTIFICATIONS_NOVU_API_KEY) {
-    throw Error("NOTIFICATIONS_NOVU_API_KEY env variable required.");
+    throw new Error("NOTIFICATIONS_NOVU_API_KEY env variable required.");
   } else if (!process.env.NOTIFICATIONS_NOVU_APP_ID) {
-    throw Error("NOTIFICATIONS_NOVU_APP_ID env variable required.");
+    throw new Error("NOTIFICATIONS_NOVU_APP_ID env variable required.");
   }
   await verifyUserHasPermission(request, "admin.notifications.view");
   const data: LoaderData = {

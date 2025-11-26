@@ -3,9 +3,8 @@ import LoadingButton from "~/components/ui/buttons/LoadingButton";
 import ErrorModal, { RefErrorModal } from "~/components/ui/modals/ErrorModal";
 import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Link, Form, useActionData, useNavigation } from "react-router";
-import { ActionFunction, LoaderFunctionArgs, MetaFunction } from "react-router";
-import crypto from "crypto";
+import { Link, Form, useActionData, useNavigation, type ActionFunction, type LoaderFunctionArgs, type MetaFunction } from "react-router";
+import crypto from "node:crypto";
 import { getUserByEmail, updateUserVerifyToken } from "~/utils/db/users.db.server";
 import { getTranslations } from "~/locale/i18next.server";
 import { sendEmail } from "~/modules/emails/services/EmailService";
@@ -44,14 +43,6 @@ export const action: ActionFunction = async ({ request }) => {
   }
 
   const user = await getUserByEmail(email);
-  // const ipError = await IpAddressServiceServer.log(request, {
-  //   action: "forgot-password",
-  //   description: email,
-  //   block: user === null ? "User not found" : undefined,
-  // }).catch((e) => e.message);
-  // if (ipError) {
-  //   return Response.json({ error: ipError }, { status: 400 });
-  // }
   if (!user) {
     // Do not show that the email was not found, fake wait
     await new Promise((resolve) => setTimeout(resolve, 1500));
@@ -114,11 +105,7 @@ export default function ForgotPasswordRoute() {
 
           <div className="border-border mx-auto flex flex-col items-center space-y-6 rounded-lg border p-6">
             <Form method="post" className="w-full space-y-3">
-              {/* <div className="text-left font-medium">{t("account.reset.headline")}</div> */}
               <div>
-                {/* <label className="flex justify-between space-x-2 text-xs font-medium text-foreground/80 dark:text-muted-foreground" htmlFor="email">
-                  {t("account.shared.email")}
-                </label> */}
                 <InputText
                   title={t("account.shared.email")}
                   id="email"

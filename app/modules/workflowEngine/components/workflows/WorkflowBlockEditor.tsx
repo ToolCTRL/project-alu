@@ -428,16 +428,6 @@ function BlockInput({
             }}
           />
         )}
-        {/* <button
-          type="button"
-          onClick={() => {
-            setInputValue("");
-            onChange("");
-          }}
-          className="rounded-md bg-background text-muted-foreground hover:text-muted-foreground focus:outline-hidden focus:ring-2 focus:ring-gray-500 focus:ring-offset-2"
-        >
-          Clear
-        </button> */}
       </div>
       {input.type === "string" && (
         <WorkflowVariableTextInput
@@ -475,7 +465,7 @@ function BlockInput({
       )}
       {input.type === "monaco" && (
         <div className=" overflow-hidden">
-          {typeof window !== "undefined" && (
+          {typeof globalThis.window !== "undefined" && (
             <Editor
               onMount={(editor: any, monaco: any) => {
                 refMonaco.current = editor;

@@ -1,5 +1,4 @@
-import { LoaderFunctionArgs, redirect, useLoaderData } from "react-router";
-import { useParams } from "react-router";
+import { LoaderFunctionArgs, redirect, useLoaderData, useParams } from "react-router";
 import { useTranslation } from "react-i18next";
 import EditPageLayout from "~/components/ui/layouts/EditPageLayout";
 import { PortalWithDetails, getPortalById } from "~/modules/portals/db/portals.db.server";

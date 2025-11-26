@@ -24,9 +24,9 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
     await loadEntities();
     const { tenant, tenantApiKey, userId } = apiAccessValidation;
 
-    const entity = EntitiesSingleton.getEntityByIdNameOrSlug(params.entity!);
+    const entity = EntitiesSingleton.getEntityByIdNameOrSlug(params.entity);
     const data = await time(
-      RowsApi.get(params.id!, {
+      RowsApi.get(params.id, {
         entity,
         tenantId: tenant?.id ?? null,
         userId,
@@ -78,7 +78,7 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
 
 async function handleDelete(params: { id?: string }, entity: any, tenantId: string | null, userId: string, time: any) {
   await time(
-    RowsApi.del(params.id!, {
+    RowsApi.del(params.id, {
       entity,
       tenantId,
       time,
@@ -89,11 +89,22 @@ async function handleDelete(params: { id?: string }, entity: any, tenantId: stri
   return "{}";
 }
 
-async function handlePut(request: Request, params: { id?: string }, entity: any, tenant: any, userId: string, existing: any, t: any, time: any) {
+interface HandlePutParams {
+  request: Request;
+  params: { id?: string };
+  entity: any;
+  tenant: any;
+  userId: string;
+  existing: any;
+  t: any;
+  time: any;
+}
+
+async function handlePut({ request, params, entity, tenant, userId, existing, t, time }: HandlePutParams) {
   const jsonBody = await time(request.json(), "request.json");
   const rowValues = ApiHelper.getRowPropertiesFromJson(t, entity, jsonBody, existing);
   await time(
-    RowsApi.update(params.id!, {
+    RowsApi.update(params.id, {
       entity,
       tenantId: tenant?.id ?? null,
       userId,
@@ -116,10 +127,10 @@ export const action: ActionFunction = async ({ request, params }) => {
     apiAccessValidation = await time(validateApiKey(request, params), "validateApiKey");
     await loadEntities();
     const { tenant, tenantApiKey, userId } = apiAccessValidation;
-    const entity = EntitiesSingleton.getEntityByIdNameOrSlug(params.entity!);
+    const entity = EntitiesSingleton.getEntityByIdNameOrSlug(params.entity);
     const tenantId = tenant?.id ?? null;
     const data = await time(
-      RowsApi.get(params.id!, {
+      RowsApi.get(params.id, {
         entity,
         tenantId,
         userId,
@@ -128,16 +139,16 @@ export const action: ActionFunction = async ({ request, params }) => {
       "RowsApi.get"
     );
     if (!data.item) {
-      throw Error(t("shared.notFound"));
+      throw new Error(t("shared.notFound"));
     }
     const existing = data.item;
     let jsonBody = "{}";
     if (request.method === "DELETE") {
       jsonBody = await handleDelete(params, entity, tenantId, userId, time);
     } else if (request.method === "PUT") {
-      jsonBody = await handlePut(request, params, entity, tenant, userId, existing, t, time);
+      jsonBody = await handlePut({ request, params, entity, tenant, userId, existing, t, time });
     } else {
-      throw Error("Method not allowed");
+      throw new Error("Method not allowed");
     }
     const status = request.method === "DELETE" ? 204 : 200;
     if (tenant && tenantApiKey) {
@@ -162,7 +173,7 @@ export const action: ActionFunction = async ({ request, params }) => {
       return Response.json({ success: true }, { status, headers: getServerTimingHeader() });
     } else {
       const data = await time(
-        RowsApi.get(params.id!, {
+        RowsApi.get(params.id, {
           entity,
           time,
         }),

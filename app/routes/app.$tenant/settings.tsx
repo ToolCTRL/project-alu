@@ -1,6 +1,5 @@
-import { Outlet, useLoaderData, useLocation, useNavigate, useParams } from "react-router";
+import { Outlet, useLoaderData, useLocation, useNavigate, useParams, LoaderFunctionArgs, MetaFunction } from "react-router";
 import { useTranslation } from "react-i18next";
-import { LoaderFunctionArgs, MetaFunction } from "react-router";
 import { getTranslations } from "~/locale/i18next.server";
 import UrlUtils from "~/utils/app/UrlUtils";
 import { useEffect } from "react";

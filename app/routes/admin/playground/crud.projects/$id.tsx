@@ -41,11 +41,11 @@ async function handleEdit(params: any, form: FormData) {
   const active = isActive ? isActive === "on" || isActive === "true" : false;
 
   if (!name) {
-    throw Error("Please fill all fields");
+    throw new Error("Please fill all fields");
   }
 
   if (tasks.length === 0) {
-    throw Error("Please add at least one task");
+    throw new Error("Please add at least one task");
   }
 
   await FakeProjectService.update(params.id!, {

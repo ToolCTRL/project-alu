@@ -15,7 +15,7 @@ export type FeaturesBlockDto = {
     text: string;
     href: string;
     isPrimary: boolean;
-    target?: undefined | "_blank";
+    target?: "_blank";
     icon?: string;
   }[];
 };

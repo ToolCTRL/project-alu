@@ -9,7 +9,7 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
       return Response.json({ error: "No token provided" }, { status: 401 });
     }
 
-    const decoded: any = jwt.verify(token, process.env.JWT_SECRET!);
+    const decoded: any = jwt.verify(token, process.env.JWT_SECRET);
     return Response.json({ userId: decoded.userId, message: "Token is valid" });
   } catch (e: any) {
     return Response.json({ error: "Token is not valid or expired: " + e.message }, { status: 401 });

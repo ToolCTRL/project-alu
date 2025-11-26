@@ -45,7 +45,7 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
       userId,
     });
     if (!rowData.rowPermissions.canRead) {
-      throw Error(t(entity.title) + " is not public");
+      throw new Error(t(entity.title) + " is not public");
     }
     const xdata: LoaderData = {
       title: `${RowHelper.getTextDescription({ entity, item: rowData.item, t })} | ${process.env.APP_NAME}`,

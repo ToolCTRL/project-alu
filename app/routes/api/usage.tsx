@@ -16,7 +16,7 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
     apiAccessValidation = await validateTenantApiKey(request, params);
     const { tenantApiKey } = apiAccessValidation;
     if (!tenantApiKey) {
-      throw Error("Invalid API key");
+      throw new Error("Invalid API key");
     }
 
     await setApiKeyLogStatus(tenantApiKey?.apiKeyLog.id, {

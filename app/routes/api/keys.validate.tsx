@@ -20,7 +20,7 @@ export const action = async ({ request, params }: ActionFunctionArgs) => {
     apiAccessValidation = await validateTenantApiKey(request, params);
     const { tenantApiKey } = apiAccessValidation;
     if (!tenantApiKey) {
-      throw Error("Invalid API key");
+      throw new Error("Invalid API key");
     }
 
     await setApiKeyLogStatus(tenantApiKey?.apiKeyLog.id, {

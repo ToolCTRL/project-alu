@@ -2,11 +2,10 @@ import clsx from "clsx";
 import { useTranslation } from "react-i18next";
 import { HeroBlockDto } from "./HeroBlockUtils";
 import ButtonEvent from "~/components/ui/buttons/ButtonEvent";
-import ProductHuntBadge from "../launch/ProductHuntBadge";
 import { motion } from "framer-motion";
 import HybridBackground from "~/components/ui/backgrounds/HybridBackground";
 
-export default function HeroVariantSimple({ item }: { item: HeroBlockDto }) {
+export default function HeroVariantSimple({ item }: { readonly item: HeroBlockDto }) {
   const { t } = useTranslation();
 
   // Meisterwerk Animation Variants (simpler, cleaner)
@@ -103,7 +102,7 @@ export default function HeroVariantSimple({ item }: { item: HeroBlockDto }) {
           >
             {item.cta.map((cta, idx) => {
               return (
-                <motion.div key={idx} whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.98 }}>
+                <motion.div key={`cta-${cta.text}-${idx}`} whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.98 }}>
                   <ButtonEvent
                     to={cta.href}
                     target={cta.target}

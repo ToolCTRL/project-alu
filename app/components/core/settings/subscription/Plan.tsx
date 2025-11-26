@@ -84,15 +84,15 @@ export default function Plan({
   const [referral, setReferral] = useState<string | null>(null);
 
   useEffect(() => {
-    if (typeof window !== "undefined" && rootData.appConfiguration.affiliates?.provider.rewardfulApiKey) {
+    if (globalThis.window !== undefined && rootData.appConfiguration.affiliates?.provider.rewardfulApiKey) {
       try {
         // @ts-ignore
-        window.rewardful("ready", () => {
+        globalThis.rewardful("ready", () => {
           // @ts-ignore
           // eslint-disable-next-line no-console
-          // console.log("Rewardful ready", window.Rewardful.referral);
+          // console.log("Rewardful ready", globalThis.Rewardful.referral);
           // @ts-ignore
-          setReferral(window.Rewardful.referral);
+          setReferral(globalThis.Rewardful.referral);
         });
       } catch (e: any) {
         // eslint-disable-next-line no-console

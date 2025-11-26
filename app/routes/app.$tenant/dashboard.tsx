@@ -12,7 +12,6 @@ import InputSelect from "~/components/ui/input/InputSelect";
 import PeriodHelper, { defaultPeriodFilter, PeriodFilters } from "~/utils/helpers/PeriodHelper";
 import { useTranslation } from "react-i18next";
 import ServerError from "~/components/ui/errors/ServerError";
-import { serverTimingHeaders } from "~/modules/metrics/utils/defaultHeaders.server";
 import { createMetrics } from "~/modules/metrics/services/.server/MetricTracker";
 import { promiseHash } from "~/utils/promises/promiseHash";
 import { getTenant } from "~/utils/db/tenants.db.server";
@@ -20,7 +19,7 @@ import { Fragment } from "react";
 import { getUserHasPermission } from "~/utils/helpers/PermissionsHelper";
 import { requireAuth } from "~/utils/loaders.middleware";
 import { v2MetaFunction } from "~/utils/compat/v2MetaFunction";
-export { serverTimingHeaders as headers };
+export { serverTimingHeaders as headers } from "~/modules/metrics/utils/defaultHeaders.server";
 
 export const meta: v2MetaFunction<LoaderData> = ({ data }) => [{ title: data?.title }];
 

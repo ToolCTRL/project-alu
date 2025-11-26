@@ -102,18 +102,6 @@ const isSuspicious = ({
   } else if (email === lastName) {
     return "Email as last name";
   }
-  // const hasSuspiciousCaseCombination = (name: string | undefined): boolean => {
-  //   if (!name) return false;
-
-  //   // Regular expression to match a suspicious pattern (e.g., alternating or random mix of cases)
-  //   const suspiciousPattern = /(?=.*[A-Z])(?=.*[a-z])[A-Za-z]{3,}/;
-  //   return suspiciousPattern.test(name);
-  // };
-
-  // Check both first and last names
-  // if (hasSuspiciousCaseCombination(firstName) || hasSuspiciousCaseCombination(lastName)) {
-  //   return "Suspicious name";
-  // }
   return undefined;
 };
 

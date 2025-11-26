@@ -11,7 +11,7 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
       db.appConfiguration.count(),
       fetch(url.toString(), { method: "HEAD" }).then((r) => {
         if (!r.ok) {
-          return Promise.reject(r);
+          throw new Error(`Health check failed: ${r.status} ${r.statusText}`);
         }
       }),
     ]);

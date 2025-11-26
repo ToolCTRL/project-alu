@@ -12,10 +12,10 @@ declare global {
 if (process.env.NODE_ENV === "production") {
   db = new PrismaClient();
 } else {
-  if (!global.__db) {
-    global.__db = new PrismaClient();
+  if (!globalThis.__db) {
+    globalThis.__db = new PrismaClient();
   }
-  db = global.__db;
+  db = globalThis.__db;
 }
 
 export { db };

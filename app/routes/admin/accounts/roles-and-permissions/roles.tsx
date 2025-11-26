@@ -11,13 +11,12 @@ import InputSearchWithURL from "~/components/ui/input/InputSearchWithURL";
 import { getAllPermissionsIdsAndNames } from "~/utils/db/permissions/permissions.db.server";
 import ButtonPrimary from "~/components/ui/buttons/ButtonPrimary";
 import { createMetrics } from "~/modules/metrics/services/.server/MetricTracker";
-import { serverTimingHeaders } from "~/modules/metrics/utils/defaultHeaders.server";
 import { getUserHasPermission } from "~/utils/helpers/PermissionsHelper";
 import { verifyUserHasPermission } from "~/utils/helpers/.server/PermissionsService";
 import { v2MetaFunction } from "~/utils/compat/v2MetaFunction";
 import SlideOverWideEmpty from "~/components/ui/slideOvers/SlideOverWideEmpty";
 import { t } from "i18next";
-export { serverTimingHeaders as headers };
+export { serverTimingHeaders as headers } from "~/modules/metrics/utils/defaultHeaders.server";
 
 export const meta: v2MetaFunction<LoaderData> = ({ data }) => [{ title: data?.title }];
 

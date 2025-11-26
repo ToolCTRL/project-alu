@@ -4,9 +4,8 @@ import RowsViewRoute from "~/modules/rows/components/RowsViewRoute";
 import { Rows_List } from "~/modules/rows/routes/Rows_List.server";
 import { useAppOrAdminData } from "~/utils/data/useAppOrAdminData";
 import { getEntityPermission, getUserHasPermission } from "~/utils/helpers/PermissionsHelper";
-import { serverTimingHeaders } from "~/modules/metrics/utils/defaultHeaders.server";
 import { v2MetaFunction } from "~/utils/compat/v2MetaFunction";
-export { serverTimingHeaders as headers };
+export { serverTimingHeaders as headers } from "~/modules/metrics/utils/defaultHeaders.server";
 
 export const meta: v2MetaFunction<Rows_List.LoaderData> = ({ data }) => data?.meta || [];
 export const loader = (args: LoaderFunctionArgs) => Rows_List.loader(args);

@@ -12,7 +12,7 @@ type LoaderData = {
 };
 export const loader = async ({ request, params }: LoaderFunctionArgs) => {
   await verifyUserHasPermission(request, "admin.accountTypes.update");
-  const item = await getTenantType(params.id!);
+  const item = await getTenantType(params.id);
   if (!item) {
     return redirect("/admin/settings/accounts/types");
   }
@@ -29,7 +29,7 @@ export const action = async ({ request, params }: ActionFunctionArgs) => {
   const form = await request.formData();
   const action = form.get("action")?.toString();
 
-  const item = await getTenantType(params.id!);
+  const item = await getTenantType(params.id);
   if (!item) {
     return redirect("/admin/settings/accounts/types");
   }
@@ -50,7 +50,7 @@ export const action = async ({ request, params }: ActionFunctionArgs) => {
       return Response.json({ error: t("shared.alreadyExists") }, { status: 400 });
     }
 
-    await updateTenantType(params.id!, {
+    await updateTenantType(params.id, {
       title,
       titlePlural,
       description,
@@ -60,14 +60,14 @@ export const action = async ({ request, params }: ActionFunctionArgs) => {
     return redirect("/admin/settings/accounts/types");
   } else if (action === "delete") {
     await verifyUserHasPermission(request, "admin.accountTypes.delete");
-    await deleteTenantType(params.id!);
+    await deleteTenantType(params.id);
     return Response.json({ success: t("shared.deleted") });
   } else {
     return Response.json({ error: t("shared.invalidForm") }, { status: 400 });
   }
 };
 
-export default function () {
+export default function EditTenantTypePage() {
   const data = useLoaderData<LoaderData>();
 
   return (

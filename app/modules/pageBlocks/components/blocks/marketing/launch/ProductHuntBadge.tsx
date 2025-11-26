@@ -3,9 +3,23 @@ import ButtonEvent from "~/components/ui/buttons/ButtonEvent";
 import { useRootData } from "~/utils/data/useRootData";
 
 interface Props {
-  theme?: "light" | "neutral" | "dark";
+  readonly theme?: "light" | "neutral" | "dark";
 }
-export default function ProductHuntBadge({ theme }: Props) {
+
+function getProductHuntImage(theme: string | undefined, postId: string, title: string) {
+  const themeParam = theme === "light" ? "light" : theme === "neutral" ? "neutral" : theme === "dark" ? "dark" : "light";
+  return (
+    <img
+      src={`https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=${postId}&theme=${themeParam}`}
+      alt={title}
+      style={{ width: "220px" }}
+      width="250"
+      height="54"
+    />
+  );
+}
+
+export default function ProductHuntBadge({ theme }: Readonly<Props>) {
   const rootData = useRootData();
   const producthunt = rootData?.appConfiguration.launches?.producthunt;
   if (!producthunt) {
@@ -21,37 +35,7 @@ export default function ProductHuntBadge({ theme }: Props) {
             target="_blank"
             rel="noreferrer"
           >
-            {theme === "light" ? (
-              <img
-                src={`https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=${producthunt.postId}&theme=light`}
-                alt={producthunt.title}
-                style={{
-                  width: "220px",
-                }}
-                width="250"
-                height="54"
-              />
-            ) : theme === "neutral" ? (
-              <img
-                src={`https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=${producthunt.postId}&theme=neutral`}
-                alt={producthunt.title}
-                style={{
-                  width: "220px",
-                }}
-                width="250"
-                height="54"
-              />
-            ) : theme === "dark" ? (
-              <img
-                src={`https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=${producthunt.postId}&theme=dark`}
-                alt={producthunt.title}
-                style={{
-                  width: "220px",
-                }}
-                width="250"
-                height="54"
-              />
-            ) : null}
+            {getProductHuntImage(theme, producthunt.postId, producthunt.title)}
           </ButtonEvent>
         </div>
       ) : null}

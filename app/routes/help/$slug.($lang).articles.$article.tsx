@@ -7,7 +7,9 @@ export const meta: MetaFunction<typeof loader> = ({ data }) => data?.metatags ||
 export const loader = (args: LoaderFunctionArgs) => KbRoutesArticleApi.loader(args);
 export const action = (args: ActionFunctionArgs) => KbRoutesArticleApi.action(args);
 
-export default () => <KbRoutesArticleView />;
+export default function HelpArticle() {
+  return <KbRoutesArticleView />;
+}
 
 export function ErrorBoundary() {
   return <ServerError />;

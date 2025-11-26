@@ -24,7 +24,7 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
     await loadEntities();
     const { tenant, tenantApiKey, userId } = apiAccessValidation;
     const urlSearchParams = new URL(request.url).searchParams;
-    const entity = EntitiesSingleton.getEntityByIdNameOrSlug(params.entity!);
+    const entity = EntitiesSingleton.getEntityByIdNameOrSlug(params.entity);
     const data = await time(
       RowsApi.getAll({
         entity,
@@ -94,7 +94,7 @@ export const action: ActionFunction = async ({ request, params }) => {
     apiAccessValidation = await time(validateApiKey(request, params), "validateApiKey");
     await loadEntities();
     const { tenant, tenantApiKey, userId } = apiAccessValidation;
-    const entity = EntitiesSingleton.getEntityByIdNameOrSlug(params.entity!);
+    const entity = EntitiesSingleton.getEntityByIdNameOrSlug(params.entity);
     if (request.method !== "POST") {
       throw new Error("Method not allowed");
     }

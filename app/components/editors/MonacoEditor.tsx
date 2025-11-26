@@ -93,7 +93,7 @@ export default function MonacoEditor({
   return (
     <Fragment>
       {name && <textarea name={name} value={value} hidden readOnly />}
-      {typeof window !== "undefined" && (
+      {window !== undefined && (
         <Editor
           loading={<div className={clsx(className)}></div>}
           theme={theme}

@@ -14,7 +14,7 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
   await verifyUserHasPermission(request, "admin.accountTypes.create");
   const appConfiguration = await getAppConfiguration({ request });
   if (!appConfiguration.app.features.tenantTypes) {
-    throw Error("Tenant Types are not enabled (appConfiguration.app.features.tenantTypes)");
+    throw new Error("Tenant Types are not enabled (appConfiguration.app.features.tenantTypes)");
   }
   const data: LoaderData = {
     allSubscriptionProducts: await getAllSubscriptionProducts(),
@@ -55,7 +55,7 @@ export const action = async ({ request }: ActionFunctionArgs) => {
   }
 };
 
-export default function () {
+export default function NewTenantTypePage() {
   const data = useLoaderData<LoaderData>();
   return (
     <div>

@@ -118,7 +118,7 @@ export default function PostForm({ item, categories, tags, canUpdate = true, can
           {contentType === "wysiwyg" && (
             <div>
               <input type="hidden" name="content" value={content} hidden readOnly />
-              {typeof globalThis.window !== "undefined" && (
+              {globalThis.window !== undefined && (
                 <Editor
                   content={content}
                   onChange={(e) => {
@@ -246,7 +246,44 @@ export default function PostForm({ item, categories, tags, canUpdate = true, can
 
           <InputGroup title="Details">
             <div className="bg-background grid gap-3 rounded-md">
-              {!addingCategory ? (
+              {addingCategory ? (
+                <div>
+                  <input
+                    className="bg-background border-border focus:border-accent-foreground block w-full appearance-none rounded-md border px-3 py-2 shadow-sm focus:outline-none sm:text-sm"
+                    autoComplete="off"
+                    disabled={!canUpdate}
+                    type="text"
+                    name="new-category"
+                    placeholder="New category..."
+                    value={newCategory}
+                    onChange={(e) => setNewCategory(e.currentTarget.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") {
+                        addCategory();
+                      } else if (e.key === "Escape") {
+                        setAddingCategory(false);
+                      }
+                    }}
+                    autoFocus
+                  />
+                  <div className="mt-2 flex items-center space-x-2">
+                    <button
+                      type="button"
+                      onClick={addCategory}
+                      className="text-theme-700 hover:text-theme-900 rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2"
+                    >
+                      <span>{t("shared.add")}</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setAddingCategory(false)}
+                      className="bg-background hover:bg-secondary rounded-md border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 shadow-sm focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2"
+                    >
+                      {t("shared.cancel")}
+                    </button>
+                  </div>
+                </div>
+              ) : (
                 <InputSelector
                   disabled={!canUpdate}
                   className=""

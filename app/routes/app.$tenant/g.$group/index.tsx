@@ -1,5 +1,4 @@
-import { LoaderFunctionArgs, redirect, MetaFunction, useLoaderData } from "react-router";
-import { useSearchParams } from "react-router";
+import { LoaderFunctionArgs, redirect, MetaFunction, useLoaderData, useSearchParams } from "react-router";
 import { getTranslations } from "~/locale/i18next.server";
 import { getAppDashboardStats } from "~/utils/services/appDashboardService";
 import { DashboardStats } from "~/components/ui/stats/DashboardStats";
@@ -9,13 +8,12 @@ import InputSelector from "~/components/ui/input/InputSelector";
 import PeriodHelper, { defaultPeriodFilter, PeriodFilters } from "~/utils/helpers/PeriodHelper";
 import { useTranslation } from "react-i18next";
 import ServerError from "~/components/ui/errors/ServerError";
-import { serverTimingHeaders } from "~/modules/metrics/utils/defaultHeaders.server";
 import { getTenant } from "~/utils/db/tenants.db.server";
 import { EntityGroupWithDetails, getEntityGroupBySlug } from "~/utils/db/entities/entityGroups.db.server";
 import UrlUtils from "~/utils/app/UrlUtils";
 import EditPageLayout from "~/components/ui/layouts/EditPageLayout";
 import { requireAuth } from "~/utils/loaders.middleware";
-export { serverTimingHeaders as headers };
+export { serverTimingHeaders as headers } from "~/modules/metrics/utils/defaultHeaders.server";
 
 type LoaderData = {
   title: string;
@@ -27,7 +25,7 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
   await requireAuth({ request, params });
   const { t } = await getTranslations(request);
   const tenantId = await getTenantIdFromUrl(params);
-  const group = await getEntityGroupBySlug(params.group!);
+  const group = await getEntityGroupBySlug(params.group);
   const tenant = await getTenant(tenantId);
   if (!group) {
     throw redirect(tenantId ? UrlUtils.currentTenantUrl(params, "404") : "/404");

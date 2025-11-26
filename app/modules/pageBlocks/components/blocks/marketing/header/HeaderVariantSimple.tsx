@@ -14,9 +14,8 @@ import ButtonEvent from "~/components/ui/buttons/ButtonEvent";
 import ProfileButton from "~/components/layouts/buttons/ProfileButton";
 import ThemeSelector from "~/components/ui/selectors/ThemeSelector";
 import ButtonPrimary from "~/components/ui/buttons/ButtonPrimary";
-import ButtonTertiary from "~/components/ui/buttons/ButtonTertiary";
 
-export default function HeaderVariantSimple({ item, width = "7xl" }: { item: HeaderBlockDto; width?: "screen-2xl" | "7xl" }) {
+export default function HeaderVariantSimple({ item, width = "7xl" }: { readonly item: HeaderBlockDto; readonly width?: "screen-2xl" | "7xl" }) {
   const { authenticated, appConfiguration, user } = useRootData();
   const { t } = useTranslation();
 
@@ -71,11 +70,11 @@ export default function HeaderVariantSimple({ item, width = "7xl" }: { item: Hea
                               event={{
                                 action: "click",
                                 category: "header",
-                                label: !authenticated ? t("account.shared.signIn") : t("shared.enter"),
+                                label: authenticated ? t("shared.enter") : t("account.shared.signIn"),
                                 value: loginOrEnterRoute(),
                               }}
                             >
-                              {!authenticated ? <div>{t("account.shared.signIn")}</div> : <div>{t("shared.enter")}</div>}
+                              {authenticated ? <div>{t("shared.enter")}</div> : <div>{t("account.shared.signIn")}</div>}
                             </ButtonPrimary>
                           )}
                         </div>
@@ -102,7 +101,7 @@ export default function HeaderVariantSimple({ item, width = "7xl" }: { item: Hea
               <div className="hidden items-center space-x-2 sm:space-x-4 md:flex md:space-x-6">
                 {item.links.map((link, idx) => {
                   return (
-                    <Fragment key={idx}>
+                    <Fragment key={`nav-link-${link.title}-${idx}`}>
                       {!link.items || link.items.length === 0 ? (
                         <ButtonEvent
                           to={link.path ?? ""}
@@ -144,11 +143,11 @@ export default function HeaderVariantSimple({ item, width = "7xl" }: { item: Hea
                           event={{
                             action: "click",
                             category: "header",
-                            label: !authenticated ? t("account.shared.signIn") : t("shared.enter"),
+                            label: authenticated ? t("shared.enter") : t("account.shared.signIn"),
                             value: loginOrEnterRoute(),
                           }}
                         >
-                          {!authenticated ? <div>{t("account.shared.signIn")}</div> : <div>{t("shared.enter")}</div>}
+                          {authenticated ? <div>{t("shared.enter")}</div> : <div>{t("account.shared.signIn")}</div>}
                         </ButtonPrimary>
                       </>
                     )
@@ -191,7 +190,7 @@ export default function HeaderVariantSimple({ item, width = "7xl" }: { item: Hea
                   <div className="px-2 pt-2" role="none">
                     {item.links.map((link, idx) => {
                       return (
-                        <Fragment key={idx}>
+                        <Fragment key={`mobile-nav-${link.title}-${idx}`}>
                           {link.path ? (
                             <ButtonEvent
                               to={link.path}

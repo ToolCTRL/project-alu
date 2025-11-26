@@ -288,7 +288,7 @@ function getAlignment(align: string | undefined): string {
 
 function handleRowClick(e: React.MouseEvent, href: string, navigate: (path: string) => void) {
   if (e.ctrlKey || e.metaKey) {
-    window.open(href, "_blank");
+    globalThis.open(href, "_blank");
   } else {
     navigate(href);
   }

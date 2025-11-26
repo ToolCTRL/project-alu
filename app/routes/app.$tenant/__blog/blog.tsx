@@ -7,7 +7,9 @@ export const meta: MetaFunction<typeof loader> = ({ data }) => data?.metatags ||
 export const loader = (args: LoaderFunctionArgs) => BlogRoutesIndexApi.loader(args);
 // export const action = (args: ActionFunctionArgs) => BlogRoutesIndexApi.action(args);
 
-export default () => <BlogView />;
+export default function Blog() {
+  return <BlogView />;
+}
 
 export function ErrorBoundary() {
   return <ServerError />;

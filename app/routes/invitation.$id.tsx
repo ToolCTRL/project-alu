@@ -4,8 +4,7 @@ import ErrorModal, { RefErrorModal } from "~/components/ui/modals/ErrorModal";
 import UserUtils from "~/utils/app/UserUtils";
 import { useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
-import { Link, Form, useActionData, useLoaderData } from "react-router";
-import { ActionFunction, LoaderFunctionArgs, MetaFunction } from "react-router";
+import { Link, Form, useActionData, useLoaderData, type ActionFunction, type LoaderFunctionArgs, type MetaFunction } from "react-router";
 import { getTranslations } from "~/locale/i18next.server";
 import { getUser, getUserByEmail, register } from "~/utils/db/users.db.server";
 import { sendEmail } from "~/modules/emails/services/EmailService";
@@ -63,7 +62,40 @@ export const action: ActionFunction = async ({ request, params }) => {
   const fromUser = invitation.fromUserId ? await getUser(invitation.fromUserId) : null;
 
   let existingUser = await getUserByEmail(invitation.email);
-  if (!existingUser) {
+  if (existingUser) {
+    // Existing user
+    await updateUserInvitationPending(invitation.id);
+    const roles = await getAllRoles("app");
+    await createTenantUser(
+      {
+        tenantId: invitation.tenantId,
+        userId: existingUser.id,
+        type: invitation.type,
+      },
+      roles.filter((f) => f.assignToNewUsers)
+    );
+    await EventsService.create({
+      request,
+      event: "member.invitation.accepted",
+      tenantId: invitation.tenant.id,
+      userId: existingUser.id,
+      data: {
+        newUser: false,
+        tenant: { id: invitation.tenantId, name: invitation.tenant.name, slug: invitation.tenant.slug },
+        fromUser: fromUser ? { id: fromUser.id, email: fromUser.email } : null,
+        user: {
+          id: existingUser.id,
+          email: existingUser.email,
+          firstName: existingUser.firstName,
+          lastName: existingUser.lastName,
+          type: TenantUserType[invitation.type],
+        },
+        invitation: { id: invitation.id },
+      } satisfies MemberInvitationAcceptedDto,
+    });
+
+    return { invitationAccepted: true };
+  } else {
     // Register user
     const passwordError = UserUtils.validatePasswords({ t, password, passwordConfirm });
     if (passwordError) {
@@ -93,7 +125,7 @@ export const action: ActionFunction = async ({ request, params }) => {
         newUser: true,
         tenant: { id: invitation.tenantId, name: invitation.tenant.name, slug: invitation.tenant.slug },
         user: { id: user.id, email: user.email, firstName: invitation.firstName, lastName: invitation.lastName, type: TenantUserType[invitation.type] },
-        fromUser: !fromUser ? null : { id: fromUser.id, email: fromUser.email },
+        fromUser: fromUser ? { id: fromUser.id, email: fromUser.email } : null,
         invitation: { id: invitation.id },
       } satisfies MemberInvitationAcceptedDto,
     });
@@ -122,39 +154,6 @@ export const action: ActionFunction = async ({ request, params }) => {
       },
       tenant ? `/app/${tenant.slug ?? tenant.id}/dashboard` : "/app"
     );
-  } else {
-    // Existing user
-    await updateUserInvitationPending(invitation.id);
-    const roles = await getAllRoles("app");
-    await createTenantUser(
-      {
-        tenantId: invitation.tenantId,
-        userId: existingUser.id,
-        type: invitation.type,
-      },
-      roles.filter((f) => f.assignToNewUsers)
-    );
-    await EventsService.create({
-      request,
-      event: "member.invitation.accepted",
-      tenantId: invitation.tenant.id,
-      userId: existingUser.id,
-      data: {
-        newUser: false,
-        tenant: { id: invitation.tenantId, name: invitation.tenant.name, slug: invitation.tenant.slug },
-        fromUser: !fromUser ? null : { id: fromUser.id, email: fromUser.email },
-        user: {
-          id: existingUser.id,
-          email: existingUser.email,
-          firstName: existingUser.firstName,
-          lastName: existingUser.lastName,
-          type: TenantUserType[invitation.type],
-        },
-        invitation: { id: invitation.id },
-      } satisfies MemberInvitationAcceptedDto,
-    });
-
-    return { invitationAccepted: true };
   }
 };
 
@@ -183,27 +182,7 @@ export default function InvitationRoute() {
             <Logo className="mx-auto h-12 w-auto" />
           </div>
           {(() => {
-            if (!data.invitation?.pending || actionData?.invitationAccepted) {
-              return (
-                <div className="mt-3 w-full space-y-5">
-                  <div className="flex flex-col items-center ">
-                    <h1 className="text-left text-xl font-extrabold">Invitation Accepted</h1>
-                    <div className="mx-auto mt-4 w-full max-w-sm space-y-5">
-                      <div className="w-full">
-                        <SuccessBanner title={t("shared.success")} text="You have successfully accepted the invitation" />
-                      </div>
-                      <div className="flex w-full justify-end">
-                        <Button asChild variant="outline">
-                          <Link to="/app">{t("account.shared.signIn")}</Link>
-                        </Button>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              );
-            } else if (!data.invitation) {
-              return <div className="text-center text-red-500">{t("shared.invalidInvitation")}</div>;
-            } else {
+            if (data.invitation?.pending && !actionData?.invitationAccepted) {
               return (
                 <div>
                   <h2 className="text-foreground mt-6 text-center text-lg font-extrabold dark:text-slate-200">
@@ -281,6 +260,26 @@ export default function InvitationRoute() {
                   </div>
                 </div>
               );
+            } else if (data.invitation) {
+              return (
+                <div className="mt-3 w-full space-y-5">
+                  <div className="flex flex-col items-center ">
+                    <h1 className="text-left text-xl font-extrabold">Invitation Accepted</h1>
+                    <div className="mx-auto mt-4 w-full max-w-sm space-y-5">
+                      <div className="w-full">
+                        <SuccessBanner title={t("shared.success")} text="You have successfully accepted the invitation" />
+                      </div>
+                      <div className="flex w-full justify-end">
+                        <Button asChild variant="outline">
+                          <Link to="/app">{t("account.shared.signIn")}</Link>
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              );
+            } else {
+              return <div className="text-center text-red-500">{t("shared.invalidInvitation")}</div>;
             }
           })()}
         </div>

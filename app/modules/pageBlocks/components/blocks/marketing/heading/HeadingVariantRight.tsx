@@ -1,7 +1,7 @@
 import { useTranslation } from "react-i18next";
 import { HeadingBlockDto } from "./HeadingBlockUtils";
 
-export default function HeadingVariantRight({ item }: { item: HeadingBlockDto }) {
+export default function HeadingVariantRight({ item }: { readonly item: HeadingBlockDto }) {
   const { t } = useTranslation();
   return (
     <div className="mx-auto max-w-7xl px-4 text-right sm:px-6 lg:px-8">

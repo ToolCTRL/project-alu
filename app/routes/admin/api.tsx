@@ -1,9 +1,8 @@
-import { LoaderFunctionArgs, MetaFunction, Link } from "react-router";
-import { Outlet } from "react-router";
+import { LoaderFunctionArgs, MetaFunction, Link, Outlet } from "react-router";
 import { useTranslation } from "react-i18next";
 import { motion } from "framer-motion";
 import { Badge } from "~/components/ui/badge";
-import { KeyRound, FileCode2, TerminalSquare, Gauge, Filter, Sparkles } from "lucide-react";
+import { KeyRound, FileCode2, TerminalSquare, Gauge, Sparkles } from "lucide-react";
 import { CreditTypes } from "~/modules/usage/dtos/CreditType";
 
 type LoaderData = {
@@ -19,7 +18,7 @@ export const loader = async (_: LoaderFunctionArgs) => {
 
 export const meta: MetaFunction<typeof loader> = ({ data }) => [{ title: data?.title }];
 
-export default () => {
+export default function AdminApiRoute() {
   const { t } = useTranslation();
   const navLinks = [
     { title: t("models.apiCall.plural"), desc: "Logs & usage", href: "logs", icon: <TerminalSquare className="h-4 w-4" /> },
@@ -111,8 +110,8 @@ function ApiCircuitAnimation() {
           { x: 60, y: 120, h: 28, delay: 0 },
           { x: 140, y: 80, h: 32, delay: 0.4 },
           { x: 110, y: 150, h: 24, delay: 0.7 },
-        ].map((p, idx) => (
-          <g key={idx}>
+        ].map((p) => (
+          <g key={`${p.x}-${p.y}`}>
             <motion.rect
               x={p.x - 12}
               y={p.y - p.h}

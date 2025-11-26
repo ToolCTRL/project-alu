@@ -1,5 +1,4 @@
-import { LoaderFunctionArgs, MetaFunction } from "react-router";
-import { Link } from "react-router";
+import { LoaderFunctionArgs, MetaFunction, Link } from "react-router";
 import EditPageLayout from "~/components/ui/layouts/EditPageLayout";
 import { getTranslations } from "~/locale/i18next.server";
 
@@ -12,7 +11,7 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
 
 export const meta: MetaFunction<typeof loader> = ({ data }) => data?.metadata || [];
 
-export default function () {
+export default function AccountsSettingsPage() {
   return (
     <EditPageLayout
       title="Accounts Settings"

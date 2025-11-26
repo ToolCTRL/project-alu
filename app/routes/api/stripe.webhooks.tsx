@@ -44,14 +44,10 @@ export const action = async ({ request }: ActionFunctionArgs) => {
   // eslint-disable-next-line no-console
   console.log({ event });
 
-  if (event.type == "subscription_schedule.canceled") {
-    const subscription = event.data.object as Stripe.SubscriptionSchedule;
-    await updateTenantSubscription({ request, t, stripeSubscriptionId: subscription.id });
-  } else if (event.type === "customer.subscription.deleted") {
-    const subscription = event.data.object as Stripe.Subscription;
-    await updateTenantSubscription({ request, t, stripeSubscriptionId: subscription.id });
-  } else if (event.type === "customer.subscription.updated") {
-    const subscription = event.data.object as Stripe.Subscription;
+  if (event.type == "subscription_schedule.canceled" ||
+      event.type === "customer.subscription.deleted" ||
+      event.type === "customer.subscription.updated") {
+    const subscription = event.data.object as Stripe.Subscription | Stripe.SubscriptionSchedule;
     await updateTenantSubscription({ request, t, stripeSubscriptionId: subscription.id });
   }
   return Response.json({

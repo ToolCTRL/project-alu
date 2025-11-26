@@ -174,7 +174,7 @@ const InputText = (props: InputTextProps, ref: Ref<RefInputText>) => {
     return (
       <>
         <textarea hidden readOnly name={name} value={actualValue} />
-        {typeof globalThis.window !== "undefined" && (
+        {globalThis.window !== undefined && (
           <Editor
             theme={editorTheme}
             className={clsx(

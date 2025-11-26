@@ -32,9 +32,9 @@ export namespace RowsNewBlockService {
     };
   }
   export async function create({ request, params, form }: PageBlockActionArgs) {
-    const entityName = (form.get("rows-entity") as FormDataEntryValue | null)?.toString();
-    const tenantId = (form.get("rows-tenant") as FormDataEntryValue | null)?.toString() ?? null;
-    const redirectTo = (form.get("rows-redirectTo") as FormDataEntryValue | null)?.toString();
+    const entityName = form.get("rows-entity")?.toString();
+    const tenantId = form.get("rows-tenant")?.toString() ?? null;
+    const redirectTo = form.get("rows-redirectTo")?.toString();
 
     const userInfo = await getUserInfo(request);
     const entity = await getEntityByName({ tenantId, name: entityName! });

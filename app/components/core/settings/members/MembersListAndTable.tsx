@@ -3,7 +3,6 @@ import { useTranslation } from "react-i18next";
 import { TenantUserType } from "~/application/enums/tenants/TenantUserType";
 import { TenantUserStatus } from "~/application/enums/tenants/TenantUserStatus";
 import { TenantUserWithUser } from "~/utils/db/tenants.db.server";
-import { TenantUser } from "@prisma/client";
 import DateUtils from "~/utils/shared/DateUtils";
 import UserBadge from "../../users/UserBadge";
 import TableSimple from "~/components/ui/tables/TableSimple";

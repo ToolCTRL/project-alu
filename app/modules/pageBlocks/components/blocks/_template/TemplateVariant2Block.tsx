@@ -1,4 +1,3 @@
-import { useTranslation } from "react-i18next";
 import { TemplateBlockDto } from "./TemplateBlockUtils";
 
 export default function TemplateVariant2Block({ item }: readonly { readonly item: TemplateBlockDto }) {

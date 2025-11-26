@@ -23,7 +23,7 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
   await requireAuth({ request, params });
   const appConfiguration = await getAppConfiguration({ request });
   if (!appConfiguration.app.features.tenantEntityCustomization) {
-    throw Error("Entity customization is not enabled");
+    throw new Error("Entity customization is not enabled");
   }
   const tenantId = await getTenantIdOrNull({ request, params });
   const entity = await getEntityBySlug({ tenantId, slug: params.entity ?? "" });

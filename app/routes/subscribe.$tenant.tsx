@@ -64,13 +64,13 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
     try {
       const stripeCoupon = await getStripeCoupon(couponParam);
       if (!stripeCoupon) {
-        throw Error(t("pricing.coupons.invalid"));
+        throw new Error(t("pricing.coupons.invalid"));
       }
       if (stripeCoupon.max_redemptions && stripeCoupon.times_redeemed > stripeCoupon.max_redemptions) {
-        throw Error(t("pricing.coupons.expired"));
+        throw new Error(t("pricing.coupons.expired"));
       }
       if (!stripeCoupon.valid) {
-        throw Error(t("pricing.coupons.invalid"));
+        throw new Error(t("pricing.coupons.invalid"));
       }
       coupon = { stripeCoupon };
     } catch (e: any) {

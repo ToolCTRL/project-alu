@@ -8,6 +8,16 @@ import clsx from "clsx";
 import { ExternalLinkIcon } from "lucide-react";
 import { Link } from "react-router";
 
+function getIconContent(feature: FeatureDto) {
+  if (feature.icon?.startsWith("<svg")) {
+    return <div dangerouslySetInnerHTML={{ __html: feature.icon.replace("<svg", `<svg class='${" h-5 w-5"}'`) ?? "" }} />;
+  }
+  if (feature.icon?.startsWith("http")) {
+    return <img className=" h-5 w-5" src={feature.icon} alt={feature.name} />;
+  }
+  return feature.icon;
+}
+
 export default function FeaturesVariantCards({ item }: { readonly item: FeaturesBlockDto }) {
   const { t } = useTranslation();
   const featuresOnly = item.headline !== "+25 Built-in Features";
@@ -42,21 +52,21 @@ export default function FeaturesVariantCards({ item }: { readonly item: Features
                 item.position === "right" && "justify-end"
               )}
             >
-              {item.cta?.map((item, idx) => {
+              {item.cta?.map((ctaItem, idx) => {
                 return (
                   <ButtonEvent
-                    key={idx}
-                    to={item.href}
-                    target={item.target}
+                    key={`cta-${ctaItem.text}-${idx}`}
+                    to={ctaItem.href}
+                    target={ctaItem.target}
                     className={clsx(
                       "flex w-full items-center space-x-2 sm:w-auto",
-                      item.isPrimary
+                      ctaItem.isPrimary
                         ? "bg-primary hover:bg-primary/95 text-primary-foreground inline-flex justify-center rounded-md border-0 px-2 py-1 text-base shadow-2xs focus:outline-hidden"
                         : "bg-secondary hover:bg-secondary/95 text-secondary-foreground inline-flex justify-center rounded-md border-0 px-2 py-1 text-base shadow-2xs focus:outline-hidden"
                     )}
-                    event={{ action: "click", category: "features", label: item.text ?? "", value: item.href ?? "" }}
+                    event={{ action: "click", category: "features", label: ctaItem.text ?? "", value: ctaItem.href ?? "" }}
                   >
-                    {t(item.text)} {item.icon === "external" && <ExternalLinkIcon className="h-4" />}
+                    {t(ctaItem.text)} {ctaItem.icon === "external" && <ExternalLinkIcon className="h-4" />}
                   </ButtonEvent>
                 );
               })}
@@ -122,13 +132,7 @@ function FeatureCard({ feature }: { readonly feature: FeatureDto }) {
           <div className="text-primary mr-3 inline-flex shrink-0 items-center justify-center">
             {feature.icon ? (
               <>
-                {feature.icon.startsWith("<svg") ? (
-                  <div dangerouslySetInnerHTML={{ __html: feature.icon.replace("<svg", `<svg class='${" h-5 w-5"}'`) ?? "" }} />
-                ) : feature.icon.startsWith("http") ? (
-                  <img className=" h-5 w-5" src={feature.icon} alt={feature.name} />
-                ) : (
-                  feature.icon
-                )}
+                {getIconContent(feature)}
               </>
             ) : (
               <CheckIcon className=" h-5 w-5" aria-hidden="true" />

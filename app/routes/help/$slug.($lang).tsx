@@ -5,9 +5,10 @@ import ServerError from "~/components/ui/errors/ServerError";
 
 export const meta: MetaFunction<typeof loader> = ({ data }) => data?.metatags || [];
 export const loader = (args: LoaderFunctionArgs) => KbRoutesIndexApi.loader(args);
-// export const action = (args: ActionFunctionArgs) => KbRoutesIndexApi.action(args);
 
-export default () => <KbRoutesIndex />;
+export default function HelpIndex() {
+  return <KbRoutesIndex />;
+}
 
 export function ErrorBoundary() {
   return <ServerError />;

@@ -1,12 +1,10 @@
-import { ActionFunctionArgs, LoaderFunctionArgs, MetaFunction, useActionData, useLoaderData } from "react-router";
+import { type ActionFunctionArgs, type LoaderFunctionArgs, type MetaFunction, useActionData, useLoaderData, useSearchParams } from "react-router";
 import { useEffect, useState } from "react";
 import PageBlocks from "~/modules/pageBlocks/components/blocks/PageBlocks";
-import { useSearchParams } from "react-router";
 import { getCurrentPage } from "~/modules/pageBlocks/services/.server/pagesService";
 import { PageLoaderData } from "~/modules/pageBlocks/dtos/PageBlockData";
 import ErrorBanner from "~/components/ui/banners/ErrorBanner";
 import { useTranslation } from "react-i18next";
-import { serverTimingHeaders } from "~/modules/metrics/utils/defaultHeaders.server";
 import Modal from "~/components/ui/modals/Modal";
 import LoginForm from "~/modules/users/components/LoginForm";
 import toast from "react-hot-toast";
@@ -15,7 +13,7 @@ import { useRootData } from "~/utils/data/useRootData";
 import { PricingBlockService } from "~/modules/pageBlocks/components/blocks/marketing/pricing/PricingBlockService.server";
 import { getTranslations } from "~/locale/i18next.server";
 import { v2MetaFunction } from "~/utils/compat/v2MetaFunction";
-export { serverTimingHeaders as headers };
+export { serverTimingHeaders as headers } from "~/modules/metrics/utils/defaultHeaders.server";
 
 export const meta: v2MetaFunction<PageLoaderData> = ({ data }) => data?.metatags ?? [];
 
@@ -36,7 +34,7 @@ export const action = async ({ request, params }: ActionFunctionArgs) => {
   }
 };
 
-export default function () {
+export default function Index() {
   const { t } = useTranslation();
   const rootData = useRootData();
   const data = useLoaderData<PageLoaderData>();

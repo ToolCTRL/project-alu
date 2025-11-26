@@ -9,11 +9,11 @@ export default function BlueprintParticles() {
   useEffect(() => {
     // Detect mobile device for performance optimization
     const checkMobile = () => {
-      setIsMobile(window.innerWidth < 768);
+      setIsMobile(globalThis.innerWidth < 768);
     };
     checkMobile();
-    window.addEventListener('resize', checkMobile);
-    return () => window.removeEventListener('resize', checkMobile);
+    globalThis.addEventListener('resize', checkMobile);
+    return () => globalThis.removeEventListener('resize', checkMobile);
   }, []);
 
   const particlesInit = useCallback(async (engine: Engine) => {

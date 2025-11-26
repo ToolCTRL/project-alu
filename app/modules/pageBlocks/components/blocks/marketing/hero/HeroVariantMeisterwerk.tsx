@@ -8,7 +8,6 @@ import { use3DTilt } from "~/hooks/use3DTilt";
 import { useRootData } from "~/utils/data/useRootData";
 import LogoDark from "~/assets/img/logo-dark.png";
 import AluLogo from "~/assets/img/ALU_LOGO.png";
-import LogoLight from "~/assets/img/logo-light.png";
 
 type HeroScene = {
   id: string;
@@ -63,10 +62,10 @@ const heroScenes: HeroScene[] = [
 ];
 
 interface Props {
-  item: HeroBlockDto;
+  readonly item: HeroBlockDto;
 }
 
-export default function HeroVariantMeisterwerk({ item }: Props) {
+export default function HeroVariantMeisterwerk({ item }: Readonly<Props>) {
   const { t } = useTranslation();
   const { appConfiguration } = useRootData();
   const currentScene = heroScenes[0];

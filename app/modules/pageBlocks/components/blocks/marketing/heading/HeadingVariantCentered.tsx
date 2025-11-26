@@ -1,7 +1,7 @@
 import { useTranslation } from "react-i18next";
 import { HeadingBlockDto } from "./HeadingBlockUtils";
 
-export default function HeadingVariantCentered({ item }: { item: HeadingBlockDto }) {
+export default function HeadingVariantCentered({ item }: { readonly item: HeadingBlockDto }) {
   const { t } = useTranslation();
   return (
     <div className="mx-auto max-w-2xl px-4 text-center sm:px-6 lg:px-8">

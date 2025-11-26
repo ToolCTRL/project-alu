@@ -27,7 +27,7 @@ export namespace BlogPostBlockService {
     if (!post) {
       throw Response.json({ error: "Post not found with slug: " + postSlug }, { status: 404 });
     }
-    if (!post.published && (!user || !user.admin)) {
+    if (!post.published && !user?.admin) {
       throw Response.json({ error: "Post not published" }, { status: 404 });
     }
     let metaTags: MetaTagsDto = [
@@ -58,7 +58,7 @@ export namespace BlogPostBlockService {
     };
   }
   export async function publish({ params, form }: PageBlockActionArgs) {
-    const postId = (form.get("id") as FormDataEntryValue | null)?.toString() ?? "";
+    const postId = form.get("id")?.toString() ?? "";
     const post = await getBlogPost({ tenantId: null, idOrSlug: postId });
     if (!post) {
       throw Response.json({ error: "Post not found with id: " + postId }, { status: 404 });

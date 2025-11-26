@@ -18,7 +18,7 @@ export interface NavbarItemDto {
   description?: string;
   className?: string;
   items?: NavbarItemDto[];
-  target?: undefined | "_blank";
+  target?: "_blank";
   hint?: string;
 }
 

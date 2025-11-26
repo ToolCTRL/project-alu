@@ -10,8 +10,7 @@ import { useEffect, useState } from "react";
 import Page404 from "~/components/pages/Page404";
 import RedirectsService from "~/modules/redirects/RedirectsService";
 import { v2MetaFunction } from "~/utils/compat/v2MetaFunction";
-import { serverTimingHeaders } from "~/modules/metrics/utils/defaultHeaders.server";
-export { serverTimingHeaders as headers };
+export { serverTimingHeaders as headers } from "~/modules/metrics/utils/defaultHeaders.server";
 
 export const meta: v2MetaFunction<PageLoaderData> = ({ data }) => data?.metatags || [];
 export const handle = { i18n: "translations" };

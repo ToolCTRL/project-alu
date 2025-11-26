@@ -9,7 +9,7 @@ import InputResponsiveSelector from "~/components/ui/input/InputResponsiveSelect
 import InputText from "~/components/ui/input/InputText";
 import PageBlockUtils from "~/modules/pageBlocks/components/blocks/PageBlockUtils";
 
-export default function HeroBlockForm({ item, onUpdate }: { item?: HeroBlockDto; onUpdate: (item: HeroBlockDto) => void }) {
+export default function HeroBlockForm({ item, onUpdate }: { readonly item?: HeroBlockDto; readonly onUpdate: (item: HeroBlockDto) => void }) {
   const { t } = useTranslation();
   const [state, setState] = useState<HeroBlockDto>(item || PageBlockUtils.defaultBlocks.hero!);
   useEffect(() => {
@@ -78,7 +78,7 @@ export default function HeroBlockForm({ item, onUpdate }: { item?: HeroBlockDto;
       <InputGroup title="CTA">
         <div className="flex flex-col space-y-2">
           {state.cta.map((cta, index) => (
-            <div key={index} className="group relative grid grid-cols-3 gap-2">
+            <div key={`cta-${index}-${cta.text}`} className="group relative grid grid-cols-3 gap-2">
               <button
                 onClick={() => {
                   const cta = state.cta;

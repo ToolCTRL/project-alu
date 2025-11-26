@@ -178,7 +178,13 @@ function TopItemsData({ title, items, viewMoreRoute, fallbackName, bgClassName }
             <div key={`${item.name}-${item.count}`} className="flex justify-between space-x-2">
               <div className="w-full truncate">
                 <div className={clsx("overflow-visible px-2 py-0.5 text-sm", getWidthPercentageCss(item), bgClassName ?? "bg-orange-50")}>
-                  {item.name ? <span>{item.name}</span> : fallbackName ? <span>{fallbackName}</span> : <div>-</div>}
+                  {item.name ? (
+                    <span>{item.name}</span>
+                  ) : fallbackName ? (
+                    <span>{fallbackName}</span>
+                  ) : (
+                    <div>-</div>
+                  )}
                 </div>
               </div>
               <div className="w-10 px-2 py-0.5 text-right text-sm font-extrabold">{NumberUtils.intFormat(item.count)}</div>

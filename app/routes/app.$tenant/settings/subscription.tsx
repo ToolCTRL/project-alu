@@ -21,7 +21,6 @@ import { getTenant } from "~/utils/db/tenants.db.server";
 import { cancelTenantSubscription, getPlanFeaturesUsage } from "~/utils/services/.server/subscriptionService";
 import { PlanFeatureUsageDto } from "~/application/dtos/subscriptions/PlanFeatureUsageDto";
 import { verifyUserHasPermission } from "~/utils/helpers/.server/PermissionsService";
-import { serverTimingHeaders } from "~/modules/metrics/utils/defaultHeaders.server";
 import { promiseHash } from "~/utils/promises/promiseHash";
 import { createMetrics } from "~/modules/metrics/services/.server/MetricTracker";
 import EditPageLayout from "~/components/ui/layouts/EditPageLayout";
@@ -30,7 +29,7 @@ import toast from "react-hot-toast";
 import { getUserHasPermission } from "~/utils/helpers/PermissionsHelper";
 import { useAppData } from "~/utils/data/useAppData";
 import { v2MetaFunction } from "~/utils/compat/v2MetaFunction";
-export { serverTimingHeaders as headers };
+export { serverTimingHeaders as headers } from "~/modules/metrics/utils/defaultHeaders.server";
 
 type LoaderData = {
   title: string;

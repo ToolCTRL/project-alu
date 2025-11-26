@@ -16,7 +16,7 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
   try {
     apiAccessValidation = await time(validateApiKey(request, params), "validateApiKey");
     const { tenant, userId } = apiAccessValidation;
-    const relationship = await RowRelationshipsApi.getRelationship(params.id!, {
+    const relationship = await RowRelationshipsApi.getRelationship(params.id, {
       tenantId: tenant?.id ?? null,
       userId,
       time,
@@ -59,7 +59,7 @@ export const action = async ({ request, params }: ActionFunctionArgs) => {
     if (request.method !== "DELETE") {
       throw new Error("Method not allowed");
     }
-    const relationship = await RowRelationshipsApi.getRelationship(params.id!, {
+    const relationship = await RowRelationshipsApi.getRelationship(params.id, {
       tenantId: tenant?.id ?? null,
       userId,
       time,
@@ -68,7 +68,7 @@ export const action = async ({ request, params }: ActionFunctionArgs) => {
       throw new Error("Relationship not found");
     }
     const item = await time(
-      RowRelationshipsApi.deleteRelationshipById(params.id!, {
+      RowRelationshipsApi.deleteRelationshipById(params.id, {
         tenantId: tenant?.id ?? null,
         userId,
         time,

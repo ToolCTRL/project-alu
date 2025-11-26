@@ -819,7 +819,7 @@ function RowGroups({
 
 function getPropertyColumnSpan(property: PropertyWithDetails) {
     const columns = PropertyAttributeHelper.getPropertyAttributeValue_Number(property, PropertyAttributeName.Columns);
-    if (columns === undefined || isNaN(columns) || (columns < 1 && columns > 12)) {
+    if (columns === undefined || Number.isNaN(columns) || (columns < 1 && columns > 12)) {
       return "col-span-12";
     }
     return `col-span-${columns}`;
@@ -957,7 +957,7 @@ function getPropertyColumnSpan(property: PropertyWithDetails) {
 
 function getPropertyColumnSpan(property: PropertyWithDetails) {
   const columns = PropertyAttributeHelper.getPropertyAttributeValue_Number(property, PropertyAttributeName.Columns);
-  if (columns === undefined || isNaN(columns) || (columns < 1 && columns > 12)) {
+  if (columns === undefined || Number.isNaN(columns) || (columns < 1 && columns > 12)) {
     return "col-span-12";
   }
   return `col-span-${columns}`;

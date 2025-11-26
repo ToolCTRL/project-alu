@@ -8,6 +8,19 @@ import clsx from "clsx";
 import ButtonEvent from "~/components/ui/buttons/ButtonEvent";
 import { ExternalLinkIcon } from "lucide-react";
 
+function getFeatureIcon(icon: string | undefined, name: string) {
+  if (!icon) {
+    return <CheckIcon className="  h-5 w-5" aria-hidden="true" />;
+  }
+  if (icon.startsWith("<svg")) {
+    return <div dangerouslySetInnerHTML={{ __html: icon.replace("<svg", `<svg class='${" h-5 w-5 "}'`) ?? "" }} />;
+  }
+  if (icon.startsWith("http")) {
+    return <img className=" h-5 w-5" src={icon} alt={name} />;
+  }
+  return icon;
+}
+
 export default function FeaturesList({ item }: { readonly item: FeaturesBlockDto }) {
   const { t } = useTranslation();
   return (
@@ -70,19 +83,7 @@ export default function FeaturesList({ item }: { readonly item: FeaturesBlockDto
             return (
               <div key={`feature-list-${idx}-${feature.name}`} className="flex">
                 <div className="text-primary mb-4 inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full">
-                  {feature.icon ? (
-                    <>
-                      {feature.icon.startsWith("<svg") ? (
-                        <div dangerouslySetInnerHTML={{ __html: feature.icon.replace("<svg", `<svg class='${" h-5 w-5 "}'`) ?? "" }} />
-                      ) : feature.icon.startsWith("http") ? (
-                        <img className=" h-5 w-5" src={feature.icon} alt={feature.name} />
-                      ) : (
-                        feature.icon
-                      )}
-                    </>
-                  ) : (
-                    <CheckIcon className="  h-5 w-5" aria-hidden="true" />
-                  )}
+                  {getFeatureIcon(feature.icon, feature.name)}
                 </div>
                 <div className="grow pl-6">
                   <p className="title-font mb-2 text-lg font-medium">{t(feature.name)}</p>

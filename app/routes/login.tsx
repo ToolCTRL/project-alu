@@ -24,13 +24,13 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
   if (userInfo.userId !== undefined && userInfo.userId !== "") {
     const user = await getUser(userInfo.userId);
     if (user) {
-      if (!user?.defaultTenantId) {
-        throw redirect("/app");
-      } else {
+      if (user?.defaultTenantId) {
         const tenant = await getTenant(user.defaultTenantId);
         if (tenant) {
           throw redirect(`/app/${tenant?.slug ?? tenant.id}`);
         }
+      } else {
+        throw redirect("/app");
       }
     }
   }

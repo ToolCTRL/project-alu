@@ -1,4 +1,4 @@
-export default function ConditionalIcon({ className }: { className?: string }) {
+export default function ConditionalIcon({ className }: Readonly<{ className?: string }>) {
   return (
     <svg
       className={className}

@@ -10,14 +10,13 @@ import { FilterablePropertyDto } from "~/application/dtos/data/FilterablePropert
 import InputSearchWithURL from "~/components/ui/input/InputSearchWithURL";
 import InputFilters from "~/components/ui/input/InputFilters";
 import ButtonPrimary from "~/components/ui/buttons/ButtonPrimary";
-import { serverTimingHeaders } from "~/modules/metrics/utils/defaultHeaders.server";
 import { createMetrics } from "~/modules/metrics/services/.server/MetricTracker";
 import { getUserHasPermission } from "~/utils/helpers/PermissionsHelper";
 import { verifyUserHasPermission } from "~/utils/helpers/.server/PermissionsService";
 import { v2MetaFunction } from "~/utils/compat/v2MetaFunction";
 import SlideOverWideEmpty from "~/components/ui/slideOvers/SlideOverWideEmpty";
 import { t } from "i18next";
-export { serverTimingHeaders as headers };
+export { serverTimingHeaders as headers } from "~/modules/metrics/utils/defaultHeaders.server";
 
 export const meta: v2MetaFunction<LoaderData> = ({ data }) => [{ title: data?.title }];
 

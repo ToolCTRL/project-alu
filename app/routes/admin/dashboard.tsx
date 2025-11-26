@@ -17,7 +17,6 @@ import PeriodHelper, { defaultPeriodFilter, PeriodFilters } from "~/utils/helper
 import { createMetrics } from "~/modules/metrics/services/.server/MetricTracker";
 import { promiseHash } from "~/utils/promises/promiseHash";
 import { useAppOrAdminData } from "~/utils/data/useAppOrAdminData";
-import { serverTimingHeaders } from "~/modules/metrics/utils/defaultHeaders.server";
 import { getUserHasPermission } from "~/utils/helpers/PermissionsHelper";
 import ButtonSecondary from "~/components/ui/buttons/ButtonSecondary";
 import InputSelect from "~/components/ui/input/InputSelect";
@@ -31,7 +30,7 @@ import { StatChange } from "~/application/dtos/stats/StatChange";
 import { use3DTilt } from "~/hooks/use3DTilt";
 import clsx from "clsx";
 import { motion, AnimatePresence } from "framer-motion";
-export { serverTimingHeaders as headers };
+export { serverTimingHeaders as headers } from "~/modules/metrics/utils/defaultHeaders.server";
 
 export const meta: v2MetaFunction<LoaderData> = ({ data }) => [{ title: data?.title }];
 

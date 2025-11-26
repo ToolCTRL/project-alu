@@ -12,6 +12,7 @@ export const action = async ({ request }: ActionFunctionArgs) => {
     try {
       body = await request.json();
     } catch (e) {
+      console.error("Failed to parse JSON request body:", e);
       return Response.json({ error: t("shared.invalidRequest") }, { status: 400 });
     }
     const email = body.email;
@@ -32,7 +33,7 @@ export const action = async ({ request }: ActionFunctionArgs) => {
     }
 
     await createLogLogin(request, user);
-    const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET!, { expiresIn: "1h" });
+    const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET, { expiresIn: "1h" });
     return Response.json({ token, user: { id: user.id, email: user.email } });
   } catch (e: any) {
     return Response.json(

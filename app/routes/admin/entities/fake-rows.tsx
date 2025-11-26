@@ -206,7 +206,7 @@ async function createFakeRow({ entity, tenantId, idx, status }: { entity: Entity
   }
   tag = entity.tags.find((f) => f.value === "fake-row");
   if (!tag) {
-    throw Error("Could not create tag: fake-row");
+    throw new Error("Could not create tag: fake-row");
   }
   for (const property of entity.properties) {
     const propertyId = property.id;

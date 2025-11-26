@@ -16,7 +16,6 @@ import ActionResultModal from "~/components/ui/modals/ActionResultModal";
 import Stripe from "stripe";
 import { getStripeInvoices } from "~/utils/stripe.server";
 import { createMetrics } from "~/modules/metrics/services/.server/MetricTracker";
-import { serverTimingHeaders } from "~/modules/metrics/utils/defaultHeaders.server";
 import { getAllTenantTypes } from "~/utils/db/tenants/tenantTypes.db.server";
 import SlideOverWideEmpty from "~/components/ui/slideOvers/SlideOverWideEmpty";
 import { useAppOrAdminData } from "~/utils/data/useAppOrAdminData";
@@ -37,7 +36,7 @@ import { ActionTile } from "~/components/ui/cards";
 import { Badge } from "~/components/ui/badge";
 import { Blocks, Building2, ShieldCheck, Sparkles, Users as UsersIcon, Activity, Wallet } from "lucide-react";
 import { motion } from "framer-motion";
-export { serverTimingHeaders as headers };
+export { serverTimingHeaders as headers } from "~/modules/metrics/utils/defaultHeaders.server";
 
 export const meta: v2MetaFunction<LoaderData> = ({ data }) => [{ title: data?.title }];
 

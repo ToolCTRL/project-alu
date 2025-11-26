@@ -1,15 +1,11 @@
-import { ActionFunction, LoaderFunctionArgs, MetaFunction, useFetcher } from "react-router";
-import { useLoaderData, useSubmit } from "react-router";
+import { ActionFunction, LoaderFunctionArgs, MetaFunction, useFetcher, useLoaderData } from "react-router";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import CookieConsentSettings from "~/components/cookies/CookieConsentSettings";
 import CookiesList from "~/components/cookies/CookiesList";
-import ButtonPrimary from "~/components/ui/buttons/ButtonPrimary";
 import ButtonSecondary from "~/components/ui/buttons/ButtonSecondary";
 import PreviewIcon from "~/components/ui/icons/PreviewIcon";
 import InputCheckboxWithDescription from "~/components/ui/input/InputCheckboxWithDescription";
-import UnderConstruction from "~/components/ui/misc/UnderConstruction";
-import OpenModal from "~/components/ui/modals/OpenModal";
 import { getTranslations } from "~/locale/i18next.server";
 import { useAdminData } from "~/utils/data/useAdminData";
 import { AppConfiguration, getAppConfiguration, getOrCreateAppConfiguration, updateAppConfiguration } from "~/utils/db/appConfiguration.db.server";

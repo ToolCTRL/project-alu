@@ -36,9 +36,9 @@ export default function BannerVariantBottom({ item, onClose }: readonly { readon
                         target={cta.target}
                         className={clsx(
                           "flex items-center justify-center space-x-1 rounded-md border px-3 py-2 text-xs font-medium sm:text-sm md:px-4",
-                          !cta.isPrimary
-                            ? "bg-primary text-primary-foreground shadow-xs"
-                            : "bg-secondary text-secondary-foreground hover:bg-secondary/80 shadow-2xs"
+                          cta.isPrimary
+                            ? "bg-secondary text-secondary-foreground hover:bg-secondary/80 shadow-2xs"
+                            : "bg-primary text-primary-foreground shadow-xs"
                         )}
                         event={{ action: "click", category: "banner", label: typeof cta.text === "string" ? cta.text : "icon", value: cta.href }}
                       >

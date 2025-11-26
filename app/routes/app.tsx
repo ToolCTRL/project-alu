@@ -1,8 +1,7 @@
 import { Combobox, ComboboxOption, ComboboxOptions } from "@headlessui/react";
 import clsx from "clsx";
 import { useTranslation } from "react-i18next";
-import { Link, useLoaderData } from "react-router";
-import { LoaderFunctionArgs, redirect } from "react-router";
+import { Link, useLoaderData, LoaderFunctionArgs, redirect } from "react-router";
 import Logo from "~/components/brand/Logo";
 import EmptyState from "~/components/ui/emptyState/EmptyState";
 import UserUtils from "~/utils/app/UserUtils";
@@ -36,13 +35,10 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
   if (myTenants.length === 1) {
     try {
       return redirect("/app/" + encodeURIComponent(myTenants[0].slug) + "/dashboard");
-    } catch (e) {
+    } catch {
       return redirect("/app/" + myTenants[0].id + "/dashboard");
     }
   }
-  // if (myTenants.length === 0 && user.admin) {
-  //   return redirect("/admin");
-  // }
 
   const data: LoaderData = {
     user,

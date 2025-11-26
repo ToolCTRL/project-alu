@@ -38,7 +38,7 @@ export const action: ActionFunction = async ({ request }) => {
   }
 };
 
-export default function () {
+export default function AdminApiLogsRoute() {
   const data = useLoaderData<LoaderData>();
   return (
     <EditPageLayout title="API Calls">

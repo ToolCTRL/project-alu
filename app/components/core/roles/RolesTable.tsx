@@ -38,7 +38,7 @@ function RoleAssignToNewUsersCell(item: RoleWithPermissionsAndUsers) {
   return item.assignToNewUsers ? <CheckIcon className="h-4 w-4 text-teal-500" /> : <XIcon className="h-4 w-4 text-gray-300" />;
 }
 
-function RoleModalPermissionNameCell(item: { permission: { name: string; description: string } }) {
+function RoleModalPermissionNameCell(item: Readonly<{ permission: { name: string; description: string } }>) {
   return <RoleBadge item={item.permission} />;
 }
 

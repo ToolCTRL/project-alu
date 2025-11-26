@@ -28,7 +28,7 @@ const accentClasses = {
 };
 
 // Connector Line Component with Scroll Animation
-function ConnectorLine({ index }: { index: number }) {
+function ConnectorLine({ index }: { readonly index: number }) {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, amount: 0.3 });
 
@@ -71,7 +71,7 @@ function FeatureCard({
   readonly feature: FeatureDto;
   readonly accent: (typeof accentClasses)["primary"];
 }) {
-  const { t } = useTranslation();
+  useTranslation();
   const [rotateX, setRotateX] = useState(0);
   const [rotateY, setRotateY] = useState(0);
   const throttleRef = useRef<NodeJS.Timeout | null>(null);
@@ -147,7 +147,7 @@ function FeatureCard({
   );
 }
 
-export default function FeaturesVariantAlternating({ item }: readonly Props) {
+export default function FeaturesVariantAlternating({ item }: Readonly<Props>) {
   const { t } = useTranslation();
 
   return (
@@ -192,7 +192,7 @@ export default function FeaturesVariantAlternating({ item }: readonly Props) {
           const totalFeatures = item.items.length;
 
           return (
-            <div key={index} className="relative">
+            <div key={`feature-${feature.name}-${index}`} className="relative">
               <ScrollReveal delay={index * 0.1}>
                 <div className={`grid lg:grid-cols-2 gap-12 lg:gap-16 items-center group`}>
                   {/* Text Content */}

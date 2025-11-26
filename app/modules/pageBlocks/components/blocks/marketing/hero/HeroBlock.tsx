@@ -5,7 +5,7 @@ import HeroVariantTopImage from "./HeroVariantTopImage";
 import HeroVariantBottomImage from "./HeroVariantBottomImage";
 import HeroVariantMeisterwerk from "./HeroVariantMeisterwerk";
 
-export default function HeroBlock({ item }: { item: HeroBlockDto }) {
+export default function HeroBlock({ item }: { readonly item: HeroBlockDto }) {
   return (
     <>
       {item.style === "simple" && <HeroVariantSimple item={item} />}

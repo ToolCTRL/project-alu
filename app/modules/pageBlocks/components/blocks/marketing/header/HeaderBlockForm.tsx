@@ -10,7 +10,7 @@ import InputText from "~/components/ui/input/InputText";
 import CollapsibleRow from "~/components/ui/tables/CollapsibleRow";
 import PageBlockUtils from "~/modules/pageBlocks/components/blocks/PageBlockUtils";
 
-export default function HeaderBlockForm({ item, onUpdate }: { item?: HeaderBlockDto; onUpdate: (item: HeaderBlockDto) => void }) {
+export default function HeaderBlockForm({ item, onUpdate }: { readonly item?: HeaderBlockDto; readonly onUpdate: (item: HeaderBlockDto) => void }) {
   const { t } = useTranslation();
   const [state, setState] = useState<HeaderBlockDto>(PageBlockUtils.defaultBlocks.header!);
   useEffect(() => {

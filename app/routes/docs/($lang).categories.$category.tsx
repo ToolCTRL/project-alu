@@ -7,7 +7,9 @@ export const meta: MetaFunction<typeof loader> = ({ data }) => data?.metatags ||
 export const loader = (args: LoaderFunctionArgs) => KbRoutesCategoryApi.loader(args, { kbSlug: "docs" });
 // export const action = (args: ActionFunctionArgs) => KbRoutesCategoryApi.action(args, { kbSlug: kbSlug: "docs",});
 
-export default () => <KbRoutesCategoryView />;
+export default function DocsCategory() {
+  return <KbRoutesCategoryView />;
+}
 
 export function ErrorBoundary() {
   return <ServerError />;
