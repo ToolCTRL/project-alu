@@ -59,48 +59,42 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
   return data;
 };
 
+const stringOrEmpty = (value: FormDataEntryValue | null) => (typeof value === "string" ? value : "");
+
 async function calculateFeaturedOrder(item: KnowledgeBaseArticleWithDetails, isFeatured: boolean, knowledgeBaseId: string, language: string) {
-  if (!isFeatured) {
-    return null;
+  if (isFeatured) {
+    if (item.featuredOrder) {
+      return item.featuredOrder;
+    }
+    const featuredArticles = await getFeaturedKnowledgeBaseArticles({
+      knowledgeBaseId,
+      language,
+    });
+    const maxOrder = featuredArticles.length > 0 ? Math.max(...featuredArticles.map((p) => p.featuredOrder ?? 0)) : 0;
+    return maxOrder + 1;
   }
-  if (item.featuredOrder) {
-    return item.featuredOrder;
-  }
-  const featuredArticles = await getFeaturedKnowledgeBaseArticles({
-    knowledgeBaseId,
-    language,
-  });
-  const maxOrder = featuredArticles.length > 0 ? Math.max(...featuredArticles.map((p) => p.featuredOrder ?? 0)) : 0;
-  return maxOrder + 1;
+  return null;
 }
 
 async function handleEditAction(request: Request, params: any, form: FormData, item: KnowledgeBaseArticleWithDetails) {
-  const knowledgeBaseIdValue = form.get("knowledgeBaseId");
-  const knowledgeBaseId = knowledgeBaseIdValue != null ? String(knowledgeBaseIdValue) : "";
-  const categoryIdValue = form.get("categoryId");
-  const categoryId = categoryIdValue != null ? String(categoryIdValue) : "";
-  const sectionIdValue = form.get("sectionId");
-  const sectionId = sectionIdValue != null ? String(sectionIdValue) : "";
-  const languageValue = form.get("language");
-  const language = languageValue != null ? String(languageValue) : "";
-  const slugValue = form.get("slug");
-  const slug = slugValue != null ? String(slugValue) : "";
-  const titleValue = form.get("title");
-  const title = titleValue != null ? String(titleValue) : "";
-  const descriptionValue = form.get("description");
-  const description = descriptionValue != null ? String(descriptionValue) : "";
-  const seoImageValue = form.get("seoImage");
-  const seoImage = seoImageValue != null ? String(seoImageValue) : "";
+  const knowledgeBaseId = stringOrEmpty(form.get("knowledgeBaseId"));
+  const categoryId = stringOrEmpty(form.get("categoryId"));
+  const sectionId = stringOrEmpty(form.get("sectionId"));
+  const language = stringOrEmpty(form.get("language"));
+  const slug = stringOrEmpty(form.get("slug"));
+  const title = stringOrEmpty(form.get("title"));
+  const description = stringOrEmpty(form.get("description"));
+  const seoImage = stringOrEmpty(form.get("seoImage"));
   const isFeatured = Boolean(form.get("isFeatured"));
   const relatedArticles = form.getAll("relatedArticles[]").map(String);
 
   const knowledgeBase = await KnowledgeBaseService.getById({ id: knowledgeBaseId, request });
-  if (!knowledgeBase) {
+  if (knowledgeBase == null) {
     return Response.json({ error: "Knowledge base not found" }, { status: 400 });
   }
 
   const existingLanguage = KnowledgeBaseUtils.supportedLanguages.find((f) => f.value === language);
-  if (!existingLanguage) {
+  if (existingLanguage == null) {
     return Response.json({ error: "Language not found: " + language }, { status: 400 });
   }
 
@@ -144,7 +138,7 @@ export const action = async ({ request, params }: ActionFunctionArgs) => {
   const action = form.get("action")?.toString() ?? "";
 
   const item = await getKbArticleById(params.id!);
-  if (!item) {
+  if (item == null) {
     return Response.json({ error: "Article not found" }, { status: 400 });
   }
 

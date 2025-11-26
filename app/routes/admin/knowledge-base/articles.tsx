@@ -99,12 +99,14 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
 type ActionData = {
   error?: string;
 };
+
+const stringOrEmpty = (value: FormDataEntryValue | null) => (typeof value === "string" ? value : "");
+
 async function handleNewArticle(request: Request, form: FormData, userInfo: any) {
   await verifyUserHasPermission(request, "admin.kb.create");
-  const kbIdValue = form.get("kbId");
-  const kbId = kbIdValue != null ? String(kbIdValue) : "";
+  const kbId = stringOrEmpty(form.get("kbId"));
   const kb = await KnowledgeBaseService.getById({ id: kbId, request });
-  if (!kb) {
+  if (kb == null) {
     return Response.json({ error: "Knowledge base not found" }, { status: 404 });
   }
   const created = await KnowledgeBaseService.newArticle({

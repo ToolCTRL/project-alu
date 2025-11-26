@@ -38,6 +38,8 @@ type ActionData = {
 };
 const badRequest = (data: ActionData) => Response.json(data, { status: 400 });
 
+const stringOrEmpty = (value: FormDataEntryValue | null) => (typeof value === "string" ? value : "");
+
 function validatePropertyName(name: string) {
   const reservedNames = ["id", "folio", "createdAt", "createdByUser", "sort", "page", "q", "v", "redirect", "tags"];
   if (reservedNames.includes(name)) {
@@ -55,7 +57,7 @@ function validatePropertyName(name: string) {
 function processFormData(form: FormData, type: PropertyType) {
   let isRequired = Boolean(form.get("is-required"));
   const formulaIdValue = form.get("formula-id");
-  let formulaId = formulaIdValue != null ? String(formulaIdValue) : "";
+  let formulaId = stringOrEmpty(formulaIdValue);
 
   if (type !== PropertyType.FORMULA) {
     formulaId = "";
@@ -80,8 +82,7 @@ async function handleEdit(
     return badRequest({ error: nameError });
   }
 
-  const subtypeValue = form.get("subtype");
-  const subtype = subtypeValue != null ? String(subtypeValue) : "";
+  const subtype = stringOrEmpty(form.get("subtype"));
   const order = Number(form.get("order"));
   const isHidden = Boolean(form.get("is-hidden"));
   const isDisplay = Boolean(form.get("is-display"));
@@ -98,7 +99,7 @@ async function handleEdit(
     return JSON.parse(f.toString());
   });
 
-  if ([PropertyType.FORMULA].includes(type) && !formulaId) {
+  if (type === PropertyType.FORMULA && formulaId === "") {
     return badRequest({ error: "Select a formula" });
   }
 
@@ -129,8 +130,7 @@ async function handleEdit(
 
 async function handleDelete(params: any, form: FormData, t: any) {
   await verifyUserHasPermission(request, "admin.entities.delete");
-  const idValue = form.get("id");
-  const id = idValue != null ? String(idValue) : "";
+  const id = stringOrEmpty(form.get("id"));
   const existingProperty = await getProperty(id);
   if (!existingProperty) {
     return badRequest({ error: t("shared.notFound") });

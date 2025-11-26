@@ -37,7 +37,13 @@ export default function PropertyFormulaValueBadge({ property, value }: Readonly<
       return <RowDateCell value={value ? (value as Date) : undefined} format={getDateFormat()} />;
     }
 
-    return <div>{value != null ? String(value) : ""}</div>;
+    if (value === null || value === undefined) {
+      return <div />;
+    }
+
+    const formattedValue = typeof value === "object" ? JSON.stringify(value) : String(value);
+
+    return <div>{formattedValue}</div>;
   }
 
   return <div className="flex space-x-1">{renderFormulaValue()}</div>;

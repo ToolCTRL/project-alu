@@ -156,11 +156,12 @@ async function handleSetSectionOrders(form: FormData) {
   return Response.json({ updated: true });
 }
 
+const stringOrEmpty = (value: FormDataEntryValue | null) => (typeof value === "string" ? value : "");
+
 async function handleDuplicateArticle(kb: KnowledgeBaseDto, params: any, form: FormData) {
   await verifyUserHasPermission(null as any, "admin.kb.create");
   try {
-    const idValue = form.get("id");
-    const id = idValue != null ? String(idValue) : "";
+    const id = stringOrEmpty(form.get("id"));
     const item = await KnowledgeBaseService.duplicateArticle({ kb, language: params.lang!, articleId: id });
     return redirect(`/admin/knowledge-base/bases/${kb.slug}/articles/${params.lang}/${item.id}`);
   } catch (e: any) {
@@ -169,12 +170,11 @@ async function handleDuplicateArticle(kb: KnowledgeBaseDto, params: any, form: F
 }
 
 async function handleToggleFeatured(form: FormData, kb: KnowledgeBaseDto, request: Request) {
-  const idValue = form.get("id");
-  const id = idValue != null ? String(idValue) : "";
+  const id = stringOrEmpty(form.get("id"));
   const isFeatured = String(form.get("isFeatured") ?? "") === "true";
 
   const item = await getKbArticleById(id);
-  if (!item) {
+  if (item == null) {
     return Response.json({ error: "Not found" }, { status: 404 });
   }
 

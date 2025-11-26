@@ -75,6 +75,7 @@ type ActionData = {
   error?: string;
   success?: string;
 };
+const stringOrEmpty = (value: FormDataEntryValue | null | undefined) => (typeof value === "string" ? value : "");
 async function handleCreatePostmarkTemplates(request: Request) {
   await verifyUserHasPermission(request, "admin.emails.create");
   try {
@@ -88,9 +89,8 @@ async function handleCreatePostmarkTemplates(request: Request) {
 async function handleCreateEmailTemplate(request: Request, form: FormData) {
   await verifyUserHasPermission(request, "admin.emails.create");
   try {
-    const aliasValue = form.get("alias");
-    const alias = aliasValue != null ? String(aliasValue) : undefined;
-    if (!alias) {
+    const alias = stringOrEmpty(form.get("alias"));
+    if (alias === "") {
       return { error: `Alias ${alias} not found` };
     }
     await createPostmarkEmailTemplates(alias);
@@ -104,9 +104,8 @@ async function handleCreateEmailTemplate(request: Request, form: FormData) {
 async function handleDeleteEmailTemplate(request: Request, form: FormData) {
   await verifyUserHasPermission(request, "admin.emails.delete");
   try {
-    const aliasValue = form.get("alias");
-    const alias = aliasValue != null ? String(aliasValue) : undefined;
-    if (!alias) {
+    const alias = stringOrEmpty(form.get("alias"));
+    if (alias === "") {
       return { error: `Alias ${alias} not found` };
     }
     await deleteEmailTemplate(alias);
@@ -118,10 +117,9 @@ async function handleDeleteEmailTemplate(request: Request, form: FormData) {
 }
 
 async function handleSendTest(request: Request, form: FormData, user: Awaited<ReturnType<typeof requireUser>>) {
-  const emailValue = form.get("email");
-  const email = emailValue != null ? String(emailValue) : undefined;
+  const email = stringOrEmpty(form.get("email"));
   const templateName = form.get("template")?.toString();
-  if (!email) {
+  if (email === "") {
     return { error: "Invalid email" };
   }
   const template = EmailTemplates.allTemplates.find((f) => f.name === templateName);
