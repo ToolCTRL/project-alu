@@ -186,8 +186,7 @@ function getBlockErrors({ workflow, block }: { workflow: WorkflowDto; block: Wor
   }
 
   const workflowBlock = WorkflowBlockTypes.find((f) => f.value === block.type);
-  errors.push(...validateBlockInputs(block, workflowBlock));
-  errors.push(...validateConditionGroups(block, workflowBlock));
+  errors.push(...validateBlockInputs(block, workflowBlock), ...validateConditionGroups(block, workflowBlock));
 
   return errors;
 }

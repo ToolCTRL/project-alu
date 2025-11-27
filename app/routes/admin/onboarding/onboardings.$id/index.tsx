@@ -58,7 +58,7 @@ export const action: ActionFunction = async ({ request, params }) => {
   if (action === "update") {
     const title = form.get("title")?.toString();
     await updateOnboarding(item.id, {
-      title: title !== undefined ? title : undefined,
+      title: title === undefined ? undefined : title,
     });
     return Response.json({ success: "Onboarding updated" });
   } else if (action === "activate") {
@@ -66,7 +66,7 @@ export const action: ActionFunction = async ({ request, params }) => {
     if (active === undefined) {
       return Response.json({ error: t("shared.invalidForm") }, { status: 400 });
     }
-    const isActive = active !== undefined ? active === "true" : undefined;
+    const isActive = active === undefined ? undefined : active === "true";
     await updateOnboarding(item.id, {
       active: isActive,
     });

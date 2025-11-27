@@ -42,6 +42,8 @@ interface EntityRowsRelationshipsProps {
 
 function EntityRowsRelationships({ data, className }: Readonly<EntityRowsRelationshipsProps>) {
   const { t } = useTranslation();
+  const renderCard = (item: RowWithDetails) => <EntityRowCard entity={data.entity} item={item} t={t} />;
+
   return (
     <div className={clsx(className)}>
       {data?.entity && (
@@ -51,7 +53,7 @@ function EntityRowsRelationships({ data, className }: Readonly<EntityRowsRelatio
               name: "entity",
               title: t(data?.entity.titlePlural ?? ""),
               items: data?.items ?? [],
-              card: (item) => <EntityRowCard entity={data.entity} item={item} t={t} />,
+              card: renderCard,
             },
           ]}
         />

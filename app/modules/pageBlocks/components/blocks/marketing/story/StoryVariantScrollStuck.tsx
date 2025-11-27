@@ -43,19 +43,6 @@ export default function StoryVariantScrollStuck({ item }: { readonly item: Story
     }
   };
 
-  const getGradientColors = (accentColor: "primary" | "secondary" | "tertiary") => {
-    switch (accentColor) {
-      case "tertiary":
-        return "from-orange-500/20 to-purple-500/20";
-      case "primary":
-        return "from-purple-500/20 to-green-500/20";
-      case "secondary":
-        return "from-green-500/20 to-purple-500/20";
-      default:
-        return "from-purple-500/20 to-green-500/20";
-    }
-  };
-
   const getBackgroundGradient = (phaseIndex: number): string => {
     if (phaseIndex === 0) {
       return "rgba(245, 158, 11, 0.2), rgba(168, 85, 247, 0.2)";

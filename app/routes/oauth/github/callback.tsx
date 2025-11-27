@@ -63,15 +63,11 @@ const signUpGithubUser = async (request: Request, userProfile: GitHubProfile) =>
   const { t } = await getTranslations(request);
   const userInfo = await getUserInfo(request);
   const [firstName, lastName] = userProfile.name?.split(" ") ?? ["", ""];
-  let company: string;
-  if (userProfile.company) {
-    company = userProfile.company;
-  } else if (isCompanyEmail(userProfile.email)) {
-    // Use email as company
-    company = companyFromEmail(userProfile.email);
-  } else {
-    company = UrlUtils.slugify(firstName + " " + lastName);
-  }
+  const company = userProfile.company
+    ? userProfile.company
+    : isCompanyEmail(userProfile.email)
+    ? companyFromEmail(userProfile.email)
+    : UrlUtils.slugify(firstName + " " + lastName);
   const result = await validateRegistration({
     request,
     registrationData: {

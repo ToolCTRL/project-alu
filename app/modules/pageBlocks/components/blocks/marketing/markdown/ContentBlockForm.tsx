@@ -61,7 +61,7 @@ export default function ContentBlockForm({ item, onUpdate }: { readonly item?: C
           {contentType === "wysiwyg" ? (
             <div>
               <input type="hidden" name="content" value={state.content} hidden readOnly />
-              {typeof globalThis.window !== "undefined" && <Editor content={state.content} onChange={(e) => setState({ ...state, content: e.html ?? "" })} />}
+              {globalThis.window !== undefined && <Editor content={state.content} onChange={(e) => setState({ ...state, content: e.html ?? "" })} />}
             </div>
           ) : (
             contentType === "markdown" && (

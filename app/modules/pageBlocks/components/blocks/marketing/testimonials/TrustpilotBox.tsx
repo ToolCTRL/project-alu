@@ -15,7 +15,7 @@ const TrustpilotBox = ({
     // If globalThis.window.Trustpilot is available it means that we need to load the TrustBox from our ref.
     // If it's not, it means the script you pasted into <head /> isn't loaded  just yet.
     // When it is, it will automatically load the TrustBox.
-    if (typeof globalThis.window !== "undefined") {
+    if (globalThis.window !== undefined) {
       // @ts-ignore
       if (globalThis.Trustpilot) {
         // @ts-ignore

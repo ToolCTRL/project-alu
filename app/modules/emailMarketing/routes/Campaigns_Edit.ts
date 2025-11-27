@@ -42,11 +42,15 @@ export namespace Campaigns_Edit {
   }
 
   async function handleUpdate(params: any, form: FormData, t: any) {
+    const name = form.get("name");
+    const subject = form.get("subject");
+    const htmlBody = form.get("htmlBody");
+    const textBody = form.get("textBody");
     await updateCampaign(params.id, {
-      name: String(form.get("name") ?? ""),
-      subject: String(form.get("subject") ?? ""),
-      htmlBody: String(form.get("htmlBody") ?? ""),
-      textBody: String(form.get("textBody") ?? ""),
+      name: String(name ?? ""),
+      subject: String(subject ?? ""),
+      htmlBody: String(htmlBody ?? ""),
+      textBody: String(textBody ?? ""),
     });
     return Response.json({ success: t("shared.saved") });
   }
@@ -57,7 +61,8 @@ export namespace Campaigns_Edit {
   }
 
   async function handleSendPreview(item: any, form: FormData, t: any) {
-    const email = String(form.get("email") ?? "");
+    const emailValue = form.get("email");
+    const email = String(emailValue ?? "");
     await EmailMarketingService.sendCampaignTest(item, email);
     return Response.json({ success: t("shared.sent") }, { status: 200 });
   }

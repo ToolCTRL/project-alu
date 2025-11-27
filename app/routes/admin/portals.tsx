@@ -85,12 +85,11 @@ type ActionData = {
   success?: string;
   error?: string;
 };
-function TenantCell({ item }: { item: PortalWithCount & { portalUrl?: string } }) {
-  const { t } = useTranslation();
+function TenantCell({ item }: Readonly<{ item: PortalWithCount & { portalUrl?: string } }>) {
   return <FilterableValueLink name="tenantId" value={item?.tenant?.name ?? "{Admin}"} param={item?.tenant?.id ?? "null"} />;
 }
 
-function TitleCell({ item }: { item: PortalWithCount & { portalUrl?: string } }) {
+function TitleCell({ item }: Readonly<{ item: PortalWithCount & { portalUrl?: string } }>) {
   return (
     <div className="flex flex-col">
       <div>
@@ -103,7 +102,7 @@ function TitleCell({ item }: { item: PortalWithCount & { portalUrl?: string } })
   );
 }
 
-function UsersCell({ item }: { item: PortalWithCount & { portalUrl?: string } }) {
+function UsersCell({ item }: Readonly<{ item: PortalWithCount & { portalUrl?: string } }>) {
   return <div>{item._count.users}</div>;
 }
 

@@ -58,18 +58,21 @@ export const action: ActionFunction = async ({ request, params }) => {
   const isReadOnly = Boolean(form.get("is-read-only"));
   const canUpdate = Boolean(form.get("can-update"));
   let showInCreate = Boolean(form.get("show-in-create"));
-  let formulaId = form.get("formula-id")?.toString() ?? null;
+  const formulaValue = form.get("formula-id");
+  let formulaId = formulaValue?.toString() ?? null;
 
   if (["id", "folio", "createdAt", "createdByUser", "sort", "page", "q", "v", "redirect", "tags"].includes(name)) {
     return badRequest({ error: name + " is a reserved property name" });
   }
 
   const options: { order: number; value: string; name?: string; color?: Colors }[] = form.getAll("options[]").map((f: FormDataEntryValue) => {
-    return JSON.parse(f.toString());
+    const value = typeof f === 'string' ? f : f.toString();
+    return JSON.parse(value);
   });
 
   const attributes: { name: string; value: string }[] = form.getAll("attributes[]").map((f: FormDataEntryValue) => {
-    return JSON.parse(f.toString());
+    const value = typeof f === 'string' ? f : f.toString();
+    return JSON.parse(value);
   });
 
   if (type === PropertyType.FORMULA) {

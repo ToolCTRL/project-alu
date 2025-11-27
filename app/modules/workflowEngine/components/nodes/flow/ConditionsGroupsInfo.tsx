@@ -110,9 +110,7 @@ export default function ConditionsGroupsInfo({
         className="sm:max-w-2xl"
         title={
           selectedConditionsGroup
-            ? type === "if"
-              ? "If Condition"
-              : `Case ${selectedConditionsGroup.index + 1}`
+            ? (type === "if" ? "If Condition" : `Case ${selectedConditionsGroup.index + 1}`)
             : ""
         }
         open={!!selectedConditionsGroup}

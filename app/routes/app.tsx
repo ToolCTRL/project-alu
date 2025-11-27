@@ -114,11 +114,11 @@ export default function AppRoute() {
                           to={`/app/${item.slug}/dashboard`}
                           name={item.name}
                           icon={
-                            !item.icon ? null : (
+                            item.icon ? (
                               <div className="bg-primary rounded-md">
                                 <img src={item.icon} className="h-10 w-10 rounded-lg p-1" alt={item.name} />
                               </div>
-                            )
+                            ) : null
                           }
                           prefix={UserUtils.getTenantPrefix(item)}
                         />

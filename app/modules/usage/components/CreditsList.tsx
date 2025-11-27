@@ -110,19 +110,19 @@ export default function CreditsList({ data }: Readonly<Props>) {
             name: "createdAt",
             title: t("shared.createdAt"),
             value: (item) => DateUtils.dateYMDHMS(item.createdAt),
-            formattedValue: (item) => <CreatedAtCell item={item} />,
+            formattedValue: CreatedAtCell,
           },
           {
             name: "tenant",
             title: "Tenant",
-            value: (item) => <TenantCell item={item} />,
+            value: TenantCell,
             hidden: !!params.tenant,
           },
 
           {
             name: "type",
             title: t("shared.type"),
-            value: (item) => <TypeCell item={item} />,
+            value: TypeCell,
           },
           {
             name: "resource",
@@ -133,7 +133,7 @@ export default function CreditsList({ data }: Readonly<Props>) {
           {
             name: "user",
             title: t("models.user.object"),
-            value: (item) => <UserCell item={item} />,
+            value: UserCell,
           },
         ]}
       />

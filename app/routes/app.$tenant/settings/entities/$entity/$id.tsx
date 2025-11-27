@@ -62,10 +62,10 @@ async function validatePropertyData(
 }
 
 async function handleEditProperty(params: any, form: FormData, existing: PropertyWithDetails, entity: EntityWithDetails) {
-  const name = (form.get("name")?.toString() ?? "");
-  const title = (form.get("title")?.toString() ?? "");
+  const name = typeof form.get("name") === "string" ? form.get("name") : "";
+  const title = typeof form.get("title") === "string" ? form.get("title") : "";
   const type = Number(form.get("type")) as PropertyType;
-  const subtype = (form.get("subtype")?.toString() ?? "") || null;
+  const subtype = (typeof form.get("subtype") === "string" ? form.get("subtype") : "") || null;
   const order = Number(form.get("order"));
   let isRequired = Boolean(form.get("is-required"));
   const isHidden = Boolean(form.get("is-hidden"));
@@ -73,7 +73,8 @@ async function handleEditProperty(params: any, form: FormData, existing: Propert
   const isReadOnly = Boolean(form.get("is-read-only"));
   const canUpdate = Boolean(form.get("can-update"));
   const showInCreate = Boolean(form.get("show-in-create"));
-  let formulaId = (form.get("formula-id")?.toString() ?? "") || null;
+  const formulaValue = form.get("formula-id");
+  let formulaId = (formulaValue?.toString() ?? "") || null;
 
   if (type === PropertyType.FORMULA) {
     isRequired = false;
@@ -94,10 +95,12 @@ async function handleEditProperty(params: any, form: FormData, existing: Propert
   }
 
   const options: { order: number; value: string; name?: string; color?: Colors }[] = form.getAll("options[]").map((f: FormDataEntryValue) => {
-    return JSON.parse(f.toString());
+    const value = typeof f === 'string' ? f : f.toString();
+    return JSON.parse(value);
   });
   const attributes: { name: string; value: string }[] = form.getAll("attributes[]").map((f: FormDataEntryValue) => {
-    return JSON.parse(f.toString());
+    const value = typeof f === 'string' ? f : f.toString();
+    return JSON.parse(value);
   });
 
   try {
@@ -125,7 +128,8 @@ async function handleEditProperty(params: any, form: FormData, existing: Propert
 }
 
 async function handleDeleteProperty(params: any, form: FormData, t: any) {
-  const id = (form.get("id")?.toString() ?? "");
+  const idValue = form.get("id");
+  const id = idValue?.toString() ?? "";
   const existingProperty = await getProperty(id);
   if (!existingProperty) {
     return badRequest({ error: t("shared.notFound") });

@@ -458,11 +458,13 @@ function parseRangeFromForm(
     };
   }
   if (PropertyType.RANGE_DATE === property.type) {
+    const minValue = min !== null && min !== undefined ? min : null;
+    const maxValue = max !== null && max !== undefined ? max : null;
     return {
       numberMin: null,
       numberMax: null,
-      dateMin: min !== null && min !== undefined ? new Date(String(min)) : null,
-      dateMax: max !== null && max !== undefined ? new Date(String(max)) : null,
+      dateMin: minValue !== null ? new Date(String(minValue)) : null,
+      dateMax: maxValue !== null ? new Date(String(maxValue)) : null,
     };
   }
   return null;
@@ -647,7 +649,7 @@ const getRowPropertiesFromForm = ({
     if (form?.has(name)) {
       parentRows = parentRows ?? [];
     }
-    const rowIds = getFormDataEntryValues({ name, form, values }).map((f) => String(f));
+    const rowIds = getFormDataEntryValues({ name, form, values }).map(String);
     const parentRowIds = rowIds.map((parentId) => {
       return { relationshipId: relationship.id, parentId };
     });
@@ -662,7 +664,7 @@ const getRowPropertiesFromForm = ({
     if (form?.has(name)) {
       childRows = childRows ?? [];
     }
-    const rowIds = getFormDataEntryValues({ name, form, values }).map((f) => String(f));
+    const rowIds = getFormDataEntryValues({ name, form, values }).map(String);
     const childRowIds = rowIds.map((childId) => {
       return { relationshipId: relationship.id, childId };
     });

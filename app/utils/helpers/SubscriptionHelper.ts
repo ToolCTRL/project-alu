@@ -4,14 +4,18 @@ import { SubscriptionBillingPeriod } from "~/application/enums/subscriptions/Sub
 import { getSubscriptionProduct } from "../db/subscriptionProducts.db.server";
 
 async function getPlanFromForm(form: FormData) {
-  const productId = String(form.get("product-id") ?? "");
+  const productIdValue = form.get("product-id");
+  const productId = productIdValue?.toString() ?? "";
   const billingPeriod = Number(form.get("billing-period")) as SubscriptionBillingPeriod;
-  const currency = String(form.get("currency") ?? "");
+  const currencyValue = form.get("currency");
+  const currency = currencyValue?.toString() ?? "";
   const quantity = Number(form.get("quantity"));
   const couponValue = form.get("coupon");
   const coupon = couponValue !== null && couponValue !== undefined ? String(couponValue) : undefined;
-  const isUpgrade = String(form.get("is-upgrade") ?? "") === "true";
-  const isDowngrade = String(form.get("is-downgrade") ?? "") === "true";
+  const isUpgradeValue = form.get("is-upgrade");
+  const isUpgrade = (isUpgradeValue?.toString() ?? "") === "true";
+  const isDowngradeValue = form.get("is-downgrade");
+  const isDowngrade = (isDowngradeValue?.toString() ?? "") === "true";
   const referralValue = form.get("referral");
   const referral = referralValue !== null && referralValue !== undefined ? String(referralValue) : null;
 

@@ -98,6 +98,14 @@ export default function UsersTable({ items, canImpersonate, canChangePassword, c
     );
   };
 
+  const renderCreatedAtValue = (item: UserWithDetails) => {
+    return (
+      <time dateTime={DateUtils.dateYMDHMS(item.createdAt)} title={DateUtils.dateYMDHMS(item.createdAt)}>
+        {DateUtils.dateAgo(item.createdAt)}
+      </time>
+    );
+  };
+
   useEffect(() => {
     const headers: RowHeaderDisplayDto<UserWithDetails>[] = [
       {
@@ -121,13 +129,7 @@ export default function UsersTable({ items, canImpersonate, canChangePassword, c
         name: "createdAt",
         title: t("shared.createdAt"),
         value: (i) => DateUtils.dateDM(i.createdAt),
-        formattedValue: (item) => {
-          return (
-            <time dateTime={DateUtils.dateYMDHMS(item.createdAt)} title={DateUtils.dateYMDHMS(item.createdAt)}>
-              {DateUtils.dateAgo(item.createdAt)}
-            </time>
-          );
-        },
+        formattedValue: renderCreatedAtValue,
         sortBy: "createdAt",
       },
     ];

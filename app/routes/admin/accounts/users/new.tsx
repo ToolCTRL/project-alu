@@ -42,7 +42,7 @@ export const action = async ({ request, params }: ActionFunctionArgs) => {
     const password = form.get("password")?.toString();
 
     const arrRoles: { id: string; tenantId: string | undefined }[] = form.getAll("roles[]").map((f: FormDataEntryValue) => {
-      return JSON.parse(f.toString());
+      return JSON.parse(String(f));
     });
 
     if (!email || !password || !firstName) {
@@ -111,7 +111,7 @@ export default function SetUserRolesRoute() {
     setSelectedRoles((f) => [...f, roleId]);
   }
   function removeRole(roleId: string) {
-    setSelectedRoles((f) => f.filter((f) => f !== roleId));
+    setSelectedRoles((roles) => roles.filter((id) => id !== roleId));
   }
   function handleRoleToggle(checked: boolean, roleId: string) {
     if (checked) {

@@ -82,6 +82,10 @@ function getColor(type: string) {
   }
 }
 
+function BlacklistTypeCell({ type }: { readonly type: string }) {
+  return <SimpleBadge title={type} color={getColor(type)} />;
+}
+
 export default function BlacklistRoute() {
   const data = useLoaderData<LoaderData>();
   const { t } = useTranslation();
@@ -126,7 +130,7 @@ export default function BlacklistRoute() {
             name: "type",
             title: t("models.blacklist.type"),
             value: (i) => i.type,
-            formattedValue: (i) => <SimpleBadge title={i.type} color={getColor(i.type)} />,
+            formattedValue: (i) => <BlacklistTypeCell type={i.type} />,
           },
           {
             name: "value",

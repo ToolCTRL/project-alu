@@ -161,7 +161,6 @@ export default function AdminPricingRoute() {
 
   const [model, setModel] = useState<PricingModel>(PricingModel.FLAT_RATE);
   const [items, setItems] = useState<SubscriptionProductDto[]>([]);
-  const [allFeatures, setAllFeatures] = useState<SubscriptionFeatureDto[]>([]);
 
   useEffect(() => {
     updateItems(data.items);
@@ -207,10 +206,6 @@ export default function AdminPricingRoute() {
     return allFeatures.sort((a, b) => a.order - b.order);
   };
 
-  useEffect(() => {
-    setAllFeatures(extractUniqueFeatures(items));
-  }, [items]);
-
   const sortedItems = () => {
     return items.sort((x, y) => {
       return x?.order > y?.order ? 1 : -1;
@@ -250,9 +245,9 @@ export default function AdminPricingRoute() {
                 }}
               />
             )}
-            {data.items.filter((f) => f.id).length > 0 && (
+            {data.items.some((f) => f.id) && (
               <ButtonSecondary
-                disabled={data.items.filter((f) => f.id).length === 0}
+                disabled={!data.items.some((f) => f.id)}
                 to={`/admin/settings/pricing/features?` + selectedItems.map((f) => "id=" + f.id).join("&")}
               >
                 Set features

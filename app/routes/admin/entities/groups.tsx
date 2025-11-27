@@ -34,7 +34,7 @@ export const action = async ({ request }: ActionFunctionArgs) => {
 
   if (action === "set-orders") {
     await verifyUserHasPermission(request, "admin.entities.update");
-    const items: { id: string; order: number }[] = form.getAll("orders[]").map((f: FormDataEntryValue) => JSON.parse(f.toString()));
+    const items: { id: string; order: number }[] = form.getAll("orders[]").map((f: FormDataEntryValue) => JSON.parse(String(f)));
 
     await Promise.all(
       items.map(async ({ id, order }) => {

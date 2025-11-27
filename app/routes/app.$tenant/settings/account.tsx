@@ -87,9 +87,9 @@ async function updateTenantSettings(tenantId: string, form: FormData, existing: 
 }
 
 async function handleEditAction(request: Request, params: any, form: FormData, tenantId: string, t: any) {
-  const name = (form.get("name")?.toString() ?? "");
-  const slug = ((form.get("slug")?.toString() ?? "").toLowerCase());
-  const icon = (form.get("icon")?.toString() ?? "");
+  const name = typeof form.get("name") === "string" ? form.get("name") : "";
+  const slug = (typeof form.get("slug") === "string" ? form.get("slug") : "").toLowerCase();
+  const icon = typeof form.get("icon") === "string" ? form.get("icon") : "";
 
   const validationError = await validateEditForm(name, slug);
   if (validationError) {

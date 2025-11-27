@@ -1,7 +1,7 @@
 export interface BlockVariableDto {
   type: "manual" | "param" | "query";
-  param?: "id1" | "id2" | string;
+  param?: string;
   query?: string;
-  value?: string | null;
+  value?: string;
   required?: boolean;
 }

@@ -87,7 +87,8 @@ type ActionData = {
 const badRequest = (data: ActionData) => Response.json(data, { status: 400 });
 
 async function handleDeleteInvitation(form: FormData) {
-  const invitationId = (form.get("invitation-id")?.toString() ?? "");
+  const invitationIdValue = form.get("invitation-id");
+  const invitationId = invitationIdValue?.toString() ?? "";
   const invitation = await getUserInvitation(invitationId);
   if (!invitation) {
     return badRequest({ error: "Invitation not found" });
@@ -130,7 +131,10 @@ async function removeRole(userId: string, roleId: string, tenantId: string, requ
 }
 
 async function handleEditRole(form: FormData, request: Request, tenantId: string, userInfo: UserSimple, fromUser: User) {
-  const toSafeString = (value: FormDataEntryValue | null) => (value?.toString() ?? "");
+  const toSafeString = (value: FormDataEntryValue | null) => {
+    if (value === null) return "";
+    return typeof value === 'string' ? value : value.toString();
+  };
   const userId = toSafeString(form.get("user-id"));
   const roleId = toSafeString(form.get("role-id"));
   const add = toSafeString(form.get("add")) === "true";
@@ -171,7 +175,8 @@ async function validateSuperAdminRole(tenantId: string, currentUserId: string, t
 
 async function handleImpersonate(form: FormData, request: Request, params: Params<string>, t: TFunction, userInfo: UserSimple, tenantId: string) {
   await verifyUserHasPermission(request, "app.settings.members.impersonate", tenantId);
-  const userId = (form.get("user-id")?.toString() ?? "");
+  const userIdValue = form.get("user-id");
+  const userId = userIdValue?.toString() ?? "";
   const user = await getUser(userId);
 
   if (!user) {

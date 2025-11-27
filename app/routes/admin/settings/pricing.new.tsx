@@ -119,7 +119,6 @@ export const action: ActionFunction = async ({ request }) => {
 export default function NewPricingPlanRoute() {
   const data = useLoaderData<LoaderData>();
   const actionData = useActionData<ActionData>();
-  const { t } = useTranslation();
 
   useEffect(() => {
     if (actionData?.error) {

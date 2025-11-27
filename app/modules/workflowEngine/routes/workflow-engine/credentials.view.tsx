@@ -11,6 +11,18 @@ import { WorkflowsCredentialsApi } from "./credentials.api.server";
 
 export const meta: MetaFunction = () => [{ title: "Workflow Credentials" }];
 
+function CredentialNameCell({ name }: { readonly name: string }) {
+  return <div className="select-all">{`{{$credentials.${name}}}`}</div>;
+}
+
+function CredentialValueCell() {
+  return <div className="max-w-sm truncate">{"".padEnd(36, "*")}</div>;
+}
+
+function CredentialDateCell({ date }: { readonly date: Date }) {
+  return <DateCell date={date} />;
+}
+
 export default function WorkflowsCredentialsView() {
   const data = useLoaderData<WorkflowsCredentialsApi.LoaderData>();
   const submit = useSubmit();
@@ -42,18 +54,18 @@ export default function WorkflowsCredentialsView() {
             {
               title: "Name",
               name: "name",
-              value: (item) => <div className="select-all">{`{{$credentials.${item.name}}}`}</div>,
+              value: (item) => <CredentialNameCell name={item.name} />,
             },
             {
               title: "Value",
               name: "value",
               className: "w-full",
-              value: (item) => <div className="max-w-sm truncate">{"".padEnd(36, "*")}</div>,
+              value: () => <CredentialValueCell />,
             },
             {
               title: "Created At",
               name: "createdAt",
-              value: (item) => <DateCell date={item.createdAt} />,
+              value: (item) => <CredentialDateCell date={item.createdAt} />,
             },
           ]}
           items={data.items}

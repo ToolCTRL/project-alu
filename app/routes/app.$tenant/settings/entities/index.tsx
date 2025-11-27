@@ -25,7 +25,7 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
   return data;
 };
 
-function EntityTitleCell({ item, t }: { item: EntityWithDetails; t: any }) {
+function EntityTitleCell({ item, t }: Readonly<{ item: EntityWithDetails; t: any }>) {
   return (
     <div>
       <div className="flex items-center space-x-1">
@@ -37,7 +37,7 @@ function EntityTitleCell({ item, t }: { item: EntityWithDetails; t: any }) {
   );
 }
 
-function EntityPropertiesCell({ item, t }: { item: EntityWithDetails; t: any }) {
+function EntityPropertiesCell({ item, t }: Readonly<{ item: EntityWithDetails; t: any }>) {
   return (
     <div className="max-w-xs truncate">
       {item.properties.some((f) => !f.isDefault) ? (

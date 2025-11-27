@@ -135,22 +135,30 @@ export default function PricingSubscribedSuccessRoute() {
             <Logo className="mx-auto h-12 w-auto" />
 
             <div className="flex flex-col items-center">
-              {data.error ? (
-                <>
-                  <h1 className="text-left text-2xl font-extrabold">Unexpected Error</h1>
-                  <p className="mt-1 text-center text-sm text-red-500">{data.error}</p>
-                </>
-              ) : data.checkoutSession ? (
-                <>
-                  <h1 className="text-left text-2xl font-extrabold">{t("account.register.setup")}</h1>
-                  <p className="mt-1 text-center text-sm">Thank you for subscribing to {t(data.checkoutSession.products.map((f) => t(f.title)).join(", "))}</p>
-                </>
-              ) : (
-                <>
-                  <h1 className="text-left text-2xl font-extrabold">Error</h1>
-                  <p className="mt-1 text-center text-sm text-red-500">Invalid checkout session</p>
-                </>
-              )}
+              {(() => {
+                if (data.error) {
+                  return (
+                    <>
+                      <h1 className="text-left text-2xl font-extrabold">Unexpected Error</h1>
+                      <p className="mt-1 text-center text-sm text-red-500">{data.error}</p>
+                    </>
+                  );
+                }
+                if (data.checkoutSession) {
+                  return (
+                    <>
+                      <h1 className="text-left text-2xl font-extrabold">{t("account.register.setup")}</h1>
+                      <p className="mt-1 text-center text-sm">Thank you for subscribing to {t(data.checkoutSession.products.map((f) => t(f.title)).join(", "))}</p>
+                    </>
+                  );
+                }
+                return (
+                  <>
+                    <h1 className="text-left text-2xl font-extrabold">Error</h1>
+                    <p className="mt-1 text-center text-sm text-red-500">Invalid checkout session</p>
+                  </>
+                );
+              })()}
             </div>
 
             {data.checkoutSession && !data.error && (

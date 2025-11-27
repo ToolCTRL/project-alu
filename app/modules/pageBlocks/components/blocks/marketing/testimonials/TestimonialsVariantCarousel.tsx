@@ -102,9 +102,9 @@ export default function TestimonialsVariantCarousel({ item }: { readonly item: T
               {/* Stars (if provided) */}
               {item.items[activeIndex].stars && (
                 <div className="mt-4 flex items-center gap-1">
-                  {[...new Array(5)].map((_, i) => (
+                  {Array.from({ length: 5 }).map((_, i) => (
                     <svg
-                      key={`star-${i}`}
+                      key={`star-${activeIndex}-${i}`}
                       className={`w-5 h-5 ${
                         i < (item.items[activeIndex].stars || 0)
                           ? "text-yellow-400"

@@ -5,15 +5,15 @@ import EditPageLayout from "~/components/ui/layouts/EditPageLayout";
 import TableSimple from "~/components/ui/tables/TableSimple";
 import { WorkflowsVariablesApi } from "./variables.api.server";
 
-function DateCellRenderer({ item }: { item: { createdAt: Date | null } }) {
+function DateCellRenderer({ item }: { readonly item: { createdAt: Date | null } }) {
   return <DateCell date={item.createdAt} />;
 }
 
-function NameCell({ name }: { name: string }) {
+function NameCell({ name }: { readonly name: string }) {
   return <>{`{{$vars.${name}}}`}</>;
 }
 
-function ValueCell({ value }: { value: string }) {
+function ValueCell({ value }: { readonly value: string }) {
   return <>{value}</>;
 }
 

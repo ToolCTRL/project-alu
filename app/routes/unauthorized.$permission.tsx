@@ -25,8 +25,7 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
     if (!permission) {
       throw redirect(redirectTo);
     }
-    const userInfo = await getUserInfo(request);
-    const { userPermission } = await getUserPermission({ userId: userInfo.userId, permissionName: permission.name });
+    await getUserPermission({ userId: userInfo.userId, permissionName: permission.name });
   } else if (!permission) {
     throw redirect("/404?error=permission-not-found");
   }

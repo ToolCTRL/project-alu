@@ -20,92 +20,104 @@ export default function EntitiesTable({ items, selected, onSelected }: Readonly<
   const appOrAdminData = useAppOrAdminData();
   const { t } = useTranslation();
 
+  const renderTypeValue = (item: EntityWithCount) => {
+    const getTypeTitle = () => {
+      if (item.type === "all") return "App & Admin";
+      if (item.type === "app") return "App";
+      return "Admin";
+    };
+    const getTypeColor = () => {
+      if (item.type === "app") return Colors.BLUE;
+      if (item.type === "admin") return Colors.GRAY;
+      return Colors.EMERALD;
+    };
+    return SimpleBadge({ title: getTypeTitle(), color: getTypeColor() });
+  };
+
+  const renderOrderValue = (_: EntityWithCount, idx: number) => OrderListButtons({ index: idx, items });
+
+  const renderTitleValue = (item: EntityWithCount) => {
+    return (
+      <div className="flex items-center space-x-1">
+        <Link to={"/admin/entities/" + item.slug + "/details"} className="font-medium hover:underline">
+          {t(item.titlePlural)}
+        </Link>
+      </div>
+    );
+  };
+
+  const renderPropertiesValue = (item: EntityWithCount) => {
+    return (
+      <div className="max-w-xs truncate">
+        {item.properties.some((f) => !f.isDefault) ? (
+          <Link className="truncate pb-1 hover:underline" to={"/admin/entities/" + item.slug + "/properties"}>
+            {item.properties
+              .filter((f) => !f.isDefault)
+              .map((f) => t(f.title) + (f.isRequired ? "*" : ""))
+              .join(", ")}
+          </Link>
+        ) : (
+          <Link className="text-muted-foreground truncate pb-1 hover:underline" to={"/admin/entities/" + item.slug + "/properties"}>
+            {t("shared.setCustomProperties")}
+          </Link>
+        )}
+      </div>
+    );
+  };
+
+  const renderRelationshipsValue = (item: EntityWithCount) => {
+    return (
+      <Link className="truncate pb-1 hover:underline" to={"/admin/entities/" + item.slug + "/relationships"}>
+        {[...item.parentEntities, ...item.childEntities]
+          .map((relationship) => t(RelationshipHelper.getTitleWithName({ fromEntityId: item.id, relationship })))
+          .join(", ")}
+      </Link>
+    );
+  };
+
+  const renderRowsValue = (item: EntityWithCount) => {
+    return (
+      <Link to={"/admin/entities/" + item.slug + "/rows"} className="hover:underline">
+        {item._count.rows}
+      </Link>
+    );
+  };
+
   const [headers, setHeaders] = useState<RowHeaderDisplayDto<EntityWithCount>[]>([]);
   useEffect(() => {
     const headers: RowHeaderDisplayDto<EntityWithCount>[] = [
       {
         name: "type",
         title: t("models.entity.type"),
-        value: (item) => {
-          const getTypeTitle = () => {
-            if (item.type === "all") return "App & Admin";
-            if (item.type === "app") return "App";
-            return "Admin";
-          };
-          const getTypeColor = () => {
-            if (item.type === "app") return Colors.BLUE;
-            if (item.type === "admin") return Colors.GRAY;
-            return Colors.EMERALD;
-          };
-          return SimpleBadge({ title: getTypeTitle(), color: getTypeColor() });
-        },
+        value: renderTypeValue,
       },
       {
         title: t("shared.order"),
         name: "order",
         value: (item) => item.order,
-        formattedValue: (_, idx) => OrderListButtons({ index: idx, items }),
+        formattedValue: renderOrderValue,
       },
       {
         name: "title",
         title: t("models.entity.title"),
-        value: (item) => {
-          return (
-            <div className="flex items-center space-x-1">
-              <Link to={"/admin/entities/" + item.slug + "/details"} className="font-medium hover:underline">
-                {t(item.titlePlural)}
-              </Link>
-            </div>
-          );
-        },
+        value: renderTitleValue,
       },
       {
         name: "properties",
         title: t("models.property.plural"),
         className: "w-full text-xs",
-        value: (item) => {
-          return (
-            <div className="max-w-xs truncate">
-              {item.properties.some((f) => !f.isDefault) ? (
-                <Link className="truncate pb-1 hover:underline" to={"/admin/entities/" + item.slug + "/properties"}>
-                  {item.properties
-                    .filter((f) => !f.isDefault)
-                    .map((f) => t(f.title) + (f.isRequired ? "*" : ""))
-                    .join(", ")}
-                </Link>
-              ) : (
-                <Link className="text-muted-foreground truncate pb-1 hover:underline" to={"/admin/entities/" + item.slug + "/properties"}>
-                  {t("shared.setCustomProperties")}
-                </Link>
-              )}
-            </div>
-          );
-        },
+        value: renderPropertiesValue,
       },
       {
         name: "relationships",
         title: t("models.relationship.plural"),
-        value: (item) => {
-          return (
-            <Link className="truncate pb-1 hover:underline" to={"/admin/entities/" + item.slug + "/relationships"}>
-              {[...item.parentEntities, ...item.childEntities]
-                .map((relationship) => t(RelationshipHelper.getTitleWithName({ fromEntityId: item.id, relationship })))
-                .join(", ")}
-            </Link>
-          );
-        },
+        value: renderRelationshipsValue,
         className: "text-xs",
       },
       {
         name: "rows",
         title: t("models.row.plural"),
-        value: (item) => {
-          return (
-            <Link to={"/admin/entities/" + item.slug + "/rows"} className="hover:underline">
-              {item._count.rows}
-            </Link>
-          );
-        },
+        value: renderRowsValue,
       },
     ];
 

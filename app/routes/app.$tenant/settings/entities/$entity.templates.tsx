@@ -56,7 +56,7 @@ function TemplateCell({ item, entity, t }: Readonly<{ item: EntityTemplate; enti
   return <ShowPayloadModalButton title={`Template: ${item.title}`} payload={getConfig(item)} />;
 }
 
-function TemplateCellWrapper({ item, entity, t }: { item: EntityTemplate; entity: EntityWithDetails; t: any }) {
+function TemplateCellWrapper({ item, entity, t }: Readonly<{ item: EntityTemplate; entity: EntityWithDetails; t: any }>) {
   return <TemplateCell item={item} entity={entity} t={t} />;
 }
 

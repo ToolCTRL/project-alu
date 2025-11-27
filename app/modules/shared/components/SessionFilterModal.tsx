@@ -63,6 +63,170 @@ export default function SessionFilterModal({
     e.preventDefault();
     onConfirm();
   }
+
+  function renderValueInput() {
+    if (filter?.type === "tenant.is") {
+      return (
+        <InputSelector
+          name="value"
+          title={t("shared.value")}
+          disabled={!filter?.type}
+          value={filter?.value ?? undefined}
+          withSearch={true}
+          setValue={(e) => setFilter({ ...filter, value: e?.toString() ?? null })}
+          options={metadata.tenants.map((t) => {
+            return { value: t.id, name: t.name };
+          })}
+          required
+        />
+      );
+    }
+    if (filter?.type === "user.is") {
+      return (
+        <InputSelector
+          name="value"
+          title={t("shared.value")}
+          disabled={!filter?.type}
+          value={filter?.value ?? undefined}
+          withSearch={true}
+          setValue={(e) => setFilter({ ...filter, value: e?.toString() ?? null })}
+          options={metadata.users.map((t) => {
+            return { value: t.email, name: t.email };
+          })}
+          required
+        />
+      );
+    }
+    if (["user.roles.contains", "user.roles.notContains"].includes(filter?.type ?? "")) {
+      return (
+        <InputSelector
+          name="value"
+          title={t("shared.value")}
+          disabled={!filter?.type}
+          value={filter?.value ?? undefined}
+          withSearch={true}
+          setValue={(e) => setFilter({ type: filter?.type ?? "", value: e?.toString() ?? null })}
+          options={metadata.roles.map((t) => {
+            return { value: t.name, name: t.name };
+          })}
+          required
+        />
+      );
+    }
+    if (filter?.type === "tenant.subscription.products.has") {
+      return (
+        <InputSelector
+          name="value"
+          title={t("onboarding.filter.value")}
+          value={filter.value ?? undefined}
+          withSearch={true}
+          setValue={(e) => setFilter({ ...filter, value: e?.toString() ?? null })}
+          options={metadata.subscriptionProducts.map((f) => {
+            return { value: f.id, name: t(f.title) };
+          })}
+          required
+        />
+      );
+    }
+    if (filter?.type === "env") {
+      return (
+        <FilterSelector
+          filter={filter}
+          setFilter={setFilter}
+          options={[
+            { value: "production", name: "Production" },
+            { value: "development", name: "Development" },
+            { value: "staging", name: "Staging" },
+          ]}
+        />
+      );
+    }
+    if (filter?.type === "percentage") {
+      return (
+        <FilterSelector
+          filter={filter}
+          setFilter={setFilter}
+          options={Array.from({ length: 10 }, (_, i) => i + 1).map((f) => {
+            return {
+              value: `${f * 10}`,
+              name: `${f * 10}%`,
+            };
+          })}
+        />
+      );
+    }
+    if (["session.darkMode", "session.logged", "tenant.subscription.active", "tenant.api.used"].includes(filter?.type ?? "")) {
+      return (
+        <FilterSelector
+          filter={filter}
+          setFilter={setFilter}
+          options={[
+            { value: "true", name: "True" },
+            { value: "false", name: "False" },
+          ]}
+        />
+      );
+    }
+    if (["user.language", "session.language"].includes(filter?.type ?? "")) {
+      return (
+        <FilterSelector
+          filter={filter}
+          setFilter={setFilter}
+          options={i18nConfig.supportedLngs.map((f) => {
+            return {
+              value: f,
+              name: f,
+            };
+          })}
+        />
+      );
+    }
+    if (metadata.analytics && filter?.type.startsWith("analytics.")) {
+      return <AnalyticsSelector filter={filter} setFilter={setFilter} analytics={metadata.analytics} />;
+    }
+    if (filter?.type === "page") {
+      return (
+        <FilterSelector
+          filter={filter}
+          setFilter={setFilter}
+          options={[
+            { name: "Landing", value: "/" },
+            { name: "Pricing", value: "/pricing" },
+            { name: "Contact", value: "/contact" },
+            { name: "Blog", value: "/blog" },
+            { name: "Newsletter", value: "/newsletter" },
+            { name: "Login", value: "/login" },
+            { name: "Register", value: "/register" },
+            { name: "Forgot password", value: "/forgot-password" },
+            { name: "Reset password", value: "/reset" },
+            { name: "Docs", value: "/docs" },
+          ]}
+        />
+      );
+    }
+    if (["user.createdAfter", "user.createdBefore"].includes(filter?.type ?? "")) {
+      return (
+        <InputDate
+          name="value"
+          title={t("shared.value")}
+          disabled={!filter?.type}
+          value={filter?.value ? new Date(filter?.value) : undefined}
+          onChange={(e) => setFilter({ type: filter?.type ?? "", value: e?.toString() ?? null })}
+          required
+        />
+      );
+    }
+    return (
+      <InputText
+        name="value"
+        title={t("shared.value")}
+        disabled={!filter?.type}
+        value={filter?.value ?? undefined}
+        setValue={(e) => setFilter({ type: filter?.type ?? "", value: e.toString() ?? null })}
+        required
+      />
+    );
+  }
   return (
     <Modal open={open} setOpen={onClose} size="md">
       <Form onSubmit={onSubmit} className="inline-block w-full p-1 text-left align-bottom sm:align-middle">
@@ -82,151 +246,7 @@ export default function SessionFilterModal({
             })}
             required
           />
-          {filter?.type === "tenant.is" ? (
-            <InputSelector
-              name="value"
-              title={t("shared.value")}
-              disabled={!filter?.type}
-              value={filter?.value ?? undefined}
-              withSearch={true}
-              setValue={(e) => setFilter({ ...filter, value: e?.toString() ?? null })}
-              options={metadata.tenants.map((t) => {
-                return { value: t.id, name: t.name };
-              })}
-              required
-            />
-          ) : filter?.type === "user.is" ? (
-            <InputSelector
-              name="value"
-              title={t("shared.value")}
-              disabled={!filter?.type}
-              value={filter?.value ?? undefined}
-              withSearch={true}
-              setValue={(e) => setFilter({ ...filter, value: e?.toString() ?? null })}
-              options={metadata.users.map((t) => {
-                return { value: t.email, name: t.email };
-              })}
-              required
-            />
-          ) : ["user.roles.contains", "user.roles.notContains"].includes(filter?.type ?? "") ? (
-            <InputSelector
-              name="value"
-              title={t("shared.value")}
-              disabled={!filter?.type}
-              value={filter?.value ?? undefined}
-              withSearch={true}
-              setValue={(e) => setFilter({ type: filter?.type ?? "", value: e?.toString() ?? null })}
-              options={metadata.roles.map((t) => {
-                return { value: t.name, name: t.name };
-              })}
-              required
-            />
-          ) : filter?.type === "tenant.subscription.products.has" ? (
-            <InputSelector
-              name="value"
-              title={t("onboarding.filter.value")}
-              value={filter.value ?? undefined}
-              withSearch={true}
-              setValue={(e) => setFilter({ ...filter, value: e?.toString() ?? null })}
-              options={metadata.subscriptionProducts.map((f) => {
-                return { value: f.id, name: t(f.title) };
-              })}
-              required
-            />
-          ) : filter?.type === "env" ? (
-            <FilterSelector
-              filter={filter}
-              setFilter={setFilter}
-              options={[
-                { value: "production", name: "Production" },
-                { value: "development", name: "Development" },
-                { value: "staging", name: "Staging" },
-              ]}
-            />
-          ) : filter?.type === "percentage" ? (
-            <FilterSelector
-              filter={filter}
-              setFilter={setFilter}
-              options={Array.from({ length: 10 }, (_, i) => i + 1).map((f) => {
-                return {
-                  value: `${f * 10}`,
-                  name: `${f * 10}%`,
-                };
-              })}
-            />
-          ) : (() => {
-            if (["session.darkMode", "session.logged", "tenant.subscription.active", "tenant.api.used"].includes(filter?.type ?? "")) {
-              return (
-                <FilterSelector
-                  filter={filter}
-                  setFilter={setFilter}
-                  options={[
-                    { value: "true", name: "True" },
-                    { value: "false", name: "False" },
-                  ]}
-                />
-              );
-            }
-            if (["user.language", "session.language"].includes(filter?.type ?? "")) {
-              return (
-                <FilterSelector
-                  filter={filter}
-                  setFilter={setFilter}
-                  options={i18nConfig.supportedLngs.map((f) => {
-                    return {
-                      value: f,
-                      name: f,
-                    };
-                  })}
-                />
-              );
-            }
-            if (metadata.analytics && filter?.type.startsWith("analytics.")) {
-              return <AnalyticsSelector filter={filter} setFilter={setFilter} analytics={metadata.analytics} />;
-            }
-            if (filter?.type === "page") {
-              return (
-                <FilterSelector
-                  filter={filter}
-                  setFilter={setFilter}
-                  options={[
-                    { name: "Landing", value: "/" },
-                    { name: "Pricing", value: "/pricing" },
-                    { name: "Contact", value: "/contact" },
-                    { name: "Blog", value: "/blog" },
-                    { name: "Newsletter", value: "/newsletter" },
-                    { name: "Login", value: "/login" },
-                    { name: "Register", value: "/register" },
-                    { name: "Forgot password", value: "/forgot-password" },
-                    { name: "Reset password", value: "/reset" },
-                    { name: "Docs", value: "/docs" },
-                  ]}
-                />
-              );
-            }
-            if (["user.createdAfter", "user.createdBefore"].includes(filter?.type ?? "")) {
-              return (
-                <InputDate
-                  name="value"
-                  title={t("shared.value")}
-                  disabled={!filter?.type}
-                  value={filter?.value ? new Date(filter?.value) : undefined}
-                  onChange={(e) => setFilter({ type: filter?.type ?? "", value: e?.toString() ?? null })}
-                  required
-                />
-              );
-            }
-            return (
-              <InputText
-                name="value"
-                title={t("shared.value")}
-                disabled={!filter?.type}
-                value={filter?.value ?? undefined}
-                setValue={(e) => setFilter({ type: filter?.type ?? "", value: e.toString() ?? null })}
-                required
-              />
-            );
-          })()}
+          {renderValueInput()}
         </div>
         <div className="mt-3 flex justify-between space-x-2">
           <div>

@@ -28,6 +28,30 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
 
 export const meta: MetaFunction<typeof loader> = ({ data }) => [{ title: data?.title }];
 
+function TenantInfoCell({ name, slug }: { readonly name: string; readonly slug: string }) {
+  return (
+    <div className="max-w-sm truncate">
+      <div className="text-foreground flex items-center space-x-1 truncate font-medium">{name}</div>
+      <div className="text-muted-foreground text-xs">
+        <span>/{slug}</span>
+      </div>
+    </div>
+  );
+}
+
+function TenantTypesCell({ types, t }: { readonly types: any[]; readonly t: any }) {
+  return types.length === 0 ? <span className="text-muted-foreground">{t("shared.default")}</span> : <>{types.map((f) => f.title).join(", ")}</>;
+}
+
+function TenantCreatedAtCell({ createdAt }: { readonly createdAt: Date }) {
+  return (
+    <div className="flex flex-col">
+      <div>{DateUtils.dateYMD(createdAt)}</div>
+      <div className="text-xs">{DateUtils.dateAgo(createdAt)}</div>
+    </div>
+  );
+}
+
 export default function AdminRolesAndPermissionsAccountUsersRoute() {
   const { t } = useTranslation();
   const data = useLoaderData<LoaderData>();
@@ -59,21 +83,12 @@ export default function AdminRolesAndPermissionsAccountUsersRoute() {
           {
             name: "tenant",
             title: t("models.tenant.object"),
-            value: (i) => (
-              <div className="max-w-sm truncate">
-                <div className="text-foreground flex items-center space-x-1 truncate font-medium">{i.name}</div>
-
-                <div className="text-muted-foreground text-xs">
-                  <span>/{i.slug}</span>
-                </div>
-              </div>
-            ),
+            value: (i) => <TenantInfoCell name={i.name} slug={i.slug} />,
           },
           {
             name: "types",
             title: t("shared.types"),
-            value: (i) =>
-              i.types.length === 0 ? <span className="text-muted-foreground">{t("shared.default")}</span> : i.types.map((f) => f.title).join(", "),
+            value: (i) => <TenantTypesCell types={i.types} t={t} />,
           },
           {
             name: "users",
@@ -86,12 +101,7 @@ export default function AdminRolesAndPermissionsAccountUsersRoute() {
             name: "createdAt",
             title: t("shared.createdAt"),
             value: (i) => i.createdAt,
-            formattedValue: (item) => (
-              <div className="flex flex-col">
-                <div>{DateUtils.dateYMD(item.createdAt)}</div>
-                <div className="text-xs">{DateUtils.dateAgo(item.createdAt)}</div>
-              </div>
-            ),
+            formattedValue: (item) => <TenantCreatedAtCell createdAt={item.createdAt} />,
           },
         ]}
         actions={[

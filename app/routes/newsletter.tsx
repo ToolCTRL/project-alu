@@ -88,7 +88,13 @@ export default function NewsletterRoute() {
   const actionData = useActionData<ActionData>();
   const navigation = useNavigation();
   const isSubscribing = navigation.state === "submitting" && navigation.formData?.get("action") === "subscribe";
-  const state: "idle" | "success" | "error" | "submitting" = navigation.state === "submitting" ? "submitting" : actionData?.error ? "error" : actionData?.success ? "success" : "idle";
+  const getState = (): "idle" | "success" | "error" | "submitting" => {
+    if (navigation.state === "submitting") return "submitting";
+    if (actionData?.error) return "error";
+    if (actionData?.success) return "success";
+    return "idle";
+  };
+  const state = getState();
 
   const formRef = useRef<HTMLFormElement>(null);
 
@@ -174,15 +180,19 @@ export default function NewsletterRoute() {
 
                           <div className="flex items-baseline justify-between space-x-2 sm:col-span-2">
                             <div>
-                              {state === "error" ? (
-                                <p>{actionData?.error}</p>
-                              ) : state === "success" ? (
-                                <div>
-                                  <p>{t("front.newsletter.checkEmail")}</p>
-                                </div>
-                              ) : (
-                                <div></div>
-                              )}
+                              {(() => {
+                                if (state === "error") {
+                                  return <p>{actionData?.error}</p>;
+                                }
+                                if (state === "success") {
+                                  return (
+                                    <div>
+                                      <p>{t("front.newsletter.checkEmail")}</p>
+                                    </div>
+                                  );
+                                }
+                                return <div></div>;
+                              })()}
                             </div>
                             <LoadingButton type="submit">
                               {isSubscribing ? t("front.newsletter.subscribing") + "..." : t("front.newsletter.subscribe")}

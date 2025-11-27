@@ -69,11 +69,13 @@ export namespace Campaigns_New {
     htmlBody: string,
     textBody: string
   ) {
-    const name = String(form.get("name") ?? "");
+    const nameValue = form.get("name");
+    const name = String(nameValue ?? "");
     if (!name) {
       return Response.json({ error: "Invalid name" }, { status: 400 });
     }
-    const contactViewId = String(form.get("contactViewId") ?? "");
+    const contactViewIdValue = form.get("contactViewId");
+    const contactViewId = String(contactViewIdValue ?? "");
     if (!contactViewId) {
       return Response.json({ error: "Invalid contact/recipient list" }, { status: 400 });
     }

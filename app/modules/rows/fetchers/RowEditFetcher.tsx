@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import { useTranslation } from "react-i18next";
 import Loading from "~/components/ui/loaders/Loading";
 import { EntitiesApi } from "~/utils/api/.server/EntitiesApi";
 import { RowsApi } from "~/utils/api/.server/RowsApi";
@@ -70,38 +69,44 @@ export default function RowEditFetcher({ url, onUpdated, allEntities, onDeleted 
     });
   }
 
+  function renderContent() {
+    if (fetcher.data) {
+      if (data?.rowData) {
+        return (
+          <div>
+            {data.routes && (
+              <div className="space-y-2">
+                {data.rowData.item.tags.length > 0 && <RowTags items={data.rowData.item.tags} />}
+                <RowForm
+                  allEntities={allEntities}
+                  entity={data.rowData.entity}
+                  routes={data.routes}
+                  item={data.rowData.item}
+                  editing={true}
+                  canDelete={getUserHasPermission(appOrAdminData, getEntityPermission(data.rowData.entity, "delete")) && data.rowData.rowPermissions.canDelete}
+                  canUpdate={getUserHasPermission(appOrAdminData, getEntityPermission(data.rowData.entity, "update")) && data.rowData.rowPermissions.canUpdate}
+                  onSubmit={onSubmit}
+                  onDelete={onDelete}
+                  relationshipRows={data.relationshipRows}
+                  state={{
+                    loading: fetcher.state === "loading",
+                    submitting: fetcher.state === "submitting",
+                  }}
+                  promptFlows={data.rowData.allPromptFlows}
+                />
+              </div>
+            )}
+          </div>
+        );
+      }
+      return <div>No data</div>;
+    }
+    return <Loading small loading />;
+  }
+
   return (
     <div>
-      {!fetcher.data ? (
-        <Loading small loading />
-      ) : data?.rowData ? (
-        <div>
-          {data.routes && (
-            <div className="space-y-2">
-              {data.rowData.item.tags.length > 0 && <RowTags items={data.rowData.item.tags} />}
-              <RowForm
-                allEntities={allEntities}
-                entity={data.rowData.entity}
-                routes={data.routes}
-                item={data.rowData.item}
-                editing={true}
-                canDelete={getUserHasPermission(appOrAdminData, getEntityPermission(data.rowData.entity, "delete")) && data.rowData.rowPermissions.canDelete}
-                canUpdate={getUserHasPermission(appOrAdminData, getEntityPermission(data.rowData.entity, "update")) && data.rowData.rowPermissions.canUpdate}
-                onSubmit={onSubmit}
-                onDelete={onDelete}
-                relationshipRows={data.relationshipRows}
-                state={{
-                  loading: fetcher.state === "loading",
-                  submitting: fetcher.state === "submitting",
-                }}
-                promptFlows={data.rowData.allPromptFlows}
-              />
-            </div>
-          )}
-        </div>
-      ) : (
-        <div>No data</div>
-      )}
+      {renderContent()}
     </div>
   );
 }

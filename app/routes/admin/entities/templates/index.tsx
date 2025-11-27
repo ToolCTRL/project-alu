@@ -50,10 +50,6 @@ export default function AdminEntityNoCodeRoute() {
           );
         })}
       </div>
-      {/* <UnderConstruction
-        title="TODO: ENTITY TEMPLATES"
-        description="Default entities with properties, relationships, views, webhooks... I'm thinking of letting SaasRock users share their functional templates (long-term), no-code and downloadable custom-code."
-      /> */}
     </div>
   );
 }

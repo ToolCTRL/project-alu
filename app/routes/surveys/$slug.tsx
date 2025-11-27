@@ -147,13 +147,13 @@ async function getAlreadyVoted({ item, request }: { item: SurveyWithDetails; req
   return false;
 }
 
-function SurveyItemWrapper(props: {
+function SurveyItemWrapper(props: Readonly<{
   survey: SurveyDto;
   item: SurveyItemDto;
   value: SurveryItemResultDto;
   disabled: boolean;
   onChange: (value: SurveryItemResultDto) => void;
-}) {
+}>) {
   return <SurveyItem {...props} />;
 }
 
@@ -161,7 +161,7 @@ function ResultsToggleButton({ showingResults }: { showingResults: boolean }) {
   return showingResults ? <ButtonSecondary to="?">Hide Results</ButtonSecondary> : <ButtonSecondary to="?results=true">View Results</ButtonSecondary>;
 }
 
-function ResetButton({ searchParams, setSearchParams, t }: { searchParams: URLSearchParams; setSearchParams: (params: URLSearchParams) => void; t: any }) {
+function ResetButton({ searchParams, setSearchParams, t }: Readonly<{ searchParams: URLSearchParams; setSearchParams: (params: URLSearchParams) => void; t: any }>) {
   return (
     <ButtonSecondary
       onClick={() => {
@@ -389,11 +389,7 @@ function SurveyGroup({
       {survey.isEnabled ? null : <WarningBanner title="Disabled" text="Voting is closed for this survey." />}
 
       <div className="flex justify-end space-x-2">
-        {canShowResults && (
-          <Fragment>
-            <ResultsToggleButton showingResults={showingResults} />
-          </Fragment>
-        )}
+        {canShowResults && <ResultsToggleButton showingResults={showingResults} />}
         {(searchParams.get("success") !== null || searchParams.get("results") !== null) && (
           <ResetButton searchParams={searchParams} setSearchParams={setSearchParams} t={t} />
         )}
@@ -412,131 +408,6 @@ function SurveyGroup({
     </fetcher.Form>
   );
 }
-
-// function SurveyItem({
-//   survey,
-//   item,
-//   value,
-//   onChange,
-//   disabled,
-// }: {
-//   survey: SurveyDto;
-//   item: SurveyItemDto;
-//   value: SurveryItemResultDto;
-//   onChange: (value: SurveryItemResultDto) => void;
-//   disabled: boolean;
-// }) {
-//   const itemResults = survey.results?.items.find((r) => r.item === item.title);
-
-//   const mainInput = useRef<HTMLInputElement>(null);
-//   function focusOtherInput() {
-//     setTimeout(() => {
-//       mainInput.current?.focus();
-//     }, 0);
-//   }
-
-//   return (
-//     <div className="space-y-1">
-//       <div>
-//         <div className="flex items-center space-x-2">
-//           <h3 className="text-base font-semibold">
-//             {/* <span className=" text-muted-foreground font-normal">#{idx + 1})</span> */}
-//             {item.title}
-//           </h3>
-//           {item.categories && (
-//             <div className="flex flex-wrap items-center gap-2">
-//               {item.categories.map((category, idx) => (
-//                 <span key={idx} className="text-muted-foreground bg-secondary rounded-md px-2 py-1 text-xs">
-//                   {category}
-//                 </span>
-//               ))}
-//             </div>
-//           )}
-//         </div>
-//         {item.description && <p className="text-muted-foreground text-sm">{item.description}</p>}
-//       </div>
-//       <div className={clsx("bg-background border-border rounded-md border p-5", disabled && "bg-secondary")}>
-//         <div className="flex justify-between space-x-2">
-//           <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
-//             {item.options.map((option, idx) => {
-//               const optionResults = itemResults?.votes.find((v) => v.option === option.title);
-//               return (
-//                 <label key={idx} className={clsx("flex select-none items-center space-x-2", disabled ? " cursor-not-allowed " : "cursor-pointer")}>
-//                   {item.isMultiple ? (
-//                     <Checkbox
-//                       name={item.title}
-//                       checked={value.values.includes(option.title)}
-//                       className={clsx(disabled && "opacity-50")}
-//                       onCheckedChange={(e) => {
-//                         onChange({
-//                           ...value,
-//                           values: e ? [...value.values, option.title] : value.values.filter((v) => v !== option.title),
-//                         });
-//                         if (e && option.isOther) {
-//                           focusOtherInput();
-//                         }
-//                       }}
-//                       disabled={disabled}
-//                     />
-//                   ) : (
-//                     <input
-//                       type="radio"
-//                       name={item.title}
-//                       value={option.title}
-//                       checked={value.values.includes(option.title)}
-//                       required
-//                       className={clsx(disabled && "opacity-50")}
-//                       disabled={disabled}
-//                       onChange={(e) => {
-//                         onChange({ ...value, values: [option.title] });
-//                         if (option.isOther) {
-//                           focusOtherInput();
-//                         }
-//                       }}
-//                     />
-//                   )}
-//                   <div
-//                     className={clsx(
-//                       "flex h-9 items-center space-x-2 rounded-md px-4",
-//                       value.values.includes(option.title) ? "bg-secondary hover:bg-secondary/90 text-secondary-foreground" : "bg-background text-foreground",
-//                       disabled && "cursor-not-allowed opacity-50"
-//                     )}
-//                   >
-//                     {option.icon && <ImageOrSvg icon={option.icon} className="h-4 w-4" />}
-
-//                     <div>{option.title}</div>
-//                     {optionResults && (
-//                       <div className="text-foreground text-sm font-medium">
-//                         {optionResults?.percentage.toFixed(0)}%<span className="text-muted-foreground text-xs"> ({optionResults?.count})</span>
-//                       </div>
-//                     )}
-//                   </div>
-//                 </label>
-//               );
-//             })}
-//             {item.options.find((o) => o.isOther) && value.values.includes("Other") && (
-//               <li className="w-full sm:w-64">
-//                 <label className="flex items-center space-x-2">
-//                   <Input
-//                     ref={mainInput}
-//                     type="text"
-//                     value={value.other}
-//                     onChange={(e) => {
-//                       onChange({ ...value, other: e.target.value });
-//                     }}
-//                     placeholder="Other..."
-//                     required={value.values.includes("Other")}
-//                     disabled={disabled || !value.values.includes("Other")}
-//                   />
-//                 </label>
-//               </li>
-//             )}
-//           </div>
-//         </div>
-//       </div>
-//     </div>
-//   );
-// }
 
 function SurveyItem({
   survey,

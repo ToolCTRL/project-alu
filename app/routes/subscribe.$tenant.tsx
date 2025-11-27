@@ -1,5 +1,5 @@
 import { useTranslation } from "react-i18next";
-import { ActionFunction, LoaderFunctionArgs, MetaFunction, redirect, useLoaderData, Link, useActionData, useSearchParams } from "react-router";
+import { ActionFunction, LoaderFunctionArgs, redirect, useLoaderData, Link, useActionData, useSearchParams } from "react-router";
 import { getTranslations } from "~/locale/i18next.server";
 import { getTenant } from "~/utils/db/tenants.db.server";
 import { getUser } from "~/utils/db/users.db.server";

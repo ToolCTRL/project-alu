@@ -41,7 +41,7 @@ export const action: ActionFunction = async ({ request, params }) => {
     const entities: { entityId: string; create: boolean; read: boolean; update: boolean; delete: boolean }[] = form
       .getAll("entities[]")
       .map((f: FormDataEntryValue) => {
-        return JSON.parse(f.toString());
+        return JSON.parse(String(f));
       });
     let expirationDate: Date | null = null;
     let expires = form.get("expires")?.toString();

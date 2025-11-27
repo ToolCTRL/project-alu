@@ -1,4 +1,3 @@
-import { useTranslation } from "react-i18next";
 import InputText from "~/components/ui/input/InputText";
 import { SurveyItemDto } from "../dtos/SurveyDtos";
 import InputCheckboxWithDescription from "~/components/ui/input/InputCheckboxWithDescription";

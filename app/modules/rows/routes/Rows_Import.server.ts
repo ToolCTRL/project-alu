@@ -42,15 +42,15 @@ export namespace Rows_Import {
     const action = form.get("action");
     if (action === "import") {
       const tagValue = form.get("tag");
-      const tag = (typeof tagValue === "string" ? tagValue : tagValue?.toString()) ?? "import";
+      const tag = (typeof tagValue === "string" ? tagValue : String(tagValue || "")) || "import";
       const rawRows: ImportRow[] = form.getAll("rows[]").map((f: FormDataEntryValue) => {
-        const strValue = typeof f === "string" ? f : f?.toString();
+        const strValue = typeof f === "string" ? f : String(f || "");
         return JSON.parse(strValue);
       });
       let tenantToImport = tenantId;
       if (tenantId === null) {
         const selectedTenantIdValue = form.get("selectedTenantId");
-        const selectedTenantId = (typeof selectedTenantIdValue === "string" ? selectedTenantIdValue : selectedTenantIdValue?.toString()) || "{null}";
+        const selectedTenantId = (typeof selectedTenantIdValue === "string" ? selectedTenantIdValue : String(selectedTenantIdValue || "")) || "{null}";
         if (selectedTenantId === "{null}") {
           tenantToImport = null;
         } else {

@@ -48,6 +48,18 @@ function EntityRowsRelationships({ entity, className, withTitle }: Readonly<{ en
     setSearchParams(searchParams);
   };
 
+  const renderCard = (item: RowWithDetails) => {
+    return data?.entity ? (
+      <EntityRowCard
+        item={item}
+        entity={data.entity}
+        isSelected={isSelected(item)}
+        onItemClick={handleItemClick}
+        t={t}
+      />
+    ) : null;
+  };
+
   return (
     <div className={clsx(className)}>
       {data?.entity && (
@@ -58,17 +70,7 @@ function EntityRowsRelationships({ entity, className, withTitle }: Readonly<{ en
               name: "entity",
               title: t(data?.entity.titlePlural ?? ""),
               items: data?.items ?? [],
-              card: (item) => {
-                return (
-                  <EntityRowCard
-                    item={item}
-                    entity={data.entity}
-                    isSelected={isSelected(item)}
-                    onItemClick={handleItemClick}
-                    t={t}
-                  />
-                );
-              },
+              card: renderCard,
             },
           ]}
         />

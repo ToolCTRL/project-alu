@@ -117,7 +117,7 @@ async function handleDeleteEmailTemplate(request: Request, form: FormData) {
 
 async function handleSendTest(request: Request, form: FormData, user: Awaited<ReturnType<typeof requireUser>>) {
   const email = stringOrEmpty(form.get("email"));
-  const templateName = String(form.get("template") ?? "");
+  const templateName = stringOrEmpty(form.get("template"));
   if (email === "") {
     return { error: "Invalid email" };
   }
@@ -148,13 +148,13 @@ async function handleSendTest(request: Request, form: FormData, user: Awaited<Re
 
 async function handleUpdateAppConfiguration(request: Request, form: FormData, t: Awaited<ReturnType<typeof getTranslations>>["t"]) {
   const data = {
-    emailProvider: String(form.get("emailProvider") ?? ""),
-    emailFromEmail: String(form.get("emailFromEmail") ?? ""),
-    emailFromName: String(form.get("emailFromName") ?? ""),
-    emailSupportEmail: String(form.get("emailSupportEmail") ?? ""),
+    emailProvider: stringOrEmpty(form.get("emailProvider")),
+    emailFromEmail: stringOrEmpty(form.get("emailFromEmail")),
+    emailFromName: stringOrEmpty(form.get("emailFromName")),
+    emailSupportEmail: stringOrEmpty(form.get("emailSupportEmail")),
   };
   await updateAppConfiguration(data);
-  const apiKey = String(form.get("apiKey") ?? "");
+  const apiKey = stringOrEmpty(form.get("apiKey"));
   if (data.emailProvider && apiKey !== undefined) {
     await db.credential.upsert({
       where: { name: data.emailProvider },

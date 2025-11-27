@@ -82,13 +82,13 @@ export const action: ActionFunction = async ({ request, params }) => {
 
   const featuresArr = form.getAll("features[]");
   const features: SubscriptionFeatureDto[] = featuresArr.map((f: FormDataEntryValue) => {
-    return JSON.parse(String(f));
+    return JSON.parse(typeof f === "string" ? f : "");
   });
 
   const prices: { billingPeriod: SubscriptionBillingPeriod; price: number; currency: string; trialDays?: number }[] = form
     .getAll("prices[]")
     .map((f: FormDataEntryValue) => {
-      return JSON.parse(String(f));
+      return JSON.parse(typeof f === "string" ? f : "");
     });
 
   const oneTimePricesWithZero = prices.filter((p) => p.billingPeriod === SubscriptionBillingPeriod.ONCE && p.price === 0);
@@ -97,7 +97,7 @@ export const action: ActionFunction = async ({ request, params }) => {
   }
 
   const usageBasedPrices: SubscriptionUsageBasedPriceDto[] = form.getAll("usage-based-prices[]").map((f: FormDataEntryValue) => {
-    return JSON.parse(String(f));
+    return JSON.parse(typeof f === "string" ? f : "");
   });
 
   if (!title) {

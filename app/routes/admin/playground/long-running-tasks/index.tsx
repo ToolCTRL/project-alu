@@ -34,7 +34,7 @@ export const action: ActionFunction = async ({ request }) => {
 
     // Simulate long-running task
     let items: ItemToImportDto[] = form.getAll("items[]").map((f: FormDataEntryValue) => {
-      return JSON.parse(String(f));
+      return JSON.parse(f.toString());
     });
     const itemsToImport = items.slice(from, to);
     await Promise.all(
@@ -65,7 +65,7 @@ export const action: ActionFunction = async ({ request }) => {
     return Response.json({ next, items });
   } else if (action === "process") {
     const items: ItemToImportDto[] = form.getAll("items[]").map((f: FormDataEntryValue) => {
-      return JSON.parse(String(f));
+      return JSON.parse(f.toString());
     });
     await Promise.all(
       items.map(async (item) => {
@@ -84,7 +84,7 @@ type ItemToImportDto = {
   processed: boolean;
 };
 
-function NameCell({ item }: { item: ItemToImportDto }) {
+function NameCell({ item }: Readonly<{ item: ItemToImportDto }>) {
   return (
     <div className="flex flex-col">
       <div>{item.name}</div>

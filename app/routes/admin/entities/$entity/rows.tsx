@@ -46,6 +46,14 @@ export const action: ActionFunction = async ({ request, params }) => {
   return badRequest({ error: t("shared.invalidForm") });
 };
 
+function ObjectCell({ item }: Readonly<{ item: RowWithDetails }>) {
+  return (
+    <div>
+      <ShowPayloadModalButton title="Details" description={"Details"} payload={JSON.stringify(item)} />
+    </div>
+  );
+}
+
 export default function EditEntityIndexRoute() {
   const data = useLoaderData<LoaderData>();
   return (
@@ -60,11 +68,7 @@ export default function EditEntityIndexRoute() {
           {
             name: "object",
             title: "Object",
-            value: (item) => (
-              <div>
-                <ShowPayloadModalButton title="Details" description={"Details"} payload={JSON.stringify(item)} />
-              </div>
-            ),
+            value: (item) => <ObjectCell item={item} />,
           },
         ]}
       />

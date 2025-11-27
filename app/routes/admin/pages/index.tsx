@@ -56,6 +56,35 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
   return data;
 };
 
+const PageTitleCell = ({ item }: { item: PageConfiguration }) => (
+  <div className=" w-40 truncate">{item.page?.metaTags.find((f) => f.name === "title")?.value}</div>
+);
+
+const PageStatusCell = ({ item }: { item: PageConfiguration }) => (
+  <div>
+    {item.page?.isPublished && item.page.isPublic && <SimpleBadge title="Public" color={Colors.GREEN} />}
+    {item.page?.isPublished && !item.page.isPublic && <SimpleBadge title="Private" color={Colors.INDIGO} />}
+    {!item.page?.isPublished && <SimpleBadge title="Unpublished" color={Colors.RED} />}
+  </div>
+);
+
+const PageActionsCell = ({ item }: { item: PageConfiguration }) => (
+  <div className="flex items-center space-x-3">
+    <a href={item.slug} target="_blank" rel="noreferrer" className="text-muted-foreground hover:text-muted-foreground hover:underline">
+      <ExternalLinkEmptyIcon className="h-4 w-4" />
+    </a>
+    <Link to={`/admin/pages/edit/${item.page?.id}/blocks`} className="text-muted-foreground hover:text-muted-foreground hover:underline">
+      Blocks
+    </Link>
+    <Link to={`/admin/pages/edit/${item.page?.id}/seo`} className="text-muted-foreground hover:text-muted-foreground hover:underline">
+      SEO
+    </Link>
+    <Link to={`/admin/pages/edit/${item.page?.id}/settings`} className="text-muted-foreground hover:text-muted-foreground hover:underline">
+      Settings
+    </Link>
+  </div>
+);
+
 type ActionData = {
   success?: string;
   error?: string;
@@ -183,7 +212,7 @@ export default function AdminPagesIndexRoute() {
                 name: "title",
                 title: "Title",
                 className: "w-full",
-                value: (i) => <div className=" w-40 truncate">{i.page?.metaTags.find((f) => f.name === "title")?.value}</div>,
+                value: (i) => <PageTitleCell item={i} />,
               },
               {
                 name: "blocks",
@@ -198,33 +227,12 @@ export default function AdminPagesIndexRoute() {
               {
                 name: "status",
                 title: "Status",
-                value: (i) => (
-                  <div>
-                    {i.page?.isPublished && i.page.isPublic && <SimpleBadge title="Public" color={Colors.GREEN} />}
-                    {i.page?.isPublished && !i.page.isPublic && <SimpleBadge title="Private" color={Colors.INDIGO} />}
-                    {!i.page?.isPublished && <SimpleBadge title="Unpublished" color={Colors.RED} />}
-                  </div>
-                ),
+                value: (i) => <PageStatusCell item={i} />,
               },
               {
                 name: "actions",
                 title: "Actions",
-                value: (item) => (
-                  <div className="flex items-center space-x-3">
-                    <a href={item.slug} target="_blank" rel="noreferrer" className="text-muted-foreground hover:text-muted-foreground hover:underline">
-                      <ExternalLinkEmptyIcon className="h-4 w-4" />
-                    </a>
-                    <Link to={`/admin/pages/edit/${item.page?.id}/blocks`} className="text-muted-foreground hover:text-muted-foreground hover:underline">
-                      Blocks
-                    </Link>
-                    <Link to={`/admin/pages/edit/${item.page?.id}/seo`} className="text-muted-foreground hover:text-muted-foreground hover:underline">
-                      SEO
-                    </Link>
-                    <Link to={`/admin/pages/edit/${item.page?.id}/settings`} className="text-muted-foreground hover:text-muted-foreground hover:underline">
-                      Settings
-                    </Link>
-                  </div>
-                ),
+                value: (item) => <PageActionsCell item={item} />,
               },
             ]}
           />

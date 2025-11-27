@@ -82,7 +82,7 @@ export const action: ActionFunction = async ({ request, params }) => {
 
     const featuresArr = form.getAll("features[]");
     const features: SubscriptionFeatureDto[] = featuresArr.map((f: FormDataEntryValue) => {
-      return JSON.parse(String(f));
+      return JSON.parse(typeof f === "string" ? f : "");
     });
 
     if (!title) {

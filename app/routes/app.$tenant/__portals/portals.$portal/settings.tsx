@@ -48,8 +48,8 @@ type ActionData = {
   error?: string;
 };
 async function handleEdit(request: Request, form: FormData, item: any, t: any) {
-  const subdomain = UrlUtils.slugify((form.get("subdomain")?.toString() ?? ""));
-  const title = (form.get("title")?.toString() ?? "") || undefined;
+  const subdomain = UrlUtils.slugify(typeof form.get("subdomain") === "string" ? form.get("subdomain") : "");
+  const title = (typeof form.get("title") === "string" ? form.get("title") : "") || undefined;
 
   if (subdomain && subdomain !== item.subdomain) {
     const isValidSubdomainSyntax = /^[a-z0-9-]+$/i.test(subdomain);
@@ -79,13 +79,13 @@ async function handleEdit(request: Request, form: FormData, item: any, t: any) {
 }
 
 async function handleEditSeo(form: FormData, item: any, t: any) {
-  const seoTitle = (form.get("seoTitle")?.toString() ?? "") || undefined;
-  const seoDescription = (form.get("seoDescription")?.toString() ?? "") || undefined;
-  const seoTwitterCreator = (form.get("seoTwitterCreator")?.toString() ?? "") || undefined;
-  const seoTwitterSite = (form.get("seoTwitterSite")?.toString() ?? "") || undefined;
-  const seoKeywords = (form.get("seoKeywords")?.toString() ?? "") || undefined;
-  const seoImage = (form.get("seoImage")?.toString() ?? "") || undefined;
-  const seoThumbnail = (form.get("seoThumbnail")?.toString() ?? "") || undefined;
+  const seoTitle = (typeof form.get("seoTitle") === "string" ? form.get("seoTitle") : "") || undefined;
+  const seoDescription = (typeof form.get("seoDescription") === "string" ? form.get("seoDescription") : "") || undefined;
+  const seoTwitterCreator = (typeof form.get("seoTwitterCreator") === "string" ? form.get("seoTwitterCreator") : "") || undefined;
+  const seoTwitterSite = (typeof form.get("seoTwitterSite") === "string" ? form.get("seoTwitterSite") : "") || undefined;
+  const seoKeywords = (typeof form.get("seoKeywords") === "string" ? form.get("seoKeywords") : "") || undefined;
+  const seoImage = (typeof form.get("seoImage") === "string" ? form.get("seoImage") : "") || undefined;
+  const seoThumbnail = (typeof form.get("seoThumbnail") === "string" ? form.get("seoThumbnail") : "") || undefined;
 
   const { storedSeoImage, storedSeoThumbnail } = await promiseHash({
     storedSeoImage: seoImage ? storeSupabaseFile({ bucket: "seo", content: seoImage, id: `${item.id}-seo-image.png` }) : Promise.resolve(""),
@@ -106,13 +106,13 @@ async function handleEditSeo(form: FormData, item: any, t: any) {
 }
 
 async function handleEditBranding(form: FormData, item: any, t: any) {
-  const themeColor = (form.get("themeColor")?.toString() ?? "") || undefined;
-  const themeScheme = (form.get("themeScheme")?.toString() ?? "") || undefined;
-  const logo = (form.get("logo")?.toString() ?? "") || undefined;
-  const logoDarkMode = (form.get("logoDarkMode")?.toString() ?? "") || undefined;
-  const icon = (form.get("icon")?.toString() ?? "") || undefined;
-  const iconDarkMode = (form.get("iconDarkMode")?.toString() ?? "") || undefined;
-  const favicon = (form.get("favicon")?.toString() ?? "") || undefined;
+  const themeColor = (typeof form.get("themeColor") === "string" ? form.get("themeColor") : "") || undefined;
+  const themeScheme = (typeof form.get("themeScheme") === "string" ? form.get("themeScheme") : "") || undefined;
+  const logo = (typeof form.get("logo") === "string" ? form.get("logo") : "") || undefined;
+  const logoDarkMode = (typeof form.get("logoDarkMode") === "string" ? form.get("logoDarkMode") : "") || undefined;
+  const icon = (typeof form.get("icon") === "string" ? form.get("icon") : "") || undefined;
+  const iconDarkMode = (typeof form.get("iconDarkMode") === "string" ? form.get("iconDarkMode") : "") || undefined;
+  const favicon = (typeof form.get("favicon") === "string" ? form.get("favicon") : "") || undefined;
 
   const { storedLogo, storedLogoDarkMode, storedIcon, storedIconDarkMode, storedFavicon } = await promiseHash({
     storedLogo: logo ? storeSupabaseFile({ bucket: "branding", content: logo, id: `${item.id}-logo.png` }) : Promise.resolve(""),
@@ -138,7 +138,7 @@ async function handleEditBranding(form: FormData, item: any, t: any) {
 async function handleEditAnalytics(form: FormData, item: any, t: any) {
   const simpleAnalytics = FormHelper.getBoolean(form, "simpleAnalytics");
   const plausibleAnalytics = FormHelper.getBoolean(form, "plausibleAnalytics");
-  const googleAnalyticsTrackingId = (form.get("googleAnalyticsTrackingId")?.toString() ?? "") || undefined;
+  const googleAnalyticsTrackingId = (typeof form.get("googleAnalyticsTrackingId") === "string" ? form.get("googleAnalyticsTrackingId") : "") || undefined;
 
   await updatePortal(item, {
     analyticsSimpleAnalytics: simpleAnalytics,

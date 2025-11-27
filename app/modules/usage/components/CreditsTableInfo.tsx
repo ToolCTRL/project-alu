@@ -25,7 +25,7 @@ export default function CreditsTableInfo() {
             name: "name",
             title: t("shared.name"),
             className: "w-full",
-            value: (item) => <NameCell item={item} />,
+            value: NameCell,
           },
           {
             name: "amount",

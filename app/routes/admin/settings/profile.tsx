@@ -28,7 +28,7 @@ import SettingSection from "~/components/ui/sections/SettingSection";
 
 export const meta: MetaFunction<typeof loader> = ({ data }) => [{ title: data?.title }];
 
-function ProfileMessage({ actionData }: { actionData?: ActionData }) {
+function ProfileMessage({ actionData }: Readonly<{ actionData?: ActionData }>) {
   if (actionData?.profileSuccess) {
     return (
       <p className="py-2 text-sm text-teal-500" role="alert">
@@ -46,7 +46,7 @@ function ProfileMessage({ actionData }: { actionData?: ActionData }) {
   return null;
 }
 
-function PasswordMessage({ actionData }: { actionData?: ActionData }) {
+function PasswordMessage({ actionData }: Readonly<{ actionData?: ActionData }>) {
   if (actionData?.passwordSuccess) {
     return (
       <p className="py-2 text-sm text-teal-500" role="alert">

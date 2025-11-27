@@ -35,7 +35,7 @@ export default function SurveyForm({ item }: Readonly<Props>) {
   return (
     <div>
       <Form method="post">
-        <input type="hidden" name="action" value={!item ? "create" : "edit"} readOnly hidden />
+        <input type="hidden" name="action" value={item ? "edit" : "create"} readOnly hidden />
         <input type="hidden" name="item" value={JSON.stringify(state)} readOnly hidden />
 
         <div className="space-y-2">
@@ -48,10 +48,9 @@ export default function SurveyForm({ item }: Readonly<Props>) {
                 setValue={(e) => setState({ ...state, title: e.toString() })}
                 required
                 onBlur={() => {
-                  if (item) {
-                    return;
+                  if (!item) {
+                    setState({ ...state, slug: UrlUtils.slugify(state.title) });
                   }
-                  setState({ ...state, slug: UrlUtils.slugify(state.title) });
                 }}
               />
             </div>

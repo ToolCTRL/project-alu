@@ -13,6 +13,52 @@ import DateUtils from "~/utils/shared/DateUtils";
 import { WorkflowsExecutionsApi } from "./executions.api.server";
 import { useTranslation } from "react-i18next";
 
+function ExecutionTypeCell({ type }: { readonly type: string }) {
+  return <div>{type}</div>;
+}
+
+function ExecutionStatusCell({ execution }: { readonly execution: WorkflowExecutionWithDetails }) {
+  return (
+    <div className="flex max-w-xs flex-col truncate">
+      <WorkflowResultBadge
+        createdAt={execution.createdAt}
+        startedAt={execution.createdAt}
+        completedAt={execution.endedAt}
+        status={execution.status}
+        error={execution.error}
+      />
+    </div>
+  );
+}
+
+function ExecutionTenantCell({ tenant }: { readonly tenant: WorkflowExecutionWithDetails["tenant"] }) {
+  return tenant ? <TenantBadge item={tenant} /> : <span className="text-muted-foreground italic">Admin</span>;
+}
+
+function ExecutionDurationCell({ createdAt, endedAt }: { readonly createdAt: Date; readonly endedAt: Date | null }) {
+  return <>{DateUtils.getDurationInSeconds({ start: createdAt, end: endedAt })}</>;
+}
+
+function ExecutionBlockRunsCell({ count }: { readonly count: number }) {
+  return <div>{count === 1 ? <span>1 block run</span> : <span>{count} block runs</span>}</div>;
+}
+
+function ExecutionCreatedAtCell({ date }: { readonly date: Date }) {
+  return <DateCell date={date} />;
+}
+
+function ExecutionEndedAtCell({ date }: { readonly date: Date | null }) {
+  return <DateCell date={date} />;
+}
+
+function ExecutionWorkflowCell({ execution, params }: { readonly execution: WorkflowExecutionWithDetails; readonly params: any }) {
+  return (
+    <Link className="truncate font-medium hover:underline" to={UrlUtils.getModulePath(params, `workflow-engine/workflows/${execution.workflow.id}`)}>
+      {execution.workflow.name}
+    </Link>
+  );
+}
+
 export default function WorkflowsExecutionsView() {
   const { t } = useTranslation();
   const data = useLoaderData<WorkflowsExecutionsApi.LoaderData>();
@@ -62,50 +108,42 @@ export default function WorkflowsExecutionsView() {
           {
             name: "type",
             title: "Type",
-            value: (i) => <div>{i.type}</div>,
+            value: (i) => <ExecutionTypeCell type={i.type} />,
           },
           {
             name: "status",
             title: "Status",
-            value: (i) => (
-              <div className="flex max-w-xs flex-col truncate">
-                <WorkflowResultBadge createdAt={i.createdAt} startedAt={i.createdAt} completedAt={i.endedAt} status={i.status} error={i.error} />
-              </div>
-            ),
+            value: (i) => <ExecutionStatusCell execution={i} />,
           },
           {
             name: "tenant",
             title: t("models.tenant.object"),
-            value: (i) => (i.tenant ? <TenantBadge item={i.tenant} /> : <span className="text-muted-foreground italic">Admin</span>),
+            value: (i) => <ExecutionTenantCell tenant={i.tenant} />,
           },
           {
             name: "duration",
             title: "Duration",
-            value: (i) => DateUtils.getDurationInSeconds({ start: i.createdAt, end: i.endedAt }),
+            value: (i) => <ExecutionDurationCell createdAt={i.createdAt} endedAt={i.endedAt} />,
           },
           {
             name: "blockRuns",
             title: "Block runs",
-            value: (i) => <div>{i.blockRuns.length === 1 ? <span>1 block run</span> : <span>{i.blockRuns.length} block runs</span>}</div>,
+            value: (i) => <ExecutionBlockRunsCell count={i.blockRuns.length} />,
           },
           {
             name: "createdAt",
             title: "Created at",
-            value: (i) => <DateCell date={i.createdAt} />,
+            value: (i) => <ExecutionCreatedAtCell date={i.createdAt} />,
           },
           {
             name: "endedAt",
             title: "Ended at",
-            value: (i) => <DateCell date={i.endedAt} />,
+            value: (i) => <ExecutionEndedAtCell date={i.endedAt} />,
           },
           {
             name: "workflow",
             title: "Workflow",
-            value: (i) => (
-              <Link className="truncate font-medium hover:underline" to={UrlUtils.getModulePath(params, `workflow-engine/workflows/${i.workflow.id}`)}>
-                {i.workflow.name}
-              </Link>
-            ),
+            value: (i) => <ExecutionWorkflowCell execution={i} params={params} />,
           },
         ]}
       />

@@ -59,7 +59,7 @@ export namespace Rows_List {
     const { time, getServerTimingHeader } = await createMetrics({ request, params }, `[Rows_List] ${params.entity}`);
     const { t, userId, tenantId, entity, form } = await RowsRequestUtils.getAction({ request, params });
     const actionValue = form.get("action") ?? "";
-    const action = typeof actionValue === "string" ? actionValue : String(actionValue);
+    const action = typeof actionValue === "string" ? actionValue : String(actionValue || "");
     if (action === "view-create") {
       try {
         const view = await time(EntityViewsApi.createFromForm({ entity, form, createdByUserId: userId }), "EntityViewsApi.createFromForm");
@@ -69,7 +69,7 @@ export namespace Rows_List {
       }
     } else if (action === "view-edit" || action === "view-delete") {
       const idValue = form.get("id") ?? "";
-      const id = typeof idValue === "string" ? idValue : String(idValue);
+      const id = typeof idValue === "string" ? idValue : String(idValue || "");
       const item = await time(getEntityView(id), "getEntityView");
       if (!item) {
         return Response.json({ error: t("shared.notFound") }, { status: 400, headers: getServerTimingHeader() });
@@ -87,7 +87,7 @@ export namespace Rows_List {
       }
     } else if (["move-up", "move-down"].includes(action)) {
       const moveIdValue = form.get("id") ?? "";
-      const id = typeof moveIdValue === "string" ? moveIdValue : String(moveIdValue);
+      const id = typeof moveIdValue === "string" ? moveIdValue : String(moveIdValue || "");
       await time(
         RowsApi.changeOrder(id, {
           target: action === "move-up" ? "up" : "down",
@@ -98,11 +98,11 @@ export namespace Rows_List {
     } else if (action === "board-move") {
       try {
         const boardIdValue = form.get("id") ?? "";
-        const id = typeof boardIdValue === "string" ? boardIdValue : String(boardIdValue);
+        const id = typeof boardIdValue === "string" ? boardIdValue : String(boardIdValue || "");
         const propertyValue = form.get("property") ?? "";
-        const property = typeof propertyValue === "string" ? propertyValue : String(propertyValue);
+        const property = typeof propertyValue === "string" ? propertyValue : String(propertyValue || "");
         const valueValue = form.get("value") ?? "";
-        const value = typeof valueValue === "string" ? valueValue : String(valueValue);
+        const value = typeof valueValue === "string" ? valueValue : String(valueValue || "");
         if (!id || !property) {
           return Response.json({ error: t("shared.invalidForm") }, { status: 400, headers: getServerTimingHeader() });
         }

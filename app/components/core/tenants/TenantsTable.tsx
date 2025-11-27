@@ -122,6 +122,81 @@ export default function TenantsTable({ items, pagination, actions = [], tenantIn
     [getTenantInvoices]
   );
 
+  const renderSubscriptionValue = useCallback((item: TenantWithUsage) => {
+    return (
+      <span>
+        {item.subscription?.products ? (
+          <div>
+            {item.subscription.products.map((product) => renderSubscriptionProduct(product, t))}
+          </div>
+        ) : (
+          <span className="text-muted-foreground text-sm italic">{t("settings.subscription.noSubscription")}</span>
+        )}
+      </span>
+    );
+  }, [t]);
+
+  const renderLastInvoiceValue = useCallback((i: TenantWithUsage) => {
+    const invoice = lastTenantInvoice(i);
+    return (
+      <a
+        className="flex flex-col space-y-1 hover:underline"
+        target="_blank"
+        rel="noreferrer"
+        href={`https://dashboard.stripe.com${isStripeTest ? "/test" : ""}/customers/${i.subscription?.stripeCustomerId ?? ""}`}
+      >
+        <div className="flex flex-col space-y-1">
+          {invoice ? TenantInvoice({ item: invoice }) : <span>-</span>}
+        </div>
+      </a>
+    );
+  }, [lastTenantInvoice, isStripeTest]);
+
+  const renderTotalPaidValue = useCallback((i: TenantWithUsage) => {
+    const totalPaid = getTotalPaid(i);
+    const paidCount = getTenantInvoices(i).filter((f) => f.paid).length;
+    return (
+      <a
+        className="flex flex-col space-y-1 hover:underline"
+        target="_blank"
+        rel="noreferrer"
+        href={`https://dashboard.stripe.com${isStripeTest ? "/test" : ""}/customers/${i.subscription?.stripeCustomerId ?? ""}`}
+      >
+        {totalPaid === 0 ? (
+          <span>-</span>
+        ) : (
+          <div>
+            ${NumberUtils.decimalFormat(totalPaid)} ({paidCount})
+          </div>
+        )}
+      </a>
+    );
+  }, [getTotalPaid, getTenantInvoices, isStripeTest]);
+
+  const renderTypesValue = useCallback((i: TenantWithUsage) => {
+    if (i.types.length === 0) {
+      return <span className="text-muted-foreground">{t("shared.default")}</span>;
+    }
+    return i.types.map((f) => f.title).join(", ");
+  }, [t]);
+
+  const renderRowsValue = useCallback((item: TenantWithUsage) => {
+    return <Link to={"/admin/entities/rows?tenantId=" + item.id}>{item._count.rows}</Link>;
+  }, []);
+
+  const renderEventsValue = useCallback((i: TenantWithUsage) => {
+    return <Link to={`/admin/events?tenantId=${i.id}`}>{i._count.events}</Link>;
+  }, []);
+
+  const renderCreatedAtValue = useCallback((item: TenantWithUsage) => {
+    return (
+      <div className="flex flex-col">
+        <div>{DateUtils.dateYMD(item.createdAt)}</div>
+        <div className="text-xs">{DateUtils.dateAgo(item.createdAt)}</div>
+      </div>
+    );
+  }, []);
+
   const [headers, setHeaders] = useState<RowHeaderDisplayDto<TenantWithUsage>[]>([]);
 
   useEffect(() => {
@@ -135,19 +210,7 @@ export default function TenantsTable({ items, pagination, actions = [], tenantIn
         name: "subscription",
         title: t("admin.tenants.subscription.title"),
         value: () => "",
-        formattedValue: (item) => {
-          return (
-            <span>
-              {item.subscription?.products ? (
-                <div>
-                  {item.subscription.products.map((product) => renderSubscriptionProduct(product, t))}
-                </div>
-              ) : (
-                <span className="text-muted-foreground text-sm italic">{t("settings.subscription.noSubscription")}</span>
-              )}
-            </span>
-          );
-        },
+        formattedValue: renderSubscriptionValue,
       },
     ];
 
@@ -157,45 +220,12 @@ export default function TenantsTable({ items, pagination, actions = [], tenantIn
             {
               name: "lastInvoice",
               title: "Last invoice",
-              value: (i) => {
-                const invoice = lastTenantInvoice(i);
-                return (
-                  <a
-                    className="flex flex-col space-y-1 hover:underline"
-                    target="_blank"
-                    rel="noreferrer"
-                    href={`https://dashboard.stripe.com${isStripeTest ? "/test" : ""}/customers/${i.subscription?.stripeCustomerId ?? ""}`}
-                  >
-                    <div className="flex flex-col space-y-1">
-                      {invoice ? TenantInvoice({ item: invoice }) : <span>-</span>}
-                    </div>
-                  </a>
-                );
-              },
+              value: renderLastInvoiceValue,
             },
             {
               name: "totalInvoicesPaid",
               title: "Total paid",
-              value: (i) => {
-                const totalPaid = getTotalPaid(i);
-                const paidCount = getTenantInvoices(i).filter((f) => f.paid).length;
-                return (
-                  <a
-                    className="flex flex-col space-y-1 hover:underline"
-                    target="_blank"
-                    rel="noreferrer"
-                    href={`https://dashboard.stripe.com${isStripeTest ? "/test" : ""}/customers/${i.subscription?.stripeCustomerId ?? ""}`}
-                  >
-                    {totalPaid === 0 ? (
-                      <span>-</span>
-                    ) : (
-                      <div>
-                        ${NumberUtils.decimalFormat(totalPaid)} ({paidCount})
-                      </div>
-                    )}
-                  </a>
-                );
-              },
+              value: renderTotalPaidValue,
             },
           ]
         : [];
@@ -204,12 +234,7 @@ export default function TenantsTable({ items, pagination, actions = [], tenantIn
       {
         name: "types",
         title: t("shared.types"),
-        value: (i) => {
-          if (i.types.length === 0) {
-            return <span className="text-muted-foreground">{t("shared.default")}</span>;
-          }
-          return i.types.map((f) => f.title).join(", ");
-        },
+        value: renderTypesValue,
       },
       {
         name: "users",
@@ -221,35 +246,24 @@ export default function TenantsTable({ items, pagination, actions = [], tenantIn
       {
         name: "rows",
         title: t("models.row.plural"),
-        value: (item) => {
-          return <Link to={"/admin/entities/rows?tenantId=" + item.id}>{item._count.rows}</Link>;
-        },
+        value: renderRowsValue,
       },
       {
         name: "events",
         title: "Events",
         value: (i) => i._count.events,
-        formattedValue: (i) => {
-          return <Link to={`/admin/events?tenantId=${i.id}`}>{i._count.events}</Link>;
-        },
+        formattedValue: renderEventsValue,
       },
       {
         name: "createdAt",
         title: t("shared.createdAt"),
         value: (i) => i.createdAt,
-        formattedValue: (item) => {
-          return (
-            <div className="flex flex-col">
-              <div>{DateUtils.dateYMD(item.createdAt)}</div>
-              <div className="text-xs">{DateUtils.dateAgo(item.createdAt)}</div>
-            </div>
-          );
-        },
+        formattedValue: renderCreatedAtValue,
       },
     ];
 
     setHeaders([...baseHeaders, ...invoiceHeaders, ...otherHeaders]);
-  }, [getTenantInvoices, getTotalPaid, isStripeTest, lastTenantInvoice, t, tenantInvoices]);
+  }, [getTenantInvoices, getTotalPaid, isStripeTest, lastTenantInvoice, t, tenantInvoices, renderSubscriptionValue, renderLastInvoiceValue, renderTotalPaidValue, renderTypesValue, renderRowsValue, renderEventsValue, renderCreatedAtValue]);
 
   return (
     <div className="space-y-2">

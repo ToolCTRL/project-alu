@@ -15,9 +15,12 @@ function renderBooleanValue(value: JsonValue): JSX.Element | null {
 function renderDateValue(value: JsonValue): JSX.Element {
   try {
     const date = new Date(value as string);
+    if (isNaN(date.getTime())) {
+      throw new Error("Invalid date");
+    }
     return <div><DateCell date={date} /></div>;
   } catch (error) {
-    // Invalid date format, fallback to displaying the raw value
+    console.warn("Failed to parse date value:", value, error);
     const stringValue = typeof value === 'object' ? JSON.stringify(value) : String(value);
     return <div className="text-muted-foreground">{stringValue}</div>;
   }

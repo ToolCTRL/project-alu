@@ -48,7 +48,7 @@ export const action = async ({ request, params }: ActionFunctionArgs) => {
       } else if (item.items.length === 0) {
         throw new Error("At least one item is required");
       }
-      await updateSurvey(params.id!, {
+      await updateSurvey(params.id, {
         tenantId,
         title: item.title,
         slug: item.slug,

@@ -75,7 +75,7 @@ export const action: ActionFunction = async ({ request, params }) => {
     await updateOnboarding(item.id, {
       title,
       type: type as "modal" | "page" | undefined,
-      active: active !== undefined ? Boolean(active) : undefined,
+      active: active === undefined ? undefined : Boolean(active),
     });
     return Response.json({ success: "Onboarding updated" });
   } else if (action === "delete") {
@@ -127,10 +127,10 @@ function OnboardingSettings() {
 
   function onSaveFilter(item: { type: OnboardingFilterType; value: string | null }) {
     const idx = showFilterModal?.idx;
-    if (idx !== undefined) {
-      filters[idx] = item;
-    } else {
+    if (idx === undefined) {
       filters.push(item);
+    } else {
+      filters[idx] = item;
     }
     setFilters([...filters]);
     setShowFilterModal(undefined);

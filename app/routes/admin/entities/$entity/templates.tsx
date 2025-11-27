@@ -24,6 +24,10 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
   return data;
 };
 
+function TemplateCell({ item, getConfig }: Readonly<{ item: EntityTemplate; getConfig: (item: EntityTemplate) => string }>) {
+  return <ShowPayloadModalButton title={`Template: ${item.title}`} payload={getConfig(item)} />;
+}
+
 export default function EntityTemplatesIndex() {
   const { t } = useTranslation();
   const data = useLoaderData<LoaderData>();
@@ -67,7 +71,7 @@ export default function EntityTemplatesIndex() {
               title: "Template",
               name: "template",
               className: "max-w-xs",
-              value: (item) => <ShowPayloadModalButton title={`Template: ${item.title}`} payload={getConfig(item)} />,
+              value: (item) => <TemplateCell item={item} getConfig={getConfig} />,
             },
           ]}
           items={data.items}

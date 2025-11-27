@@ -105,17 +105,22 @@ export default function SubscribeTenantSuccessRoute() {
                       {t("settings.subscription.checkout.success.description", { 0: t(data.checkoutSession.products.map((f) => t(f.title)).join(", ")) })}
                     </p>
                   </>
-                ) : data.error ? (
-                  <>
-                    <h1 className="text-3xl font-extrabold tracking-tight sm:text-4xl">{t("shared.unexpectedError")}</h1>
-                    <p className="mt-4 text-lg leading-6 text-red-500">{data.error}</p>
-                  </>
-                ) : (
-                  <>
-                    <h1 className="text-3xl font-extrabold tracking-tight sm:text-4xl">{t("shared.error")}</h1>
-                    <p className="mt-4 text-lg leading-6 text-red-500">{t("settings.subscription.checkout.invalid")}</p>
-                  </>
-                )}
+                ) : (() => {
+                  if (data.error) {
+                    return (
+                      <>
+                        <h1 className="text-3xl font-extrabold tracking-tight sm:text-4xl">{t("shared.unexpectedError")}</h1>
+                        <p className="mt-4 text-lg leading-6 text-red-500">{data.error}</p>
+                      </>
+                    );
+                  }
+                  return (
+                    <>
+                      <h1 className="text-3xl font-extrabold tracking-tight sm:text-4xl">{t("shared.error")}</h1>
+                      <p className="mt-4 text-lg leading-6 text-red-500">{t("settings.subscription.checkout.invalid")}</p>
+                    </>
+                  );
+                })()}
 
                 <div className="mt-4">
                   <Link

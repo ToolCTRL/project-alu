@@ -37,7 +37,10 @@ export namespace Rows_Share {
     }
     let tenants: Tenant[] = [];
     if (tenantId) {
-      tenants.push((await getTenant(tenantId))!);
+      const tenant = await getTenant(tenantId);
+      if (tenant) {
+        tenants.push(tenant);
+      }
     } else {
       tenants = await adminGetAllTenants();
     }

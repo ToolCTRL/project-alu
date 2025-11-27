@@ -47,7 +47,7 @@ export const action = async ({ request }: ActionFunctionArgs) => {
   if (event.type === "subscription_schedule.canceled" ||
       event.type === "customer.subscription.deleted" ||
       event.type === "customer.subscription.updated") {
-    const subscription = event.data.object as Stripe.Subscription | Stripe.SubscriptionSchedule;
+    const subscription = event.data.object;
     await updateTenantSubscription({ request, t, stripeSubscriptionId: subscription.id });
   }
   return Response.json({

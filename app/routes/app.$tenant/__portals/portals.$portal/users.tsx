@@ -103,11 +103,11 @@ function UserCreatedAtCell({ item }: Readonly<{ item: PortalUserDto }>) {
   );
 }
 
-function UserTableCellValue({ item }: { item: PortalUserDto }) {
+function UserTableCellValue({ item }: Readonly<{ item: PortalUserDto }>) {
   return <UserTableCell item={item} />;
 }
 
-function UserCreatedAtCellValue({ item }: { item: PortalUserDto }) {
+function UserCreatedAtCellValue({ item }: Readonly<{ item: PortalUserDto }>) {
   return <UserCreatedAtCell item={item} />;
 }
 

@@ -40,6 +40,10 @@ const ConfirmModal = (props: Props, ref: Ref<RefConfirmModal>) => {
 
   const inputValue = useRef<HTMLInputElement>(null);
 
+  function setDestructive(destructive: boolean) {
+    setIsDestructive(destructive);
+  }
+
   useEffect(() => {
     setTitle(t("shared.confirm").toString());
     // eslint-disable-next-line react-hooks/exhaustive-deps

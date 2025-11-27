@@ -41,7 +41,7 @@ export const action: ActionFunction = async ({ request }) => {
   const action = form.get("action");
   if (action === "set-settings") {
     const ignoreUrls: RowValueMultipleDto[] = form.getAll("ignoreUrls[]").map((f: FormDataEntryValue) => {
-      return JSON.parse(String(f));
+      return JSON.parse(f.toString());
     });
     await updateAppConfiguration({
       metricsEnabled: ["true", "on"].includes(form.get("enabled")?.toString() ?? "false"),

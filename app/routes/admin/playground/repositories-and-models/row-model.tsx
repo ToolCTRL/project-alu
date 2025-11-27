@@ -26,7 +26,7 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
   return data;
 };
 
-function LogoCell({ item }: { item: RowController }) {
+function LogoCell({ item }: Readonly<{ item: RowController }>) {
   const logo = item.getMediaPublicUrlOrFile("logo");
   if (!logo) {
     return null;

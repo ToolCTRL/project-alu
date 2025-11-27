@@ -231,25 +231,23 @@ function InputSlug({
           <InputText title={"URL"} defaultValue={"/docs"} disabled />
         </>
       ) : (
-        <>
-          <div className="grid grid-cols-2 gap-2">
-            <InputSelect
-              name="basePath"
-              title="Base path"
-              value={basePath}
-              setValue={(e) => setBasePath(e)}
-              options={[
-                {
-                  value: "/help",
-                  name: "/help/",
-                },
-              ]}
-              required
-            />
-            <InputText name="slug" title={"Slug"} value={slug} setValue={setSlug} required />
-            <InputText title={"URL"} value={UrlUtils.join(basePath, slug)} setValue={() => {}} disabled />
-          </div>
-        </>
+        <div className="grid grid-cols-2 gap-2">
+          <InputSelect
+            name="basePath"
+            title="Base path"
+            value={basePath}
+            setValue={(e) => setBasePath(e)}
+            options={[
+              {
+                value: "/help",
+                name: "/help/",
+              },
+            ]}
+            required
+          />
+          <InputText name="slug" title={"Slug"} value={slug} setValue={setSlug} required />
+          <InputText title={"URL"} value={UrlUtils.join(basePath as string, slug)} setValue={() => {}} disabled />
+        </div>
       )}
     </div>
   );

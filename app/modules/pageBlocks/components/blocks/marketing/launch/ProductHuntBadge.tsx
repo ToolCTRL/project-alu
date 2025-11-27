@@ -6,12 +6,12 @@ interface Props {
 }
 
 function getProductHuntImage(theme: string | undefined, postId: string, title: string) {
-  let themeParam = "light";
+  let themeParam: string;
   if (theme === "neutral") {
     themeParam = "neutral";
   } else if (theme === "dark") {
     themeParam = "dark";
-  } else if (theme === "light") {
+  } else {
     themeParam = "light";
   }
 

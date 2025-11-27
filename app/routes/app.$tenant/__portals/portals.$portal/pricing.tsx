@@ -63,7 +63,7 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
   return data;
 };
 
-function ProductBadge({ item }: { item: SubscriptionProductDto }) {
+function ProductBadge({ item }: Readonly<{ item: SubscriptionProductDto }>) {
   const { t } = useTranslation();
   return (
     <>
@@ -73,12 +73,12 @@ function ProductBadge({ item }: { item: SubscriptionProductDto }) {
   );
 }
 
-function ProductModel({ item }: { item: SubscriptionProductDto }) {
+function ProductModel({ item }: Readonly<{ item: SubscriptionProductDto }>) {
   const { t } = useTranslation();
   return <>{t("pricing." + PricingModel[item.model])}</>;
 }
 
-function ProductSubscriptions({ item }: { item: SubscriptionProductDto }) {
+function ProductSubscriptions({ item }: Readonly<{ item: SubscriptionProductDto }>) {
   const { t } = useTranslation();
   return (
     <div className=" text-muted-foreground lowercase">
@@ -87,7 +87,7 @@ function ProductSubscriptions({ item }: { item: SubscriptionProductDto }) {
   );
 }
 
-function ProductStatus({ item }: { item: SubscriptionProductDto }) {
+function ProductStatus({ item }: Readonly<{ item: SubscriptionProductDto }>) {
   const { t } = useTranslation();
   return (
     <>
@@ -117,23 +117,23 @@ function ProductActions({ item }: Readonly<{ item: SubscriptionProductDto }>) {
   );
 }
 
-function ProductBadgeCell({ item }: { item: SubscriptionProductDto }) {
+function ProductBadgeCell({ item }: Readonly<{ item: SubscriptionProductDto }>) {
   return <ProductBadge item={item} />;
 }
 
-function ProductModelCell({ item }: { item: SubscriptionProductDto }) {
+function ProductModelCell({ item }: Readonly<{ item: SubscriptionProductDto }>) {
   return <ProductModel item={item} />;
 }
 
-function ProductSubscriptionsCell({ item }: { item: SubscriptionProductDto }) {
+function ProductSubscriptionsCell({ item }: Readonly<{ item: SubscriptionProductDto }>) {
   return <ProductSubscriptions item={item} />;
 }
 
-function ProductStatusCell({ item }: { item: SubscriptionProductDto }) {
+function ProductStatusCell({ item }: Readonly<{ item: SubscriptionProductDto }>) {
   return <ProductStatus item={item} />;
 }
 
-function ProductActionsCell({ item }: { item: SubscriptionProductDto }) {
+function ProductActionsCell({ item }: Readonly<{ item: SubscriptionProductDto }>) {
   return <ProductActions item={item} />;
 }
 

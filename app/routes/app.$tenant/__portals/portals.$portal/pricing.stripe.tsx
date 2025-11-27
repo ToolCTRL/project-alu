@@ -28,10 +28,10 @@ type LoaderData = {
 function StripeConnectionStatus({
   stripeAccount,
   onDelete
-}: {
+}: Readonly<{
   stripeAccount: Stripe.Account | null;
   onDelete: () => void;
-}) {
+}>) {
   if (stripeAccount === null) {
     return (
       <div className="space-y-2">

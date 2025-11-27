@@ -410,9 +410,9 @@ export default function PricingFeaturesRoute() {
                     <PlanFeatureDescription
                       feature={{
                         ...item,
-                        title: existing?.title ?? "",
-                        value: existing?.value ?? 0,
-                        type: existing?.type ?? SubscriptionFeatureLimitType.NOT_INCLUDED,
+                        title: existing.title ?? "",
+                        value: existing.value ?? 0,
+                        type: existing.type ?? SubscriptionFeatureLimitType.NOT_INCLUDED,
                       }}
                       editing={true}
                     />

@@ -93,13 +93,15 @@ export default function NewsletterVariantRightForm({ item }: { readonly item: Ne
               </ButtonPrimary>
             </div>
             <div className="mt-3">
-              {fetcher.data?.success ? (
-                <p>{fetcher.data.success}</p>
-              ) : fetcher.data?.error ? (
-                <p>{fetcher.data.error}</p>
-              ) : (
-                <div className="invisible">...</div>
-              )}
+              {(() => {
+                if (fetcher.data?.success) {
+                  return <p>{fetcher.data.success}</p>;
+                }
+                if (fetcher.data?.error) {
+                  return <p>{fetcher.data.error}</p>;
+                }
+                return <div className="invisible">...</div>;
+              })()}
             </div>
             <div className="text-muted-foreground mt-3 text-xs">
               {t("front.newsletter.weCare")}{" "}
