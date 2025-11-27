@@ -1,4 +1,4 @@
-import { KnowledgeBase, KnowledgeBaseArticle } from "@prisma/client";
+import { KnowledgeBase } from "@prisma/client";
 import { createKnowledgeBaseArticle, getAllKnowledgeBaseArticles, getKbArticleBySlug, updateKnowledgeBaseArticle } from "../db/kbArticles.db.server";
 import { createKnowledgeBaseCategory, getAllKnowledgeBaseCategories, getKbCategoryBySlug, updateKnowledgeBaseCategory } from "../db/kbCategories.db.server";
 import { createKnowledgeBase, getAllKnowledgeBases, getKnowledgeBaseBySlug, updateKnowledgeBase } from "../db/knowledgeBase.db.server";

@@ -66,8 +66,7 @@ export default function PromptsList() {
           Prompt Flow Builder is only available in SaasRock Pro. You can see how it works by clicking{" "}
           <a href="https://www.loom.com/share/64e4f6092acd4f11a37d2695e63b1c42" target="_blank" rel="noreferrer" className="underline">
             here
-          </a>
-          .
+          </a>.
         </ErrorBanner>
       </IndexPageLayout>
     </SidebarIconsLayout>

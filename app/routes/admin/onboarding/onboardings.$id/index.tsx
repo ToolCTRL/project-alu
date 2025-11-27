@@ -85,10 +85,7 @@ export const action: ActionFunction = async ({ request, params }) => {
 };
 
 function canBeActivated(item: OnboardingWithDetails) {
-  if (item.filters.length > 0 && item.steps.length > 0) {
-    return true;
-  }
-  return false;
+  return item.filters.length > 0 && item.steps.length > 0;
 }
 
 function canBeInactivated() {
@@ -219,7 +216,7 @@ function OnboardingOverviewRoute() {
         </div>
       </InputGroup>
 
-      {canBeActivated(data.item) ? null : (
+      {!canBeActivated(data.item) && (
         <WarningBanner title={t("onboarding.errors.cannotBeActivated.title")} text={t("onboarding.errors.cannotBeActivated.description")} />
       )}
 

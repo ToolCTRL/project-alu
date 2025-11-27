@@ -49,7 +49,7 @@ export const action = async ({ request, params }: ActionFunctionArgs) => {
 
   if (action === "set-user-roles") {
     const arrRoles: { id: string; tenantId: string | undefined }[] = form.getAll("roles[]").map((f: FormDataEntryValue) => {
-      return JSON.parse(String(f));
+      return JSON.parse(f.toString());
     });
     const allRoles = await getRoles(arrRoles.map((r) => r.id));
     let setRoles: { role: Role; tenantId: string | null }[] = [];
@@ -106,11 +106,17 @@ export default function SetUserRolesRoute() {
   function hasAllAdminRoles() {
     return data.adminRoles.every((ar) => selectedRoles?.includes(ar.id));
   }
+  function addRole(roleId: string) {
+    setSelectedRoles((f) => [...f, roleId]);
+  }
+  function removeRole(roleId: string) {
+    setSelectedRoles((f) => f.filter((f) => f !== roleId));
+  }
   function handleRoleToggle(checked: boolean, roleId: string) {
     if (checked) {
-      setSelectedRoles((f) => [...f, roleId]);
+      addRole(roleId);
     } else {
-      setSelectedRoles((f) => f.filter((f) => f !== roleId));
+      removeRole(roleId);
     }
   }
 

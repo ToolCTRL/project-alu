@@ -159,9 +159,8 @@ export default function Index() {
           </Form>
         </div>
 
-        {error ? (
-          <ErrorBanner title="Error" text={error} />
-        ) : type === "ChatGPT" ? (
+        {error && <ErrorBanner title="Error" text={error} />}
+        {!error && type === "ChatGPT" && (
           <div>
             <Textarea
               ref={refContent}
@@ -171,7 +170,8 @@ export default function Index() {
               defaultValue={content}
             />
           </div>
-        ) : type === "DALL-E" ? (
+        )}
+        {!error && type === "DALL-E" && (
           <div className="overflow-y-scroll">
             <div className="mx-auto">
               <div className="space-y-8 md:flex md:items-center md:space-y-0 md:space-x-8">
@@ -185,8 +185,6 @@ export default function Index() {
               </div>
             </div>
           </div>
-        ) : (
-          <div />
         )}
       </div>
     </div>

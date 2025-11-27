@@ -51,64 +51,93 @@ function rowToDto(block: WorkflowBlockWithDetails, index: number = 0) {
   return workflowBlock;
 }
 
-function getBlockErrors({ workflow, block }: { workflow: WorkflowDto; block: WorkflowBlockDto }) {
+function validateBlockConnections(workflow: WorkflowDto, block: WorkflowBlockDto): string[] {
   const errors: string[] = [];
 
-  if (block.isTrigger) {
-    if (block.toBlocks.length === 0) {
-      errors.push("Add a next block for this trigger");
-    }
-  } else if (block.isBlock) {
-    const nodesConnectingToThisBlock = workflow.blocks.filter((f) => {
-      return f.toBlocks.find((t) => t.toBlockId === block.id);
-    });
-    if (nodesConnectingToThisBlock.length === 0) {
-      errors.push("Nothing is connecting to this block");
-    }
-    if (block.type === "if") {
-      const hasTrue = block.toBlocks.find((f) => f.condition === "true");
-      const hasFalse = block.toBlocks.find((f) => f.condition === "false");
-      if (!hasTrue) {
-        errors.push("Add a next block for true condition");
-      }
-      if (!hasFalse) {
-        errors.push("Add a next block for false condition");
-      }
-    } else if (block.type === "switch") {
-      const hasDefault = block.toBlocks.find((f) => f.condition === "default");
-      if (!hasDefault) {
-        errors.push("Add a next block for default condition");
-      }
-      block.conditionGroups.forEach((conditionGroup) => {
-        const hasCase = block.toBlocks.find((f) => f.condition === `case${conditionGroup.index + 1}`);
-        if (!hasCase) {
-          errors.push(`Add a next block for case ${conditionGroup.index + 1}`);
-        }
-      });
-    } else if (block.type === "iterator") {
-      const hasLoopNext = block.toBlocks.find((f) => f.condition === "loopNext");
-      const hasLoopEnd = block.toBlocks.find((f) => f.condition === "loopEnd");
-      if (!hasLoopNext) {
-        errors.push("Add a next block for loopNext condition");
-      }
-      if (!hasLoopEnd) {
-        errors.push("Add a next block for loopEnd condition");
-      }
-    }
+  if (block.isTrigger && block.toBlocks.length === 0) {
+    errors.push("Add a next block for this trigger");
+    return errors;
   }
 
-  const workflowBlock = WorkflowBlockTypes.find((f) => f.value === block.type);
+  if (!block.isBlock) {
+    return errors;
+  }
+
+  const nodesConnectingToThisBlock = workflow.blocks.filter((f) =>
+    f.toBlocks.find((t) => t.toBlockId === block.id)
+  );
+  if (nodesConnectingToThisBlock.length === 0) {
+    errors.push("Nothing is connecting to this block");
+  }
+
+  return errors;
+}
+
+function validateIfBlock(block: WorkflowBlockDto): string[] {
+  const errors: string[] = [];
+  const hasTrue = block.toBlocks.find((f) => f.condition === "true");
+  const hasFalse = block.toBlocks.find((f) => f.condition === "false");
+
+  if (!hasTrue) {
+    errors.push("Add a next block for true condition");
+  }
+  if (!hasFalse) {
+    errors.push("Add a next block for false condition");
+  }
+  return errors;
+}
+
+function validateSwitchBlock(block: WorkflowBlockDto): string[] {
+  const errors: string[] = [];
+  const hasDefault = block.toBlocks.find((f) => f.condition === "default");
+
+  if (!hasDefault) {
+    errors.push("Add a next block for default condition");
+  }
+
+  block.conditionGroups.forEach((conditionGroup) => {
+    const hasCase = block.toBlocks.find((f) => f.condition === `case${conditionGroup.index + 1}`);
+    if (!hasCase) {
+      errors.push(`Add a next block for case ${conditionGroup.index + 1}`);
+    }
+  });
+
+  return errors;
+}
+
+function validateIteratorBlock(block: WorkflowBlockDto): string[] {
+  const errors: string[] = [];
+  const hasLoopNext = block.toBlocks.find((f) => f.condition === "loopNext");
+  const hasLoopEnd = block.toBlocks.find((f) => f.condition === "loopEnd");
+
+  if (!hasLoopNext) {
+    errors.push("Add a next block for loopNext condition");
+  }
+  if (!hasLoopEnd) {
+    errors.push("Add a next block for loopEnd condition");
+  }
+  return errors;
+}
+
+function validateBlockInputs(block: WorkflowBlockDto, workflowBlock: WorkflowBlockType | undefined): string[] {
+  const errors: string[] = [];
+
   if (!workflowBlock) {
     errors.push("Invalid workflow block type: " + block.type);
+    return errors;
   }
-  if (workflowBlock?.inputs) {
-    workflowBlock.inputs.forEach((input) => {
-      const { required } = input;
-      if (required && !block.input[input.name]) {
-        errors.push("Missing required input: " + input.name);
-      }
-    });
-  }
+
+  workflowBlock.inputs?.forEach((input) => {
+    if (input.required && !block.input[input.name]) {
+      errors.push("Missing required input: " + input.name);
+    }
+  });
+
+  return errors;
+}
+
+function validateConditionGroups(block: WorkflowBlockDto, workflowBlock: WorkflowBlockType | undefined): string[] {
+  const errors: string[] = [];
 
   if (workflowBlock?.value === "if") {
     const conditionGroups = block.conditionGroups;
@@ -139,6 +168,26 @@ function getBlockErrors({ workflow, block }: { workflow: WorkflowDto; block: Wor
       });
     }
   }
+
+  return errors;
+}
+
+function getBlockErrors({ workflow, block }: { workflow: WorkflowDto; block: WorkflowBlockDto }) {
+  const errors: string[] = [];
+
+  errors.push(...validateBlockConnections(workflow, block));
+
+  if (block.type === "if") {
+    errors.push(...validateIfBlock(block));
+  } else if (block.type === "switch") {
+    errors.push(...validateSwitchBlock(block));
+  } else if (block.type === "iterator") {
+    errors.push(...validateIteratorBlock(block));
+  }
+
+  const workflowBlock = WorkflowBlockTypes.find((f) => f.value === block.type);
+  errors.push(...validateBlockInputs(block, workflowBlock));
+  errors.push(...validateConditionGroups(block, workflowBlock));
 
   return errors;
 }

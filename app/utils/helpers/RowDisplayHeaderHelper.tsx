@@ -108,14 +108,17 @@ function displayCreatedBy(): RowHeaderDisplayDto<RowWithDetails> {
 
 function addDefaultHeaders(
   headers: RowHeaderDisplayDto<RowWithDetails>[],
-  columns: ColumnDto[] | undefined,
-  entity: EntityWithDetails,
-  layout: string | undefined,
-  routes: EntitiesApi.Routes | undefined,
-  onFolioClick: ((item: RowWithDetails) => void) | undefined,
-  onEditClick: ((item: RowWithDetails) => void) | undefined,
-  t: TFunction
+  options: {
+    columns: ColumnDto[] | undefined;
+    entity: EntityWithDetails;
+    layout: string | undefined;
+    routes: EntitiesApi.Routes | undefined;
+    onFolioClick: ((item: RowWithDetails) => void) | undefined;
+    onEditClick: ((item: RowWithDetails) => void) | undefined;
+    t: TFunction;
+  }
 ) {
+  const { columns, entity, layout, routes, onFolioClick, onEditClick, t } = options;
   if (columns && isColumnVisible(columns, RowDisplayDefaultProperty.ID)) {
     headers.push({
       name: RowDisplayDefaultProperty.ID,
@@ -374,7 +377,7 @@ function getDisplayedHeaders({
 }): RowHeaderDisplayDto<RowWithDetails>[] {
   let headers: RowHeaderDisplayDto<RowWithDetails>[] = [];
 
-  addDefaultHeaders(headers, columns, entity, layout, routes, onFolioClick, onEditClick, t);
+  addDefaultHeaders(headers, { columns, entity, layout, routes, onFolioClick, onEditClick, t });
   addPropertyHeaders(headers, entity, columns, layout);
   addRelationshipHeaders(headers, entity, columns, allEntities, routes, onRelatedRowClick, t);
   addHiddenRelationshipHeaders(headers, columns, entity, allEntities, routes, onRelatedRowClick);

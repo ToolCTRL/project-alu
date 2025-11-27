@@ -30,7 +30,6 @@ export default function CampaignsNewRoute() {
   const [htmlBody, setHtmlBody] = useState(defaultHtmlBody);
 
   const [selectedContactsViewId, setSelectedContactsViewId] = useState<string>(data.contactsViews.length > 0 ? data.contactsViews[0].view?.id ?? "" : "");
-  const [selectedContactsView] = useState<EntityViewsApi.GetEntityViewsWithRows>();
 
   useEffect(() => {
     if (actionData?.success) {

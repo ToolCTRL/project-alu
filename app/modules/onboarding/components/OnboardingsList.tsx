@@ -14,7 +14,7 @@ interface OnboardingTitleCellProps {
   readonly completedLabel: string;
 }
 
-function OnboardingTitleCell({ item, sessionPluralLabel, activeLabel, startedLabel, dismissedLabel, completedLabel }: OnboardingTitleCellProps) {
+const OnboardingTitleCell = ({ item, sessionPluralLabel, activeLabel, startedLabel, dismissedLabel, completedLabel }: OnboardingTitleCellProps) => {
   return (
     <Link to={`/admin/onboarding/onboardings/${item.id}`} className="group flex flex-col">
       <div className="flex items-center space-x-2">
@@ -54,7 +54,7 @@ function OnboardingTitleCell({ item, sessionPluralLabel, activeLabel, startedLab
       </div>
     </Link>
   );
-}
+};
 
 export default function OnboardingsList({ items, groupByStatus }: { readonly items: OnboardingWithDetails[]; readonly groupByStatus: { status: string; count: number }[] }) {
   const { t } = useTranslation();

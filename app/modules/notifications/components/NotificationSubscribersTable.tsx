@@ -17,7 +17,7 @@ interface SubscriberCellProps {
   readonly subscriber: SubscriberInfo;
 }
 
-function SubscriberCell({ subscriber }: SubscriberCellProps) {
+const SubscriberCell = ({ subscriber }: SubscriberCellProps) => {
   return (
     <div>
       {subscriber.email ? (
@@ -36,15 +36,15 @@ function SubscriberCell({ subscriber }: SubscriberCellProps) {
       )}
     </div>
   );
-}
+};
 
 interface DeletedStatusCellProps {
   readonly deleted: boolean;
 }
 
-function DeletedStatusCell({ deleted }: DeletedStatusCellProps) {
+const DeletedStatusCell = ({ deleted }: DeletedStatusCellProps) => {
   return <div>{deleted ? <CheckIcon className="text-theme-500 h-4 w-4" /> : <XIcon className="text-muted-foreground h-4 w-4" />}</div>;
-}
+};
 
 export default function NotificationSubscribersTable({ items }: { readonly items: IGetSubscribersData | null }) {
   return (

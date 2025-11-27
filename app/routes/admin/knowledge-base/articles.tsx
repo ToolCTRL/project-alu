@@ -1,4 +1,4 @@
-import { ActionFunctionArgs, LoaderFunctionArgs, redirect, useActionData, useLoaderData, Link, useNavigate, useOutlet, useParams, useSubmit } from "react-router";
+import { ActionFunctionArgs, LoaderFunctionArgs, redirect, useActionData, useLoaderData, Link, useNavigate, useOutlet, useSubmit } from "react-router";
 import { useTranslation } from "react-i18next";
 import { FilterablePropertyDto } from "~/application/dtos/data/FilterablePropertyDto";
 import { PaginationDto } from "~/application/dtos/data/PaginationDto";
@@ -121,7 +121,7 @@ async function handleNewArticle(request: Request, form: FormData, userInfo: any)
 
 async function handleSetOrders(form: FormData, updateFunction: (id: string, data: any) => Promise<any>) {
   const items: { id: string; order: number }[] = form.getAll("orders[]").map((orderData: FormDataEntryValue) => {
-    return JSON.parse(orderData.toString());
+    return JSON.parse(String(orderData));
   });
 
   await Promise.all(

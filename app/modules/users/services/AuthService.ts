@@ -32,9 +32,9 @@ async function getHome({ isAdmin, tenantId, request }: { isAdmin: boolean; tenan
 async function loginFromRequest(request: Request, form: FormData) {
   const userInfo = await getUserInfo(request);
   const { t } = await getTranslations(request);
-  const email = form.get("email")?.toString().toLowerCase().trim();
-  const password = form.get("password");
-  const redirectTo = form.get("redirectTo");
+  const email = form.get("email")?.toString().toLowerCase().trim() ?? "";
+  const password = form.get("password")?.toString() ?? "";
+  const redirectTo = form.get("redirectTo")?.toString() ?? "";
   if (typeof email !== "string" || typeof password !== "string" || typeof redirectTo !== "string") {
     throw new TypeError("Invalid form data");
   }
@@ -47,8 +47,8 @@ async function loginFromRequest(request: Request, form: FormData) {
   console.log("[AUTH_SERVICE] Passwort-Länge:", password.length);
 
   const fieldErrors = {
-    email: !UserUtils.validateEmail(email) ? "Invalid email" : undefined,
-    password: !UserUtils.validatePassword(password) ? "Invlaid password" : undefined,
+    email: UserUtils.validateEmail(email) ? undefined : "Invalid email",
+    password: UserUtils.validatePassword(password) ? undefined : "Invlaid password",
   };
   if (Object.values(fieldErrors).some(Boolean)) throw Response.json({ fieldErrors, fields }, { status: 400 });
 

@@ -238,13 +238,13 @@ export default function WorkflowBlockEditor({
                   </div>
                   <div className="space-y-2">
                     <div className="space-y-1">
-                      {block.conditionGroups.map((group, idx) => {
+                      {block.conditionGroups.map((group) => {
                         return (
                           <NextBlockWithCondition
-                            key={`case-${idx}`}
-                            title={`Case #${idx + 1}`}
+                            key={`case-${group.index}`}
+                            title={`Case #${group.index + 1}`}
                             block={block}
-                            condition={`case${idx + 1}`}
+                            condition={`case${group.index + 1}`}
                             workflow={workflow}
                             onDeleteConnection={onDeleteConnection}
                             onAddingNextBlock={onAddingNextBlock}

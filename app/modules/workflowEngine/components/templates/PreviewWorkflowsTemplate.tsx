@@ -10,6 +10,10 @@ function BlockTypeCell({ type, description }: { readonly type: string; readonly 
   );
 }
 
+function InputCell({ input }: { readonly input: any }) {
+  return JSON.stringify({ input });
+}
+
 export default function PreviewWorkflowsTemplate({ template }: { readonly template: WorkflowsTemplateDto }) {
   return (
     <div>
@@ -28,10 +32,7 @@ export default function PreviewWorkflowsTemplate({ template }: { readonly templa
                 {
                   name: "input",
                   title: "Input",
-                  value: (i) =>
-                    JSON.stringify({
-                      input: i.input,
-                    }),
+                  value: (i) => <InputCell input={i.input} />,
                 },
               ]}
             />

@@ -1,6 +1,6 @@
 import { Form, useActionData, useLoaderData, useNavigation, useSubmit } from "react-router";
 import clsx from "clsx";
-import { useState, useEffect, Fragment, FormEvent } from "react";
+import { useState, useEffect, FormEvent } from "react";
 import { useTranslation } from "react-i18next";
 import { RowHeaderDisplayDto } from "~/application/dtos/data/RowHeaderDisplayDto";
 import { MediaDto } from "~/application/dtos/entities/MediaDto";
@@ -151,11 +151,11 @@ function ImportCsv({
     let rows = str.slice(str.indexOf("\n") + 1).split("\n");
     if (firstRowHasHeaders === "noHeaders") {
       rows = str.split("\n");
-      headers = headers.map((h, index) => `Column ${index + 1}`);
+      headers = headers.map((_h, index) => `Column ${index + 1}`);
     }
     const arr = rows.map((row) => {
       const values = row.split(delimiter);
-      const el = headers.reduce((object: any, header, index) => {
+      const el = headers.reduce((object: Record<string, string>, _header, index) => {
         object[index] = values[index];
         return object;
       }, {});
@@ -165,8 +165,8 @@ function ImportCsv({
   }
 
   function downloadSample() {
-    const rows: any[][] = [];
-    const row: any[] = [];
+    const rows: string[][] = [];
+    const row: string[] = [];
     if (firstRowHasHeaders === "firstRowHasHeaders") {
       entity.properties
         .filter((f) => !f.isDefault)
@@ -177,7 +177,7 @@ function ImportCsv({
     }
 
     for (let idx = 1; idx <= 5; idx++) {
-      const row: any[] = [];
+      const row: string[] = [];
       entity.properties
         .filter((f) => !f.isDefault)
         .forEach((property) => {
@@ -561,21 +561,22 @@ function Confirm({
         });
       }
     });
+    const statusRenderer = (i: Rows_Import.ImportRow) => {
+      if (!i.row && navigation.state === "submitting") {
+        return <div className="text-muted-foreground text-sm italic">Importing...</div>;
+      }
+      if (i.error) {
+        return <div className="text-sm text-red-500">Error: {i.error}</div>;
+      }
+      if (i.row) {
+        return <div className="text-sm text-emerald-500">Imported: {i.row?.id}</div>;
+      }
+      return null;
+    };
     newHeaders.push({
       name: "status",
       title: t("shared.status"),
-      value: (i) => {
-        if (!i.row && navigation.state === "submitting") {
-          return <div className="text-muted-foreground text-sm italic">Importing...</div>;
-        }
-        if (i.error) {
-          return <div className="text-sm text-red-500">Error: {i.error}</div>;
-        }
-        if (i.row) {
-          return <div className="text-sm text-emerald-500">Imported: {i.row?.id}</div>;
-        }
-        return null;
-      },
+      value: statusRenderer,
     });
     setHeaders(newHeaders);
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -585,7 +586,7 @@ function Confirm({
     e.stopPropagation();
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
-    const tag = globalThis.prompt("tag", "import");
+    const tag = globalThis.window.prompt("tag", "import");
     formData.set("tag", tag ?? "");
     submit(formData, {
       method: "post",

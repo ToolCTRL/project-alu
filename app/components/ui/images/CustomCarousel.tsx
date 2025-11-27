@@ -9,14 +9,6 @@ interface Props {
 }
 export default function CustomCarousel({ items, size = "full" }: Props) {
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [currentItem, setCurrentItem] = useState<{ type: string; title: string; src: string } | undefined>(undefined);
-
-  useEffect(() => {
-    if (items.length > currentIndex) {
-      setCurrentItem(items[currentIndex]);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [items, currentIndex]);
 
   function nextImage() {
     if (items.length > currentIndex + 1) {

@@ -24,6 +24,38 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
   };
   return data;
 };
+
+function EntityTitleCell({ item, t }: { item: EntityWithDetails; t: any }) {
+  return (
+    <div>
+      <div className="flex items-center space-x-1">
+        <Link to={item.slug} className="font-medium hover:underline">
+          {t(item.titlePlural)}
+        </Link>
+      </div>
+    </div>
+  );
+}
+
+function EntityPropertiesCell({ item, t }: { item: EntityWithDetails; t: any }) {
+  return (
+    <div className="max-w-xs truncate">
+      {item.properties.some((f) => !f.isDefault) ? (
+        <Link className="truncate pb-1 hover:underline" to={item.slug}>
+          {item.properties
+            .filter((f) => !f.isDefault)
+            .map((f) => t(f.title) + (f.isRequired ? "*" : ""))
+            .join(", ")}
+        </Link>
+      ) : (
+        <Link className="text-muted-foreground truncate pb-1 hover:underline" to={item.slug}>
+          {t("shared.setCustomProperties")}
+        </Link>
+      )}
+    </div>
+  );
+}
+
 export default function EntitiesIndexRoute() {
   const { t } = useTranslation();
   const data = useLoaderData<LoaderData>();
@@ -46,36 +78,13 @@ export default function EntitiesIndexRoute() {
             {
               name: "title",
               title: t("models.entity.title"),
-              value: (item) => (
-                <div>
-                  <div className="flex items-center space-x-1">
-                    <Link to={item.slug} className="font-medium hover:underline">
-                      {t(item.titlePlural)}
-                    </Link>
-                  </div>
-                </div>
-              ),
+              value: (item) => <EntityTitleCell item={item} t={t} />,
             },
             {
               name: "properties",
               title: t("models.property.plural"),
               className: "w-full text-xs",
-              value: (item) => (
-                <div className="max-w-xs truncate">
-                  {item.properties.some((f) => !f.isDefault) ? (
-                    <Link className="truncate pb-1 hover:underline" to={item.slug}>
-                      {item.properties
-                        .filter((f) => !f.isDefault)
-                        .map((f) => t(f.title) + (f.isRequired ? "*" : ""))
-                        .join(", ")}
-                    </Link>
-                  ) : (
-                    <Link className="text-muted-foreground truncate pb-1 hover:underline" to={item.slug}>
-                      {t("shared.setCustomProperties")}
-                    </Link>
-                  )}
-                </div>
-              ),
+              value: (item) => <EntityPropertiesCell item={item} t={t} />,
             },
           ]}
         />

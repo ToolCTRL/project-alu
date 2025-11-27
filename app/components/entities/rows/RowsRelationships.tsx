@@ -58,15 +58,17 @@ function EntityRowsRelationships({ entity, className, withTitle }: Readonly<{ en
               name: "entity",
               title: t(data?.entity.titlePlural ?? ""),
               items: data?.items ?? [],
-              card: (item) => (
-                <EntityRowCard
-                  item={item}
-                  entity={data.entity!}
-                  isSelected={isSelected(item)}
-                  onItemClick={handleItemClick}
-                  t={t}
-                />
-              ),
+              card: (item) => {
+                return (
+                  <EntityRowCard
+                    item={item}
+                    entity={data.entity}
+                    isSelected={isSelected(item)}
+                    onItemClick={handleItemClick}
+                    t={t}
+                  />
+                );
+              },
             },
           ]}
         />

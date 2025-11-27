@@ -60,27 +60,27 @@ export default function MembersListAndTable({ items }: Readonly<Props>) {
           {
             name: "user",
             title: t("models.user.object"),
-            value: (item) => <MemberUserCell item={item} t={t} />,
+            value: (item) => MemberUserCell({ item, t }),
           },
           {
             name: "role",
             title: t("settings.profile.type"),
-            value: (item) => <MemberRoleCell item={item} t={t} />,
+            value: (item) => MemberRoleCell({ item, t }),
           },
           {
             name: "status",
             title: t("shared.status"),
-            value: (item) => <MemberStatusCell item={item} t={t} />,
+            value: (item) => MemberStatusCell({ item, t }),
           },
           {
             name: "createdAt",
             title: t("shared.createdAt"),
-            value: (item) => <MemberCreatedAtCell item={item} />,
+            value: (item) => MemberCreatedAtCell({ item }),
           },
           {
             name: "actions",
             title: t("shared.actions"),
-            value: (item) => <MemberActionsCell item={item} t={t} />,
+            value: (item) => MemberActionsCell({ item, t }),
           },
         ]}
       />

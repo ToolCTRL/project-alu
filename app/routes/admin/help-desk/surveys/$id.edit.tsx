@@ -38,7 +38,11 @@ export const action = async ({ request, params }: ActionFunctionArgs) => {
   const action = form.get("action");
   if (action === "edit") {
     try {
-      const item: SurveyDto = JSON.parse(form.get("item") as string);
+      const itemData = form.get("item");
+      if (!itemData || typeof itemData !== "string") {
+        throw new Error("Invalid item data");
+      }
+      const item: SurveyDto = JSON.parse(itemData);
       if (!item.title || !item.slug) {
         throw new Error("Title and slug are required");
       } else if (item.items.length === 0) {

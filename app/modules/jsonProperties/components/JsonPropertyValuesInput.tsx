@@ -72,7 +72,7 @@ function GroupInputs({ prefix, properties, attributes }: readonly { readonly pre
 function getValueOrDefault<T>(value: JsonValue | undefined, defaultValue: JsonValue | undefined, converter: (val: JsonValue) => T): T | undefined {
   const actualValue = value === undefined ? undefined : converter(value);
   const actualDefault = defaultValue === undefined ? undefined : converter(defaultValue);
-  return actualValue !== undefined ? actualValue : actualDefault;
+  return actualValue ?? actualDefault;
 }
 
 function StringInput({ prefix, property, value }: readonly { readonly prefix: string; readonly property: JsonPropertyDto; readonly value: JsonValue | undefined }) {

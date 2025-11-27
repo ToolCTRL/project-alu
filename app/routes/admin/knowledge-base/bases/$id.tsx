@@ -74,8 +74,9 @@ async function handleEdit(request: Request, params: any, form: FormData, item: K
       logo,
       seoImage,
     });
-  } catch (e: any) {
-    return Response.json({ error: e.message }, { status: 400 });
+  } catch (e: unknown) {
+    const errorMessage = e instanceof Error ? e.message : String(e);
+    return Response.json({ error: errorMessage }, { status: 400 });
   }
 
   return redirect("/admin/knowledge-base/bases");
@@ -86,8 +87,9 @@ async function handleDelete(request: Request, item: KnowledgeBaseDto) {
   try {
     await KnowledgeBaseService.del(item);
     return redirect("/admin/knowledge-base/bases");
-  } catch (e: any) {
-    return Response.json({ error: e.message }, { status: 400 });
+  } catch (e: unknown) {
+    const errorMessage = e instanceof Error ? e.message : String(e);
+    return Response.json({ error: errorMessage }, { status: 400 });
   }
 }
 

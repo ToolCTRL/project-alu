@@ -559,8 +559,7 @@ export default function EntityViewForm({
       </div>
 
       {!isSystem && (
-        <Fragment>
-          <InputGroup title="Filters">
+        <InputGroup title="Filters">
             {filters.map((item, idx) => (
               <input key={`filter-${item.name}-${item.condition}-${idx}`} type="text" name="filters[]" readOnly hidden value={JSON.stringify(item)} />
             ))}
@@ -657,8 +656,7 @@ export default function EntityViewForm({
             >
               <span className="text-muted-foreground block text-xs font-normal">{filters.length === 0 ? "No filters" : "Add filter"}</span>
             </button>
-          </InputGroup>
-        </Fragment>
+        </InputGroup>
       )}
 
       <InputGroup title="Preview">

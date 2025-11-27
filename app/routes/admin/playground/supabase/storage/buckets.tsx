@@ -189,7 +189,11 @@ export default function BucketsList() {
   );
 }
 
-function BucketForm({ item }: { readonly item?: SupabaseBucketDto }) {
+interface BucketFormProps {
+  readonly item?: SupabaseBucketDto;
+}
+
+function BucketForm({ item }: BucketFormProps) {
   const submit = useSubmit();
   const navigation = useNavigation();
   const actionData = useActionData<ActionData>();

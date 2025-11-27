@@ -58,7 +58,7 @@ function CommandBar() {
   );
 }
 
-function ResultItem({ item, active }: { item: string | { name?: string; subtitle?: string }; active: boolean }) {
+function ResultItem({ item, active }: { readonly item: string | { readonly name?: string; readonly subtitle?: string }; readonly active: boolean }) {
   if (typeof item === "string") {
     return (
       <div className={clsx("flex w-full cursor-pointer items-center space-x-3 py-4 pl-4 pr-5", active ? "bg-secondary/90" : "")}>
@@ -82,7 +82,7 @@ function RenderResults() {
   return (
     <KBarResults
       items={results}
-      onRender={({ item, active }) => <ResultItem item={item} active={active} />}
+      onRender={({ item, active }) => ResultItem({ item, active })}
     />
   );
 }

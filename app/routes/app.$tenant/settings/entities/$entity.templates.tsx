@@ -28,7 +28,7 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
   return data;
 };
 
-function TemplateCell({ item, entity, t }: { item: EntityTemplate; entity: EntityWithDetails; t: any }) {
+function TemplateCell({ item, entity, t }: Readonly<{ item: EntityTemplate; entity: EntityWithDetails; t: any }>) {
   function getConfig(item: EntityTemplate) {
     try {
       const config = JSON.parse(item.config);
@@ -54,6 +54,10 @@ function TemplateCell({ item, entity, t }: { item: EntityTemplate; entity: Entit
     }
   }
   return <ShowPayloadModalButton title={`Template: ${item.title}`} payload={getConfig(item)} />;
+}
+
+function TemplateCellWrapper({ item, entity, t }: { item: EntityTemplate; entity: EntityWithDetails; t: any }) {
+  return <TemplateCell item={item} entity={entity} t={t} />;
 }
 
 export default function EntityTemplatesIndex() {
@@ -88,7 +92,7 @@ export default function EntityTemplatesIndex() {
               title: "Template",
               name: "template",
               className: "max-w-xs",
-              value: (item) => <TemplateCell item={item} entity={data.entity} t={t} />,
+              value: (item) => <TemplateCellWrapper item={item} entity={data.entity} t={t} />,
             },
           ]}
           items={data.items}

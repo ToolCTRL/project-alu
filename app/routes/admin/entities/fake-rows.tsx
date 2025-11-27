@@ -190,8 +190,30 @@ export const action = async ({ request }: ActionFunctionArgs) => {
   }
 };
 
-async function createFakeRow({ entity, tenantId, idx, status }: { entity: EntityWithDetails; tenantId: string; idx: number; status: { totalRows: number } }) {
-  const values: Prisma.RowValueUncheckedCreateWithoutRowInput[] = [];
+function createFakePropertyValue(property: any, idx: number): Prisma.RowValueUncheckedCreateWithoutRowInput {
+  const propertyId = property.id;
+  const typeHandlers: Record<PropertyType, () => Prisma.RowValueUncheckedCreateWithoutRowInput> = {
+    [PropertyType.TEXT]: () => ({ propertyId, textValue: `Fake ${idx}` }),
+    [PropertyType.NUMBER]: () => ({ propertyId, numberValue: idx.toString() }),
+    [PropertyType.BOOLEAN]: () => ({ propertyId, booleanValue: idx % 2 === 0 }),
+    [PropertyType.DATE]: () => ({ propertyId, dateValue: new Date().toISOString() }),
+    [PropertyType.SELECT]: () => {
+      const firstOption = property.options.length > 0 ? property.options[0] : null;
+      return { propertyId, textValue: firstOption?.value ?? idx.toString() };
+    },
+    [PropertyType.MEDIA]: () => ({ propertyId, media: { create: { title: "Fake", name: "Fake", file: "Fake", type: "Fake" } } }),
+    [PropertyType.RANGE_DATE]: () => ({ propertyId, range: { create: { dateMin: new Date(), dateMax: new Date(), numberMin: null, numberMax: null } } }),
+    [PropertyType.RANGE_NUMBER]: () => ({ propertyId, range: { create: { dateMin: null, dateMax: null, numberMin: 1, numberMax: 2 } } }),
+  };
+
+  const handler = typeHandlers[property.type as PropertyType];
+  if (!handler) {
+    throw new Error(`[Unknown] Unknown property type ${PropertyType[property.type]}`);
+  }
+  return handler();
+}
+
+async function ensureFakeRowTag(entity: EntityWithDetails) {
   let tag = entity.tags.find((f) => f.value === "fake-row");
   if (!tag) {
     tag = await db.entityTag.create({
@@ -207,29 +229,12 @@ async function createFakeRow({ entity, tenantId, idx, status }: { entity: Entity
   if (!tag) {
     throw new Error("Could not create tag: fake-row");
   }
-  for (const property of entity.properties) {
-    const propertyId = property.id;
-    if ([PropertyType.TEXT].includes(property.type)) {
-      values.push({ propertyId, textValue: `Fake ${idx}` });
-    } else if ([PropertyType.NUMBER].includes(property.type)) {
-      values.push({ propertyId, numberValue: idx.toString() });
-    } else if ([PropertyType.BOOLEAN].includes(property.type)) {
-      values.push({ propertyId, booleanValue: idx % 2 === 0 });
-    } else if ([PropertyType.DATE].includes(property.type)) {
-      values.push({ propertyId, dateValue: new Date().toISOString() });
-    } else if ([PropertyType.SELECT].includes(property.type)) {
-      const firstOption = property.options.length > 0 ? property.options[0] : null;
-      values.push({ propertyId, textValue: firstOption?.value ?? idx.toString() });
-    } else if ([PropertyType.MEDIA].includes(property.type)) {
-      values.push({ propertyId, media: { create: { title: "Fake", name: "Fake", file: "Fake", type: "Fake" } } });
-    } else if ([PropertyType.RANGE_DATE].includes(property.type)) {
-      values.push({ propertyId, range: { create: { dateMin: new Date(), dateMax: new Date(), numberMin: null, numberMax: null } } });
-    } else if ([PropertyType.RANGE_NUMBER].includes(property.type)) {
-      values.push({ propertyId, range: { create: { dateMin: null, dateMax: null, numberMin: 1, numberMax: 2 } } });
-    } else {
-      throw new Error(`[${entity.name}] Unknown property type ${PropertyType[property.type]}`);
-    }
-  }
+  return tag;
+}
+
+async function createFakeRow({ entity, tenantId, idx, status }: { entity: EntityWithDetails; tenantId: string; idx: number; status: { totalRows: number } }) {
+  const tag = await ensureFakeRowTag(entity);
+  const values = entity.properties.map((property) => createFakePropertyValue(property, idx));
   const row = await db.row.create({
     data: {
       entityId: entity.id,
@@ -303,6 +308,28 @@ async function createFakeApiKeyLog({
   return apiKeyLog;
 }
 
+function createUpdatePropertyValue(property: any, value: RowValue, idx: number): Prisma.RowValueUpdateWithWhereUniqueWithoutRowInput | null {
+  const typeHandlers: Record<PropertyType, () => Prisma.RowValueUpdateWithWhereUniqueWithoutRowInput> = {
+    [PropertyType.TEXT]: () => ({ where: { id: value.id }, data: { textValue: "Updated " + value.textValue } }),
+    [PropertyType.NUMBER]: () => ({ where: { id: value.id }, data: { numberValue: idx + 100 } }),
+    [PropertyType.BOOLEAN]: () => ({ where: { id: value.id }, data: { booleanValue: idx % 2 !== 0 } }),
+    [PropertyType.DATE]: () => ({ where: { id: value.id }, data: { dateValue: new Date().toISOString() } }),
+    [PropertyType.SELECT]: () => {
+      const firstOption = property.options.length > 0 ? property.options[0] : null;
+      return { where: { id: value.id }, data: { textValue: firstOption?.value ?? idx.toString() } };
+    },
+    [PropertyType.MEDIA]: () => ({ where: { id: value.id }, data: { media: { create: { title: "Fake", name: "Fake", file: "Fake", type: "Fake" } } } }),
+    [PropertyType.RANGE_DATE]: () => ({ where: { id: value.id }, data: { range: { create: { dateMin: new Date(), dateMax: new Date(), numberMin: null, numberMax: null } } } }),
+    [PropertyType.RANGE_NUMBER]: () => ({ where: { id: value.id }, data: { range: { create: { dateMin: null, dateMax: null, numberMin: 1, numberMax: 2 } } } }),
+  };
+
+  const handler = typeHandlers[property.type as PropertyType];
+  if (!handler) {
+    throw new Error(`[Unknown] Unknown property type ${PropertyType[property.type]}`);
+  }
+  return handler();
+}
+
 async function updateFakeRow(
   row: Row & { values: RowValue[] },
   { entity, idx, status }: { entity: EntityWithDetails; idx: number; status: { totalRows: number } }
@@ -313,25 +340,9 @@ async function updateFakeRow(
     if (!value) {
       continue;
     }
-    if ([PropertyType.TEXT].includes(property.type)) {
-      values.push({ where: { id: value.id }, data: { textValue: "Updated " + value.textValue } });
-    } else if ([PropertyType.NUMBER].includes(property.type)) {
-      values.push({ where: { id: value.id }, data: { numberValue: idx + 100 } });
-    } else if ([PropertyType.BOOLEAN].includes(property.type)) {
-      values.push({ where: { id: value.id }, data: { booleanValue: idx % 2 !== 0 } });
-    } else if ([PropertyType.DATE].includes(property.type)) {
-      values.push({ where: { id: value.id }, data: { dateValue: new Date().toISOString() } });
-    } else if ([PropertyType.SELECT].includes(property.type)) {
-      const firstOption = property.options.length > 0 ? property.options[0] : null;
-      values.push({ where: { id: value.id }, data: { textValue: firstOption?.value ?? idx.toString() } });
-    } else if ([PropertyType.MEDIA].includes(property.type)) {
-      values.push({ where: { id: value.id }, data: { media: { create: { title: "Fake", name: "Fake", file: "Fake", type: "Fake" } } } });
-    } else if ([PropertyType.RANGE_DATE].includes(property.type)) {
-      values.push({ where: { id: value.id }, data: { range: { create: { dateMin: new Date(), dateMax: new Date(), numberMin: null, numberMax: null } } } });
-    } else if ([PropertyType.RANGE_NUMBER].includes(property.type)) {
-      values.push({ where: { id: value.id }, data: { range: { create: { dateMin: null, dateMax: null, numberMin: 1, numberMax: 2 } } } });
-    } else {
-      throw new Error(`[${entity.name}] Unknown property type ${PropertyType[property.type]}`);
+    const updateValue = createUpdatePropertyValue(property, value, idx);
+    if (updateValue) {
+      values.push(updateValue);
     }
   }
   await db.row.update({

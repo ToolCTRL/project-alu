@@ -169,18 +169,21 @@ export default function TestimonialsVariantCarousel({ item }: { readonly item: T
           {/* Navigation Dots */}
           {item.items.length > 1 && (
             <div className="flex justify-center gap-2 mt-8">
-              {item.items.map((testimonial, i) => (
-                <button
-                  key={`dot-${i}-${testimonial.name}`}
-                  onClick={() => handleDotClick(i)}
-                  className={`h-2 rounded-full transition-all ${
-                    i === activeIndex
-                      ? "w-8 bg-blueprint-accent"
-                      : "w-2 bg-blueprint-text-muted/50 hover:bg-blueprint-text-muted"
-                  }`}
-                  aria-label={`Go to testimonial ${i + 1}`}
-                />
-              ))}
+              {item.items.map((testimonial, i) => {
+                const dotKey = `dot-${i}-${testimonial.name}`;
+                return (
+                  <button
+                    key={dotKey}
+                    onClick={() => handleDotClick(i)}
+                    className={`h-2 rounded-full transition-all ${
+                      i === activeIndex
+                        ? "w-8 bg-blueprint-accent"
+                        : "w-2 bg-blueprint-text-muted/50 hover:bg-blueprint-text-muted"
+                    }`}
+                    aria-label={`Go to testimonial ${i + 1}`}
+                  />
+                );
+              })}
             </div>
           )}
         </div>

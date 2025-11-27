@@ -321,15 +321,15 @@ function ActionsCells<T>({
               .filter((f) => (f.hidden ? !f.hidden(item) : true))
               .map((action) => {
                 const actionKey =
-                  (action.title && action.title.toString()) ||
+                  action.title?.toString() ||
                   action.onClick?.name ||
                   action.onClickRouteTarget ||
                   `action-${idxRow}`;
                 return (
                   <ButtonTertiary
-                    disabled={action.disabled !== undefined ? action.disabled(item) : action.disabled}
+                    disabled={action.disabled === undefined ? action.disabled : action.disabled(item)}
                     key={actionKey}
-                    destructive={action.renderIsDestructive !== undefined ? action.renderIsDestructive(item) : action.destructive}
+                    destructive={action.renderIsDestructive === undefined ? action.destructive : action.renderIsDestructive(item)}
                     prefetch={action.prefetch}
                     onClick={(e) => {
                       e.stopPropagation();

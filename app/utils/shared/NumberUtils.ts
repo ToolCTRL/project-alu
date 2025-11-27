@@ -37,8 +37,9 @@ const pad = (num: number, size: number) => {
 const custom = (value: number, format: string): string => {
   try {
     return numeral(value).format(format);
-  } catch (e) {
-    return value?.toString();
+  } catch (e: unknown) {
+    console.error("Error formatting number with custom format:", e);
+    return value?.toString() ?? "";
   }
 };
 

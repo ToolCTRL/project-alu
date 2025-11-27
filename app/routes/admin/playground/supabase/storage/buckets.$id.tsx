@@ -60,7 +60,7 @@ async function handleFileSave(supabaseBucketId: string, form: FormData) {
     return Response.json({ error: "Missing name" }, { status: 400 });
   }
   const files: MediaDto[] = form.getAll("files[]").map((f) => {
-    return JSON.parse(f.toString());
+    return JSON.parse(String(f));
   });
   if (files.length !== 1) {
     return Response.json({ error: "Missing file" }, { status: 400 });
@@ -247,7 +247,11 @@ export default function BucketsDetail() {
   );
 }
 
-function FileFormComponent({ item }: { readonly item?: SupabaseFileDto }) {
+interface FileFormProps {
+  readonly item?: SupabaseFileDto;
+}
+
+function FileFormComponent({ item }: FileFormProps) {
   const submit = useSubmit();
   const navigation = useNavigation();
   const actionData = useActionData<ActionData>();

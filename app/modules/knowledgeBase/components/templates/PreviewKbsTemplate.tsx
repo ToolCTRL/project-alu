@@ -15,6 +15,33 @@ function TitleCell({ title, description }: TitleCellProps) {
   );
 }
 
+interface KbTableProps {
+  readonly title: string;
+  readonly description: string;
+}
+
+function KbTitleCell({ title, description }: KbTableProps) {
+  return <TitleCell title={title} description={description} />;
+}
+
+interface CategoryTableProps {
+  readonly title: string;
+  readonly description: string;
+}
+
+function CategoryTitleCell({ title, description }: CategoryTableProps) {
+  return <TitleCell title={title} description={description} />;
+}
+
+interface ArticleTableProps {
+  readonly title: string;
+  readonly description: string;
+}
+
+function ArticleTitleCell({ title, description }: ArticleTableProps) {
+  return <TitleCell title={title} description={description} />;
+}
+
 export default function PreviewKbsTemplate({ template }: { readonly template: KnowledgeBasesTemplateDto }) {
   return (
     <div className="space-y-2">
@@ -26,7 +53,7 @@ export default function PreviewKbsTemplate({ template }: { readonly template: Kn
           {
             name: "title",
             title: "Title",
-            value: (i) => <TitleCell title={i.title} description={i.description} />,
+            value: (i) => <KbTitleCell title={i.title} description={i.description} />,
           },
           { name: "enabled", title: "Enabled", value: (i) => i.enabled },
         ]}
@@ -40,7 +67,7 @@ export default function PreviewKbsTemplate({ template }: { readonly template: Kn
           {
             name: "title",
             title: "Title",
-            value: (i) => <TitleCell title={i.title} description={i.description} />,
+            value: (i) => <CategoryTitleCell title={i.title} description={i.description} />,
           },
           {
             name: "sections",
@@ -59,7 +86,7 @@ export default function PreviewKbsTemplate({ template }: { readonly template: Kn
           {
             name: "title",
             title: "Title",
-            value: (i) => <TitleCell title={i.title} description={i.description} />,
+            value: (i) => <ArticleTitleCell title={i.title} description={i.description} />,
           },
           { name: "knowledgeBase", title: "Knowledge Base", value: (i) => i.knowledgeBaseSlug },
         ]}

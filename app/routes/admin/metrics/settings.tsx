@@ -2,7 +2,6 @@ import { ActionFunction, LoaderFunctionArgs, Form, useActionData, useLoaderData,
 import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { RowValueMultipleDto } from "~/application/dtos/entities/RowValueMultipleDto";
-import ButtonSecondary from "~/components/ui/buttons/ButtonSecondary";
 import LoadingButton from "~/components/ui/buttons/LoadingButton";
 import InputCheckboxWithDescription from "~/components/ui/input/InputCheckboxWithDescription";
 import InputMultiText from "~/components/ui/input/InputMultiText";
@@ -42,7 +41,7 @@ export const action: ActionFunction = async ({ request }) => {
   const action = form.get("action");
   if (action === "set-settings") {
     const ignoreUrls: RowValueMultipleDto[] = form.getAll("ignoreUrls[]").map((f: FormDataEntryValue) => {
-      return JSON.parse(f.toString());
+      return JSON.parse(String(f));
     });
     await updateAppConfiguration({
       metricsEnabled: ["true", "on"].includes(form.get("enabled")?.toString() ?? "false"),

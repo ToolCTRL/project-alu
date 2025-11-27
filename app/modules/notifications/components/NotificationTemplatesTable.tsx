@@ -9,7 +9,7 @@ import { IGetTemplatesData } from "../services/.server/NotificationService";
 
 function isValid(item: NotificationChannelDto, templates: IGetTemplatesData | null): boolean {
   const existing = templates?.data.find((f) => f.name === item.name);
-  return !(!existing || !existing.steps || existing.steps.length === 0);
+  return Boolean(existing?.steps?.length);
 }
 
 interface NameCellProps {
@@ -17,7 +17,7 @@ interface NameCellProps {
   readonly valid: boolean;
 }
 
-function NameCell({ name, valid }: NameCellProps) {
+const NameCell = ({ name, valid }: NameCellProps) => {
   if (valid) {
     return <div>{name}</div>;
   }
@@ -28,28 +28,28 @@ function NameCell({ name, valid }: NameCellProps) {
       <div>{name}</div>
     </div>
   );
-}
+};
 
 interface DescriptionCellProps {
   readonly description: string;
   readonly valid: boolean;
 }
 
-function DescriptionCell({ description, valid }: DescriptionCellProps) {
+const DescriptionCell = ({ description, valid }: DescriptionCellProps) => {
   return (
     <div className="text-muted-foreground max-w-xs overflow-x-auto">
       <div className={clsx(valid ? "" : "text-red-600")}>{description}</div>
     </div>
   );
-}
+};
 
 interface RolesCellProps {
   readonly roles: string[] | undefined;
 }
 
-function RolesCell({ roles }: RolesCellProps) {
+const RolesCell = ({ roles }: RolesCellProps) => {
   return <div className="text-muted-foreground">{roles?.map((f) => f).join(", ")}</div>;
-}
+};
 
 interface SendButtonCellProps {
   readonly isActive: boolean;
@@ -57,7 +57,7 @@ interface SendButtonCellProps {
   readonly sendLabel: string;
 }
 
-function SendButtonCell({ isActive, onSendPreview, sendLabel }: SendButtonCellProps) {
+const SendButtonCell = ({ isActive, onSendPreview, sendLabel }: SendButtonCellProps) => {
   return (
     <div>
       <button
@@ -69,30 +69,30 @@ function SendButtonCell({ isActive, onSendPreview, sendLabel }: SendButtonCellPr
       </button>
     </div>
   );
-}
+};
 
 interface ActiveStatusCellProps {
   readonly active: boolean;
 }
 
-function ActiveStatusCell({ active }: ActiveStatusCellProps) {
+const ActiveStatusCell = ({ active }: ActiveStatusCellProps) => {
   return <div>{active ? <CheckIcon className="text-theme-500 h-4 w-4" /> : <XIcon className="text-muted-foreground h-4 w-4" />}</div>;
-}
+};
 
 interface HasStepsCellProps {
   readonly hasSteps: boolean;
 }
 
-function HasStepsCell({ hasSteps }: HasStepsCellProps) {
+const HasStepsCell = ({ hasSteps }: HasStepsCellProps) => {
   return <div>{hasSteps ? <CheckIcon className="text-theme-500 h-4 w-4" /> : <XIcon className="h-4 w-4 text-red-600" />}</div>;
-}
+};
 
 interface IdLinkCellProps {
   readonly id: string | undefined;
   readonly createLabel: string;
 }
 
-function IdLinkCell({ id, createLabel }: IdLinkCellProps) {
+const IdLinkCell = ({ id, createLabel }: IdLinkCellProps) => {
   if (id) {
     return (
       <a
@@ -116,7 +116,7 @@ function IdLinkCell({ id, createLabel }: IdLinkCellProps) {
       {createLabel}
     </a>
   );
-}
+};
 
 export default function NotificationTemplatesTable({
   items,

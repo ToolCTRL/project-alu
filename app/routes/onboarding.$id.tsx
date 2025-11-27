@@ -24,7 +24,7 @@ export const action: ActionFunction = async ({ request, params }) => {
     return Response.json({ error: "Session not found" }, { status: 404 });
   }
   const actions: OnboardingSessionActionDto[] = form.getAll("actions[]").map((f: FormDataEntryValue) => {
-    return JSON.parse(String(f));
+    return JSON.parse(f.toString());
   });
   if (action === "started") {
     await OnboardingSessionService.started(session);

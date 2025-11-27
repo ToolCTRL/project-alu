@@ -29,9 +29,9 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
   if (!knowledgeBase) {
     throw redirect("/admin/knowledge-base/bases");
   }
-  const article = await getKbArticleById(params.id!);
+  const article = await getKbArticleById(params.id);
   if (!article) {
-    throw redirect(`/admin/knowledge-base/bases/${params.slug!}/articles`);
+    throw redirect(`/admin/knowledge-base/bases/${params.slug}/articles`);
   }
   const data: LoaderData = {
     metatags: [{ title: `${t("shared.edit")}: ${article.title} | ${knowledgeBase.title} | ${t("knowledgeBase.title")} | ${process.env.APP_NAME}` }],
@@ -49,7 +49,7 @@ export const action = async ({ request, params }: ActionFunctionArgs) => {
   const form = await request.formData();
   const action = form.get("action")?.toString() ?? "";
 
-  const article = await getKbArticleById(params.id!);
+  const article = await getKbArticleById(params.id);
   if (!article) {
     return Response.json({ error: "Article not found" }, { status: 400 });
   }

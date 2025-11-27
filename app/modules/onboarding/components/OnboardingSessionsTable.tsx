@@ -24,14 +24,14 @@ interface UserCellProps {
   readonly tenant: OnboardingSessionWithDetails["tenant"];
 }
 
-function UserCell({ user, tenant }: UserCellProps) {
+const UserCell = ({ user, tenant }: UserCellProps) => {
   return (
     <div>
       <UserBadge item={user} />
       <TenantCell item={tenant} />
     </div>
   );
-}
+};
 
 interface ActivityCellProps {
   readonly item: OnboardingSessionWithDetails;
@@ -40,7 +40,7 @@ interface ActivityCellProps {
   readonly onSelect: (item: OnboardingSessionWithDetails) => void;
 }
 
-function ActivityCell({ item, metadata, t, onSelect }: ActivityCellProps) {
+const ActivityCell = ({ item, metadata, t, onSelect }: ActivityCellProps) => {
   return (
     <div>
       <button type="button" onClick={() => onSelect(item)} className="hover:border-theme-400 border-border border-b border-dotted hover:border-dashed">
@@ -48,7 +48,7 @@ function ActivityCell({ item, metadata, t, onSelect }: ActivityCellProps) {
       </button>
     </div>
   );
-}
+};
 
 interface StepsCellProps {
   readonly item: OnboardingSessionWithDetails;
@@ -56,7 +56,7 @@ interface StepsCellProps {
   readonly onSelect: (item: OnboardingSessionWithDetails) => void;
 }
 
-function StepsCell({ item, completedLabel, onSelect }: StepsCellProps) {
+const StepsCell = ({ item, completedLabel, onSelect }: StepsCellProps) => {
   return (
     <div>
       <button type="button" onClick={() => onSelect(item)} className="hover:border-theme-400 border-border border-b border-dotted hover:border-dashed">
@@ -64,21 +64,21 @@ function StepsCell({ item, completedLabel, onSelect }: StepsCellProps) {
       </button>
     </div>
   );
-}
+};
 
 interface DateOrIconCellProps {
   readonly date: Date | null;
 }
 
-function DateOrIconCell({ date }: DateOrIconCellProps) {
+const DateOrIconCell = ({ date }: DateOrIconCellProps) => {
   return <div className="flex justify-center">{date ? <DateCell date={date} /> : <XIcon className="h-4 w-4 text-red-500" />}</div>;
-}
+};
 
 interface OnboardingHeaderCellProps {
   readonly item: OnboardingSessionWithDetails;
 }
 
-function OnboardingHeaderCell({ item }: OnboardingHeaderCellProps) {
+const OnboardingHeaderCell = ({ item }: OnboardingHeaderCellProps) => {
   return (
     <div className="flex items-center space-x-2">
       <div className="text-base font-bold">{item.onboarding.title}</div>
@@ -87,7 +87,7 @@ function OnboardingHeaderCell({ item }: OnboardingHeaderCellProps) {
       </div>
     </div>
   );
-}
+};
 
 interface DeleteActionCellProps {
   readonly item: OnboardingSessionWithDetails;
@@ -96,7 +96,7 @@ interface DeleteActionCellProps {
   readonly deleteLabel: string;
 }
 
-function DeleteActionCell({ item, onDelete, canDelete, deleteLabel }: DeleteActionCellProps) {
+const DeleteActionCell = ({ item, onDelete, canDelete, deleteLabel }: DeleteActionCellProps) => {
   return (
     <div className="flex items-center space-x-2">
       {onDelete && (
@@ -106,7 +106,7 @@ function DeleteActionCell({ item, onDelete, canDelete, deleteLabel }: DeleteActi
       )}
     </div>
   );
-}
+};
 
 export default function OnboardingSessionsTable({
   items,

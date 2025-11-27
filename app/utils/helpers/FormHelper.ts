@@ -113,8 +113,8 @@ const getDateRange = (form: FormData, name: string): RowValueRangeDto => {
   let range: RowValueRangeDto = {
     numberMin: null,
     numberMax: null,
-    dateMin: min ? new Date(String(min)) : null,
-    dateMax: max ? new Date(String(max)) : null,
+    dateMin: min !== null && min !== undefined ? new Date(String(min)) : null,
+    dateMax: max !== null && max !== undefined ? new Date(String(max)) : null,
   };
   return range;
 };

@@ -37,67 +37,75 @@ export default function EntitiesTable({ items, selected, onSelected }: Readonly<
             if (item.type === "admin") return Colors.GRAY;
             return Colors.EMERALD;
           };
-          return <SimpleBadge title={getTypeTitle()} color={getTypeColor()} />;
+          return SimpleBadge({ title: getTypeTitle(), color: getTypeColor() });
         },
       },
       {
         title: t("shared.order"),
         name: "order",
         value: (item) => item.order,
-        formattedValue: (_, idx) => <OrderListButtons index={idx} items={items} />,
+        formattedValue: (_, idx) => OrderListButtons({ index: idx, items }),
       },
       {
         name: "title",
         title: t("models.entity.title"),
-        value: (item) => (
-          <div className="flex items-center space-x-1">
-            <Link to={"/admin/entities/" + item.slug + "/details"} className="font-medium hover:underline">
-              {t(item.titlePlural)}
-            </Link>
-          </div>
-        ),
+        value: (item) => {
+          return (
+            <div className="flex items-center space-x-1">
+              <Link to={"/admin/entities/" + item.slug + "/details"} className="font-medium hover:underline">
+                {t(item.titlePlural)}
+              </Link>
+            </div>
+          );
+        },
       },
       {
         name: "properties",
         title: t("models.property.plural"),
         className: "w-full text-xs",
-        value: (item) => (
-          <div className="max-w-xs truncate">
-            {item.properties.some((f) => !f.isDefault) ? (
-              <Link className="truncate pb-1 hover:underline" to={"/admin/entities/" + item.slug + "/properties"}>
-                {item.properties
-                  .filter((f) => !f.isDefault)
-                  .map((f) => t(f.title) + (f.isRequired ? "*" : ""))
-                  .join(", ")}
-              </Link>
-            ) : (
-              <Link className="text-muted-foreground truncate pb-1 hover:underline" to={"/admin/entities/" + item.slug + "/properties"}>
-                {t("shared.setCustomProperties")}
-              </Link>
-            )}
-          </div>
-        ),
+        value: (item) => {
+          return (
+            <div className="max-w-xs truncate">
+              {item.properties.some((f) => !f.isDefault) ? (
+                <Link className="truncate pb-1 hover:underline" to={"/admin/entities/" + item.slug + "/properties"}>
+                  {item.properties
+                    .filter((f) => !f.isDefault)
+                    .map((f) => t(f.title) + (f.isRequired ? "*" : ""))
+                    .join(", ")}
+                </Link>
+              ) : (
+                <Link className="text-muted-foreground truncate pb-1 hover:underline" to={"/admin/entities/" + item.slug + "/properties"}>
+                  {t("shared.setCustomProperties")}
+                </Link>
+              )}
+            </div>
+          );
+        },
       },
       {
         name: "relationships",
         title: t("models.relationship.plural"),
-        value: (item) => (
-          <Link className="truncate pb-1 hover:underline" to={"/admin/entities/" + item.slug + "/relationships"}>
-            {[...item.parentEntities, ...item.childEntities]
-              .map((relationship) => t(RelationshipHelper.getTitleWithName({ fromEntityId: item.id, relationship })))
-              .join(", ")}
-          </Link>
-        ),
+        value: (item) => {
+          return (
+            <Link className="truncate pb-1 hover:underline" to={"/admin/entities/" + item.slug + "/relationships"}>
+              {[...item.parentEntities, ...item.childEntities]
+                .map((relationship) => t(RelationshipHelper.getTitleWithName({ fromEntityId: item.id, relationship })))
+                .join(", ")}
+            </Link>
+          );
+        },
         className: "text-xs",
       },
       {
         name: "rows",
         title: t("models.row.plural"),
-        value: (item) => (
-          <Link to={"/admin/entities/" + item.slug + "/rows"} className="hover:underline">
-            {item._count.rows}
-          </Link>
-        ),
+        value: (item) => {
+          return (
+            <Link to={"/admin/entities/" + item.slug + "/rows"} className="hover:underline">
+              {item._count.rows}
+            </Link>
+          );
+        },
       },
     ];
 

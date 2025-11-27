@@ -8,10 +8,12 @@ async function getPlanFromForm(form: FormData) {
   const billingPeriod = Number(form.get("billing-period")) as SubscriptionBillingPeriod;
   const currency = String(form.get("currency") ?? "");
   const quantity = Number(form.get("quantity"));
-  const coupon = form.get("coupon")?.toString();
+  const couponValue = form.get("coupon");
+  const coupon = couponValue !== null && couponValue !== undefined ? String(couponValue) : undefined;
   const isUpgrade = String(form.get("is-upgrade") ?? "") === "true";
   const isDowngrade = String(form.get("is-downgrade") ?? "") === "true";
-  const referral = form.get("referral")?.toString() || null;
+  const referralValue = form.get("referral");
+  const referral = referralValue !== null && referralValue !== undefined ? String(referralValue) : null;
 
   // eslint-disable-next-line no-console
   console.log("[Subscription]", {

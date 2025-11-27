@@ -1,4 +1,4 @@
-import { ActionFunction, LoaderFunctionArgs, redirect, useLoaderData, useNavigate, useOutlet, useParams, Outlet } from "react-router";
+import { ActionFunction, LoaderFunctionArgs, redirect, useLoaderData, useNavigate, useOutlet, useParams } from "react-router";
 import { Fragment, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { PropertyType } from "~/application/enums/entities/PropertyType";
@@ -62,8 +62,7 @@ export const action: ActionFunction = async ({ request, params }) => {
 
   if (action === "set-orders") {
     const items: { id: string; order: number }[] = form.getAll("orders[]").map((f: FormDataEntryValue) => {
-      const value = typeof f === "string" ? f : f.toString();
-      return JSON.parse(value);
+      return JSON.parse(f.toString());
     });
 
     await Promise.all(

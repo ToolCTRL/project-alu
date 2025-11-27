@@ -129,7 +129,7 @@ async function handleNewArticle(kb: KnowledgeBaseDto, params: any, userId: strin
 
 async function handleSetOrders(form: FormData) {
   const items: { id: string; order: number }[] = form.getAll("orders[]").map((f: FormDataEntryValue) => {
-    return JSON.parse(f.toString());
+    return JSON.parse(String(f));
   });
   await Promise.all(
     items.map(async ({ id, order }) => {
@@ -143,7 +143,7 @@ async function handleSetOrders(form: FormData) {
 
 async function handleSetSectionOrders(form: FormData) {
   const items: { id: string; order: number }[] = form.getAll("orders[]").map((f: FormDataEntryValue) => {
-    return JSON.parse(f.toString());
+    return JSON.parse(String(f));
   });
   await Promise.all(
     items.map(async ({ id, order }) => {
@@ -210,6 +210,48 @@ export const action = async ({ request, params }: ActionFunctionArgs) => {
   return Response.json({ error: "Invalid action" }, { status: 400 });
 };
 
+const ArticleStatusCell = ({ item }: { item: KnowledgeBaseArticleWithDetails }) => (
+  <div>{item.publishedAt ? <SimpleBadge title="Published" color={Colors.TEAL} /> : <SimpleBadge title="Draft" color={Colors.GRAY} />}</div>
+);
+
+const ArticleTitleCell = ({ item }: { item: KnowledgeBaseArticleWithDetails }) => (
+  <div className="space-y-1">
+    <Link to={item.id} className="font-medium hover:underline">
+      {item.title}
+    </Link>
+  </div>
+);
+
+const ArticleCategoryCell = ({ item }: { item: KnowledgeBaseArticleWithDetails }) => (
+  <div>
+    {item.category ? (
+      <div className="flex flex-col">
+        <div>{item.category.title}</div>
+        {item.section && <div className="text-muted-foreground text-xs">{item.section.title}</div>}
+      </div>
+    ) : (
+      <Link to={`${item.id}/settings`} className="text-muted-foreground text-xs italic hover:underline">
+        No category
+      </Link>
+    )}
+  </div>
+);
+
+const ArticleCreatedByCell = ({ item }: { item: KnowledgeBaseArticleWithDetails }) => (
+  <div className="flex flex-col">
+    <DateCell date={item.createdAt} displays={["ymd"]} />
+    <div>
+      {item.createdByUser ? (
+        <div>
+          {item.createdByUser.firstName} {item.createdByUser.lastName}
+        </div>
+      ) : (
+        <div className="text-muted-foreground text-xs italic hover:underline">No author</div>
+      )}
+    </div>
+  </div>
+);
+
 export default function AdminKnowledgeBaseArticlesLang() {
   const { t } = useTranslation();
   const data = useLoaderData<LoaderData>();
@@ -238,13 +280,13 @@ export default function AdminKnowledgeBaseArticlesLang() {
   }
   return (
     <EditPageLayout
-      title={`Articles (${KnowledgeBaseUtils.getLanguageName(params.lang!)})`}
+      title={`Articles (${KnowledgeBaseUtils.getLanguageName(params.lang)})`}
       withHome={false}
       menu={[
         { title: "Knowledge Bases", routePath: "/admin/knowledge-base/bases" },
         { title: data.knowledgeBase.title, routePath: `/admin/knowledge-base/bases/${data.knowledgeBase.slug}` },
         { title: "Articles", routePath: `/admin/knowledge-base/bases/${params.slug}/articles` },
-        { title: params.lang!, routePath: `/admin/knowledge-base/bases/${params.slug}/articles/${params.lang}` },
+        { title: params.lang, routePath: `/admin/knowledge-base/bases/${params.slug}/articles/${params.lang}` },
       ]}
       buttons={
         <>
@@ -286,38 +328,18 @@ export default function AdminKnowledgeBaseArticlesLang() {
             {
               name: "status",
               title: "Status",
-              value: (i) => <div>{i.publishedAt ? <SimpleBadge title="Published" color={Colors.TEAL} /> : <SimpleBadge title="Draft" color={Colors.GRAY} />}</div>,
+              value: (i) => <ArticleStatusCell item={i} />,
             },
             {
               name: "title",
               title: "Title",
               className: "w-full",
-              value: (i) => (
-                <div className="space-y-1">
-                  <Link to={i.id} className="font-medium hover:underline">
-                    {i.title}
-                  </Link>
-                </div>
-              ),
+              value: (i) => <ArticleTitleCell item={i} />,
             },
             {
               name: "category",
               title: "Category",
-              value: (i) => (
-                <div>
-                  {i.category ? (
-                    <div className="flex flex-col">
-                      <div>{i.category.title}</div>
-
-                      {i.section && <div className="text-muted-foreground text-xs">{i.section.title}</div>}
-                    </div>
-                  ) : (
-                    <Link to={`${i.id}/settings`} className="text-muted-foreground text-xs italic hover:underline">
-                      No category
-                    </Link>
-                  )}
-                </div>
-              ),
+              value: (i) => <ArticleCategoryCell item={i} />,
             },
             {
               name: "characters",
@@ -347,20 +369,7 @@ export default function AdminKnowledgeBaseArticlesLang() {
             {
               name: "createdAt",
               title: t("shared.createdAt"),
-              value: (i) => (
-                <div className="flex flex-col">
-                  <DateCell date={i.createdAt} displays={["ymd"]} />
-                  <div>
-                    {i.createdByUser ? (
-                      <div>
-                        {i.createdByUser.firstName} {i.createdByUser.lastName}
-                      </div>
-                    ) : (
-                      <div className="text-muted-foreground text-xs italic hover:underline">No author</div>
-                    )}
-                  </div>
-                </div>
-              ),
+              value: (i) => <ArticleCreatedByCell item={i} />,
             },
           ]}
         />

@@ -28,6 +28,42 @@ import SettingSection from "~/components/ui/sections/SettingSection";
 
 export const meta: MetaFunction<typeof loader> = ({ data }) => [{ title: data?.title }];
 
+function ProfileMessage({ actionData }: { actionData?: ActionData }) {
+  if (actionData?.profileSuccess) {
+    return (
+      <p className="py-2 text-sm text-teal-500" role="alert">
+        {actionData.profileSuccess}
+      </p>
+    );
+  }
+  if (actionData?.profileError) {
+    return (
+      <p className="py-2 text-sm text-red-500" role="alert">
+        {actionData.profileError}
+      </p>
+    );
+  }
+  return null;
+}
+
+function PasswordMessage({ actionData }: { actionData?: ActionData }) {
+  if (actionData?.passwordSuccess) {
+    return (
+      <p className="py-2 text-sm text-teal-500" role="alert">
+        {actionData.passwordSuccess}
+      </p>
+    );
+  }
+  if (actionData?.passwordError) {
+    return (
+      <p className="py-2 text-sm text-red-500" role="alert">
+        {actionData.passwordError}
+      </p>
+    );
+  }
+  return null;
+}
+
 type LoaderData = {
   title: string;
 };
@@ -315,15 +351,7 @@ export default function ProfileRoute() {
               <div className="border-border mt-3 border-t pt-3">
                 <div className="flex justify-between">
                   <div id="form-success-message" className="flex items-center space-x-2">
-                    {actionData?.profileSuccess ? (
-                      <p className="py-2 text-sm text-teal-500" role="alert">
-                        {actionData.profileSuccess}
-                      </p>
-                    ) : actionData?.profileError ? (
-                      <p className="py-2 text-sm text-red-500" role="alert">
-                        {actionData?.profileError}
-                      </p>
-                    ) : null}
+                    <ProfileMessage actionData={actionData} />
                   </div>
                   <Button variant="outline" disabled={navigation.state === "submitting"} type="submit">
                     {t("shared.save")}
@@ -381,15 +409,7 @@ export default function ProfileRoute() {
                 <div className="border-border mt-3 border-t pt-3">
                   <div className="flex justify-between space-x-2">
                     <div id="form-success-message" className="flex items-center space-x-2">
-                      {actionData?.passwordSuccess ? (
-                        <p className="py-2 text-sm text-teal-500" role="alert">
-                          {actionData.passwordSuccess}
-                        </p>
-                      ) : actionData?.passwordError ? (
-                        <p className="py-2 text-sm text-red-500" role="alert">
-                          {actionData?.passwordError}
-                        </p>
-                      ) : null}
+                      <PasswordMessage actionData={actionData} />
                     </div>
                     <Button variant="outline" type="submit">
                       {t("shared.save")}

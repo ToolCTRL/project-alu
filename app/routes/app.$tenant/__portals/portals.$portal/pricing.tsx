@@ -106,7 +106,7 @@ function ProductStatus({ item }: { item: SubscriptionProductDto }) {
   );
 }
 
-function ProductActions({ item }: { item: SubscriptionProductDto }) {
+function ProductActions({ item }: Readonly<{ item: SubscriptionProductDto }>) {
   const { t } = useTranslation();
   return (
     <div className="flex items-center space-x-2">
@@ -117,10 +117,54 @@ function ProductActions({ item }: { item: SubscriptionProductDto }) {
   );
 }
 
+function ProductBadgeCell({ item }: { item: SubscriptionProductDto }) {
+  return <ProductBadge item={item} />;
+}
+
+function ProductModelCell({ item }: { item: SubscriptionProductDto }) {
+  return <ProductModel item={item} />;
+}
+
+function ProductSubscriptionsCell({ item }: { item: SubscriptionProductDto }) {
+  return <ProductSubscriptions item={item} />;
+}
+
+function ProductStatusCell({ item }: { item: SubscriptionProductDto }) {
+  return <ProductStatus item={item} />;
+}
+
+function ProductActionsCell({ item }: { item: SubscriptionProductDto }) {
+  return <ProductActions item={item} />;
+}
+
 export default function PricingPage() {
   const { t } = useTranslation();
   const data = useLoaderData<LoaderData>();
   const params = useParams();
+
+  const getStripeWarning = () => {
+    if (data.stripeAccount === null) {
+      return (
+        <WarningBanner title="Stripe not Connected">
+          You don't have a Stripe account connected.{" "}
+          <Link to={UrlUtils.getModulePath(params, `portals/${params.portal}/pricing/stripe`)} className="underline">
+            Click here to connect your Stripe account.
+          </Link>
+        </WarningBanner>
+      );
+    }
+    if (data.stripeAccount.charges_enabled === false) {
+      return (
+        <WarningBanner title="Stripe Integration Pending">
+          Your Stripe integration is pending.{" "}
+          <Link to={UrlUtils.getModulePath(params, `portals/${params.portal}/pricing/stripe`)} className="underline">
+            Click here to continue.
+          </Link>
+        </WarningBanner>
+      );
+    }
+    return null;
+  };
 
   return (
     <EditPageLayout
@@ -157,21 +201,7 @@ export default function PricingPage() {
         },
       ]}
     >
-      {data.stripeAccount === null ? (
-        <WarningBanner title="Stripe not Connected">
-          You don't have a Stripe account connected.{" "}
-          <Link to={UrlUtils.getModulePath(params, `portals/${params.portal}/pricing/stripe`)} className="underline">
-            Click here to connect your Stripe account.
-          </Link>
-        </WarningBanner>
-      ) : data.stripeAccount.charges_enabled === false ? (
-        <WarningBanner title="Stripe Integration Pending">
-          Your Stripe integration is pending.{" "}
-          <Link to={UrlUtils.getModulePath(params, `portals/${params.portal}/pricing/stripe`)} className="underline">
-            Click here to continue.
-          </Link>
-        </WarningBanner>
-      ) : null}
+      {getStripeWarning()}
       <div>
         <TableSimple
           items={data.items}
@@ -184,27 +214,27 @@ export default function PricingPage() {
             {
               name: "title",
               title: t("models.subscriptionProduct.title"),
-              value: (item) => <ProductBadge item={item} />,
+              value: (item) => <ProductBadgeCell item={item} />,
             },
             {
               name: "model",
               title: t("models.subscriptionProduct.model"),
-              value: (item) => <ProductModel item={item} />,
+              value: (item) => <ProductModelCell item={item} />,
             },
             {
               name: "subscriptions",
               title: t("models.subscriptionProduct.plural"),
-              value: (item) => <ProductSubscriptions item={item} />,
+              value: (item) => <ProductSubscriptionsCell item={item} />,
             },
             {
               name: "active",
               title: t("models.subscriptionProduct.status"),
-              value: (item) => <ProductStatus item={item} />,
+              value: (item) => <ProductStatusCell item={item} />,
             },
             {
               name: "actions",
               title: t("shared.actions"),
-              value: (item) => <ProductActions item={item} />,
+              value: (item) => <ProductActionsCell item={item} />,
             },
           ]}
         />

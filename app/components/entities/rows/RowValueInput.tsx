@@ -28,6 +28,8 @@ export interface RefRowValueInput {
   focus: () => void;
 }
 
+type RowValueType = string | number | Date | boolean | undefined | null;
+
 type ChangeValue = string | number | Date | boolean | undefined | null;
 type RowIdWithPrompts = { readonly rowId: string | undefined; readonly prompts: PromptFlowWithDetails[] };
 
@@ -344,7 +346,7 @@ function TextPropertyInput({
   readonly textValue?: string;
   readonly readOnly: boolean;
   readonly className?: string;
-  readonly onChange?: (value: string | number | Date | boolean | undefined | null) => void;
+  readonly onChange?: (value: RowValueType) => void;
   readonly autoFocus?: boolean;
   readonly promptFlows?: RowIdWithPrompts;
   readonly t: any;
@@ -487,7 +489,7 @@ function SelectPropertyInput({
   readonly textValue?: string;
   readonly readOnly: boolean;
   readonly className?: string;
-  readonly onChange?: (value: string | number | Date | boolean | undefined | null) => void;
+  readonly onChange?: (value: RowValueType) => void;
   readonly onChangeOption?: (option: string | undefined) => void;
   readonly autoFocus?: boolean;
   readonly t: any;
@@ -564,7 +566,7 @@ function BooleanPropertyInput({
   readonly booleanValue?: boolean;
   readonly readOnly: boolean;
   readonly className?: string;
-  readonly onChange?: (value: string | number | Date | boolean | undefined | null) => void;
+  readonly onChange?: (value: RowValueType) => void;
   readonly autoFocus?: boolean;
   readonly t: any;
 }) {

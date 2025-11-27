@@ -4,7 +4,6 @@ import { useLocation, useMatches, useSearchParams, useSubmit } from "react-route
 import { useRootData } from "~/utils/data/useRootData";
 import AnalyticsHelper from "~/utils/helpers/AnalyticsHelper";
 import { i18nConfig } from "~/locale/i18n";
-import { Fragment } from "react";
 import {
   DropdownMenu,
   DropdownMenuContent,

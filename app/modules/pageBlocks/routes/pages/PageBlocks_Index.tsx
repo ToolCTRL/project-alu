@@ -14,7 +14,7 @@ export namespace PageBlocks_Index {
   export const loader = async ({ request, params }: LoaderFunctionArgs) => {
     await verifyUserHasPermission(request, "admin.pages.view");
     const { t } = await getTranslations(request);
-    const item = await getPage(params.id!);
+    const item = await getPage(params.id ?? "");
     if (!item) {
       return redirect("/admin/pages");
     }
@@ -37,7 +37,7 @@ export namespace PageBlocks_Index {
     const form = await request.formData();
     const action = form.get("action")?.toString();
 
-    const item = await getPage(params.id!);
+    const item = await getPage(params.id ?? "");
     if (!item) {
       return redirect("/admin/pages");
     }

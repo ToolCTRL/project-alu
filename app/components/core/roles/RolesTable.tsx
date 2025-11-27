@@ -79,7 +79,7 @@ export default function RolesTable({ items, canUpdate = true, tenantId = null }:
         name: "permissions",
         title: t("models.role.permissions"),
         value: (i) => i.permissions.length,
-        formattedValue: (i) => <RolePermissionsCell item={i} tenantId={tenantId} onSelectRole={setSelectedRole} />,
+        formattedValue: (i) => RolePermissionsCell({ item: i, tenantId, onSelectRole: setSelectedRole }),
         className: "max-w-xs truncate",
       },
       {

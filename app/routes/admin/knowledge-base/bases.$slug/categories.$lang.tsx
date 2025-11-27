@@ -331,13 +331,13 @@ export default function CategoriesLang() {
   }
   return (
     <EditPageLayout
-      title={`Categories (${KnowledgeBaseUtils.getLanguageName(params.lang!)})`}
+      title={`Categories (${KnowledgeBaseUtils.getLanguageName(params.lang)})`}
       withHome={false}
       menu={[
         { title: "Knowledge Bases", routePath: "/admin/knowledge-base/bases" },
         { title: data.knowledgeBase.title, routePath: `/admin/knowledge-base/bases/${data.knowledgeBase.slug}` },
         { title: "Categories", routePath: `/admin/knowledge-base/bases/${params.slug}/categories` },
-        { title: params.lang!, routePath: `/admin/knowledge-base/bases/${params.slug}/categories/${params.lang}` },
+        { title: params.lang, routePath: `/admin/knowledge-base/bases/${params.slug}/categories/${params.lang}` },
       ]}
     >
       <div className="space-y-2">
@@ -539,11 +539,12 @@ function CategorySections({
                         <button
                           type="button"
                           onClick={() => {
-                            setToggledSections((prev) =>
-                              prev.includes(item.id)
-                                ? prev.filter((f) => f !== item.id)
-                                : [...prev, item.id]
-                            );
+                            setToggledSections((prev) => {
+                              if (prev.includes(item.id)) {
+                                return prev.filter((f) => f !== item.id);
+                              }
+                              return [...prev, item.id];
+                            });
                           }}
                           className="hover:bg-secondary/90 focus:bg-secondary/90 group flex items-center rounded-md border border-transparent p-2 focus:outline-hidden focus:ring-2 focus:ring-gray-400 focus:ring-offset-1"
                         >

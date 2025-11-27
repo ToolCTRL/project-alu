@@ -48,8 +48,8 @@ type ActionData = {
   error?: string;
 };
 async function handleEdit(request: Request, form: FormData, item: any, t: any) {
-  const subdomain = UrlUtils.slugify(String(form.get("subdomain") ?? ""));
-  const title = String(form.get("title") ?? "") || undefined;
+  const subdomain = UrlUtils.slugify((form.get("subdomain")?.toString() ?? ""));
+  const title = (form.get("title")?.toString() ?? "") || undefined;
 
   if (subdomain && subdomain !== item.subdomain) {
     const isValidSubdomainSyntax = /^[a-z0-9-]+$/i.test(subdomain);
@@ -79,13 +79,13 @@ async function handleEdit(request: Request, form: FormData, item: any, t: any) {
 }
 
 async function handleEditSeo(form: FormData, item: any, t: any) {
-  const seoTitle = String(form.get("seoTitle") ?? "") || undefined;
-  const seoDescription = String(form.get("seoDescription") ?? "") || undefined;
-  const seoTwitterCreator = String(form.get("seoTwitterCreator") ?? "") || undefined;
-  const seoTwitterSite = String(form.get("seoTwitterSite") ?? "") || undefined;
-  const seoKeywords = String(form.get("seoKeywords") ?? "") || undefined;
-  const seoImage = String(form.get("seoImage") ?? "") || undefined;
-  const seoThumbnail = String(form.get("seoThumbnail") ?? "") || undefined;
+  const seoTitle = (form.get("seoTitle")?.toString() ?? "") || undefined;
+  const seoDescription = (form.get("seoDescription")?.toString() ?? "") || undefined;
+  const seoTwitterCreator = (form.get("seoTwitterCreator")?.toString() ?? "") || undefined;
+  const seoTwitterSite = (form.get("seoTwitterSite")?.toString() ?? "") || undefined;
+  const seoKeywords = (form.get("seoKeywords")?.toString() ?? "") || undefined;
+  const seoImage = (form.get("seoImage")?.toString() ?? "") || undefined;
+  const seoThumbnail = (form.get("seoThumbnail")?.toString() ?? "") || undefined;
 
   const { storedSeoImage, storedSeoThumbnail } = await promiseHash({
     storedSeoImage: seoImage ? storeSupabaseFile({ bucket: "seo", content: seoImage, id: `${item.id}-seo-image.png` }) : Promise.resolve(""),
@@ -106,13 +106,13 @@ async function handleEditSeo(form: FormData, item: any, t: any) {
 }
 
 async function handleEditBranding(form: FormData, item: any, t: any) {
-  const themeColor = String(form.get("themeColor") ?? "") || undefined;
-  const themeScheme = String(form.get("themeScheme") ?? "") || undefined;
-  const logo = String(form.get("logo") ?? "") || undefined;
-  const logoDarkMode = String(form.get("logoDarkMode") ?? "") || undefined;
-  const icon = String(form.get("icon") ?? "") || undefined;
-  const iconDarkMode = String(form.get("iconDarkMode") ?? "") || undefined;
-  const favicon = String(form.get("favicon") ?? "") || undefined;
+  const themeColor = (form.get("themeColor")?.toString() ?? "") || undefined;
+  const themeScheme = (form.get("themeScheme")?.toString() ?? "") || undefined;
+  const logo = (form.get("logo")?.toString() ?? "") || undefined;
+  const logoDarkMode = (form.get("logoDarkMode")?.toString() ?? "") || undefined;
+  const icon = (form.get("icon")?.toString() ?? "") || undefined;
+  const iconDarkMode = (form.get("iconDarkMode")?.toString() ?? "") || undefined;
+  const favicon = (form.get("favicon")?.toString() ?? "") || undefined;
 
   const { storedLogo, storedLogoDarkMode, storedIcon, storedIconDarkMode, storedFavicon } = await promiseHash({
     storedLogo: logo ? storeSupabaseFile({ bucket: "branding", content: logo, id: `${item.id}-logo.png` }) : Promise.resolve(""),
@@ -138,7 +138,7 @@ async function handleEditBranding(form: FormData, item: any, t: any) {
 async function handleEditAnalytics(form: FormData, item: any, t: any) {
   const simpleAnalytics = FormHelper.getBoolean(form, "simpleAnalytics");
   const plausibleAnalytics = FormHelper.getBoolean(form, "plausibleAnalytics");
-  const googleAnalyticsTrackingId = String(form.get("googleAnalyticsTrackingId") ?? "") || undefined;
+  const googleAnalyticsTrackingId = (form.get("googleAnalyticsTrackingId")?.toString() ?? "") || undefined;
 
   await updatePortal(item, {
     analyticsSimpleAnalytics: simpleAnalytics,

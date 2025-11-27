@@ -65,11 +65,11 @@ export const action: ActionFunction = async ({ request, params }) => {
   }
 
   const options: { order: number; value: string; name?: string; color?: Colors }[] = form.getAll("options[]").map((f: FormDataEntryValue) => {
-    return JSON.parse(String(f));
+    return JSON.parse(f.toString());
   });
 
   const attributes: { name: string; value: string }[] = form.getAll("attributes[]").map((f: FormDataEntryValue) => {
-    return JSON.parse(String(f));
+    return JSON.parse(f.toString());
   });
 
   if (type === PropertyType.FORMULA) {

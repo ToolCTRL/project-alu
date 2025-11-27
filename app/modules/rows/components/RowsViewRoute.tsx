@@ -213,29 +213,35 @@ export default function RowsViewRoute({
           <div className="flex space-x-1">{bulkActions.includes("bulk-delete") && <DeleteIconButton onClick={onDeleteSelectedRows} />}</div>
         ) : (
           <Fragment>
-            {rowsData.views.length > 1 ? (
-              <TabsWithIcons
-                className="grow xl:flex"
-                tabs={rowsData.views.map((item) => {
-                  searchParams.set("v", item.name);
-                  searchParams.delete("page");
-                  return {
-                    name: t(item.title),
-                    href: location.pathname + "?" + searchParams.toString(),
-                    current: isCurrenView(item),
-                  };
-                })}
-              />
-            ) : rowsData.currentView?.layout === "board" && ["opportunity", "ticket"].includes(rowsData.entity.name) ? null : (
-              title || <h3 className="flex flex-1 items-center truncate font-bold">{t(rowsData.currentView?.title ?? rowsData.entity.titlePlural)}</h3>
-            )}
+            {(() => {
+              if (rowsData.views.length > 1) {
+                return (
+                  <TabsWithIcons
+                    className="grow xl:flex"
+                    tabs={rowsData.views.map((item) => {
+                      searchParams.set("v", item.name);
+                      searchParams.delete("page");
+                      return {
+                        name: t(item.title),
+                        href: location.pathname + "?" + searchParams.toString(),
+                        current: isCurrenView(item),
+                      };
+                    })}
+                  />
+                );
+              }
+              if (rowsData.currentView?.layout === "board" && ["opportunity", "ticket"].includes(rowsData.entity.name)) {
+                return null;
+              }
+              return title || <h3 className="flex flex-1 items-center truncate font-bold">{t(rowsData.currentView?.title ?? rowsData.entity.titlePlural)}</h3>;
+            })()}
           </Fragment>
         )}
         <div className="flex items-center space-x-1">
           {filters.length > 0 && <InputFilters filters={filters} />}
           {/* <RunPromptFlowButtons type="list" promptFlows={rowsData.promptFlows} className="p-0.5" /> */}
           {permissions.create && (
-            <ButtonPrimary disabled={!permissions.create} to={!onNewRow ? "new" : undefined} onClick={onNewRow}>
+            <ButtonPrimary disabled={!permissions.create} to={onNewRow ? undefined : "new"} onClick={onNewRow}>
               <span className="sm:text-sm">+</span>
             </ButtonPrimary>
           )}
@@ -273,11 +279,7 @@ export default function RowsViewRoute({
 
           {saveCustomViews && rowsData.entity.hasViews && (
             <Fragment>
-              {!canUpdateCurrentView() ? (
-                <button type="button" className="text-muted-foreground text-xs font-medium hover:underline" onClick={onCreateView}>
-                  {t("models.view.actions.create")}
-                </button>
-              ) : (
+              {canUpdateCurrentView() ? (
                 <div className="text-muted-foreground flex items-center space-x-2">
                   <button type="button" className="text-xs font-medium hover:underline" disabled={!canUpdateCurrentView()} onClick={onUpdateView}>
                     {t("models.view.actions.update")}
@@ -287,6 +289,10 @@ export default function RowsViewRoute({
                     {t("models.view.actions.create")}
                   </button>
                 </div>
+              ) : (
+                <button type="button" className="text-muted-foreground text-xs font-medium hover:underline" onClick={onCreateView}>
+                  {t("models.view.actions.create")}
+                </button>
               )}
             </Fragment>
           )}

@@ -90,9 +90,9 @@ export default function PlaygroundCrud() {
   return (
     <IndexPageLayout title="CRUD examples">
       <WarningBanner title="Warning" text="Data is not saved in the database, created, updated or deleted data is not persisted. This is just for UI and UX." />
-      {examples.map((example, idx) => {
+      {examples.map((example) => {
         return (
-          <div key={`example-${idx}`} className="space-y-2">
+          <div key={example.title} className="space-y-2">
             <h2 className="text-foreground font-medium">{example.title}</h2>
             <TableSimple
               items={example.files}

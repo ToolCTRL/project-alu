@@ -21,26 +21,24 @@ const getFieldTitle = (field: Property, _ = false): string => {
 };
 
 function getFilters({ t, entity }: { t: TFunction; entity: EntityWithDetails; pagination?: PaginationDto }) {
-  const filters: FilterDto[] = [
-    ...entity.properties
-      .filter((f) => RowFiltersHelper.isPropertyFilterable(f))
-      .map((item) => {
-        const filter: FilterDto = {
-          name: item.name,
-          title: t(item.title),
-          options: item.options?.map((option) => {
-            return {
-              color: option.color,
-              name: option.name ?? option.value,
-              value: option.value,
-            };
-          }),
-          isBoolean: item.type === PropertyType.BOOLEAN,
-          hideSearch: item.type === PropertyType.BOOLEAN,
-        };
-        return filter;
-      }),
-  ];
+  const filters: FilterDto[] = entity.properties
+    .filter((f) => RowFiltersHelper.isPropertyFilterable(f))
+    .map((item) => {
+      const filter: FilterDto = {
+        name: item.name,
+        title: t(item.title),
+        options: item.options?.map((option) => {
+          return {
+            color: option.color,
+            name: option.name ?? option.value,
+            value: option.value,
+          };
+        }),
+        isBoolean: item.type === PropertyType.BOOLEAN,
+        hideSearch: item.type === PropertyType.BOOLEAN,
+      };
+      return filter;
+    });
   if (entity.tags.length > 0) {
     filters.push({
       name: "tag",
@@ -54,20 +52,6 @@ function getFilters({ t, entity }: { t: TFunction; entity: EntityWithDetails; pa
       }),
     });
   }
-  // if (pagination) {
-  //   filters.push({
-  //     hideSearch: true,
-  //     name: "pageSize",
-  //     title: t("shared.pageSize"),
-  //     options: [
-  //       { name: "5", value: "5" },
-  //       { name: "10", value: "10" },
-  //       { name: "25", value: "25" },
-  //       { name: "50", value: "50" },
-  //       { name: "100", value: "100" },
-  //     ],
-  //   });
-  // }
   return filters;
 }
 
@@ -141,7 +125,7 @@ function getLayoutBreadcrumbsMenu({
       ...menu,
       { title: t(entity.titlePlural), routePath: getRoutes({ routes, entity: entity })?.list },
       {
-        title: RowHelper.getRowFolio(entity, item!),
+        title: item ? RowHelper.getRowFolio(entity, item) : "",
         routePath: getRoutes({ routes, entity: entity, item: item })?.overview,
       },
       {

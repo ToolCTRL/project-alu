@@ -73,8 +73,8 @@ export const action: ActionFunction = async ({ request, params }) => {
     const type = form.get("type")?.toString();
     const active = form.get("active");
     await updateOnboarding(item.id, {
-      title: title !== undefined ? title : undefined,
-      type: type !== undefined ? (type as "modal" | "page") : undefined,
+      title,
+      type: type as "modal" | "page" | undefined,
       active: active !== undefined ? Boolean(active) : undefined,
     });
     return Response.json({ success: "Onboarding updated" });

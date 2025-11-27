@@ -11,7 +11,7 @@ export namespace PageSettings_Index {
   };
   export const loader = async ({ request, params }: LoaderFunctionArgs) => {
     await verifyUserHasPermission(request, "admin.pages.view");
-    const page = await getPage(params.id!);
+    const page = await getPage(params.id ?? "");
     if (!page) {
       return redirect(params.tenant ? `/app/${params.tenant}/settings/pages` : "/admin/pages");
     }
@@ -32,7 +32,7 @@ export namespace PageSettings_Index {
     const form = await request.formData();
     const action = form.get("action")?.toString();
 
-    const item = await getPage(params.id!);
+    const item = await getPage(params.id ?? "");
     if (!item) {
       return redirect(params.tenant ? `/app/${params.tenant}/settings/pages` : "/admin/pages");
     }

@@ -1,4 +1,3 @@
-import { Fragment } from "react";
 import ButtonEvent from "~/components/ui/buttons/ButtonEvent";
 import { useRootData } from "~/utils/data/useRootData";
 
@@ -33,20 +32,17 @@ export default function ProductHuntBadge({ theme }: Readonly<Props>) {
   if (!producthunt) {
     return null;
   }
+
   return (
-    <Fragment>
-      {producthunt ? (
-        <div className="mx-auto mb-6 flex justify-center text-center">
-          <ButtonEvent
-            event={{ action: "click", category: "hero", label: "producthunt", value: producthunt.title }}
-            to={producthunt.url}
-            target="_blank"
-            rel="noreferrer"
-          >
-            {getProductHuntImage(theme, producthunt.postId, producthunt.title)}
-          </ButtonEvent>
-        </div>
-      ) : null}
-    </Fragment>
+    <div className="mx-auto mb-6 flex justify-center text-center">
+      <ButtonEvent
+        event={{ action: "click", category: "hero", label: "producthunt", value: producthunt.title }}
+        to={producthunt.url}
+        target="_blank"
+        rel="noreferrer"
+      >
+        {getProductHuntImage(theme, producthunt.postId, producthunt.title)}
+      </ButtonEvent>
+    </div>
   );
 }

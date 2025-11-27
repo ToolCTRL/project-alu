@@ -48,11 +48,11 @@ export const action: ActionFunction = async ({ request }) => {
   }
 
   const formData = await request.formData();
-  const firstName = formData.get("first_name")?.toString() ?? "";
-  const lastName = formData.get("last_name")?.toString() ?? "";
-  const email = formData.get("email")?.toString() ?? "";
-  const source = formData.get("source")?.toString() ?? "";
-  const honeypot = formData.get("codeId")?.toString() ?? "";
+  const firstName = (formData.get("first_name")?.toString() ?? "");
+  const lastName = (formData.get("last_name")?.toString() ?? "");
+  const email = (formData.get("email")?.toString() ?? "");
+  const source = (formData.get("source")?.toString() ?? "");
+  const honeypot = (formData.get("codeId")?.toString() ?? "");
 
   if (!email) {
     return Response.json({ error: "Missing fields" }, { status: 400 });

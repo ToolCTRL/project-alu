@@ -32,7 +32,7 @@ export const action: ActionFunction = async ({ request }) => {
     const to = Number(form.get("to"));
     const total = Number(form.get("total"));
 
-    // TODO - START: Simulate long-running task
+    // Simulate long-running task
     let items: ItemToImportDto[] = form.getAll("items[]").map((f: FormDataEntryValue) => {
       return JSON.parse(String(f));
     });
@@ -45,7 +45,6 @@ export const action: ActionFunction = async ({ request }) => {
       })
     );
     items = items.slice(0, from).concat(itemsToImport).concat(items.slice(to));
-    // TODO - END: Simulate long-running task
 
     const next: NextActionDto = {
       action: "import",
@@ -84,6 +83,24 @@ type ItemToImportDto = {
   name: string;
   processed: boolean;
 };
+
+function NameCell({ item }: { item: ItemToImportDto }) {
+  return (
+    <div className="flex flex-col">
+      <div>{item.name}</div>
+      {item.id ? <div className="text-muted-foreground text-xs">ID: {item.id}</div> : null}
+    </div>
+  );
+}
+
+function ImportedCell({ item }: { item: ItemToImportDto }) {
+  return item.id ? <SimpleBadge color={Colors.GREEN}>Imported</SimpleBadge> : <SimpleBadge color={Colors.YELLOW}>Pending</SimpleBadge>;
+}
+
+function ProcessedCell({ item }: { item: ItemToImportDto }) {
+  return item.processed ? <SimpleBadge color={Colors.GREEN}>Processed</SimpleBadge> : <SimpleBadge color={Colors.YELLOW}>Pending</SimpleBadge>;
+}
+
 export default function PlaygroundLongRunningTasks() {
   const actionData = useActionData<ActionData>();
   const submit = useSubmit();
@@ -183,23 +200,17 @@ export default function PlaygroundLongRunningTasks() {
               name: "name",
               title: "Name",
               className: "w-full",
-              value: (item) => (
-                <div className="flex flex-col">
-                  <div>{item.name}</div>
-                  {item.id ? <div className="text-muted-foreground text-xs">ID: {item.id}</div> : null}
-                </div>
-              ),
+              value: NameCell,
             },
             {
               name: "imported",
               title: "Imported",
-              value: (item) => (item.id ? <SimpleBadge color={Colors.GREEN}>Imported</SimpleBadge> : <SimpleBadge color={Colors.YELLOW}>Pending</SimpleBadge>),
+              value: ImportedCell,
             },
             {
               name: "processed",
               title: "Processed",
-              value: (item) =>
-                item.processed ? <SimpleBadge color={Colors.GREEN}>Processed</SimpleBadge> : <SimpleBadge color={Colors.YELLOW}>Pending</SimpleBadge>,
+              value: ProcessedCell,
             },
           ]}
         />

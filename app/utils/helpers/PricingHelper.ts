@@ -162,10 +162,7 @@ export function getFormattedPriceInCurrency({
   withSymbol?: boolean;
 }) {
   let currencyDetails = currencies.find((c) => c.value.toLowerCase() === currency?.toLowerCase()) || currencies.find((c) => c.default);
-  if (!currencyDetails) {
-    // default
-    currencyDetails = currencies.find((f) => f.default);
-  }
+  currencyDetails ??= currencies.find((f) => f.default);
   if (!currencyDetails) {
     return "Currency not supported: " + currency;
   }

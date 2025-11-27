@@ -91,16 +91,24 @@ export const action = async ({ request, params }: ActionFunctionArgs) => {
   }
 };
 
-function UserTableCell({ item }: { item: PortalUserDto }) {
+function UserTableCell({ item }: Readonly<{ item: PortalUserDto }>) {
   return <UserBadge item={item} withAvatar={true} />;
 }
 
-function UserCreatedAtCell({ item }: { item: PortalUserDto }) {
+function UserCreatedAtCell({ item }: Readonly<{ item: PortalUserDto }>) {
   return (
     <time dateTime={DateUtils.dateYMDHMS(item.createdAt)} title={DateUtils.dateYMDHMS(item.createdAt)}>
       {DateUtils.dateAgo(item.createdAt)}
     </time>
   );
+}
+
+function UserTableCellValue({ item }: { item: PortalUserDto }) {
+  return <UserTableCell item={item} />;
+}
+
+function UserCreatedAtCellValue({ item }: { item: PortalUserDto }) {
+  return <UserCreatedAtCell item={item} />;
 }
 
 export default function UsersPage() {
@@ -190,12 +198,12 @@ export default function UsersPage() {
           {
             name: "user",
             title: t("models.user.object"),
-            value: (item) => <UserTableCell item={item} />,
+            value: (item) => <UserTableCellValue item={item} />,
           },
           {
             name: "createdAt",
             title: t("shared.createdAt"),
-            value: (item) => <UserCreatedAtCell item={item} />,
+            value: (item) => <UserCreatedAtCellValue item={item} />,
           },
         ]}
       />

@@ -90,72 +90,72 @@ function WorkflowBuilderFlow({
     }, 100);
   }, [reactFlowInstance, nodes, edges, workflow]);
 
+  const getConditionForBlockType = useCallback((fromBlock: WorkflowBlockDto): string | null => {
+    if (fromBlock.type === "if") {
+      const hasTrue = fromBlock.toBlocks.find((x) => x.condition === "true");
+      const hasFalse = fromBlock.toBlocks.find((x) => x.condition === "false");
+      if (hasTrue && hasFalse) {
+        return null;
+      }
+      return hasTrue ? "false" : "true";
+    }
+
+    if (fromBlock.type === "switch") {
+      let availableNextCase = -1;
+      fromBlock.conditionGroups.forEach((group) => {
+        const existingConnection = fromBlock.toBlocks.find((f) => f.condition === `case${group.index + 1}`);
+        if (!existingConnection) {
+          availableNextCase = group.index;
+        }
+      });
+
+      if (availableNextCase !== -1) {
+        return `case${availableNextCase + 1}`;
+      }
+
+      const existingDefaultConnection = fromBlock.toBlocks.find((f) => f.condition === "default");
+      return existingDefaultConnection ? null : "default";
+    }
+
+    if (fromBlock.type === "iterator") {
+      const hasLoopNext = fromBlock.toBlocks.find((x) => x.condition === "loopNext");
+      const hasLoopEnd = fromBlock.toBlocks.find((x) => x.condition === "loopEnd");
+      if (hasLoopNext && hasLoopEnd) {
+        return null;
+      }
+      return hasLoopNext ? "loopEnd" : "loopNext";
+    }
+
+    return null;
+  }, []);
+
   const onConnect = useCallback(
     (params: Connection) => {
-      if (!onConnectBlocks) {
+      if (!onConnectBlocks || !params.source || !params.target) {
         return;
       }
+
       const fromBlock = workflow.blocks.find((x) => x.id === params.source);
       const toBlock = workflow.blocks.find((x) => x.id === params.target);
-      if (!fromBlock || !toBlock) {
+
+      if (!fromBlock || !toBlock || fromBlock.id === toBlock.id) {
         return;
       }
-      if (fromBlock.id === toBlock.id) {
+
+      const isAlreadyConnected = fromBlock.toBlocks.some((x) => x.toBlockId === toBlock.id) ||
+                                 toBlock.toBlocks.some((x) => x.toBlockId === fromBlock.id);
+      if (isAlreadyConnected) {
         return;
       }
-      if (fromBlock.toBlocks.some((x) => x.toBlockId === toBlock.id)) {
-        // already connected
+
+      const condition = getConditionForBlockType(fromBlock);
+      if (condition === null) {
         return;
       }
-      if (toBlock.toBlocks.some((x) => x.toBlockId === fromBlock.id)) {
-        // already connected
-        return;
-      }
-      let condition: string | null = null;
-      if (fromBlock.type === "if") {
-        const hasTrue = fromBlock.toBlocks.find((x) => x.condition === "true");
-        const hasFalse = fromBlock.toBlocks.find((x) => x.condition === "false");
-        if (hasTrue) {
-          if (hasFalse) {
-            return;
-          }
-          condition = "false";
-        } else {
-          condition = "true";
-        }
-      } else if (fromBlock.type === "switch") {
-        let availableNextCase = -1;
-        fromBlock.conditionGroups.forEach((group) => {
-          const existingConnection = fromBlock.toBlocks.find((f) => f.condition === `case${group.index + 1}`);
-          if (!existingConnection) {
-            availableNextCase = group.index;
-          }
-        });
-        if (availableNextCase === -1) {
-          const existingDefaultConnection = fromBlock.toBlocks.find((f) => f.condition === "default");
-          if (existingDefaultConnection) {
-            return;
-          } else {
-            condition = "default";
-          }
-        } else {
-          condition = `case${availableNextCase + 1}`;
-        }
-      } else if (fromBlock.type === "iterator") {
-        const hasLoopNext = fromBlock.toBlocks.find((x) => x.condition === "loopNext");
-        const hasLoopEnd = fromBlock.toBlocks.find((x) => x.condition === "loopEnd");
-        if (hasLoopNext) {
-          if (hasLoopEnd) {
-            return;
-          }
-          condition = "loopEnd";
-        } else {
-          condition = "loopNext";
-        }
-      }
+
       onConnectBlocks({
-        fromBlockId: params.source!,
-        toBlockId: params.target!,
+        fromBlockId: params.source,
+        toBlockId: params.target,
         condition,
       });
 
@@ -163,7 +163,7 @@ function WorkflowBuilderFlow({
         reactFlowInstance?.fitView();
       }, 1000);
     },
-    [onConnectBlocks, reactFlowInstance, workflow.blocks]
+    [onConnectBlocks, reactFlowInstance, workflow.blocks, getConditionForBlockType]
   );
 
   const onEdgeDelete = useCallback(

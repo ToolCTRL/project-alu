@@ -116,15 +116,12 @@ export default function OnboardingStepsRoute() {
       <input type="hidden" name="action" value="set-steps" hidden readOnly />
       <input type="hidden" name="block" value={JSON.stringify(onboardingBlock)} hidden readOnly />
 
-      {data.item.active ? (
-        <ErrorBanner title={t("shared.warning")} text="You cannot edit an active onboarding." />
-      ) : data.item.sessions.length > 0 ? (
+      {data.item.active && <ErrorBanner title={t("shared.warning")} text="You cannot edit an active onboarding." />}
+      {!data.item.active && data.item.sessions.length > 0 && (
         <WarningBanner
           title={t("onboarding.prompts.updateSteps.title", { 0: data.item.sessions.length })}
           text={t("onboarding.prompts.updateSteps.description")}
         />
-      ) : (
-        <div />
       )}
 
       <div>

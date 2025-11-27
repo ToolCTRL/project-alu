@@ -23,7 +23,7 @@ export default function RowsRelationshipsRoute() {
   );
 }
 
-function EntityRowCard({ entity, item, t }: { entity: EntityWithDetails; item: RowWithDetails; t: (key: string) => string }) {
+function EntityRowCard({ entity, item, t }: Readonly<{ entity: EntityWithDetails; item: RowWithDetails; t: (key: string) => string }>) {
   return (
     <div className="hover:bg-secondary border-border bg-background group w-full truncate rounded-md border p-3 text-left shadow-2xs">
       <div className="flex items-center justify-between space-x-2">
@@ -35,7 +35,12 @@ function EntityRowCard({ entity, item, t }: { entity: EntityWithDetails; item: R
   );
 }
 
-function EntityRowsRelationships({ data, className }: Readonly<{ data: RowsApi.GetRowsData; className?: string }>) {
+interface EntityRowsRelationshipsProps {
+  data: RowsApi.GetRowsData;
+  className?: string;
+}
+
+function EntityRowsRelationships({ data, className }: Readonly<EntityRowsRelationshipsProps>) {
   const { t } = useTranslation();
   return (
     <div className={clsx(className)}>
@@ -46,7 +51,7 @@ function EntityRowsRelationships({ data, className }: Readonly<{ data: RowsApi.G
               name: "entity",
               title: t(data?.entity.titlePlural ?? ""),
               items: data?.items ?? [],
-              card: (item) => <EntityRowCard entity={data.entity!} item={item} t={t} />,
+              card: (item) => <EntityRowCard entity={data.entity} item={item} t={t} />,
             },
           ]}
         />

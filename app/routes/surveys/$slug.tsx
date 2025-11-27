@@ -147,6 +147,34 @@ async function getAlreadyVoted({ item, request }: { item: SurveyWithDetails; req
   return false;
 }
 
+function SurveyItemWrapper(props: {
+  survey: SurveyDto;
+  item: SurveyItemDto;
+  value: SurveryItemResultDto;
+  disabled: boolean;
+  onChange: (value: SurveryItemResultDto) => void;
+}) {
+  return <SurveyItem {...props} />;
+}
+
+function ResultsToggleButton({ showingResults }: { showingResults: boolean }) {
+  return showingResults ? <ButtonSecondary to="?">Hide Results</ButtonSecondary> : <ButtonSecondary to="?results=true">View Results</ButtonSecondary>;
+}
+
+function ResetButton({ searchParams, setSearchParams, t }: { searchParams: URLSearchParams; setSearchParams: (params: URLSearchParams) => void; t: any }) {
+  return (
+    <ButtonSecondary
+      onClick={() => {
+        searchParams.delete("success");
+        searchParams.delete("results");
+        setSearchParams(searchParams);
+      }}
+    >
+      {t("shared.reset")}
+    </ButtonSecondary>
+  );
+}
+
 export const action: ActionFunction = async ({ request, params }) => {
   const item = await getSurveyBySlug({ tenantId: null, slug: params.slug! });
   if (!item) {
@@ -346,7 +374,7 @@ function SurveyGroup({
             });
           };
           return (
-            <SurveyItem
+            <SurveyItemWrapper
               key={`survey-item-${item.title}-${idx}`}
               survey={survey}
               item={item}
@@ -363,19 +391,11 @@ function SurveyGroup({
       <div className="flex justify-end space-x-2">
         {canShowResults && (
           <Fragment>
-            {showingResults ? <ButtonSecondary to="?">Hide Results</ButtonSecondary> : <ButtonSecondary to="?results=true">View Results</ButtonSecondary>}
+            <ResultsToggleButton showingResults={showingResults} />
           </Fragment>
         )}
         {(searchParams.get("success") !== null || searchParams.get("results") !== null) && (
-          <ButtonSecondary
-            onClick={() => {
-              searchParams.delete("success");
-              searchParams.delete("results");
-              setSearchParams(searchParams);
-            }}
-          >
-            {t("shared.reset")}
-          </ButtonSecondary>
+          <ResetButton searchParams={searchParams} setSearchParams={setSearchParams} t={t} />
         )}
         <LoadingButton isLoading={isLoading} disabled={!canSubmit() || !survey.isEnabled || disabled} type="submit">
           {alreadyVoted ? "You already voted" : <span>{t("shared.submit")}</span>}

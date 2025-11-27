@@ -18,7 +18,6 @@ interface Props {
   allEntities: EntityWithDetails[];
 }
 export default function RowEditFetcher({ url, onUpdated, allEntities, onDeleted }: Readonly<Props>) {
-  const { t } = useTranslation();
   const fetcher = useFetcher<{
     rowData?: RowsApi.GetRowData;
     routes?: EntitiesApi.Routes;

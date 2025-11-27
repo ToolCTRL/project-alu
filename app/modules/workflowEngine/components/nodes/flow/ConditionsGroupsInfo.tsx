@@ -40,18 +40,11 @@ export default function ConditionsGroupsInfo({
         return (
           <div key={group.index} className="space-y-0.5">
             {type === "switch" && <div className="text-muted-foreground text-xs font-medium uppercase">Case #{group.index + 1}</div>}
-            <div
+            <button
+              type="button"
               onClick={() => setSelectedConditionsGroup(group)}
-              onKeyDown={(e) => {
-                if (e.key === "Enter" || e.key === " ") {
-                  e.preventDefault();
-                  setSelectedConditionsGroup(group);
-                }
-              }}
-              role="button"
-              tabIndex={0}
               className={clsx(
-                "border-border group relative cursor-pointer rounded-lg border border-dashed px-2 py-2 text-sm hover:border-dotted focus:outline-hidden",
+                "border-border group relative w-full cursor-pointer rounded-lg border border-dashed px-2 py-2 text-left text-sm hover:border-dotted focus:outline-hidden",
                 group.conditions.length === 0
                   ? "border-red-300 bg-red-50 text-red-800 hover:border-red-800 hover:bg-red-100"
                   : "border-border bg-background hover:bg-secondary/90 hover:border-gray-800"
@@ -99,7 +92,7 @@ export default function ConditionsGroupsInfo({
                   );
                 })()}
               </div>
-            </div>
+            </button>
           </div>
         );
       })}
@@ -115,7 +108,13 @@ export default function ConditionsGroupsInfo({
 
       <SlideOverWideEmpty
         className="sm:max-w-2xl"
-        title={selectedConditionsGroup ? (type === "if" ? "If Condition" : `Case ${selectedConditionsGroup.index + 1}`) : ""}
+        title={
+          selectedConditionsGroup
+            ? type === "if"
+              ? "If Condition"
+              : `Case ${selectedConditionsGroup.index + 1}`
+            : ""
+        }
         open={!!selectedConditionsGroup}
         onClose={() => setSelectedConditionsGroup(null)}
       >

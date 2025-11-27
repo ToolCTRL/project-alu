@@ -225,11 +225,11 @@ function InputSlug({
         ]}
       />
       {type === "docs" ? (
-        <div className="grid grid-cols-2 gap-2">
+        <>
           <input type="hidden" name="basePath" value={"/"} hidden readOnly />
           <input type="hidden" name="slug" value={"docs"} hidden readOnly />
           <InputText title={"URL"} defaultValue={"/docs"} disabled />
-        </div>
+        </>
       ) : (
         <>
           <div className="grid grid-cols-2 gap-2">
@@ -237,7 +237,7 @@ function InputSlug({
               name="basePath"
               title="Base path"
               value={basePath}
-              setValue={setBasePath}
+              setValue={(e) => setBasePath(e)}
               options={[
                 {
                   value: "/help",

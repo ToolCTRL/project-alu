@@ -25,6 +25,82 @@ type LoaderData = {
   stripeAccount: Stripe.Account | null;
 };
 
+function StripeConnectionStatus({
+  stripeAccount,
+  onDelete
+}: {
+  stripeAccount: Stripe.Account | null;
+  onDelete: () => void;
+}) {
+  if (stripeAccount === null) {
+    return (
+      <div className="space-y-2">
+        <p className="">Start accepting payments by connecting your Stripe account.</p>
+        <Form method="post" className="space-y-2">
+          <input type="hidden" name="action" value="connectStripe" />
+          <div className="w-40">
+            <InputSelect name="country" title="Country" placeholder="Select..." options={StripeConnectUtils.stripeConnectCountries} required />
+          </div>
+          <div>
+            <LoadingButton
+              className="bg-[#5433FF] text-white hover:bg-[#4F2DFF] focus:ring-[#5433FF] focus:ring-opacity-50 active:bg-[#4F2DFF]"
+              type="submit"
+            >
+              Connect with Stripe
+            </LoadingButton>
+          </div>
+        </Form>
+      </div>
+    );
+  }
+
+  if (stripeAccount.charges_enabled === false) {
+    return (
+      <div className="space-y-2">
+        <div className="flex items-center space-x-2">
+          <XIcon className="h-6 w-6 text-red-500" />
+          <div className="text-lg font-medium">Your Stripe integration is pending</div>
+        </div>
+        <Form method="post">
+          <input type="hidden" name="action" value="reconnectStripe" />
+          <LoadingButton
+            className="bg-[#5433FF] hover:bg-[#4F2DFF] focus:ring-[#5433FF] focus:ring-opacity-50 active:bg-[#4F2DFF]"
+            type="submit"
+            actionName="reconnectStripe"
+          >
+            Reconnect
+          </LoadingButton>
+        </Form>
+        <div className="space-y-2">
+          <Form method="post" onSubmit={onDelete}>
+            <input type="hidden" name="action" value="deleteStripe" />
+            <ButtonSecondary destructive type="submit">
+              Disconnect
+            </ButtonSecondary>
+          </Form>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-2">
+      <div className="flex items-center space-x-2">
+        <CheckIcon className="h-6 w-6 text-green-500" />
+        <div className="text-lg font-medium">Stripe connected</div>
+      </div>
+      <div>
+        <Form method="post" onSubmit={onDelete}>
+          <input type="hidden" name="action" value="deleteStripe" />
+          <ButtonSecondary destructive type="submit">
+            Disconnect
+          </ButtonSecondary>
+        </Form>
+      </div>
+    </div>
+  );
+}
+
 export const loader = async ({ request, params }: LoaderFunctionArgs) => {
   await requireAuth({ request, params });
   const appConfiguration = await getAppConfiguration({ request });
@@ -205,67 +281,7 @@ export default function PricingStripeRoute() {
         },
       ]}
     >
-      {data.stripeAccount === null ? (
-        <div className="space-y-2">
-          <p className="">Start accepting payments by connecting your Stripe account.</p>
-          <Form method="post" className="space-y-2">
-            <input type="hidden" name="action" value="connectStripe" />
-            <div className="w-40">
-              <InputSelect name="country" title="Country" placeholder="Select..." options={StripeConnectUtils.stripeConnectCountries} required />
-            </div>
-            <div>
-              <LoadingButton
-                className="bg-[#5433FF] text-white hover:bg-[#4F2DFF] focus:ring-[#5433FF] focus:ring-opacity-50 active:bg-[#4F2DFF]"
-                type="submit"
-              >
-                Connect with Stripe
-              </LoadingButton>
-            </div>
-          </Form>
-        </div>
-      ) : data.stripeAccount.charges_enabled === false ? (
-        <div className="space-y-2">
-          <div className="flex items-center space-x-2">
-            <XIcon className="h-6 w-6 text-red-500" />
-            <div className="text-lg font-medium">Your Stripe integration is pending</div>
-          </div>
-          <Form method="post">
-            <input type="hidden" name="action" value="reconnectStripe" />
-            <LoadingButton
-              className="bg-[#5433FF] hover:bg-[#4F2DFF] focus:ring-[#5433FF] focus:ring-opacity-50 active:bg-[#4F2DFF]"
-              type="submit"
-              actionName="reconnectStripe"
-            >
-              Reconnect
-            </LoadingButton>
-          </Form>
-
-          <div className="space-y-2">
-            <Form method="post" onSubmit={onDelete}>
-              <input type="hidden" name="action" value="deleteStripe" />
-              <ButtonSecondary destructive type="submit">
-                Disconnect
-              </ButtonSecondary>
-            </Form>
-          </div>
-        </div>
-      ) : (
-        <div className="space-y-2">
-          <div className="flex items-center space-x-2">
-            <CheckIcon className="h-6 w-6 text-green-500" />
-            <div className="text-lg font-medium">Stripe connected</div>
-          </div>
-
-          <div>
-            <Form method="post" onSubmit={onDelete}>
-              <input type="hidden" name="action" value="deleteStripe" />
-              <ButtonSecondary destructive type="submit">
-                Disconnect
-              </ButtonSecondary>
-            </Form>
-          </div>
-        </div>
-      )}
+      <StripeConnectionStatus stripeAccount={data.stripeAccount} onDelete={onDelete} />
       <ConfirmModal ref={confirmDelete} onYes={onDeleteConfirm} destructive />
     </EditPageLayout>
   );

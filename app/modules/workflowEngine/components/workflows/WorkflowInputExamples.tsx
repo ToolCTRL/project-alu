@@ -160,8 +160,10 @@ function WorkflowInputExampleForm({
       <div className="space-y-1">
         <InputText ref={mainInput} title="Title" value={title} setValue={setTitle} required />
         <div className="overflow-hidden">
-          <label className="text-foreground/80 mb-1 block text-sm font-medium">Input</label>
-          <MonacoEditor theme="vs-dark" className=" h-80" value={input} onChange={setInput} language="json" tabSize={2} hideLineNumbers />
+          <label htmlFor="input-editor" className="text-foreground/80 mb-1 block text-sm font-medium">Input</label>
+          <div id="input-editor">
+            <MonacoEditor theme="vs-dark" className=" h-80" value={input} onChange={setInput} language="json" tabSize={2} hideLineNumbers />
+          </div>
         </div>
       </div>
       <div className="border-border mt-2 border-t pt-2">

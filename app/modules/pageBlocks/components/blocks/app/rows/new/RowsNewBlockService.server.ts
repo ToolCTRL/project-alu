@@ -19,7 +19,7 @@ export namespace RowsNewBlockService {
     const tenantId = BlockVariableService.getValue({ request, params, variable: block?.rowsNew?.variables?.tenantId });
 
     const userId = (await getUserInfo(request)).userId;
-    const entity = await getEntityByName({ tenantId, name: entityName! });
+    const entity = await getEntityByName({ tenantId, name: entityName });
     const entityData = await EntitiesApi.get({
       entity,
       tenantId,
@@ -32,12 +32,12 @@ export namespace RowsNewBlockService {
     };
   }
   export async function create({ request, params, form }: PageBlockActionArgs) {
-    const entityName = form.get("rows-entity")?.toString() ?? "";
-    const tenantId = form.get("rows-tenant")?.toString() ?? null;
-    const redirectTo = form.get("rows-redirectTo")?.toString() ?? "";
+    const entityName = String(form.get("rows-entity") ?? "");
+    const tenantId = String(form.get("rows-tenant") ?? "") || null;
+    const redirectTo = String(form.get("rows-redirectTo") ?? "");
 
     const userInfo = await getUserInfo(request);
-    const entity = await getEntityByName({ tenantId, name: entityName! });
+    const entity = await getEntityByName({ tenantId, name: entityName });
 
     const { t } = await getTranslations(request);
     await verifyUserHasPermission(request, getEntityPermission(entity, "create"), tenantId);

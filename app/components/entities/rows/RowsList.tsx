@@ -220,7 +220,7 @@ function RowsListWrapped({
             />
           ) : (
             <div className="space-y-2">
-              <GridContainer {...(currentView ? EntityViewHelper.getGridLayout(currentView) : { columns: 3 as const, gap: "xs" as const })}>
+              <GridContainer {...(currentView ? EntityViewHelper.getGridLayout(currentView) : { columns: 3, gap: "xs" })}>
                 {items.map((item) => {
                   const href = onClickRoute
                     ? onClickRoute(item)
@@ -657,7 +657,7 @@ function AdvancedBoard({
                           <div className="text-muted-foreground shrink-0 text-xs">• {agg.count}</div>
                           {agg.sum !== null && <div className="text-muted-foreground shrink-0 text-xs">• {NumberUtils.numberFormat(agg.sum)}</div>}
                         </div>
-                        {readOnly || !routes ? null : (
+                        {!readOnly && routes ? (
                           <Link
                             className="text-muted-foreground hover:text-foreground rounded-md px-2 py-1 text-sm font-semibold"
                             to={(EntityHelper.getRoutes({ routes, entity })?.new ?? "") + (colId !== "__undefined" ? `?${groupBy?.name}=${colId}` : "")}
@@ -665,7 +665,7 @@ function AdvancedBoard({
                           >
                             +
                           </Link>
-                        )}
+                        ) : null}
                       </div>
                     );
                   })}
@@ -802,14 +802,14 @@ function BoardColumn({
           )}
           {rows.map((row, idx) => renderDraggableCard(row, idx))}
           {provided.placeholder}
-          {readOnly || !routes ? null : (
+          {!readOnly && routes ? (
             <Link
               className="text-muted-foreground hover:text-foreground border-border flex items-center justify-center rounded-md border border-dashed px-2 py-2 text-xs font-medium"
               to={(EntityHelper.getRoutes({ routes, entity })?.new ?? "") + (colId !== "__undefined" ? `?${groupBy?.name}=${colId}` : "")}
             >
               {t("shared.add")}
             </Link>
-          )}
+          ) : null}
         </div>
       )}
     </Droppable>

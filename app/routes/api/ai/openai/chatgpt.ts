@@ -10,7 +10,7 @@ import { createMetrics } from "~/modules/metrics/services/.server/MetricTracker"
 
 export const action = async ({ request, params }: ActionFunctionArgs) => {
   const { time, getServerTimingHeader } = await createMetrics({ request, params }, "ai.openai.chatgpt");
-  const { prompt, max_tokens } = (await time(request.json(), "request.json")) as {
+  const { prompt, max_tokens } = await time(request.json(), "request.json") as {
     prompt?: string;
     max_tokens?: number;
   };

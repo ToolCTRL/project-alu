@@ -1,4 +1,4 @@
-import { ActionFunctionArgs, LoaderFunctionArgs, useLoaderData, useNavigate, useOutlet, useParams, Outlet } from "react-router";
+import { ActionFunctionArgs, LoaderFunctionArgs, useLoaderData, useNavigate, useOutlet, useParams } from "react-router";
 import { getTranslations } from "~/locale/i18next.server";
 import { getAllPermissions, PermissionWithRoles, updatePermission } from "~/utils/db/permissions/permissions.db.server";
 import PermissionsTable from "~/components/core/roles/PermissionsTable";
@@ -37,12 +37,10 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
       name: "roleId",
       title: "models.role.object",
       manual: true,
-      options: (await time(getAllRolesNames(), "getAllRolesNames")).map((item) => {
-        return {
-          value: item.id,
-          name: item.name,
-        };
-      }),
+      options: (await time(getAllRolesNames(), "getAllRolesNames")).map((item) => ({
+        value: item.id,
+        name: String(item.name),
+      })),
     },
   ];
   const filters = getFiltersFromCurrentUrl(request, filterableProperties);

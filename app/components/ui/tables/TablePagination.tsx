@@ -83,7 +83,7 @@ export default function TablePagination({ page, pageSize, totalItems, totalPages
           {[undefined, ...Constants.PAGE_SIZE_OPTIONS].map((f) => {
             return (
               <option key={f ?? 'default'} value={Number(f ?? Constants.DEFAULT_PAGE_SIZE)} className="lowercase">
-                {f === undefined ? Constants.DEFAULT_PAGE_SIZE : f} {t("shared.perPage")?.toLowerCase()}
+                {f ?? Constants.DEFAULT_PAGE_SIZE} {t("shared.perPage")?.toLowerCase()}
               </option>
             );
           })}

@@ -12,7 +12,13 @@ type SetItemsFn = React.Dispatch<
   >
 >;
 
-function OrderCell({ idx, items, setItems }: { readonly idx: number; readonly items: KbNavLinkDto[]; readonly setItems: SetItemsFn }) {
+interface OrderCellProps {
+  readonly idx: number;
+  readonly items: KbNavLinkDto[];
+  readonly setItems: SetItemsFn;
+}
+
+function OrderCell({ idx, items, setItems }: OrderCellProps) {
   return (
     <OrderIndexButtons
       idx={idx}

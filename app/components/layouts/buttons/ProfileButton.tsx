@@ -63,7 +63,7 @@ function AppLayoutMenu({ params, appOrAdminData, rootData, closeDropdownUser, t 
           className="hover:bg-secondary block px-4 py-2 text-sm transition duration-150 ease-in-out"
           role="menuitem"
           onClick={closeDropdownUser}
-          to={!params.tenant ? "" : UrlUtils.currentTenantUrl(params, `settings/subscription`)}
+          to={params.tenant ? UrlUtils.currentTenantUrl(params, `settings/subscription`) : ""}
         >
           {t("app.navbar.subscription")}
         </Link>
@@ -74,7 +74,7 @@ function AppLayoutMenu({ params, appOrAdminData, rootData, closeDropdownUser, t 
           className="hover:bg-secondary block px-4 py-2 text-sm transition duration-150 ease-in-out"
           role="menuitem"
           onClick={closeDropdownUser}
-          to={!params.tenant ? "" : UrlUtils.currentTenantUrl(params, "settings/account")}
+          to={params.tenant ? UrlUtils.currentTenantUrl(params, "settings/account") : ""}
         >
           {t("app.navbar.tenant")}
         </Link>
@@ -85,7 +85,7 @@ function AppLayoutMenu({ params, appOrAdminData, rootData, closeDropdownUser, t 
           className="hover:bg-secondary block px-4 py-2 text-sm transition duration-150 ease-in-out"
           role="menuitem"
           onClick={closeDropdownUser}
-          to={!params.tenant ? "" : UrlUtils.currentTenantUrl(params, `settings/api`)}
+          to={params.tenant ? UrlUtils.currentTenantUrl(params, `settings/api`) : ""}
         >
           {t("models.apiKey.plural")}
         </Link>

@@ -12,7 +12,7 @@ function getSidebarCommands({ items }: { items: SideBarItem[] }): Action[] {
 function getCommandsFromItem(item: SideBarItem, commands: Action[], parent: string[]) {
   if (item.path && item.title) {
     let description = item.description ?? "";
-    if (parent.filter(Boolean).length > 0) {
+    if (parent.some(Boolean)) {
       description = parent.filter(Boolean).join(" / ");
     }
     commands.push({

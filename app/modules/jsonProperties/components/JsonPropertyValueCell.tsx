@@ -16,7 +16,8 @@ function renderDateValue(value: JsonValue): JSX.Element {
   try {
     const date = new Date(value as string);
     return <div><DateCell date={date} /></div>;
-  } catch (e) {
+  } catch (error) {
+    // Invalid date format, fallback to displaying the raw value
     const stringValue = typeof value === 'object' ? JSON.stringify(value) : String(value);
     return <div className="text-muted-foreground">{stringValue}</div>;
   }

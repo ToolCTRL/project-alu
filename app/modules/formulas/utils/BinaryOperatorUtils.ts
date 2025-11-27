@@ -42,8 +42,17 @@ const binaryOperators: Record<FormulaOperatorType, BinaryOperatorFn> = {
   MULTIPLY: (a: FormulaValueType, b: FormulaValueType) => (a !== null && b !== null ? Number(a) * Number(b) : false),
   DIVIDE: (a: FormulaValueType, b: FormulaValueType) => (a !== null && b !== null && b !== 0 ? Number(a) / Number(b) : false),
   CONCAT: (a: FormulaValueType, b: FormulaValueType) => {
-    const aStr = a === null || a === undefined ? "" : typeof a === 'object' ? JSON.stringify(a) : String(a);
-    const bStr = b === null || b === undefined ? "" : typeof b === 'object' ? JSON.stringify(b) : String(b);
+    const convertToString = (value: FormulaValueType): string => {
+      if (value === null || value === undefined) {
+        return "";
+      }
+      if (typeof value === 'object') {
+        return JSON.stringify(value);
+      }
+      return String(value);
+    };
+    const aStr = convertToString(a);
+    const bStr = convertToString(b);
     return aStr + bStr;
   },
   EQUALS: (a: FormulaValueType, b: FormulaValueType) => {

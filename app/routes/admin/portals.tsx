@@ -85,6 +85,28 @@ type ActionData = {
   success?: string;
   error?: string;
 };
+function TenantCell({ item }: { item: PortalWithCount & { portalUrl?: string } }) {
+  const { t } = useTranslation();
+  return <FilterableValueLink name="tenantId" value={item?.tenant?.name ?? "{Admin}"} param={item?.tenant?.id ?? "null"} />;
+}
+
+function TitleCell({ item }: { item: PortalWithCount & { portalUrl?: string } }) {
+  return (
+    <div className="flex flex-col">
+      <div>
+        {item.title}{" "}
+        <Link to={item.portalUrl || item.subdomain} target="_blank" className="text-muted-foreground text-sm hover:underline">
+          ({item.subdomain})
+        </Link>
+      </div>
+    </div>
+  );
+}
+
+function UsersCell({ item }: { item: PortalWithCount & { portalUrl?: string } }) {
+  return <div>{item._count.users}</div>;
+}
+
 export const action = async ({ request, params }: LoaderFunctionArgs) => {
   await requireAuth({ request, params });
   const { t } = await getTranslations(request);
@@ -161,30 +183,18 @@ export default function PortalsList() {
             {
               name: "tenant",
               title: t("models.tenant.object"),
-              value: (item) => <FilterableValueLink name="tenantId" value={item?.tenant?.name ?? "{Admin}"} param={item?.tenant?.id ?? "null"} />,
+              value: TenantCell,
             },
             {
               name: "title",
               title: t("models.portal.object"),
               className: "w-full",
-              value: (item) => (
-                <div
-                  // to={item.tenant ? `/app/${item.tenant.slug}/portals/${item.id}` : `/admin/portals/${item.id}`}
-                  className="flex flex-col"
-                >
-                  <div>
-                    {item.title}{" "}
-                    <Link to={item.portalUrl || item.subdomain} target="_blank" className="text-muted-foreground text-sm hover:underline">
-                      ({item.subdomain})
-                    </Link>
-                  </div>
-                </div>
-              ),
+              value: TitleCell,
             },
             {
               name: "users",
               title: "Users",
-              value: (item) => <div>{item._count.users}</div>,
+              value: UsersCell,
             },
             {
               name: "createdAt",

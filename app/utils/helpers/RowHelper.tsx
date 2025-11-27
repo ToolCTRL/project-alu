@@ -25,7 +25,6 @@ import { SelectOptionsDisplay } from "../shared/SelectOptionsUtils";
 import RowRangeNumberCell from "~/components/entities/rows/cells/RowRangeNumberCell";
 import RowRangeDateCell from "~/components/entities/rows/cells/RowRangeDateCell";
 import PropertyAttributeHelper from "./PropertyAttributeHelper";
-// import RelationshipHelper from "./RelationshipHelper";
 
 const getCellValue = ({ entity, item, property }: { entity: EntityWithDetails; item: RowWithValues; property: PropertyWithDetails }) => {
   const value = getPropertyValue({ entity, item, property });
@@ -56,9 +55,6 @@ const getCellValue = ({ entity, item, property }: { entity: EntityWithDetails; i
   } else if (property.type === PropertyType.MEDIA) {
     const media = value as MediaDto[];
     return <RowMediaCell media={media} />;
-  } else if (property.type === PropertyType.SELECT && value) {
-    const display = property.attributes.find((f) => f.name === PropertyAttributeName.SelectOptions)?.value as SelectOptionsDisplay;
-    return <PropertyOptionValueBadge entity={entity} property={property.name} value={value as string} display={display} />;
   }
   let formattedValue = getFormattedValue(value, property.type);
   if (PropertyAttributeHelper.getPropertyAttributeValue_Boolean(property, PropertyAttributeName.Password)) {
@@ -220,21 +216,10 @@ const getPropertyValue = ({
       return getDynamicPropertyValue(value, property.type);
     }
   }
-  try {
-    if (!item) {
-      return null;
-    }
-    const object = item[entity?.name as keyof typeof item];
-    if (object) {
-      // DEPRECATED
-      // return object[property.name as keyof typeof object];
-    }
-    return null;
-  } catch (e) {
-    // eslint-disable-next-line no-console
-    console.error(`Error getting row value.`, { entity: entity?.name, property: property.name });
+  if (!item) {
     return null;
   }
+  return null;
 };
 
 const getProperties = (entity: EntityWithProperties, item: RowWithValues | null) => {
@@ -265,7 +250,7 @@ const getProperties = (entity: EntityWithProperties, item: RowWithValues | null)
 function getDynamicPropertyValue(item: RowValue & { media: RowMedia[]; multiple: RowValueMultiple[]; range: RowValueRange | null }, type: PropertyType) {
   switch (type) {
     case PropertyType.NUMBER:
-      if (item.numberValue === null || isNaN(Number(item.numberValue))) {
+      if (item.numberValue === null || Number.isNaN(Number(item.numberValue))) {
         return null;
       }
       return Number(item.numberValue);
@@ -303,7 +288,7 @@ function getDetailFormattedValue(entity: EntityWithDetails, item: RowWithValues,
 function getFormattedValue(value: any, type: PropertyType): string {
   switch (type) {
     case PropertyType.NUMBER:
-      if (value === null || isNaN(value)) {
+      if (value === null || Number.isNaN(value)) {
         return "";
       }
       return NumberUtils.decimalFormat(Number(value));
@@ -321,7 +306,8 @@ function getFormattedValue(value: any, type: PropertyType): string {
         const date = new Date(value);
         return date.toISOString().split("T")[0];
       } catch (e: any) {
-        return value.toISOString().split("T")[0];
+        console.error("Error formatting date:", e);
+        return value?.toISOString?.()?.split("T")[0] ?? "";
       }
     // case PropertyType.ROLE:
     // case PropertyType.USER:
@@ -475,8 +461,8 @@ function parseRangeFromForm(
     return {
       numberMin: null,
       numberMax: null,
-      dateMin: min ? new Date(min.toString()) : null,
-      dateMax: max ? new Date(max.toString()) : null,
+      dateMin: min !== null && min !== undefined ? new Date(String(min)) : null,
+      dateMax: max !== null && max !== undefined ? new Date(String(max)) : null,
     };
   }
   return null;
@@ -496,7 +482,8 @@ function parseMediaFromForm(
     media = propertyValue.media;
   } else {
     media = getFormDataEntryValues({ name, form, values }).map((f: FormDataEntryValue) => {
-      return JSON.parse(f.toString());
+      const stringValue = typeof f === 'object' && f !== null ? JSON.stringify(f) : String(f);
+      return JSON.parse(stringValue);
     });
   }
   if (!skipValidation) {
@@ -519,7 +506,8 @@ function parseMultipleFromForm(
     multiple = propertyValue.multiple;
   } else {
     multiple = getFormDataEntryValues({ name, form, values }).map((f: FormDataEntryValue) => {
-      return JSON.parse(f.toString());
+      const stringValue = typeof f === 'object' && f !== null ? JSON.stringify(f) : String(f);
+      return JSON.parse(stringValue);
     });
   }
   if (!skipValidation) {
@@ -659,7 +647,7 @@ const getRowPropertiesFromForm = ({
     if (form?.has(name)) {
       parentRows = parentRows ?? [];
     }
-    const rowIds = getFormDataEntryValues({ name, form, values }).map((f) => f.toString());
+    const rowIds = getFormDataEntryValues({ name, form, values }).map((f) => String(f));
     const parentRowIds = rowIds.map((parentId) => {
       return { relationshipId: relationship.id, parentId };
     });
@@ -674,7 +662,7 @@ const getRowPropertiesFromForm = ({
     if (form?.has(name)) {
       childRows = childRows ?? [];
     }
-    const rowIds = getFormDataEntryValues({ name, form, values }).map((f) => f.toString());
+    const rowIds = getFormDataEntryValues({ name, form, values }).map((f) => String(f));
     const childRowIds = rowIds.map((childId) => {
       return { relationshipId: relationship.id, childId };
     });

@@ -18,7 +18,6 @@ import {
   defaultOnboardingBlock,
   defaultOnboardingStepBlock,
   OnboardingBlockDto,
-  OnboardingBlockStyle,
   OnboardingBlockStyles,
   OnboardingInputOptionDto,
   OnboardingStepBlockDto,

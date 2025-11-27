@@ -115,17 +115,19 @@ export default function UsersTable({ items, canImpersonate, canChangePassword, c
       {
         name: "lastActivity",
         title: t("shared.lastActivity"),
-        value: (item) => <LastActivity item={item} lastLogs={lastLogs} />,
+        value: (item) => LastActivity({ item, lastLogs }),
       },
       {
         name: "createdAt",
         title: t("shared.createdAt"),
         value: (i) => DateUtils.dateDM(i.createdAt),
-        formattedValue: (item) => (
-          <time dateTime={DateUtils.dateYMDHMS(item.createdAt)} title={DateUtils.dateYMDHMS(item.createdAt)}>
-            {DateUtils.dateAgo(item.createdAt)}
-          </time>
-        ),
+        formattedValue: (item) => {
+          return (
+            <time dateTime={DateUtils.dateYMDHMS(item.createdAt)} title={DateUtils.dateYMDHMS(item.createdAt)}>
+              {DateUtils.dateAgo(item.createdAt)}
+            </time>
+          );
+        },
         sortBy: "createdAt",
       },
     ];

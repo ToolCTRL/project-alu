@@ -5,7 +5,17 @@ import EditPageLayout from "~/components/ui/layouts/EditPageLayout";
 import TableSimple from "~/components/ui/tables/TableSimple";
 import { WorkflowsVariablesApi } from "./variables.api.server";
 
-const DateCellRenderer = ({ item }: { item: { createdAt: Date | null } }) => <DateCell date={item.createdAt} />;
+function DateCellRenderer({ item }: { item: { createdAt: Date | null } }) {
+  return <DateCell date={item.createdAt} />;
+}
+
+function NameCell({ name }: { name: string }) {
+  return <>{`{{$vars.${name}}}`}</>;
+}
+
+function ValueCell({ value }: { value: string }) {
+  return <>{value}</>;
+}
 
 export default function WorkflowsVariablesView() {
   const data = useLoaderData<WorkflowsVariablesApi.LoaderData>();
@@ -23,13 +33,13 @@ export default function WorkflowsVariablesView() {
             {
               title: "Name",
               name: "name",
-              value: (item) => `{{$vars.${item.name}}}`,
+              value: (item) => <NameCell name={item.name} />,
             },
             {
               title: "Value",
               name: "value",
               className: "w-full",
-              value: (item) => item.value,
+              value: (item) => <ValueCell value={item.value} />,
             },
             {
               title: "Created At",

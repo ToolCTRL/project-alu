@@ -42,7 +42,7 @@ export const action = async ({ request, params }: ActionFunctionArgs) => {
     const password = form.get("password")?.toString();
 
     const arrRoles: { id: string; tenantId: string | undefined }[] = form.getAll("roles[]").map((f: FormDataEntryValue) => {
-      return JSON.parse(String(f));
+      return JSON.parse(f.toString());
     });
 
     if (!email || !password || !firstName) {
@@ -107,11 +107,17 @@ export default function SetUserRolesRoute() {
     }
   }, [actionData]);
 
+  function addRole(roleId: string) {
+    setSelectedRoles((f) => [...f, roleId]);
+  }
+  function removeRole(roleId: string) {
+    setSelectedRoles((f) => f.filter((f) => f !== roleId));
+  }
   function handleRoleToggle(checked: boolean, roleId: string) {
     if (checked) {
-      setSelectedRoles((f) => [...f, roleId]);
+      addRole(roleId);
     } else {
-      setSelectedRoles((f) => f.filter((f) => f !== roleId));
+      removeRole(roleId);
     }
   }
 

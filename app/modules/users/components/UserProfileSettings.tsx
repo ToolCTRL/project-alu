@@ -22,7 +22,7 @@ export default function UserProfileSettings({
     firstName: string;
     lastName: string;
     avatar: string | null;
-    admin?: unknown | null;
+    admin?: object | null;
   };
 }>) {
   const location = useLocation();

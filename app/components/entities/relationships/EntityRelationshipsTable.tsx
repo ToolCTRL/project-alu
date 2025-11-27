@@ -53,53 +53,53 @@ export default function EntityRelationshipsTable({
         {
           name: "order",
           title: "Order",
-          value: (_item, idx) => <OrderCell idx={idx} items={items} />,
+          value: (_item, idx) => OrderCell({ idx, items }),
         },
         {
           name: "type",
           title: "Type",
-          value: (item) => <TypeCell item={item} t={t} />,
+          value: (item) => TypeCell({ item, t }),
           className: "w-full",
         },
         {
           name: "parent",
           title: "Parent",
-          value: (item) => <ParentCell item={item} t={t} />,
+          value: (item) => ParentCell({ item, t }),
         },
         {
           name: "child",
           title: "Child",
-          value: (item) => <ChildCell item={item} t={t} />,
+          value: (item) => ChildCell({ item, t }),
         },
         {
           name: "count",
           title: "Count",
-          value: (item) => <CountCell count={item._count.rows} />,
+          value: (item) => CountCell({ count: item._count.rows }),
         },
         {
           name: "required",
           title: "Required",
-          value: (item) => <BooleanIconCell value={item.required} />,
+          value: (item) => BooleanIconCell({ value: item.required }),
         },
         {
           name: "cascade",
           title: "Cascade delete",
-          value: (item) => <BooleanIconCell value={item.cascade} />,
+          value: (item) => BooleanIconCell({ value: item.cascade }),
         },
         {
           name: "readOnly",
           title: "Read only",
-          value: (item) => <BooleanIconCell value={item.readOnly} />,
+          value: (item) => BooleanIconCell({ value: item.readOnly }),
         },
         {
           name: "hiddenIfEmpty",
           title: "Hidden if empty",
-          value: (item) => <BooleanIconCell value={item.hiddenIfEmpty} />,
+          value: (item) => BooleanIconCell({ value: item.hiddenIfEmpty }),
         },
         {
           name: "title",
           title: "Title",
-          value: (item) => <TitleCell title={item.title} />,
+          value: (item) => TitleCell({ title: item.title }),
         },
       ]}
       items={items}

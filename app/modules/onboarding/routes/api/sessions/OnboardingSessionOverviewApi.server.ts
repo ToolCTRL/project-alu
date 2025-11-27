@@ -18,7 +18,7 @@ export namespace OnboardingSessionOverviewApi {
   export const loader = async ({ request, params }: LoaderFunctionArgs) => {
     await verifyUserHasPermission(request, "admin.onboarding.view");
     const { t } = await getTranslations(request);
-    const item = await getOnboardingSession(params.id!);
+    const item = await getOnboardingSession(params.id ?? "");
     if (!item) {
       throw redirect("/onboarding/sessions");
     }
@@ -37,7 +37,7 @@ export namespace OnboardingSessionOverviewApi {
     const { t } = await getTranslations(request);
     const form = await request.formData();
     const action = form.get("action");
-    const item = await getOnboardingSession(params.id!);
+    const item = await getOnboardingSession(params.id ?? "");
     if (!item) {
       return redirect("/onboarding/sessions");
     }

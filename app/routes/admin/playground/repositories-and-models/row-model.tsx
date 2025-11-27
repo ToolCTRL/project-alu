@@ -26,7 +26,15 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
   return data;
 };
 
-export default function () {
+function LogoCell({ item }: { item: RowController }) {
+  const logo = item.getMediaPublicUrlOrFile("logo");
+  if (!logo) {
+    return null;
+  }
+  return <img alt={item.toString()} className="h-8 w-auto" src={item.getMediaPublicUrlOrFile("logo")} title={item.getText("title")} />;
+}
+
+export default function PlaygroundRowModel() {
   const data = useLoaderData<LoaderData>();
   const companies = data.companies.items.map((item) => {
     return new RowController(item);
@@ -80,13 +88,7 @@ export default function () {
                     {
                       name: "logo",
                       title: "Logo",
-                      value: (i) => {
-                        const logo = i.getMediaPublicUrlOrFile("logo");
-                        if (!logo) {
-                          return null;
-                        }
-                        return <img alt={i.toString()} className="h-8 w-auto" src={i.getMediaPublicUrlOrFile("logo")} title={i.getText("title")} />;
-                      },
+                      value: LogoCell,
                     },
                     { name: "createdAt", title: "Created at", value: (i) => <DateCell date={i.row.createdAt} /> },
                     { name: "toString", title: "toString()", value: (i) => i.toString() },

@@ -167,14 +167,6 @@ export default function PortalIndexRoute() {
             </Link>
           )}
 
-          {/* {data.item.domain && portalsConfig?.domains?.enabled && (
-            <Link to={data.item.domain} className="group" target="_blank">
-              <Card className="">
-                <dt className="truncate text-xs font-medium text-muted-foreground group-hover:underline">{data.item.domain}</dt>
-                <dd className="mt-1 truncate text-2xl font-semibold text-foreground">Domain</dd>
-              </Card>
-            </Link>
-          )} */}
         </dl>
       </EditPageLayout>
   );

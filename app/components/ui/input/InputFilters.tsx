@@ -1,5 +1,5 @@
 import clsx from "clsx";
-import { FormEvent, Fragment, useEffect, useState } from "react";
+import { FormEvent, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Form, useSearchParams } from "react-router";
 import { Colors } from "~/application/enums/shared/Colors";

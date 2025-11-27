@@ -57,7 +57,7 @@ async function validateBearerToken(request: Request): Promise<ApiAccessValidatio
   const token = authorization.split(" ")[1];
   let userId = "";
   try {
-    const decoded: any = jwt.verify(token, process.env.JWT_SECRET!);
+    const decoded: any = jwt.verify(token, process.env.JWT_SECRET ?? "");
     userId = decoded.userId;
   } catch (e: any) {
     // eslint-disable-next-line no-console
@@ -115,7 +115,7 @@ async function validateAccessToken(request: Request): Promise<ApiAccessValidatio
 
 export async function validateApiKey(request: Request, params: Params): Promise<ApiAccessValidation> {
   const authorization = request.headers.get("Authorization");
-  if (authorization && authorization.startsWith("Bearer ")) {
+  if (authorization?.startsWith("Bearer ")) {
     return validateBearerToken(request);
   }
 

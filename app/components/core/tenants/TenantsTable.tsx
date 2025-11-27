@@ -135,17 +135,19 @@ export default function TenantsTable({ items, pagination, actions = [], tenantIn
         name: "subscription",
         title: t("admin.tenants.subscription.title"),
         value: () => "",
-        formattedValue: (item) => (
-          <span>
-            {item.subscription?.products ? (
-              <div>
-                {item.subscription.products.map((product) => renderSubscriptionProduct(product, t))}
-              </div>
-            ) : (
-              <span className="text-muted-foreground text-sm italic">{t("settings.subscription.noSubscription")}</span>
-            )}
-          </span>
-        ),
+        formattedValue: (item) => {
+          return (
+            <span>
+              {item.subscription?.products ? (
+                <div>
+                  {item.subscription.products.map((product) => renderSubscriptionProduct(product, t))}
+                </div>
+              ) : (
+                <span className="text-muted-foreground text-sm italic">{t("settings.subscription.noSubscription")}</span>
+              )}
+            </span>
+          );
+        },
       },
     ];
 
@@ -155,38 +157,45 @@ export default function TenantsTable({ items, pagination, actions = [], tenantIn
             {
               name: "lastInvoice",
               title: "Last invoice",
-              value: (i) => (
-                <a
-                  className="flex flex-col space-y-1 hover:underline"
-                  target="_blank"
-                  rel="noreferrer"
-                  href={`https://dashboard.stripe.com${isStripeTest ? "/test" : ""}/customers/${i.subscription?.stripeCustomerId ?? ""}`}
-                >
-                  <div className="flex flex-col space-y-1">
-                    {lastTenantInvoice(i) ? <TenantInvoice item={lastTenantInvoice(i)} /> : <span>-</span>}
-                  </div>
-                </a>
-              ),
+              value: (i) => {
+                const invoice = lastTenantInvoice(i);
+                return (
+                  <a
+                    className="flex flex-col space-y-1 hover:underline"
+                    target="_blank"
+                    rel="noreferrer"
+                    href={`https://dashboard.stripe.com${isStripeTest ? "/test" : ""}/customers/${i.subscription?.stripeCustomerId ?? ""}`}
+                  >
+                    <div className="flex flex-col space-y-1">
+                      {invoice ? TenantInvoice({ item: invoice }) : <span>-</span>}
+                    </div>
+                  </a>
+                );
+              },
             },
             {
               name: "totalInvoicesPaid",
               title: "Total paid",
-              value: (i) => (
-                <a
-                  className="flex flex-col space-y-1 hover:underline"
-                  target="_blank"
-                  rel="noreferrer"
-                  href={`https://dashboard.stripe.com${isStripeTest ? "/test" : ""}/customers/${i.subscription?.stripeCustomerId ?? ""}`}
-                >
-                  {getTotalPaid(i) === 0 ? (
-                    <span>-</span>
-                  ) : (
-                    <div>
-                      ${NumberUtils.decimalFormat(getTotalPaid(i))} ({getTenantInvoices(i).filter((f) => f.paid).length})
-                    </div>
-                  )}
-                </a>
-              ),
+              value: (i) => {
+                const totalPaid = getTotalPaid(i);
+                const paidCount = getTenantInvoices(i).filter((f) => f.paid).length;
+                return (
+                  <a
+                    className="flex flex-col space-y-1 hover:underline"
+                    target="_blank"
+                    rel="noreferrer"
+                    href={`https://dashboard.stripe.com${isStripeTest ? "/test" : ""}/customers/${i.subscription?.stripeCustomerId ?? ""}`}
+                  >
+                    {totalPaid === 0 ? (
+                      <span>-</span>
+                    ) : (
+                      <div>
+                        ${NumberUtils.decimalFormat(totalPaid)} ({paidCount})
+                      </div>
+                    )}
+                  </a>
+                );
+              },
             },
           ]
         : [];
@@ -195,8 +204,12 @@ export default function TenantsTable({ items, pagination, actions = [], tenantIn
       {
         name: "types",
         title: t("shared.types"),
-        value: (i) =>
-          i.types.length === 0 ? <span className="text-muted-foreground">{t("shared.default")}</span> : i.types.map((f) => f.title).join(", "),
+        value: (i) => {
+          if (i.types.length === 0) {
+            return <span className="text-muted-foreground">{t("shared.default")}</span>;
+          }
+          return i.types.map((f) => f.title).join(", ");
+        },
       },
       {
         name: "users",
@@ -208,24 +221,30 @@ export default function TenantsTable({ items, pagination, actions = [], tenantIn
       {
         name: "rows",
         title: t("models.row.plural"),
-        value: (item) => <Link to={"/admin/entities/rows?tenantId=" + item.id}>{item._count.rows}</Link>,
+        value: (item) => {
+          return <Link to={"/admin/entities/rows?tenantId=" + item.id}>{item._count.rows}</Link>;
+        },
       },
       {
         name: "events",
         title: "Events",
         value: (i) => i._count.events,
-        formattedValue: (i) => <Link to={`/admin/events?tenantId=${i.id}`}>{i._count.events}</Link>,
+        formattedValue: (i) => {
+          return <Link to={`/admin/events?tenantId=${i.id}`}>{i._count.events}</Link>;
+        },
       },
       {
         name: "createdAt",
         title: t("shared.createdAt"),
         value: (i) => i.createdAt,
-        formattedValue: (item) => (
-          <div className="flex flex-col">
-            <div>{DateUtils.dateYMD(item.createdAt)}</div>
-            <div className="text-xs">{DateUtils.dateAgo(item.createdAt)}</div>
-          </div>
-        ),
+        formattedValue: (item) => {
+          return (
+            <div className="flex flex-col">
+              <div>{DateUtils.dateYMD(item.createdAt)}</div>
+              <div className="text-xs">{DateUtils.dateAgo(item.createdAt)}</div>
+            </div>
+          );
+        },
       },
     ];
 

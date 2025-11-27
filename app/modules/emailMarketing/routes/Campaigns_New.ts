@@ -42,22 +42,22 @@ export namespace Campaigns_New {
     return Response.json({ success: t("shared.sent") }, { status: 200 });
   }
 
-  async function handleSendContactPreview(
-    sender: any,
-    tenantId: string | null,
-    contactRowId: string,
-    email: string,
-    subject: string,
-    htmlBody: string,
-    textBody: string,
-    t: any
-  ) {
+  async function handleSendContactPreview(params: {
+    sender: any;
+    tenantId: string | null;
+    contactRowId: string;
+    email: string;
+    subject: string;
+    htmlBody: string;
+    textBody: string;
+    t: any;
+  }) {
     await EmailMarketingService.sendContactPreview({
-      contactRowId,
-      from: { sender, tenantId },
-      email: { to: email, subject, htmlBody, textBody, track: true },
+      contactRowId: params.contactRowId,
+      from: { sender: params.sender, tenantId: params.tenantId },
+      email: { to: params.email, subject: params.subject, htmlBody: params.htmlBody, textBody: params.textBody, track: true },
     });
-    return Response.json({ success: t("shared.sent") }, { status: 200 });
+    return Response.json({ success: params.t("shared.sent") }, { status: 200 });
   }
 
   async function handleCreateCampaign(
@@ -69,11 +69,11 @@ export namespace Campaigns_New {
     htmlBody: string,
     textBody: string
   ) {
-    const name = form.get("name")?.toString() ?? "";
+    const name = String(form.get("name") ?? "");
     if (!name) {
       return Response.json({ error: "Invalid name" }, { status: 400 });
     }
-    const contactViewId = form.get("contactViewId")?.toString();
+    const contactViewId = String(form.get("contactViewId") ?? "");
     if (!contactViewId) {
       return Response.json({ error: "Invalid contact/recipient list" }, { status: 400 });
     }
@@ -112,7 +112,7 @@ export namespace Campaigns_New {
           return await handleSendPreview(sender, tenantId, email, subject, htmlBody, textBody, t);
         case "send-contact-preview": {
           const contactRowId = form.get("contactRowId")?.toString() ?? "";
-          return await handleSendContactPreview(sender, tenantId, contactRowId, email, subject, htmlBody, textBody, t);
+          return await handleSendContactPreview({ sender, tenantId, contactRowId, email, subject, htmlBody, textBody, t });
         }
         case "create":
           return await handleCreateCampaign(params, form, sender, tenantId, subject, htmlBody, textBody);

@@ -7,7 +7,12 @@ type ArticleItem = {
   title: string;
 };
 
-function OrderCell({ idx, items }: { readonly idx: number; readonly items: ArticleItem[] }) {
+interface OrderCellProps {
+  readonly idx: number;
+  readonly items: ArticleItem[];
+}
+
+function OrderCell({ idx, items }: OrderCellProps) {
   return <OrderListButtons index={idx} items={items} editable={true} />;
 }
 

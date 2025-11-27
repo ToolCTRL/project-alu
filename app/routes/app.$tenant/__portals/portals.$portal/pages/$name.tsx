@@ -77,14 +77,14 @@ export const action = async ({ request, params }: ActionFunctionArgs) => {
       properties: pageConfig.properties,
     });
 
-    if (!page) {
-      await createPortalPage({
-        portalId: portal.id,
-        name: params.name ?? "",
+    if (page) {
+      await updatePortalPage(page.id, {
         attributes,
       });
     } else {
-      await updatePortalPage(page.id, {
+      await createPortalPage({
+        portalId: portal.id,
+        name: params.name ?? "",
         attributes,
       });
     }

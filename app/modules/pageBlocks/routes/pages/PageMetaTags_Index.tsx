@@ -15,7 +15,7 @@ export namespace PageMetaTags_Index {
     await verifyUserHasPermission(request, "admin.pages.view");
     let page: PageWithDetails | null = null;
     if (params.id) {
-      page = await getPage(params.id);
+      page = await getPage(params.id ?? "");
     } else if (params.tenant) {
       throw redirect(`/app/${params.tenant}/settings/pages`);
     }

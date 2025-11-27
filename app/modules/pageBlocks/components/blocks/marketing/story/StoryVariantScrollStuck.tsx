@@ -157,16 +157,19 @@ export default function StoryVariantScrollStuck({ item }: { readonly item: Story
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ delay: 0.3 }}
                     >
-                      {item.phases.map((phase, idx) => (
-                        <div
-                          key={`phase-indicator-${idx}-${phase.headline.substring(0, 10)}`}
-                          className={`h-2 rounded-full transition-all duration-500 ${
-                            idx === currentPhase
-                              ? `w-12 bg-${getAccentColor(item.phases[currentPhase].accentColor)}`
-                              : "w-2 bg-blueprint-text-muted/30"
-                          }`}
-                        />
-                      ))}
+                      {item.phases.map((phase, idx) => {
+                        const phaseKey = `phase-indicator-${idx}-${phase.headline.substring(0, 10)}`;
+                        return (
+                          <div
+                            key={phaseKey}
+                            className={`h-2 rounded-full transition-all duration-500 ${
+                              idx === currentPhase
+                                ? `w-12 bg-${getAccentColor(item.phases[currentPhase].accentColor)}`
+                                : "w-2 bg-blueprint-text-muted/30"
+                            }`}
+                          />
+                        );
+                      })}
                     </motion.div>
                   </motion.div>
                 </AnimatePresence>
@@ -176,14 +179,16 @@ export default function StoryVariantScrollStuck({ item }: { readonly item: Story
 
           {/* RIGHT: Scrolling Text (3 Phases) */}
           <div className="space-y-[100vh]">
-            {item.phases.map((phase, idx) => (
-              <div
-                key={`phase-content-${idx}-${phase.headline.substring(0, 15)}`}
-                ref={(el) => {
-                  phaseRefs.current[idx] = el;
-                }}
-                className="min-h-screen flex items-center"
-              >
+            {item.phases.map((phase, idx) => {
+              const contentKey = `phase-content-${idx}-${phase.headline.substring(0, 15)}`;
+              return (
+                <div
+                  key={contentKey}
+                  ref={(el) => {
+                    phaseRefs.current[idx] = el;
+                  }}
+                  className="min-h-screen flex items-center"
+                >
                 <motion.div
                   initial={{ opacity: 0, y: 50 }}
                   whileInView={{ opacity: 1, y: 0 }}
@@ -243,7 +248,8 @@ export default function StoryVariantScrollStuck({ item }: { readonly item: Story
                   </div>
                 </motion.div>
               </div>
-            ))}
+              );
+            })}
           </div>
         </div>
       </div>

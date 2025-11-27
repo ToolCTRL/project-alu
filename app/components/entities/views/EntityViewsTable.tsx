@@ -188,63 +188,63 @@ export default function EntityViewsTable({
         {
           name: "entity",
           title: t("models.entity.object"),
-          value: (i) => <EntityCell item={i} t={t} />,
+          value: (i) => EntityCell({ item: i, t }),
         },
         {
           name: "Layout",
           title: t("models.view.layout"),
-          value: (i) => <LayoutCell item={i} />,
+          value: (i) => LayoutCell({ item: i }),
         },
         {
           name: "title",
           title: t("models.view.title"),
           className: "w-full",
-          value: (i) => <TitleCell item={i} t={t} />,
+          value: (i) => TitleCell({ item: i, t }),
         },
         {
           name: "appliesTo",
           title: t("models.view.appliesTo"),
-          value: (i) => <AppliesToCell item={i} />,
+          value: (i) => AppliesToCell({ item: i }),
         },
         {
           name: "properties",
           title: t("models.view.properties"),
-          value: (i) => <PropertiesCell item={i} t={t} />,
+          value: (i) => PropertiesCell({ item: i, t }),
         },
         {
           name: "filters",
           title: t("models.view.filters"),
-          value: (i) => <FiltersCell item={i} />,
+          value: (i) => FiltersCell({ item: i }),
         },
         {
           name: "sort",
           title: t("models.view.sort"),
-          value: (i) => <SortCell item={i} />,
+          value: (i) => SortCell({ item: i }),
         },
         {
           name: "pageSize",
           title: t("models.view.pageSize"),
-          value: (i) => <PageSizeCell item={i} />,
+          value: (i) => PageSizeCell({ item: i }),
         },
         {
           name: "isDefault",
           title: t("models.view.isDefault"),
-          value: (i) => <IsDefaultCell item={i} />,
+          value: (i) => IsDefaultCell({ item: i }),
         },
         {
           name: "updatedAt",
           title: t("shared.updatedAt"),
-          value: (i) => <UpdatedAtCell item={i} />,
+          value: (i) => UpdatedAtCell({ item: i }),
         },
         {
           name: "createdAt",
           title: t("shared.createdAt"),
-          value: (i) => <CreatedAtCell item={i} />,
+          value: (i) => CreatedAtCell({ item: i }),
         },
         {
           name: "createdBy",
           title: t("shared.createdBy"),
-          value: (i) => <CreatedByCell item={i} />,
+          value: (i) => CreatedByCell({ item: i }),
         },
       ]}
       noRecords={

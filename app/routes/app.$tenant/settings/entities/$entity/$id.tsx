@@ -62,10 +62,10 @@ async function validatePropertyData(
 }
 
 async function handleEditProperty(params: any, form: FormData, existing: PropertyWithDetails, entity: EntityWithDetails) {
-  const name = String(form.get("name") ?? "");
-  const title = String(form.get("title") ?? "");
+  const name = (form.get("name")?.toString() ?? "");
+  const title = (form.get("title")?.toString() ?? "");
   const type = Number(form.get("type")) as PropertyType;
-  const subtype = String(form.get("subtype") ?? "") || null;
+  const subtype = (form.get("subtype")?.toString() ?? "") || null;
   const order = Number(form.get("order"));
   let isRequired = Boolean(form.get("is-required"));
   const isHidden = Boolean(form.get("is-hidden"));
@@ -73,7 +73,7 @@ async function handleEditProperty(params: any, form: FormData, existing: Propert
   const isReadOnly = Boolean(form.get("is-read-only"));
   const canUpdate = Boolean(form.get("can-update"));
   const showInCreate = Boolean(form.get("show-in-create"));
-  let formulaId = String(form.get("formula-id") ?? "") || null;
+  let formulaId = (form.get("formula-id")?.toString() ?? "") || null;
 
   if (type === PropertyType.FORMULA) {
     isRequired = false;
@@ -94,10 +94,10 @@ async function handleEditProperty(params: any, form: FormData, existing: Propert
   }
 
   const options: { order: number; value: string; name?: string; color?: Colors }[] = form.getAll("options[]").map((f: FormDataEntryValue) => {
-    return JSON.parse(String(f));
+    return JSON.parse(f.toString());
   });
   const attributes: { name: string; value: string }[] = form.getAll("attributes[]").map((f: FormDataEntryValue) => {
-    return JSON.parse(String(f));
+    return JSON.parse(f.toString());
   });
 
   try {
@@ -125,7 +125,7 @@ async function handleEditProperty(params: any, form: FormData, existing: Propert
 }
 
 async function handleDeleteProperty(params: any, form: FormData, t: any) {
-  const id = String(form.get("id") ?? "");
+  const id = (form.get("id")?.toString() ?? "");
   const existingProperty = await getProperty(id);
   if (!existingProperty) {
     return badRequest({ error: t("shared.notFound") });

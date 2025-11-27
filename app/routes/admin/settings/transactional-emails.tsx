@@ -327,7 +327,7 @@ export default function TransactionalEmailsRoute() {
               <InputSelect
                 name="emailProvider"
                 value={emailProvider}
-                setValue={(e) => setEmailProvider(e as any)}
+                setValue={(e) => setEmailProvider(e?.toString() ?? "")}
                 options={data.providers.map((p) => ({
                   value: p.value,
                   name: `${p.name}`,

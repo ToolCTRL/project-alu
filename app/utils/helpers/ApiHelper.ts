@@ -116,7 +116,7 @@ function parseSimpleValue(
 }
 
 function getPropertyValueFromJson(t: TFunction | undefined, property: PropertyWithDetails, object: any, existing?: RowWithDetails) {
-  let jsonValue: unknown | null = null;
+  let jsonValue: any = null;
   let media: MediaDto[] = [];
   let multiple: RowValueMultipleDto[] = [];
   let range: RowValueRangeDto | null = null;
@@ -281,7 +281,7 @@ function getRelationship({
         apiFormat[entity.name] = {
           // relationshipId: row.id,
           ...rowApiFormat,
-          ...getApiFormatWithRelationships({ entities, item: row.row as RowWithDetails, options, originalParentId }),
+          ...getApiFormatWithRelationships({ entities, item: row.row, options, originalParentId }),
         };
       } else {
         apiFormat[entity.name] = null;

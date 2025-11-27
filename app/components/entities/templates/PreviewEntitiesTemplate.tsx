@@ -42,12 +42,12 @@ export default function PreviewEntitiesTemplate({ template }: Readonly<{ templat
         {
           name: "name",
           title: "Name",
-          value: (item) => <NameCell item={item} />,
+          value: (item) => NameCell({ item }),
         },
         {
           name: "title",
           title: "Title",
-          value: (item) => <TitleCell item={item} t={t} />,
+          value: (item) => TitleCell({ item, t }),
         },
         {
           name: "properties",
@@ -76,7 +76,7 @@ export default function PreviewEntitiesTemplate({ template }: Readonly<{ templat
         {
           name: "views",
           title: "Views",
-          value: (item) => <ViewsCell item={item} />,
+          value: (item) => ViewsCell({ item }),
         },
       ]}
     />

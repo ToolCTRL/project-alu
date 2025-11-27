@@ -1,4 +1,3 @@
-import { Fragment } from "react";
 import { WorkflowDto } from "../../dtos/WorkflowDto";
 import { WorkflowExecutionDto } from "../../dtos/WorkflowExecutionDto";
 import { Link, useParams, useSearchParams } from "react-router";
@@ -195,20 +194,14 @@ function ExecutePanel({
           <div className="space-y-0.5 overflow-y-auto">
             {executions.map((execution) => {
               return (
-                <div
+                <button
+                  type="button"
                   key={execution.id}
                   className={clsx(
-                    "hover:bg-secondary/90 cursor-pointer rounded-md border px-2 py-1.5",
+                    "hover:bg-secondary/90 w-full cursor-pointer rounded-md border px-2 py-1.5 text-left",
                     selectedExecution?.id === execution.id ? "border-border bg-secondary/90" : "bg-background border-transparent"
                   )}
                   onClick={() => onSelected(execution)}
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter" || e.key === " ") {
-                      onSelected(execution);
-                    }
-                  }}
-                  role="button"
-                  tabIndex={0}
                 >
                   <div className="flex items-center justify-between text-xs">
                     <div className="flex items-center space-x-2 truncate">
@@ -218,18 +211,12 @@ function ExecutePanel({
                       <div className="text-muted-foreground truncate">{execution.blockRuns.length} nodes executed</div>
                     </div>
                     <div>
-                      {execution.endedAt ? (
-                        execution.error ? (
-                          <SimpleBadge title="Error" color={Colors.RED} />
-                        ) : (
-                          <SimpleBadge title="Success" color={Colors.GREEN} />
-                        )
-                      ) : (
-                        <SimpleBadge title="Incomplete" color={Colors.YELLOW} />
-                      )}
+                      {!execution.endedAt && <SimpleBadge title="Incomplete" color={Colors.YELLOW} />}
+                      {execution.endedAt && execution.error && <SimpleBadge title="Error" color={Colors.RED} />}
+                      {execution.endedAt && !execution.error && <SimpleBadge title="Success" color={Colors.GREEN} />}
                     </div>
                   </div>
-                </div>
+                </button>
               );
             })}
           </div>

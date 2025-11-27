@@ -95,7 +95,7 @@ export default function PageBlocks({
     }
   }
   function addBlock(type: string, index?: number) {
-    if (!PageBlockUtils.defaultBlocks.hasOwnProperty(type)) {
+    if (!Object.hasOwn(PageBlockUtils.defaultBlocks, type)) {
       alert("[UNDER CONSTRUCTION 🚧] Block form: " + type);
       return;
     }

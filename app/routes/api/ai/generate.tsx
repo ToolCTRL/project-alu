@@ -16,7 +16,7 @@ export const action = async ({ request, params }: ActionFunctionArgs) => {
     return new Response("No prompt in the request", { status: 400, headers: getServerTimingHeader() });
   }
 
-  prompt = prompt.replaceAll(/\n/g, " ").replace(/\/$/, "").slice(0, 5000);
+  prompt = prompt.replaceAll("\n", " ").replace(/\/$/, "").slice(0, 5000);
 
   if (!prompt) {
     return new Response("No prompt", { status: 400, headers: getServerTimingHeader() });

@@ -1,4 +1,4 @@
-import { useMemo, useEffect } from "react";
+import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { ActionFunctionArgs, Link, LoaderFunctionArgs, useActionData, useLoaderData, useNavigate, useOutlet } from "react-router";
 import { adminGetAllUsers, getUser, updateUserPassword, UserWithDetails } from "~/utils/db/users.db.server";
@@ -178,7 +178,6 @@ export const action = async ({ request }: ActionFunctionArgs) => {
     }
     case "delete-user": {
       await verifyUserHasPermission(request, "admin.users.delete");
-      // TODO: CANCEL TENANTS SUBSCRIPTIONS, DELETE TENANTS AND SUBSCRIPTIONS
       try {
         await deleteUserWithItsTenants(userId);
       } catch (e: any) {
@@ -201,18 +200,6 @@ export default function AdminUsersRoute() {
   const adminData = useAdminData();
   const outlet = useOutlet();
   const navigate = useNavigate();
-
-  const stats = useMemo(() => {
-    const total = data.items.length;
-    const admins = data.items.filter((user) => user.admin).length;
-    const now = Date.now();
-    const recentThreshold = 7 * 24 * 60 * 60 * 1000;
-    const recentActive = (data.lastLogs ?? []).filter((entry) => {
-      const createdAt = entry.log?.createdAt ? new Date(entry.log.createdAt).getTime() : 0;
-      return createdAt > 0 && now - createdAt <= recentThreshold;
-    }).length;
-    return { total, admins, recentActive };
-  }, [data.items, data.lastLogs]);
 
   useEffect(() => {
     if (actionData?.success) {
