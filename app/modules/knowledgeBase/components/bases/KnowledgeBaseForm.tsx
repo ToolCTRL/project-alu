@@ -246,7 +246,7 @@ function InputSlug({
             required
           />
           <InputText name="slug" title={"Slug"} value={slug} setValue={setSlug} required />
-          <InputText title={"URL"} value={UrlUtils.join(basePath as string, slug)} setValue={() => {}} disabled />
+          <InputText title={"URL"} value={UrlUtils.join(basePath, slug)} setValue={() => {}} disabled />
         </div>
       )}
     </div>

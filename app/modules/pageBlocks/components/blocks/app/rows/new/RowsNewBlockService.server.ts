@@ -35,9 +35,9 @@ export namespace RowsNewBlockService {
     const entityNameValue = form.get("rows-entity");
     const tenantIdValue = form.get("rows-tenant");
     const redirectToValue = form.get("rows-redirectTo");
-    const entityName = String(entityNameValue ?? "");
-    const tenantId = String(tenantIdValue ?? "") || null;
-    const redirectTo = String(redirectToValue ?? "");
+    const entityName = typeof entityNameValue === "string" ? entityNameValue : "";
+    const tenantId = typeof tenantIdValue === "string" && tenantIdValue !== "" ? tenantIdValue : null;
+    const redirectTo = typeof redirectToValue === "string" ? redirectToValue : "";
 
     const userInfo = await getUserInfo(request);
     const entity = await getEntityByName({ tenantId, name: entityName });

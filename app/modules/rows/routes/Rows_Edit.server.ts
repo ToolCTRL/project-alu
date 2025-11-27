@@ -107,7 +107,9 @@ export namespace Rows_Edit {
         });
       }
       const redirectValue = form.get("redirect");
-      const redirectTo = (typeof redirectValue === "string" ? redirectValue : String(redirectValue || "")) || new URL(request.url).searchParams.get("redirect")?.toString();
+      const redirectFromForm = typeof redirectValue === "string" ? redirectValue : "";
+      const redirectFromQuery = new URL(request.url).searchParams.get("redirect") ?? "";
+      const redirectTo = redirectFromForm || redirectFromQuery;
       if (redirectTo) {
         return redirect(redirectTo, { headers: getServerTimingHeader() });
       }
@@ -125,7 +127,9 @@ export namespace Rows_Edit {
         return Response.json({ error: error.message }, { status: 400, headers: getServerTimingHeader() });
       }
       const deleteRedirectValue = form.get("redirect");
-      const redirectTo = (typeof deleteRedirectValue === "string" ? deleteRedirectValue : String(deleteRedirectValue || "")) || new URL(request.url).searchParams.get("redirect")?.toString();
+      const redirectFromForm = typeof deleteRedirectValue === "string" ? deleteRedirectValue : "";
+      const redirectFromQuery = new URL(request.url).searchParams.get("redirect") ?? "";
+      const redirectTo = redirectFromForm || redirectFromQuery;
       if (redirectTo) {
         return redirect(redirectTo, { headers: getServerTimingHeader() });
       }

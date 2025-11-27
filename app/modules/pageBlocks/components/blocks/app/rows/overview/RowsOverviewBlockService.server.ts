@@ -32,8 +32,8 @@ export namespace RowsOverviewBlockService {
   export async function create({ request, params, form }: PageBlockActionArgs) {
     const entityNameValue = form.get("rows-entity");
     const tenantIdValue = form.get("rows-tenant");
-    const entityName = String(entityNameValue ?? "");
-    const tenantId = String(tenantIdValue ?? "") || null;
+    const entityName = typeof entityNameValue === "string" ? entityNameValue : "";
+    const tenantId = typeof tenantIdValue === "string" && tenantIdValue !== "" ? tenantIdValue : null;
 
     const userInfo = await getUserInfo(request);
     const entity = await getEntityByName({ tenantId, name: entityName });
@@ -48,8 +48,9 @@ export namespace RowsOverviewBlockService {
       rowValues,
     });
     const redirectValue = form.get("redirect");
-    const searchRedirect = new URL(request.url).searchParams.get("redirect");
-    const redirectTo = String(redirectValue ?? searchRedirect ?? "");
+    const redirectFromForm = typeof redirectValue === "string" ? redirectValue : "";
+    const searchRedirect = new URL(request.url).searchParams.get("redirect") ?? "";
+    const redirectTo = redirectFromForm || searchRedirect;
     if (redirectTo) {
       return redirect(redirectTo);
     }

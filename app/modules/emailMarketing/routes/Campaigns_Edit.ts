@@ -42,15 +42,19 @@ export namespace Campaigns_Edit {
   }
 
   async function handleUpdate(params: any, form: FormData, t: any) {
-    const name = form.get("name");
-    const subject = form.get("subject");
-    const htmlBody = form.get("htmlBody");
-    const textBody = form.get("textBody");
+    const nameEntry = form.get("name");
+    const subjectEntry = form.get("subject");
+    const htmlBodyEntry = form.get("htmlBody");
+    const textBodyEntry = form.get("textBody");
+    const name = typeof nameEntry === "string" ? nameEntry : "";
+    const subject = typeof subjectEntry === "string" ? subjectEntry : "";
+    const htmlBody = typeof htmlBodyEntry === "string" ? htmlBodyEntry : "";
+    const textBody = typeof textBodyEntry === "string" ? textBodyEntry : "";
     await updateCampaign(params.id, {
-      name: String(name ?? ""),
-      subject: String(subject ?? ""),
-      htmlBody: String(htmlBody ?? ""),
-      textBody: String(textBody ?? ""),
+      name,
+      subject,
+      htmlBody,
+      textBody,
     });
     return Response.json({ success: t("shared.saved") });
   }
@@ -62,7 +66,7 @@ export namespace Campaigns_Edit {
 
   async function handleSendPreview(item: any, form: FormData, t: any) {
     const emailValue = form.get("email");
-    const email = String(emailValue ?? "");
+    const email = typeof emailValue === "string" ? emailValue : "";
     await EmailMarketingService.sendCampaignTest(item, email);
     return Response.json({ success: t("shared.sent") }, { status: 200 });
   }

@@ -70,12 +70,12 @@ export namespace Campaigns_New {
     textBody: string
   ) {
     const nameValue = form.get("name");
-    const name = String(nameValue ?? "");
+    const name = typeof nameValue === "string" ? nameValue : "";
     if (!name) {
       return Response.json({ error: "Invalid name" }, { status: 400 });
     }
     const contactViewIdValue = form.get("contactViewId");
-    const contactViewId = String(contactViewIdValue ?? "");
+    const contactViewId = typeof contactViewIdValue === "string" ? contactViewIdValue : "";
     if (!contactViewId) {
       return Response.json({ error: "Invalid contact/recipient list" }, { status: 400 });
     }

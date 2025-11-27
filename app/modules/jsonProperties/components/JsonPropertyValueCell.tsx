@@ -15,8 +15,8 @@ function renderBooleanValue(value: JsonValue): JSX.Element | null {
 function renderDateValue(value: JsonValue): JSX.Element {
   try {
     const date = new Date(value as string);
-    if (isNaN(date.getTime())) {
-      throw new Error("Invalid date");
+    if (Number.isNaN(date.getTime())) {
+      throw new TypeError("Invalid date");
     }
     return <div><DateCell date={date} /></div>;
   } catch (error) {
