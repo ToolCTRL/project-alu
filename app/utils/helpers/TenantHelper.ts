@@ -39,9 +39,8 @@ function apiFormat({
     name: tenant.name,
     icon: tenant.icon,
     ...customRow,
-    subscription: !subscriptions
-      ? null
-      : {
+    subscription: subscriptions
+      ? {
           id: subscriptions.id,
           stripeCustomerId: subscriptions.stripeCustomerId,
           products: subscriptions.products.map((f) => {
@@ -97,7 +96,8 @@ function apiFormat({
               }),
             };
           }),
-        },
+        }
+      : null,
   };
 }
 

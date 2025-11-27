@@ -17,7 +17,7 @@ function requiresCookieConsent(userSession: UserSession, searchParams: URLSearch
     }
     return null;
   });
-  if (requiredCookieCategoryConsent.filter((f) => f).length > 0) {
+  if (requiredCookieCategoryConsent.some(Boolean)) {
     return true;
   }
 

@@ -1,13 +1,5 @@
 import { EntityRelationshipWithDetails } from "../db/entities/entityRelationships.db.server";
 
-// function getTopEntities({ entity }: { entity: EntityWithDetails }) {
-//   return [...entity.parentEntities.filter((f) => f.type !== "one-to-one")];
-// }
-
-// function getBottomEntities({ entity }: { entity: EntityWithDetails }) {
-//   return [...entity.childEntities, ...entity.parentEntities.filter((f) => f.type === "one-to-one")];
-// }
-
 function getTitle({ fromEntityId, relationship }: { fromEntityId: string; relationship: EntityRelationshipWithDetails }) {
   if (relationship.title) {
     return relationship.title;
@@ -72,8 +64,6 @@ function getInputType({ fromEntityId, relationship }: { fromEntityId: string; re
 }
 
 export default {
-  // getTopEntities,
-  // getBottomEntities,
   getTitle,
   getTitleWithName,
   getInputType,

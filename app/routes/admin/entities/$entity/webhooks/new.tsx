@@ -1,5 +1,4 @@
-import { ActionFunction, redirect } from "react-router";
-import { useNavigate, useParams } from "react-router";
+import { ActionFunction, redirect, useNavigate, useParams } from "react-router";
 import EntityWebhookForm from "~/components/entities/webhooks/EntityWebhookForm";
 import OpenModal from "~/components/ui/modals/OpenModal";
 import { getTranslations } from "~/locale/i18next.server";

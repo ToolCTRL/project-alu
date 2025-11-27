@@ -7,7 +7,11 @@ export const meta: MetaFunction<typeof loader> = ({ data }) => data?.meta || [];
 export const loader = (args: LoaderFunctionArgs) => OnboardingIndexApi.loader(args);
 export const action: ActionFunction = (args) => OnboardingIndexApi.action(args);
 
-export default () => <OnboardingIndexRoute />;
+function OnboardingsRoute() {
+  return <OnboardingIndexRoute />;
+}
+
+export default OnboardingsRoute;
 
 export function ErrorBoundary() {
   return <ServerError />;

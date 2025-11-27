@@ -30,7 +30,19 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
   return data;
 };
 
-export default () => {
+const TaskRowComponent = ({ allEntities, task }: { allEntities: EntityWithDetails[]; task: RowTaskWithDetails }) => {
+  const { t } = useTranslation();
+  const [entity] = useState(allEntities.find((f) => f.id === task.row.entityId));
+  return <div>{entity && RowHelper.getTextDescription({ entity, item: task.row, t })}</div>;
+};
+
+const TaskTitleCell = ({ task }: { task: RowTaskWithDetails }) => <div className="w-full">{task.title}</div>;
+
+const TaskCompletedCell = ({ task }: { task: RowTaskWithDetails }) => (
+  <div>{task.completed ? <CheckIcon className="text-muted-foreground h-4 w-4" /> : <XIcon className="text-muted-foreground h-4 w-4" />}</div>
+);
+
+export default function TasksRoute() {
   const { t } = useTranslation();
   const data = useLoaderData<LoaderData>();
   return (
@@ -44,20 +56,18 @@ export default () => {
           {
             name: "row",
             title: t("models.row.object"),
-            value: (i) => <TaskRow allEntities={data.allEntities} task={i} />,
+            value: (i) => <TaskRowComponent allEntities={data.allEntities} task={i} />,
           },
           {
             name: "task",
             title: t("models.rowTask.object"),
-            value: (i) => <div className="w-full">{i.title}</div>,
+            value: (i) => <TaskTitleCell task={i} />,
             className: "w-full",
           },
           {
             name: "completed",
             title: t("models.rowTask.completed"),
-            value: (i) => (
-              <div>{i.completed ? <CheckIcon className="text-muted-foreground h-4 w-4" /> : <XIcon className="text-muted-foreground h-4 w-4" />}</div>
-            ),
+            value: (i) => <TaskCompletedCell task={i} />,
           },
           {
             name: "createdAt",
@@ -71,10 +81,5 @@ export default () => {
       />
     </div>
   );
-};
-
-function TaskRow({ allEntities, task }: { allEntities: EntityWithDetails[]; task: RowTaskWithDetails }) {
-  const { t } = useTranslation();
-  const [entity] = useState(allEntities.find((f) => f.id === task.row.entityId));
-  return <div>{entity && RowHelper.getTextDescription({ entity, item: task.row, t })}</div>;
 }
+

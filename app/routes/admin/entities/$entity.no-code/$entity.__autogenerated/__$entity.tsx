@@ -11,7 +11,7 @@ export const meta: v2MetaFunction<Rows_List.LoaderData> = ({ data }) => data?.me
 export const loader = (args: LoaderFunctionArgs) => Rows_List.loader(args);
 export const action: ActionFunction = (args) => Rows_List.action(args);
 
-export default function () {
+export default function EntityRowsViewRoute() {
   const data = useLoaderData<Rows_List.LoaderData>();
   const appOrAdminData = useAppOrAdminData();
   return (

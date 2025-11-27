@@ -21,9 +21,7 @@ export async function getAppDashboardStats({
   if (!tenant) {
     return [];
   }
-  if (!entities) {
-    entities = await getAllEntities({ tenantId: tenant.id, active: true, types: [DefaultEntityTypes.All, DefaultEntityTypes.AppOnly] });
-  }
+  entities ??= await getAllEntities({ tenantId: tenant.id, active: true, types: [DefaultEntityTypes.All, DefaultEntityTypes.AppOnly] });
   const promises = entities.map((entity) => getEntityStat(entity, tenant.id, gte));
   const stats = await Promise.all(promises);
   return stats;

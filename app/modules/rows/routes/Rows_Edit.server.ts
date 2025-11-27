@@ -31,7 +31,7 @@ export namespace Rows_Edit {
       throw redirect(tenantId ? UrlUtils.currentTenantUrl(params, "404") : "/404?entity=" + params.entity);
     }
     const rowData = await time(
-      RowsApi.get(params.id!, {
+      RowsApi.get(params.id, {
         entity,
         tenantId,
         userId,
@@ -39,7 +39,7 @@ export namespace Rows_Edit {
       "RowsApi.get"
     );
     if (!rowData.rowPermissions.canUpdate && !user?.admin) {
-      throw Error(t("shared.unauthorized"));
+      throw new Error(t("shared.unauthorized"));
     }
     const data: LoaderData = {
       meta: [
@@ -62,7 +62,7 @@ export namespace Rows_Edit {
     const { t, userId, tenantId, entity, form } = await RowsRequestUtils.getAction({ request, params });
     const user = await getUser(userId);
     const { item } = await time(
-      RowsApi.get(params.id!, {
+      RowsApi.get(params.id, {
         entity,
         tenantId,
         userId,
@@ -75,7 +75,7 @@ export namespace Rows_Edit {
       try {
         rowValues = RowHelper.getRowPropertiesFromForm({ t, entity, form, existing: item });
         const updatedRow = await time(
-          RowsApi.update(params.id!, {
+          RowsApi.update(params.id, {
             entity,
             tenantId,
             userId,
@@ -106,16 +106,17 @@ export namespace Rows_Edit {
           },
         });
       }
-      const redirectTo = form.get("redirect")?.toString() || new URL(request.url).searchParams.get("redirect")?.toString();
+      const redirectValue = form.get("redirect");
+      const redirectTo = (typeof redirectValue === "string" ? redirectValue : redirectValue?.toString()) || new URL(request.url).searchParams.get("redirect")?.toString();
       if (redirectTo) {
         return redirect(redirectTo, { headers: getServerTimingHeader() });
       }
-      const updatedRow = await RowsApi.get(params.id!, { entity });
+      const updatedRow = await RowsApi.get(params.id, { entity });
       return Response.json({ updatedRow }, { headers: getServerTimingHeader() });
     } else if (action === "delete") {
       try {
         await time(verifyUserHasPermission(request, getEntityPermission(entity, "delete"), tenantId), "verifyUserHasPermission");
-        await RowsApi.del(params.id!, {
+        await RowsApi.del(params.id, {
           entity,
           userId,
           checkPermissions: !user?.admin,
@@ -123,7 +124,8 @@ export namespace Rows_Edit {
       } catch (error: any) {
         return Response.json({ error: error.message }, { status: 400, headers: getServerTimingHeader() });
       }
-      const redirectTo = form.get("redirect")?.toString() || new URL(request.url).searchParams.get("redirect")?.toString();
+      const deleteRedirectValue = form.get("redirect");
+      const redirectTo = (typeof deleteRedirectValue === "string" ? deleteRedirectValue : deleteRedirectValue?.toString()) || new URL(request.url).searchParams.get("redirect")?.toString();
       if (redirectTo) {
         return redirect(redirectTo, { headers: getServerTimingHeader() });
       }

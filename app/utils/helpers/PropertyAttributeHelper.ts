@@ -17,7 +17,7 @@ function getAttributesByType(type: PropertyType, attributes?: { name: string; va
     PropertyAttributeName.Group,
   ];
   switch (type) {
-    case PropertyType.TEXT:
+    case PropertyType.TEXT: {
       const editor = attributes?.find((f) => f.name === PropertyAttributeName.Editor);
       if (editor?.value === "monaco") {
         return [PropertyAttributeName.Editor, PropertyAttributeName.EditorLanguage];
@@ -37,6 +37,7 @@ function getAttributesByType(type: PropertyType, attributes?: { name: string; va
         PropertyAttributeName.Editor,
         ...commonAttributes,
       ];
+    }
     case PropertyType.NUMBER:
       return [
         PropertyAttributeName.DefaultValue,

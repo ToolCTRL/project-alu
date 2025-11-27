@@ -52,9 +52,7 @@ export const action: ActionFunction = async ({ request, params }) => {
   const action = form.get("action")?.toString() ?? "";
 
   if (action === "set-orders") {
-    const items: { id: string; order: number }[] = form.getAll("orders[]").map((f: FormDataEntryValue) => {
-      return JSON.parse(f.toString());
-    });
+    const items: { id: string; order: number }[] = form.getAll("orders[]").map((f: FormDataEntryValue) => JSON.parse(f.toString()));
 
     await Promise.all(
       items.map(async ({ id, order }) => {
@@ -68,7 +66,7 @@ export const action: ActionFunction = async ({ request, params }) => {
 
 export const meta: MetaFunction<typeof loader> = ({ data }) => [{ title: data?.title }];
 
-export default function () {
+export default function EntitiesIndexRoute() {
   const { t } = useTranslation();
   const data = useLoaderData<LoaderData>();
   const adminData = useAdminData();

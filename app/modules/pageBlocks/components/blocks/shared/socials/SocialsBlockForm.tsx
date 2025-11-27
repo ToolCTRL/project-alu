@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { SocialsBlockDto } from "~/modules/pageBlocks/components/blocks/shared/socials/SocialsBlockDto";
 import InputText from "~/components/ui/input/InputText";
 
-export default function SocialsBlockForm({ item, onUpdate }: { item?: SocialsBlockDto; onUpdate: (item: SocialsBlockDto) => void }) {
+export default function SocialsBlockForm({ item, onUpdate }: { readonly item?: SocialsBlockDto; readonly onUpdate: (item: SocialsBlockDto) => void }) {
   const [instagram, setInstagram] = useState(item?.instagram);
   const [twitter, setTwitter] = useState(item?.twitter);
   const [github, setGithub] = useState(item?.github);

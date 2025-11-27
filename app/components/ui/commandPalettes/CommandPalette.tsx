@@ -58,28 +58,31 @@ function CommandBar() {
   );
 }
 
+function ResultItem({ item, active }: { item: string | { name?: string; subtitle?: string }; active: boolean }) {
+  if (typeof item === "string") {
+    return (
+      <div className={clsx("flex w-full cursor-pointer items-center space-x-3 py-4 pl-4 pr-5", active ? "bg-secondary/90" : "")}>
+        <div className="text-foreground/80 text-sm font-medium">{item}</div>
+      </div>
+    );
+  }
+  return (
+    <div className={clsx("flex w-full cursor-pointer items-center space-x-3 py-4 pl-4 pr-5", active ? "bg-secondary/90" : "")}>
+      <div className="flex w-full items-center justify-between space-x-2">
+        <div className="text-foreground/80 text-sm font-medium">{item.name}</div>
+        <div className="text-muted-foreground truncate text-xs">{item.subtitle}</div>
+      </div>
+    </div>
+  );
+}
+
 function RenderResults() {
   const { results } = useMatches();
 
   return (
     <KBarResults
       items={results}
-      onRender={({ item, active }) => (
-        <>
-          {typeof item === "string" ? (
-            <div className={clsx("flex w-full cursor-pointer items-center space-x-3 py-4 pl-4 pr-5", active ? "bg-secondary/90" : "")}>
-              <div className="text-foreground/80 text-sm font-medium">{item}</div>
-            </div>
-          ) : (
-            <div className={clsx("flex w-full cursor-pointer items-center space-x-3 py-4 pl-4 pr-5", active ? "bg-secondary/90" : "")}>
-              <div className="flex w-full items-center justify-between space-x-2">
-                <div className="text-foreground/80 text-sm font-medium">{item.name}</div>
-                <div className="text-muted-foreground truncate text-xs">{item.subtitle}</div>
-              </div>
-            </div>
-          )}
-        </>
-      )}
+      onRender={({ item, active }) => <ResultItem item={item} active={active} />}
     />
   );
 }

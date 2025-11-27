@@ -58,16 +58,15 @@ export const action: ActionFunction = async ({ request, params }) => {
     return badRequest({ error: name + " is a reserved property name" });
   }
 
-  const options: { order: number; value: string; name?: string; color?: Colors }[] = form.getAll("options[]").map((f: FormDataEntryValue) => {
-    return JSON.parse(String(f));
+  const options: { order: number; value: string; name?: string; color?: Colors }[] = form.getAll("options[]").map((entry: FormDataEntryValue) => {
+    const value = typeof entry === "string" ? entry : entry.toString();
+    return JSON.parse(value);
   });
 
-  const attributes: { name: string; value: string }[] = form.getAll("attributes[]").map((f: FormDataEntryValue) => {
-    return JSON.parse(String(f));
+  const attributes: { name: string; value: string }[] = form.getAll("attributes[]").map((entry: FormDataEntryValue) => {
+    const value = typeof entry === "string" ? entry : entry.toString();
+    return JSON.parse(value);
   });
-
-  if ([PropertyType.SELECT, PropertyType.MULTI_SELECT].includes(type) && options.length === 0) {
-  }
 
   if (type === PropertyType.FORMULA) {
     isRequired = false;

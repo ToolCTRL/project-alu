@@ -1,5 +1,4 @@
-import { ActionFunction, LoaderFunctionArgs, MetaFunction, useLoaderData } from "react-router";
-import { Link, useActionData, useLocation, useNavigation, useSearchParams, useSubmit } from "react-router";
+import { ActionFunction, LoaderFunctionArgs, MetaFunction, useLoaderData, Link, useActionData, useLocation, useNavigation, useSearchParams, useSubmit } from "react-router";
 import { PaginationDto } from "~/application/dtos/data/PaginationDto";
 import SimpleBadge from "~/components/ui/badges/SimpleBadge";
 import ButtonPrimary from "~/components/ui/buttons/ButtonPrimary";
@@ -76,7 +75,7 @@ export const action: ActionFunction = async ({ request }) => {
 };
 
 interface ProjectNameCellProps {
-  item: FakeProjectDto;
+  readonly item: FakeProjectDto;
 }
 
 function ProjectNameCell({ item }: ProjectNameCellProps) {
@@ -93,7 +92,7 @@ function ProjectNameCell({ item }: ProjectNameCellProps) {
 }
 
 interface ProjectActiveCellProps {
-  item: FakeProjectDto;
+  readonly item: FakeProjectDto;
 }
 
 function ProjectActiveCell({ item }: ProjectActiveCellProps) {
@@ -101,7 +100,7 @@ function ProjectActiveCell({ item }: ProjectActiveCellProps) {
 }
 
 interface ProjectTasksCellProps {
-  item: FakeProjectDto;
+  readonly item: FakeProjectDto;
 }
 
 function ProjectTasksCell({ item }: ProjectTasksCellProps) {
@@ -113,7 +112,7 @@ function ProjectTasksCell({ item }: ProjectTasksCellProps) {
 }
 
 interface ProjectDateCellProps {
-  item: FakeProjectDto;
+  readonly item: FakeProjectDto;
 }
 
 function ProjectDateCell({ item }: ProjectDateCellProps) {

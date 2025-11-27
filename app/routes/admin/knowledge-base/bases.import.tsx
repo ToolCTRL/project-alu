@@ -1,5 +1,4 @@
-import { ActionFunction, useActionData } from "react-router";
-import { Form, Link } from "react-router";
+import { ActionFunction, useActionData, Form, Link } from "react-router";
 import { useState } from "react";
 import LoadingButton from "~/components/ui/buttons/LoadingButton";
 import ServerError from "~/components/ui/errors/ServerError";
@@ -28,7 +27,6 @@ export const action: ActionFunction = async ({ request }) => {
     await verifyUserHasPermission(request, "admin.kb.create");
     try {
       const previewTemplate = JSON.parse(form.get("configuration")?.toString() ?? "{}") as KnowledgeBasesTemplateDto;
-      // await validateEntitiesFromTemplate(previewTemplate);
       const data: ActionData = {
         previewTemplate,
       };
@@ -44,11 +42,12 @@ export const action: ActionFunction = async ({ request }) => {
         template,
         currentUserId: userInfo.userId,
       });
-      const messages: string[] = [];
-      messages.push(`Knowledge bases (${status.created.kbs} created, ${status.updated.kbs} updated)`);
-      messages.push(`Articles (${status.created.articles} created, ${status.updated.articles} updated)`);
-      messages.push(`Categories (${status.created.categories} created, ${status.updated.categories} updated)`);
-      messages.push(`Category Sections (${status.created.sections} created, ${status.updated.sections} updated)`);
+      const messages: string[] = [
+        `Knowledge bases (${status.created.kbs} created, ${status.updated.kbs} updated)`,
+        `Articles (${status.created.articles} created, ${status.updated.articles} updated)`,
+        `Categories (${status.created.categories} created, ${status.updated.categories} updated)`,
+        `Category Sections (${status.created.sections} created, ${status.updated.sections} updated)`,
+      ];
 
       return success({
         success: messages,
@@ -63,9 +62,85 @@ export const action: ActionFunction = async ({ request }) => {
 
 const defaultTemplates: { title: string; template: KnowledgeBasesTemplateDto }[] = [{ title: "Sample", template: DefaultKbsTemplate.SAMPLE }];
 
-export default function () {
+export default function KnowledgeBaseImport() {
   const actionData = useActionData<ActionData>();
   const [configuration, setConfiguration] = useState<string>("");
+
+  function renderContent() {
+    if (actionData?.error) {
+      return (
+        <p id="form-error-message" className="py-2 text-sm text-rose-500" role="alert">
+          {actionData.error}
+        </p>
+      );
+    }
+
+    if (actionData?.success) {
+      return (
+        <>
+          <div id="form-success-message" className="text-text-500 space-y-1 py-2 text-sm" role="alert">
+            {actionData.success.map((f) => (
+              <div key={f}>{f}</div>
+            ))}
+          </div>
+          <Link to="/admin/knowledge-base/bases" className="text-theme-600 hover:text-theme-500 text-sm font-medium underline">
+            Back to knowledge bases
+          </Link>
+        </>
+      );
+    }
+
+    if (actionData?.previewTemplate === undefined) {
+      return (
+        <Form method="post">
+          <input type="hidden" name="action" value="preview" hidden readOnly />
+          <div className="space-y-3">
+            <div className="flex space-x-2">
+              {defaultTemplates.map((t) => (
+                <button
+                  key={t.title}
+                  type="button"
+                  onClick={() => setConfiguration(JSON.stringify(t.template, null, "\t"))}
+                  className="bg-theme-100 text-theme-700 hover:bg-theme-200 focus:ring-ring inline-flex items-center rounded border border-transparent px-2.5 py-1.5 text-xs font-medium focus:outline-hidden focus:ring-2 focus:ring-offset-2"
+                >
+                  {t.title}
+                </button>
+              ))}
+            </div>
+            <div>
+              <InputText
+                name="configuration"
+                title="Configuration"
+                editor="monaco"
+                editorLanguage="json"
+                value={configuration}
+                setValue={setConfiguration}
+                editorSize="lg"
+              />
+            </div>
+            <div className="flex justify-end">
+              <LoadingButton type="submit">Preview</LoadingButton>
+            </div>
+          </div>
+        </Form>
+      );
+    }
+
+    return (
+      <Form method="post">
+        <input type="hidden" name="action" value="create" hidden readOnly />
+        <input type="hidden" name="configuration" value={configuration} hidden readOnly />
+        <div className="space-y-2">
+          <PreviewKbsTemplate template={actionData.previewTemplate} />
+          <div className="flex justify-end space-x-2">
+            <LoadingButton type="submit">
+              <span>Import</span>
+            </LoadingButton>
+          </div>
+        </div>
+      </Form>
+    );
+  }
 
   return (
     <EditPageLayout
@@ -77,75 +152,7 @@ export default function () {
       ]}
     >
       <div className="md:border-border md:border-t md:py-2">
-        {actionData?.error ? (
-          <>
-            <p id="form-error-message" className="py-2 text-sm text-rose-500" role="alert">
-              {actionData.error}
-            </p>
-          </>
-        ) : actionData?.success ? (
-          <>
-            <div id="form-success-message" className="text-text-500 space-y-1 py-2 text-sm" role="alert">
-              {actionData.success.map((f) => (
-                <div key={f}>{f}</div>
-              ))}
-            </div>
-            <Link to="/admin/knowledge-base/bases" className="text-theme-600 hover:text-theme-500 text-sm font-medium underline">
-              Back to knowledge bases
-            </Link>
-          </>
-        ) : actionData?.previewTemplate === undefined ? (
-          <>
-            <Form method="post">
-              <input type="hidden" name="action" value="preview" hidden readOnly />
-              <div className="space-y-3">
-                <div className="flex space-x-2">
-                  {defaultTemplates.map((t) => (
-                    <button
-                      key={t.title}
-                      type="button"
-                      onClick={() => setConfiguration(JSON.stringify(t.template, null, "\t"))}
-                      className="bg-theme-100 text-theme-700 hover:bg-theme-200 focus:ring-ring inline-flex items-center rounded border border-transparent px-2.5 py-1.5 text-xs font-medium focus:outline-hidden focus:ring-2 focus:ring-offset-2"
-                    >
-                      {t.title}
-                    </button>
-                  ))}
-                </div>
-                <div>
-                  <InputText
-                    name="configuration"
-                    title="Configuration"
-                    editor="monaco"
-                    editorLanguage="json"
-                    value={configuration}
-                    setValue={setConfiguration}
-                    editorSize="lg"
-                  />
-                </div>
-                <div className="flex justify-end">
-                  <LoadingButton type="submit">Preview</LoadingButton>
-                </div>
-              </div>
-            </Form>
-          </>
-        ) : (
-          actionData?.previewTemplate !== undefined && (
-            <>
-              <Form method="post">
-                <input type="hidden" name="action" value="create" hidden readOnly />
-                <input type="hidden" name="configuration" value={configuration} hidden readOnly />
-                <div className="space-y-2">
-                  <PreviewKbsTemplate template={actionData.previewTemplate} />
-                  <div className="flex justify-end space-x-2">
-                    <LoadingButton type="submit">
-                      <span>Import</span>
-                    </LoadingButton>
-                  </div>
-                </div>
-              </Form>
-            </>
-          )
-        )}
+        {renderContent()}
       </div>
     </EditPageLayout>
   );

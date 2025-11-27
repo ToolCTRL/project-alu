@@ -24,16 +24,14 @@ export default function AdminApiKeysRoute() {
   const data = useLoaderData<LoaderData>();
   const adminData = useAdminData();
   return (
-    <>
-      <EditPageLayout title={t("models.apiKey.plural")}>
-        <ApiKeysTable
-          canCreate={getUserHasPermission(adminData, "admin.apiKeys.create")}
-          entities={adminData.entities}
-          items={data.apiKeys}
-          withTenant={true}
-        />
-        <Outlet />
-      </EditPageLayout>
-    </>
+    <EditPageLayout title={t("models.apiKey.plural")}>
+      <ApiKeysTable
+        canCreate={getUserHasPermission(adminData, "admin.apiKeys.create")}
+        entities={adminData.entities}
+        items={data.apiKeys}
+        withTenant={true}
+      />
+      <Outlet />
+    </EditPageLayout>
   );
 }

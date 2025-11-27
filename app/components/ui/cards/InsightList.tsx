@@ -32,6 +32,8 @@ export function InsightList({ items, title, description, className }: Readonly<{
         "space-y-4 rounded-[var(--radius-lg,1.25rem)] border border-white/5 bg-card/80 p-5 text-card-foreground transition-transform duration-200 will-change-transform",
         className
       )}
+      role="region"
+      aria-label={title || "Insight List"}
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
       style={{ transformStyle: "preserve-3d" }}

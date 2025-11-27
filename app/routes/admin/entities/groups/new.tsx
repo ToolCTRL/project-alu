@@ -56,7 +56,7 @@ export const action = async ({ request, params }: ActionFunctionArgs) => {
   }
 };
 
-export default function () {
+export default function NewEntityGroupRoute() {
   const data = useLoaderData<LoaderData>();
 
   return (

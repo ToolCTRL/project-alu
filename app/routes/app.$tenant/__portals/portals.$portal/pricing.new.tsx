@@ -34,7 +34,7 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
   }
 
   const tenantId = await getTenantIdOrNull({ request, params });
-  const portal = await getPortalById(tenantId, params.portal!);
+  const portal = await getPortalById(tenantId, params.portal);
   if (!portal) {
     throw redirect(UrlUtils.getModulePath(params, "portals"));
   }
@@ -56,7 +56,7 @@ export const action: ActionFunction = async ({ request, params }) => {
   await requireAuth({ request, params });
   const { t } = await getTranslations(request);
   const tenantId = await getTenantIdOrNull({ request, params });
-  const portal = await getPortalById(tenantId, params.portal!);
+  const portal = await getPortalById(tenantId, params.portal);
   if (!portal) {
     return redirect(UrlUtils.getModulePath(params, "portals"));
   }
@@ -82,13 +82,13 @@ export const action: ActionFunction = async ({ request, params }) => {
 
   const featuresArr = form.getAll("features[]");
   const features: SubscriptionFeatureDto[] = featuresArr.map((f: FormDataEntryValue) => {
-    return JSON.parse(f.toString());
+    return JSON.parse(String(f));
   });
 
   const prices: { billingPeriod: SubscriptionBillingPeriod; price: number; currency: string; trialDays?: number }[] = form
     .getAll("prices[]")
     .map((f: FormDataEntryValue) => {
-      return JSON.parse(f.toString());
+      return JSON.parse(String(f));
     });
 
   const oneTimePricesWithZero = prices.filter((p) => p.billingPeriod === SubscriptionBillingPeriod.ONCE && p.price === 0);
@@ -97,7 +97,7 @@ export const action: ActionFunction = async ({ request, params }) => {
   }
 
   const usageBasedPrices: SubscriptionUsageBasedPriceDto[] = form.getAll("usage-based-prices[]").map((f: FormDataEntryValue) => {
-    return JSON.parse(f.toString());
+    return JSON.parse(String(f));
   });
 
   if (!title) {
@@ -133,7 +133,7 @@ export const action: ActionFunction = async ({ request, params }) => {
   }
 };
 
-export default function () {
+export default function PricingNewRoute() {
   const { t } = useTranslation();
   const data = useLoaderData<LoaderData>();
   const actionData = useActionData<ActionData>();

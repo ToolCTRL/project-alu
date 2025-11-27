@@ -1,7 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { ActionFunction, LoaderFunctionArgs, MetaFunction, useActionData, useLoaderData } from "react-router";
-import { Form, useNavigation } from "react-router";
+import { ActionFunction, LoaderFunctionArgs, MetaFunction, useActionData, useLoaderData, Form, useNavigation } from "react-router";
 import FooterBlock from "~/modules/pageBlocks/components/blocks/marketing/footer/FooterBlock";
 import HeaderBlock from "~/modules/pageBlocks/components/blocks/marketing/header/HeaderBlock";
 import { getTranslations } from "~/locale/i18next.server";
@@ -89,8 +88,7 @@ export default function NewsletterRoute() {
   const actionData = useActionData<ActionData>();
   const navigation = useNavigation();
   const isSubscribing = navigation.state === "submitting" && navigation.formData?.get("action") === "subscribe";
-  const state: "idle" | "success" | "error" | "submitting" =
-    navigation.state === "submitting" ? "submitting" : actionData?.success ? "success" : actionData?.error ? "error" : "idle";
+  const state: "idle" | "success" | "error" | "submitting" = navigation.state === "submitting" ? "submitting" : actionData?.error ? "error" : actionData?.success ? "success" : "idle";
 
   const formRef = useRef<HTMLFormElement>(null);
 
@@ -176,12 +174,12 @@ export default function NewsletterRoute() {
 
                           <div className="flex items-baseline justify-between space-x-2 sm:col-span-2">
                             <div>
-                              {state === "success" ? (
+                              {state === "error" ? (
+                                <p>{actionData?.error}</p>
+                              ) : state === "success" ? (
                                 <div>
                                   <p>{t("front.newsletter.checkEmail")}</p>
                                 </div>
-                              ) : state === "error" ? (
-                                <p>{actionData?.error}</p>
                               ) : (
                                 <div></div>
                               )}

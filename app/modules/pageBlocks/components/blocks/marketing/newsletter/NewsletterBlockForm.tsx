@@ -10,7 +10,7 @@ import InputText from "~/components/ui/input/InputText";
 import PageBlockUtils from "~/modules/pageBlocks/components/blocks/PageBlockUtils";
 import SocialsBlockForm from "../../shared/socials/SocialsBlockForm";
 
-export default function NewsletterBlockForm({ item, onUpdate }: { item?: NewsletterBlockDto; onUpdate: (item: NewsletterBlockDto) => void }) {
+export default function NewsletterBlockForm({ item, onUpdate }: { readonly item?: NewsletterBlockDto; readonly onUpdate: (item: NewsletterBlockDto) => void }) {
   const [state, setState] = useState<NewsletterBlockDto>(item || PageBlockUtils.defaultBlocks.newsletter!);
   useEffect(() => {
     onUpdate(state);

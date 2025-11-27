@@ -22,7 +22,7 @@ interface Props {
   onSelectedBlock: (node: WorkflowBlockDto | null) => void;
   onSelectedExecution: (execution: WorkflowExecutionDto | null) => void;
 }
-export default function WorkflowExecutionsSidebar({ workflow, selectedBlock, selectedExecution, executions, onSelectedBlock, onSelectedExecution }: Props) {
+export default function WorkflowExecutionsSidebar({ workflow, selectedBlock, selectedExecution, executions, onSelectedBlock, onSelectedExecution }: Readonly<Props>) {
   const [searchParams, setSearchParams] = useSearchParams();
   let content;
   if (!selectedBlock && !selectedExecution) {
@@ -81,38 +81,13 @@ export default function WorkflowExecutionsSidebar({ workflow, selectedBlock, sel
 
             {selectedExecution.error && <ErrorBanner title="Error" text={selectedExecution.error} />}
 
-            <Fragment>
-              <div className="space-y-3">
-                <div className="text-foreground/80 text-sm font-medium">Workflow Params</div>
-                <div className="space-y-1">
-                  <div className="overflow-hidden">
-                    {typeof globalThis.window !== "undefined" && (
-                      <Editor
-                        value={selectedExecution.input ? JSON.stringify(selectedExecution.input, null, 2) : "{}"}
-                        language="json"
-                        options={{
-                          fontSize: 12,
-                          renderValidationDecorations: "off",
-                          wordWrap: "on",
-                          unusualLineTerminators: "off",
-                          tabSize: 2,
-                        }}
-                        className="focus:border-border focus:ring-ring border-border -ml-10 block h-32 w-full min-w-0 flex-1 rounded-md sm:text-sm"
-                        theme="vs-dark"
-                      />
-                    )}
-                  </div>
-                </div>
-              </div>
-            </Fragment>
-            <Fragment>
-              <div className="border-border border-t"></div>
-              <div className="space-y-3">
-                <div className="text-foreground/80 text-sm font-medium">Workflow Output</div>
-                <div className="space-y-1">
-                  <div className="overflow-hidden">
+            <div className="space-y-3">
+              <div className="text-foreground/80 text-sm font-medium">Workflow Params</div>
+              <div className="space-y-1">
+                <div className="overflow-hidden">
+                  {globalThis.window !== undefined && (
                     <Editor
-                      value={selectedExecution.input ? JSON.stringify(selectedExecution.output, null, 2) : "{}"}
+                      value={selectedExecution.input ? JSON.stringify(selectedExecution.input, null, 2) : "{}"}
                       language="json"
                       options={{
                         fontSize: 12,
@@ -124,10 +99,31 @@ export default function WorkflowExecutionsSidebar({ workflow, selectedBlock, sel
                       className="focus:border-border focus:ring-ring border-border -ml-10 block h-32 w-full min-w-0 flex-1 rounded-md sm:text-sm"
                       theme="vs-dark"
                     />
-                  </div>
+                  )}
                 </div>
               </div>
-            </Fragment>
+            </div>
+            <div className="border-border border-t"></div>
+            <div className="space-y-3">
+              <div className="text-foreground/80 text-sm font-medium">Workflow Output</div>
+              <div className="space-y-1">
+                <div className="overflow-hidden">
+                  <Editor
+                    value={selectedExecution.input ? JSON.stringify(selectedExecution.output, null, 2) : "{}"}
+                    language="json"
+                    options={{
+                      fontSize: 12,
+                      renderValidationDecorations: "off",
+                      wordWrap: "on",
+                      unusualLineTerminators: "off",
+                      tabSize: 2,
+                    }}
+                    className="focus:border-border focus:ring-ring border-border -ml-10 block h-32 w-full min-w-0 flex-1 rounded-md sm:text-sm"
+                    theme="vs-dark"
+                  />
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -158,10 +154,10 @@ function ExecutePanel({
   selectedExecution,
   onSelected,
 }: {
-  workflow: WorkflowDto;
-  executions: WorkflowExecutionDto[];
-  selectedExecution: WorkflowExecutionDto | null | undefined;
-  onSelected: (execution: WorkflowExecutionDto) => void;
+  readonly workflow: WorkflowDto;
+  readonly executions: WorkflowExecutionDto[];
+  readonly selectedExecution: WorkflowExecutionDto | null | undefined;
+  readonly onSelected: (execution: WorkflowExecutionDto) => void;
 }) {
   const params = useParams();
   return (
@@ -197,31 +193,39 @@ function ExecutePanel({
           </div>
         ) : (
           <div className="space-y-0.5 overflow-y-auto">
-            {executions.map((execution, idx) => {
+            {executions.map((execution) => {
               return (
                 <div
-                  key={idx}
+                  key={execution.id}
                   className={clsx(
                     "hover:bg-secondary/90 cursor-pointer rounded-md border px-2 py-1.5",
                     selectedExecution?.id === execution.id ? "border-border bg-secondary/90" : "bg-background border-transparent"
                   )}
                   onClick={() => onSelected(execution)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" || e.key === " ") {
+                      onSelected(execution);
+                    }
+                  }}
+                  role="button"
+                  tabIndex={0}
                 >
                   <div className="flex items-center justify-between text-xs">
                     <div className="flex items-center space-x-2 truncate">
-                      {/* <div className="text-muted-foreground font-light truncate w-6">#{idx + 1}</div> */}
                       <div className="text-foreground/80 w-14 font-medium">
                         <DateCell date={execution.createdAt} displays={["hms"]} />
                       </div>
                       <div className="text-muted-foreground truncate">{execution.blockRuns.length} nodes executed</div>
                     </div>
                     <div>
-                      {!execution.endedAt ? (
-                        <SimpleBadge title="Incomplete" color={Colors.YELLOW} />
-                      ) : execution.error ? (
-                        <SimpleBadge title="Error" color={Colors.RED} />
+                      {execution.endedAt ? (
+                        execution.error ? (
+                          <SimpleBadge title="Error" color={Colors.RED} />
+                        ) : (
+                          <SimpleBadge title="Success" color={Colors.GREEN} />
+                        )
                       ) : (
-                        <SimpleBadge title="Success" color={Colors.GREEN} />
+                        <SimpleBadge title="Incomplete" color={Colors.YELLOW} />
                       )}
                     </div>
                   </div>

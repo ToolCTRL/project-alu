@@ -48,8 +48,8 @@ function displayFolio(entity: EntityWithDetails, routes?: EntitiesApi.Routes, on
       <RowFolioCell
         prefix={entity.prefix}
         folio={item.folio}
-        href={routes && onClick === undefined ? EntityHelper.getRoutes({ routes, entity, item })?.overview : undefined}
-        onClick={onClick !== undefined ? () => onClick(item) : undefined}
+        href={routes && !onClick ? EntityHelper.getRoutes({ routes, entity, item })?.overview : undefined}
+        onClick={onClick ? () => onClick(item) : undefined}
       />
     ),
     // breakpoint: "sm",

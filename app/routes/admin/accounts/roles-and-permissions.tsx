@@ -1,7 +1,6 @@
 import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
-import { LoaderFunctionArgs, MetaFunction, redirect } from "react-router";
-import { Outlet, useLocation, useNavigate } from "react-router";
+import { LoaderFunctionArgs, MetaFunction, redirect, Outlet, useLocation, useNavigate } from "react-router";
 import { getTranslations } from "~/locale/i18next.server";
 import UrlUtils from "~/utils/app/UrlUtils";
 import { verifyUserHasPermission } from "~/utils/helpers/.server/PermissionsService";

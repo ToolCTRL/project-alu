@@ -1,6 +1,5 @@
 import { TFunction } from "i18next";
 import { FooterBlockDto } from "~/modules/pageBlocks/components/blocks/marketing/footer/FooterBlockUtils";
-import { defaultSocials } from "./defaultSocials";
 
 export function defaultFooter({ t }: { t: TFunction }): FooterBlockDto {
   return {

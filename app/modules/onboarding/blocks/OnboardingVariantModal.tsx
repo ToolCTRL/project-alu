@@ -62,11 +62,12 @@ export default function OnboardingVariantModal({
             {block.steps.map((step, idx) => {
               const isCompleted = step.completedAt;
               const isCurrent = idx === currentStepIdx;
-              const buttonColorClasses = isCompleted
-                ? "text-teal-500 hover:text-teal-600"
-                : isCurrent
-                ? "text-teal-600 hover:text-teal-700"
-                : "hover:text-muted-foreground text-gray-300";
+              let buttonColorClasses = "hover:text-muted-foreground text-gray-300";
+              if (isCompleted) {
+                buttonColorClasses = "text-teal-500 hover:text-teal-600";
+              } else if (isCurrent) {
+                buttonColorClasses = "text-teal-600 hover:text-teal-700";
+              }
               return (
                 <button
                   key={`step-${idx}-${step.title}`}

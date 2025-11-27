@@ -1,5 +1,4 @@
-import { ActionFunction, LoaderFunctionArgs, useLoaderData, useNavigate, useOutlet } from "react-router";
-import { Outlet, useParams } from "react-router";
+import { ActionFunction, LoaderFunctionArgs, useLoaderData, useNavigate, useOutlet, useParams } from "react-router";
 import { useTranslation } from "react-i18next";
 import TenantPropertiesList from "~/components/entities/properties/TenantPropertiesList";
 import EditPageLayout from "~/components/ui/layouts/EditPageLayout";
@@ -56,7 +55,7 @@ export const action: ActionFunction = async ({ request, params }) => {
 
   if (action === "set-orders") {
     const items: { id: string; order: number }[] = form.getAll("orders[]").map((f: FormDataEntryValue) => {
-      return JSON.parse(f.toString());
+      return JSON.parse(String(f));
     });
 
     await Promise.all(
@@ -76,7 +75,6 @@ export const action: ActionFunction = async ({ request, params }) => {
       properties: (await getEntityBySlug({ tenantId, slug: params.entity ?? "" }))?.properties,
       deleted: true,
     });
-    // return redirect(`/admin/entities/${params.entity}/properties`);
   } else if (action === "toggle-display") {
     const id = form.get("id")?.toString() ?? "";
     const existingProperty = await getProperty(id);
@@ -87,7 +85,6 @@ export const action: ActionFunction = async ({ request, params }) => {
       isDisplay: !existingProperty.isDisplay,
     });
     return Response.json({});
-    // return redirect(`/admin/entities/${params.entity}/properties`);
   } else if (action === "duplicate") {
     try {
       const propertyId = form.get("id")?.toString() ?? "";
@@ -100,7 +97,7 @@ export const action: ActionFunction = async ({ request, params }) => {
   return badRequest({ error: t("shared.invalidForm") });
 };
 
-export default function () {
+export default function EntityPropertiesRoute() {
   const { t } = useTranslation();
   const appData = useAppData();
   const data = useLoaderData<LoaderData>();

@@ -1,6 +1,5 @@
 import { Tenant } from "@prisma/client";
-import { ActionFunction, LoaderFunctionArgs, redirect, useLoaderData } from "react-router";
-import { useActionData, useNavigate } from "react-router";
+import { ActionFunction, LoaderFunctionArgs, redirect, useLoaderData, useActionData, useNavigate } from "react-router";
 import ApiKeyCreatedModal from "~/components/core/apiKeys/ApiKeyCreatedModal";
 import ApiKeyForm from "~/components/core/apiKeys/ApiKeyForm";
 import OpenModal from "~/components/ui/modals/OpenModal";
@@ -42,7 +41,7 @@ export const action: ActionFunction = async ({ request, params }) => {
     const entities: { entityId: string; create: boolean; read: boolean; update: boolean; delete: boolean }[] = form
       .getAll("entities[]")
       .map((f: FormDataEntryValue) => {
-        return JSON.parse(f.toString());
+        return JSON.parse(String(f));
       });
     let expirationDate: Date | null = null;
     let expires = form.get("expires")?.toString();
@@ -67,7 +66,6 @@ export const action: ActionFunction = async ({ request, params }) => {
       entities
     );
     await createAdminLog(request, "API Key Created", JSON.stringify({ id: apiKey.id, tenantId, alias, expirationDate, active, entities }));
-    // return success({ apiKey });
     return redirect("/admin/api/keys");
   } else {
     return badRequest({ error: t("shared.invalidForm") });
@@ -80,11 +78,9 @@ export default function AdminApiNewKeyRoute() {
   const navigate = useNavigate();
   const adminData = useAdminData();
   return (
-    <>
-      <OpenModal className="sm:max-w-xl" onClose={() => navigate(`/admin/api/keys`)}>
-        <ApiKeyForm entities={adminData.entities} tenants={data.tenants} />
-        {actionData?.apiKey !== undefined && <ApiKeyCreatedModal apiKey={actionData?.apiKey} redirectTo="/admin/api/keys" />}
-      </OpenModal>
-    </>
+    <OpenModal className="sm:max-w-xl" onClose={() => navigate(`/admin/api/keys`)}>
+      <ApiKeyForm entities={adminData.entities} tenants={data.tenants} />
+      {actionData?.apiKey !== undefined && <ApiKeyCreatedModal apiKey={actionData?.apiKey} redirectTo="/admin/api/keys" />}
+    </OpenModal>
   );
 }

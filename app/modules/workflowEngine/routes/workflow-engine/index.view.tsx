@@ -108,7 +108,7 @@ export default function WorkflowEngineIndexView() {
   );
 }
 
-function SummaryCard({ title, value, icon }: { title: string; value: number; icon?: React.ReactNode }) {
+function SummaryCard({ title, value, icon }: Readonly<{ title: string; value: number; icon?: React.ReactNode }>) {
   return (
     <div className="relative overflow-hidden rounded-[var(--radius-lg,1.25rem)] border border-white/10 bg-white/5 px-4 py-4 text-white shadow-[0_20px_40px_rgba(7,12,20,0.35)]">
       <dt className="flex items-center gap-2 text-xs font-medium uppercase tracking-[0.2em] text-white/70">

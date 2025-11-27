@@ -15,7 +15,7 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
   return data;
 };
 
-export default function () {
+export default function EntitiesApiRoute() {
   const data = useLoaderData<LoaderData>();
 
   return (

@@ -6,7 +6,7 @@ import PaddingBlockForm from "./padding/PaddingBlockForm";
 import SizeBlockForm from "./size/SizeBlockForm";
 import { PageBlockDto } from "~/modules/pageBlocks/dtos/PageBlockDto";
 
-export default function LayoutBlockForm({ item, onUpdate }: { item?: PageBlockDto; onUpdate: (item: PageBlockDto) => void }) {
+export default function LayoutBlockForm({ item, onUpdate }: { readonly item?: PageBlockDto; readonly onUpdate: (item: PageBlockDto) => void }) {
   const [state, setState] = useState(item);
   useEffect(() => {
     if (state) {

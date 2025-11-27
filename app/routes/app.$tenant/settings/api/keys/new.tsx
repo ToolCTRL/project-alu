@@ -1,5 +1,4 @@
-import { ActionFunction, LoaderFunctionArgs, redirect } from "react-router";
-import { useActionData, useNavigate, useParams } from "react-router";
+import { ActionFunction, LoaderFunctionArgs, redirect, useActionData, useNavigate, useParams } from "react-router";
 import ApiKeyCreatedModal from "~/components/core/apiKeys/ApiKeyCreatedModal";
 import ApiKeyForm from "~/components/core/apiKeys/ApiKeyForm";
 import OpenModal from "~/components/ui/modals/OpenModal";
@@ -37,7 +36,7 @@ export const action: ActionFunction = async ({ request, params }) => {
     const entities: { entityId: string; create: boolean; read: boolean; update: boolean; delete: boolean }[] = form
       .getAll("entities[]")
       .map((f: FormDataEntryValue) => {
-        return JSON.parse(f.toString());
+        return JSON.parse(String(f));
       });
 
     let expirationDate: Date | null = null;
@@ -63,7 +62,6 @@ export const action: ActionFunction = async ({ request, params }) => {
     );
     await createLog(request, tenantId, "API Key Created", JSON.stringify({ id: apiKey.id, alias, expirationDate, active, entities }));
     return redirect(UrlUtils.currentTenantUrl(params, "settings/api/keys"));
-    // return success({ apiKey });
   } else {
     return badRequest({ error: t("shared.invalidForm") });
   }
@@ -75,13 +73,11 @@ export default function ApiNewKeyRoute() {
   const params = useParams();
   const appData = useAppData();
   return (
-    <>
-      <OpenModal className="sm:max-w-xl" onClose={() => navigate(UrlUtils.currentTenantUrl(params, "settings/api/keys"))}>
-        <ApiKeyForm entities={appData.entities} />
-        {actionData?.apiKey !== undefined && (
-          <ApiKeyCreatedModal apiKey={actionData?.apiKey} redirectTo={UrlUtils.currentTenantUrl(params, "settings/api/keys")} />
-        )}
-      </OpenModal>
-    </>
+    <OpenModal className="sm:max-w-xl" onClose={() => navigate(UrlUtils.currentTenantUrl(params, "settings/api/keys"))}>
+      <ApiKeyForm entities={appData.entities} />
+      {actionData?.apiKey !== undefined && (
+        <ApiKeyCreatedModal apiKey={actionData?.apiKey} redirectTo={UrlUtils.currentTenantUrl(params, "settings/api/keys")} />
+      )}
+    </OpenModal>
   );
 }

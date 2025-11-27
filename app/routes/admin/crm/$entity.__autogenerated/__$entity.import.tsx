@@ -8,4 +8,6 @@ export const meta: v2MetaFunction<Rows_Import.LoaderData> = ({ data }) => data?.
 export const loader = (args: LoaderFunctionArgs) => Rows_Import.loader(args);
 export const action: ActionFunction = (args) => Rows_Import.action(args);
 
-export default () => <RowsImportRoute />;
+export default function AdminCrmEntityImportRoute() {
+  return <RowsImportRoute />;
+}

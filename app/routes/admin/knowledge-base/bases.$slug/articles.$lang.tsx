@@ -129,7 +129,7 @@ async function handleNewArticle(kb: KnowledgeBaseDto, params: any, userId: strin
 
 async function handleSetOrders(form: FormData) {
   const items: { id: string; order: number }[] = form.getAll("orders[]").map((f: FormDataEntryValue) => {
-    return JSON.parse(String(f));
+    return JSON.parse(f.toString());
   });
   await Promise.all(
     items.map(async ({ id, order }) => {
@@ -143,7 +143,7 @@ async function handleSetOrders(form: FormData) {
 
 async function handleSetSectionOrders(form: FormData) {
   const items: { id: string; order: number }[] = form.getAll("orders[]").map((f: FormDataEntryValue) => {
-    return JSON.parse(String(f));
+    return JSON.parse(f.toString());
   });
   await Promise.all(
     items.map(async ({ id, order }) => {
@@ -286,15 +286,8 @@ export default function AdminKnowledgeBaseArticlesLang() {
             {
               name: "status",
               title: "Status",
-              value: (i) => (
-                <div>{i.publishedAt ? <SimpleBadge title="Published" color={Colors.TEAL} /> : <SimpleBadge title="Draft" color={Colors.GRAY} />}</div>
-              ),
+              value: (i) => <div>{i.publishedAt ? <SimpleBadge title="Published" color={Colors.TEAL} /> : <SimpleBadge title="Draft" color={Colors.GRAY} />}</div>,
             },
-            // {
-            //   name: "language",
-            //   title: "Language",
-            //   value: (i) => KnowledgeBaseUtils.getLanguageName(i.language),
-            // },
             {
               name: "title",
               title: "Title",
@@ -304,9 +297,6 @@ export default function AdminKnowledgeBaseArticlesLang() {
                   <Link to={i.id} className="font-medium hover:underline">
                     {i.title}
                   </Link>
-                  {/* <div className="text-muted-foreground text-sm">{i.description}</div> */}
-                  {/* <div className="text-sm text-muted-foreground">{i.slug}</div>
-                  <div className="text-muted-foreground text-sm">{i.description}</div> */}
                 </div>
               ),
             },
@@ -352,9 +342,7 @@ export default function AdminKnowledgeBaseArticlesLang() {
             {
               name: "featured",
               title: "Featured",
-              value: (i) => {
-                return <InputCheckbox asToggle value={i.featuredOrder ? true : false} setValue={(checked) => onToggle(i, Boolean(checked))} />;
-              },
+              value: (i) => <InputCheckbox asToggle value={!!i.featuredOrder} setValue={(checked) => onToggle(i, Boolean(checked))} />,
             },
             {
               name: "createdAt",

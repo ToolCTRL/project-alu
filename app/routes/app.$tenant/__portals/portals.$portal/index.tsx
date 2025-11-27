@@ -35,7 +35,7 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
   await requireAuth({ request, params });
   const { t } = await getTranslations(request);
   const tenantId = await getTenantIdOrNull({ request, params });
-  const item: (PortalWithDetails & { portalUrl?: string }) | null = await getPortalById(tenantId, params.portal!);
+  const item: (PortalWithDetails & { portalUrl?: string }) | null = await getPortalById(tenantId, params.portal);
   if (!item) {
     throw redirect(UrlUtils.getModulePath(params, "portals"));
   }
@@ -59,7 +59,7 @@ export const action: ActionFunction = async ({ request, params }) => {
   const form = await request.formData();
   const action = form.get("action");
   const tenantId = await getTenantIdOrNull({ request, params });
-  const item = await getPortalById(tenantId, params.portal!);
+  const item = await getPortalById(tenantId, params.portal);
   if (!item) {
     return redirect(UrlUtils.getModulePath(params, "portals"));
   }
@@ -71,7 +71,7 @@ export const action: ActionFunction = async ({ request, params }) => {
   }
 };
 
-export default function () {
+export default function PortalIndexRoute() {
   const { t } = useTranslation();
   const data = useLoaderData<LoaderData>();
   const actionData = useActionData<ActionData>();
@@ -89,8 +89,7 @@ export default function () {
   }, [actionData]);
 
   return (
-    <>
-      <EditPageLayout
+    <EditPageLayout
         title={
           <div className="flex items-baseline space-x-2">
             <div>{data.item.title} </div>
@@ -178,6 +177,5 @@ export default function () {
           )} */}
         </dl>
       </EditPageLayout>
-    </>
   );
 }

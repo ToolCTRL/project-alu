@@ -1,5 +1,4 @@
-import { LoaderFunctionArgs, MetaFunction, redirect } from "react-router";
-import { Outlet, useLocation, useNavigate, useParams } from "react-router";
+import { LoaderFunctionArgs, MetaFunction, redirect, Outlet, useLocation, useNavigate, useParams } from "react-router";
 import { getTranslations } from "~/locale/i18next.server";
 import { useEffect } from "react";
 import { getTenantIdFromUrl } from "~/utils/services/.server/urlService";

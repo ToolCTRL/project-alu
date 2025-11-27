@@ -1,6 +1,5 @@
 import { useEffect } from "react";
-import { LoaderFunctionArgs, MetaFunction, redirect } from "react-router";
-import { Outlet, useLocation, useNavigate } from "react-router";
+import { LoaderFunctionArgs, MetaFunction, redirect, Outlet, useLocation, useNavigate } from "react-router";
 import UrlUtils from "~/utils/app/UrlUtils";
 import { verifyUserHasPermission } from "~/utils/helpers/.server/PermissionsService";
 

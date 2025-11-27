@@ -1,5 +1,4 @@
-import { ActionFunction, LoaderFunctionArgs, MetaFunction, redirect } from "react-router";
-import { useLoaderData, useActionData, Form, useSubmit } from "react-router";
+import { ActionFunction, LoaderFunctionArgs, MetaFunction, redirect, useLoaderData, useActionData, Form, useSubmit } from "react-router";
 import { FormEvent, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import ServerError from "~/components/ui/errors/ServerError";
@@ -27,7 +26,7 @@ type LoaderData = {
 export const loader = async ({ request, params }: LoaderFunctionArgs) => {
   await verifyUserHasPermission(request, "admin.onboarding.update");
   const { t } = await getTranslations(request);
-  const item = await getOnboarding(params.id!);
+  const item = await getOnboarding(params.id);
   if (!item) {
     throw redirect("/admin/onboarding/onboardings");
   }
@@ -47,7 +46,7 @@ export const action: ActionFunction = async ({ request, params }) => {
   const { t } = await getTranslations(request);
   const form = await request.formData();
   const action = form.get("action");
-  const item = await getOnboarding(params.id!);
+  const item = await getOnboarding(params.id);
   if (!item) {
     throw redirect("/admin/onboarding/onboardings");
   }
@@ -63,7 +62,7 @@ export const action: ActionFunction = async ({ request, params }) => {
   }
 };
 
-export default function () {
+export default function OnboardingStepsRoute() {
   const { t } = useTranslation();
   const data = useLoaderData<LoaderData>();
   const actionData = useActionData<ActionData>();
@@ -124,7 +123,9 @@ export default function () {
           title={t("onboarding.prompts.updateSteps.title", { 0: data.item.sessions.length })}
           text={t("onboarding.prompts.updateSteps.description")}
         />
-      ) : null}
+      ) : (
+        <div />
+      )}
 
       <div>
         <OnboardingBlock open={showPreview} onClose={() => setShowPreview(false)} item={onboardingBlock} />

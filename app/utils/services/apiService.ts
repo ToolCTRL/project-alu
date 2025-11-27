@@ -31,7 +31,7 @@ async function setApiError(request: Request, params: Params, error: string, stat
       status,
     });
   }
-  throw Error(error);
+  throw new Error(error);
 }
 
 export type ApiAccessValidation = {
@@ -62,14 +62,14 @@ async function validateBearerToken(request: Request): Promise<ApiAccessValidatio
   } catch (e: any) {
     // eslint-disable-next-line no-console
     console.log("Invalid authorization token: " + e.message);
-    throw Error("Invalid authorization token: " + e.message);
+    throw new Error("Invalid authorization token: " + e.message);
   }
 
   const user = await getUser(userId);
   if (!user) {
     // eslint-disable-next-line no-console
     console.log("User not found");
-    throw Error("Unauthorized");
+    throw new Error("Unauthorized");
   }
 
   let tenantId = request.headers.get("X-Account-Id") ?? request.headers.get("X-Tenant-Id");
@@ -77,17 +77,17 @@ async function validateBearerToken(request: Request): Promise<ApiAccessValidatio
     if (!user.admin) {
       // eslint-disable-next-line no-console
       console.log("No X-Account-Id provided");
-      throw Error("No X-Account-Id provided");
+      throw new Error("No X-Account-Id provided");
     }
     tenantId = null;
   }
 
   if (tenantId !== null) {
     const userTenants = await getMyTenants(user.id);
-    if (!userTenants.find((t) => t.id === tenantId || t.slug === tenantId)) {
+    if (!userTenants.some((t) => t.id === tenantId || t.slug === tenantId)) {
       // eslint-disable-next-line no-console
       console.log(`User ${user.email} is not a member of ${tenantId}`);
-      throw Error("Unauthorized");
+      throw new Error("Unauthorized");
     }
   }
 
@@ -108,7 +108,7 @@ async function validateAccessToken(request: Request): Promise<ApiAccessValidatio
   if (!tenant) {
     // eslint-disable-next-line no-console
     console.log("Account not found: " + tenantId);
-    throw Error("Account not found: " + tenantId);
+    throw new Error("Account not found: " + tenantId);
   }
   return { tenant };
 }
@@ -125,18 +125,18 @@ export async function validateApiKey(request: Request, params: Params): Promise<
       // eslint-disable-next-line no-console
       console.log("No X-API-Key header or Authorization token provided", request.url);
     }
-    throw Error("No X-API-Key header or Authorization token provided");
+    throw new Error("No X-API-Key header or Authorization token provided");
   }
 
   const searchParams = new URL(request.url).searchParams;
-  if (apiKeyFromHeaders === process.env.API_ACCESS_TOKEN && process.env.API_ACCESS_TOKEN.toString().length > 0) {
+  if (apiKeyFromHeaders === process.env.API_ACCESS_TOKEN && process.env.API_ACCESS_TOKEN?.toString().length > 0) {
     return validateAccessToken(request);
   }
 
   if (searchParams.get("tenantId")) {
     // eslint-disable-next-line no-console
     console.log("You cannot use tenantId with an API key");
-    throw Error("You cannot use tenantId with an API key");
+    throw new Error("You cannot use tenantId with an API key");
   }
 
   return validateTenantApiKey(request, params);
@@ -190,7 +190,7 @@ export async function validateTenantApiKey(request: Request, params: Params): Pr
     throw await setApiError(request, params, t(usage.message), 402, apiKeyLog.id);
   }
   // check if open invoices
-  if (tenantSubscription && tenantSubscription.stripeCustomerId) {
+  if (tenantSubscription?.stripeCustomerId) {
     // cached
     const openInvoices = await getOpenInvoices(tenantSubscription.stripeCustomerId);
     if (openInvoices.data.length > 0) {
@@ -222,11 +222,11 @@ export async function validateTenantApiKey(request: Request, params: Params): Pr
 
 export async function getEntityApiKeyFromRequest(request: Request, params: Params) {
   const { tenant, tenantApiKey } = await validateApiKey(request, params);
-  const entity = await getSimpleEntityBySlug(params.entity!);
+  const entity = await getSimpleEntityBySlug(params.entity ?? "");
   if (!tenantApiKey) {
     return { tenant, entity };
   }
-  const { apiKey, apiKeyLog, usage } = tenantApiKey!;
+  const { apiKey, apiKeyLog, usage } = tenantApiKey;
   if (!entity) {
     throw await setApiError(request, params, "Invalid entity", 400, apiKeyLog.id);
   }

@@ -1,5 +1,4 @@
-import { LoaderFunctionArgs, useLoaderData } from "react-router";
-import { useNavigate, useSearchParams } from "react-router";
+import { LoaderFunctionArgs, useLoaderData, useNavigate, useSearchParams } from "react-router";
 import clsx from "clsx";
 import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -116,11 +115,7 @@ export default function CodeGeneratorFiles() {
     }
   }
   function onTry() {
-    if (options?.routesDirectory.includes("/app/$tenant")) {
-      navigate(getSelectedRoute());
-    } else {
-      navigate(getSelectedRoute());
-    }
+    navigate(getSelectedRoute());
   }
   function filteredItems() {
     return files.filter(

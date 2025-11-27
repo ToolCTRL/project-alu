@@ -4,8 +4,8 @@ export default function StatsBlockForm({
   item = defaultStatsBlock,
   onUpdate,
 }: {
-  item?: StatsBlockDto;
-  onUpdate: (item: StatsBlockDto) => void;
+  readonly item?: StatsBlockDto;
+  readonly onUpdate: (item: StatsBlockDto) => void;
 }) {
   return (
     <div className="space-y-4">

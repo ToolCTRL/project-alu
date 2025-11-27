@@ -7,9 +7,6 @@ import { defaultPages } from "~/modules/pageBlocks/utils/defaultPages";
 import { getAllBlogPosts } from "~/modules/blog/db/blog.db.server";
 import { getPages } from "~/modules/pageBlocks/db/pages.db.server";
 
-function typedBoolean<T>(value: T): value is Exclude<T, "" | 0 | false | null | undefined> {
-  return Boolean(value);
-}
 
 function removeTrailingSlash(s: string) {
   return s.endsWith("/") ? s.slice(0, -1) : s;
@@ -28,7 +25,7 @@ type SitemapEntry = {
   route: string;
   lastmod?: string;
   changefreq?: "always" | "hourly" | "daily" | "weekly" | "monthly" | "yearly" | "never";
-  priority?: 0.0 | 0.1 | 0.2 | 0.3 | 0.4 | 0.5 | 0.6 | 0.7 | 0.8 | 0.9 | 1.0;
+  priority?: 0 | 0.1 | 0.2 | 0.3 | 0.4 | 0.5 | 0.6 | 0.7 | 0.8 | 0.9 | 1;
 };
 type SitemapHandle = {
   /** this just allows us to identify routes more directly rather than relying on pathnames */
@@ -70,18 +67,83 @@ function getExcludedRoutes(appConfiguration: any): string[] {
   if (!appConfiguration.subscription.allowSignUpBeforeSubscribe) {
     excludeRoutes.push("/register");
   }
-  if (!appConfiguration.affiliates || !appConfiguration.affiliates.provider.rewardfulApiKey) {
+  if (!(appConfiguration.affiliates?.provider?.rewardfulApiKey)) {
     excludeRoutes.push("/affiliate-program");
   }
   return excludeRoutes;
 }
 
 function shouldExcludeEntry(entry: SitemapEntry, excludeRoutes: string[], sitemapEntries: SitemapEntry[]): boolean {
-  if (excludeRoutes.find((r) => entry.route.startsWith(r))) {
+  if (excludeRoutes.some((r) => entry.route.startsWith(r))) {
     return true;
   }
-  const existingEntry = sitemapEntries.find((e) => e.route === entry.route);
-  return !!existingEntry;
+  return sitemapEntries.some((e) => e.route === entry.route);
+}
+
+function shouldSkipLanguageEntry(entry: SitemapEntry): boolean {
+  return (
+    entry.route === "/docs" ||
+    entry.route.startsWith("/blog/") ||
+    entry.route.startsWith("/api/") ||
+    entry.route.startsWith("/components/")
+  );
+}
+
+async function addLanguageVariants(sitemapEntries: SitemapEntry[], domainUrl: string): Promise<void> {
+  i18nConfig.supportedLngs
+    .filter((f) => f !== i18nConfig.fallbackLng)
+    .forEach((lng) => {
+      sitemapEntries.forEach((entry) => {
+        const url = new URL(`${domainUrl}${entry.route}`);
+        if (url.searchParams.get("lng") || shouldSkipLanguageEntry(entry)) return;
+
+        const newEntry = { ...entry, route: `${entry.route}?lng=${lng}` };
+        sitemapEntries.push(newEntry);
+      });
+    });
+}
+
+async function addKnowledgeBaseEntries(sitemapEntries: SitemapEntry[], request: Request): Promise<void> {
+  const knowledgeBases = await KnowledgeBaseServiceServer.getAll({ enabled: true, request });
+
+  for (const kb of knowledgeBases) {
+    const kbUrl = KnowledgeBaseUtils.getKbUrl({ kb, params: {} });
+    addSitemapEntry(sitemapEntries, {
+      route: kbUrl,
+      lastmod: kb.updatedAt ? kb.updatedAt.toISOString() : kb.createdAt?.toISOString(),
+    });
+
+    await addKnowledgeBaseCategoryEntries(sitemapEntries, kb, request);
+  }
+}
+
+async function addKnowledgeBaseCategoryEntries(sitemapEntries: SitemapEntry[], kb: any, request: Request): Promise<void> {
+  const allCategories = await KnowledgeBaseServiceServer.getCategories({ kb, params: {}, request });
+
+  for (const category of allCategories) {
+    addSitemapEntry(sitemapEntries, {
+      route: KnowledgeBaseUtils.getCategoryUrl({ kb, category, params: {} }),
+      lastmod: kb.updatedAt ? kb.updatedAt.toISOString() : kb.createdAt?.toISOString(),
+    });
+
+    const allArticles = await KnowledgeBaseServiceServer.getArticles({
+      kb,
+      language: kb.defaultLanguage,
+      categoryId: category.id,
+      query: undefined,
+      params: {},
+      request,
+    });
+
+    allArticles
+      .filter((f) => f.publishedAt)
+      .forEach((article) => {
+        addSitemapEntry(sitemapEntries, {
+          route: KnowledgeBaseUtils.getArticleUrl({ kb, article, params: {} }),
+          lastmod: article.updatedAt ? article.updatedAt.toISOString() : article.createdAt?.toISOString(),
+        });
+      });
+  }
 }
 
 async function getSitemapXml(request: Request, remixContext: EntryContext) {
@@ -109,7 +171,6 @@ async function getSitemapXml(request: Request, remixContext: EntryContext) {
           return handle.getSitemapEntries(request);
         }
 
-        // exclude resource routes from the sitemap
         if (!mod || !("default" in mod)) return;
 
         const manifestEntry = remixContext.manifest.routes[id];
@@ -126,8 +187,8 @@ async function getSitemapXml(request: Request, remixContext: EntryContext) {
       })
     )
   )
-    .flatMap((z) => z)
-    .filter(typedBoolean);
+    .flat()
+    .filter(Boolean);
 
   const sitemapEntries: Array<SitemapEntry> = [];
   const excludeRoutes = getExcludedRoutes(appConfiguration);
@@ -141,9 +202,7 @@ async function getSitemapXml(request: Request, remixContext: EntryContext) {
   defaultPages
     .filter((f) => !f.includes(":"))
     .forEach((page) => {
-      addSitemapEntry(sitemapEntries, {
-        route: page,
-      });
+      addSitemapEntry(sitemapEntries, { route: page });
     });
 
   const blogPosts = await getAllBlogPosts({ tenantId: null, published: true });
@@ -159,65 +218,14 @@ async function getSitemapXml(request: Request, remixContext: EntryContext) {
     console.log("[sitemap.xml] custom pages: " + pages.map((f) => f.slug).join(", "));
   }
   pages.forEach((page) => {
-    const isDefaultPage = defaultPages.includes(page.slug);
-    if (isDefaultPage) return;
     addSitemapEntry(sitemapEntries, {
       route: `${page.slug}`,
       lastmod: page.updatedAt ? page.updatedAt.toISOString() : page.createdAt?.toISOString(),
     });
   });
 
-  i18nConfig.supportedLngs
-    .filter((f) => f !== i18nConfig.fallbackLng)
-    .forEach((lng) => {
-      sitemapEntries.forEach((entry) => {
-        const newEntry = { ...entry };
-        const url = new URL(`${domainUrl}${newEntry.route}`);
-        if (url.searchParams.get("lng") || entry.route === "/docs") return;
-        if (entry.route.startsWith("/blog/")) return;
-        if (entry.route.startsWith("/api/")) return;
-        if (entry.route.startsWith("/components/")) return;
-        newEntry.route = `${entry.route}?lng=${lng}`;
-        sitemapEntries.push(newEntry);
-      });
-    });
-
-  const knowledgeBases = await KnowledgeBaseServiceServer.getAll({
-    enabled: true,
-    request,
-  });
-  for (const kb of knowledgeBases) {
-    const kbUrl = KnowledgeBaseUtils.getKbUrl({ kb, params: {} });
-    addSitemapEntry(sitemapEntries, {
-      route: kbUrl,
-      lastmod: kb.updatedAt ? kb.updatedAt.toISOString() : kb.createdAt?.toISOString(),
-    });
-    const allCategories = await KnowledgeBaseServiceServer.getCategories({
-      kb,
-      params: {},
-      request,
-    });
-    for (const category of allCategories) {
-      addSitemapEntry(sitemapEntries, {
-        route: KnowledgeBaseUtils.getCategoryUrl({ kb, category, params: {} }),
-        lastmod: kb.updatedAt ? kb.updatedAt.toISOString() : kb.createdAt?.toISOString(),
-      });
-      const allArticles = await KnowledgeBaseServiceServer.getArticles({
-        kb,
-        language: kb.defaultLanguage,
-        categoryId: category.id,
-        query: undefined,
-        params: {},
-        request,
-      });
-      for (const article of allArticles.filter((f) => f.publishedAt)) {
-        addSitemapEntry(sitemapEntries, {
-          route: KnowledgeBaseUtils.getArticleUrl({ kb, article, params: {} }),
-          lastmod: article.updatedAt ? article.updatedAt.toISOString() : article.createdAt?.toISOString(),
-        });
-      }
-    }
-  }
+  await addLanguageVariants(sitemapEntries, domainUrl);
+  await addKnowledgeBaseEntries(sitemapEntries, request);
 
   return `
 <?xml version="1.0" encoding="UTF-8"?>
@@ -232,7 +240,7 @@ async function getSitemapXml(request: Request, remixContext: EntryContext) {
 }
 
 function addSitemapEntry(sitemapEntries: SitemapEntry[], entry: SitemapEntry) {
-  if (sitemapEntries.find((e) => e.route === entry.route)) return;
+  if (sitemapEntries.some((e) => e.route === entry.route)) return;
   sitemapEntries.push(entry);
 }
 

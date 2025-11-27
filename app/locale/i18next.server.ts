@@ -5,7 +5,6 @@ import { RemixI18Next } from "remix-i18next/server";
 import { i18nConfig } from "./i18n";
 
 import Backend from "i18next-fs-backend";
-import path from "node:path";
 
 export const i18nCookie = createCookie("_i18n", {
   path: "/",
@@ -31,7 +30,7 @@ export const remixI18Next = new RemixI18Next({
   i18next: {
     ...i18nConfig,
     backend: {
-      localePath: path.resolve("./public/locales"),
+      localePath: resolve("./public/locales"),
       loadPath:
         // process.env.VERCEL_URL ? resolve("./locales/{{lng}}/{{ns}}.json") :
         resolve("./public/locales/{{lng}}/{{ns}}.json"),

@@ -10,20 +10,16 @@ import { PricingBlockDto } from "./PricingBlockUtils";
 import PricingContactUs from "./shared/PricingContactUs";
 import clsx from "clsx";
 
-export default function PricingVariantSimple({ item }: { item: PricingBlockDto }) {
+export default function PricingVariantSimple({ item }: { readonly item: PricingBlockDto }) {
   const { t } = useTranslation();
   const rootData = useRootData();
   const [searchParams, setSearchParams] = useSearchParams();
   const confirmModal = useRef<RefConfirmModal>(null);
-  // function onShowCoupon() {
-  //   confirmModal.current?.show(t("pricing.coupons.object"));
-  // }
   function onApplyCoupon(coupon: string) {
     setSearchParams({ coupon });
   }
   return (
-    <>
-      <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
+    <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
         {(item.headline || item.subheadline) && (
           <div
             className={clsx(
@@ -79,7 +75,6 @@ export default function PricingVariantSimple({ item }: { item: PricingBlockDto }
           {item.contactUs && !searchParams.get("plan") && <PricingContactUs item={item.contactUs} />}
           <ConfirmModal ref={confirmModal} onYes={onApplyCoupon} inputType="string" placeholder={t("pricing.coupons.typeCode")} />
         </div>
-      </div>
-    </>
+    </div>
   );
 }

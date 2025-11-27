@@ -1,7 +1,6 @@
 import { Entity } from "@prisma/client";
 import { useTranslation } from "react-i18next";
-import { LoaderFunctionArgs, redirect } from "react-router";
-import { Outlet, useLoaderData, useParams } from "react-router";
+import { LoaderFunctionArgs, redirect, Outlet, useLoaderData, useParams } from "react-router";
 import EditPageLayout from "~/components/ui/layouts/EditPageLayout";
 import TabsVertical from "~/components/ui/tabs/TabsVertical";
 import { findEntityBySlug } from "~/utils/db/entities/entities.db.server";
@@ -12,7 +11,7 @@ type LoaderData = {
 };
 export const loader = async ({ request, params }: LoaderFunctionArgs) => {
   await verifyUserHasPermission(request, "admin.entities.update");
-  const item = await findEntityBySlug(params.entity!);
+  const item = await findEntityBySlug(params.entity ?? "");
   if (!item) {
     return redirect("/admin/entities");
   }

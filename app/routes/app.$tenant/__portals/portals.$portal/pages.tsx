@@ -34,7 +34,7 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
   await requireAuth({ request, params });
   const appConfiguration = await getAppConfiguration({ request });
   const tenantId = await getTenantIdOrNull({ request, params });
-  const portal = await getPortalById(tenantId, params.portal!);
+  const portal = await getPortalById(tenantId, params.portal);
   if (!portal) {
     return redirect(UrlUtils.getModulePath(params, "portals"));
   }
@@ -69,7 +69,7 @@ export const action = async ({ request, params }: ActionFunctionArgs) => {
   const { t } = await getTranslations(request);
 
   const tenantId = await getTenantIdOrNull({ request, params });
-  const item = await getPortalById(tenantId, params.portal!);
+  const item = await getPortalById(tenantId, params.portal);
   if (!item) {
     return Response.json({ error: t("shared.notFound") }, { status: 404 });
   }
@@ -93,7 +93,7 @@ export const action = async ({ request, params }: ActionFunctionArgs) => {
   }
 };
 
-export default function () {
+export default function PagesRoute() {
   const { t } = useTranslation();
   const data = useLoaderData<LoaderData>();
   const actionData = useActionData<ActionData>();
@@ -124,51 +124,6 @@ export default function () {
         },
       ]}
     >
-      {/* <TableSimple
-        items={pages}
-        actions={[
-          {
-            renderTitle: (i) => t("shared.edit"),
-            onClickRoute: (_, i) => UrlUtils.getModulePath(params, `portals/${data.portal.subdomain}/pages/${i.name}`),
-          },
-        ]}
-        headers={[
-          {
-            name: "status",
-            title: "Status",
-            value: (item) => {
-              let isPublished = item.id ? true : false;
-              if (item.name === "pricing") {
-                isPublished = data.portal.stripeAccountId ? true : false;
-              }
-              return <SimpleBadge title={isPublished ? t("shared.published") : t("shared.unpublished")} color={isPublished ? Colors.GREEN : Colors.GRAY} />;
-            },
-          },
-          {
-            name: "page",
-            title: "Page",
-            value: (item) => (
-              <div className="flex flex-col">
-                <Link to={`${data.portalUrl}/${item.name}`} target="_blank" className="font-medium hover:underline">
-                  /{item.name}
-                </Link>
-              </div>
-            ),
-          },
-          {
-            name: "title",
-            title: "Title",
-            className: "w-full",
-            value: (item) => (
-              <div className="flex flex-col">
-                <div className="text-sm">{item.title}</div>
-                <div className="text-muted-foreground text-xs">{item.title}</div>
-              </div>
-            ),
-          },
-        ]}
-      /> */}
-
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
         {data.pages.map((page) => {
           return (

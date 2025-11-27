@@ -16,15 +16,15 @@ import { i18nConfig } from "~/locale/i18n";
 
 export default function UserProfileSettings({
   user,
-}: {
+}: Readonly<{
   user: {
     email: string;
     firstName: string;
     lastName: string;
     avatar: string | null;
-    admin?: any | null;
+    admin?: unknown | null;
   };
-}) {
+}>) {
   const location = useLocation();
   const [searchParams] = useSearchParams();
   const { t, i18n } = useTranslation();

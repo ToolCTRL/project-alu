@@ -1,5 +1,4 @@
-import { ActionFunctionArgs, LoaderFunctionArgs, redirect, useLoaderData } from "react-router";
-import { useParams, useSubmit } from "react-router";
+import { ActionFunctionArgs, LoaderFunctionArgs, redirect, useLoaderData, useParams, useSubmit } from "react-router";
 import { useRef } from "react";
 import ConfirmModal, { RefConfirmModal } from "~/components/ui/modals/ConfirmModal";
 import KbCategoryForm from "~/modules/knowledgeBase/components/bases/KbCategoryForm";
@@ -25,7 +24,7 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
     slug: params.slug!,
     request,
   });
-  const item = await getKbCategoryById(params.id!);
+  const item = await getKbCategoryById(params.id);
   if (!item) {
     return redirect(`/admin/knowledge-base/bases/${params.slug}/categories/${params.lang}`);
   }
@@ -46,7 +45,7 @@ export const action = async ({ request, params }: ActionFunctionArgs) => {
     request,
   });
 
-  const item = await getKbCategoryById(params.id!);
+  const item = await getKbCategoryById(params.id);
   if (!item) {
     return redirect(`/admin/knowledge-base/bases/${params.slug}/categories/${params.lang}`);
   }
@@ -86,8 +85,8 @@ export const action = async ({ request, params }: ActionFunctionArgs) => {
     await deleteKnowledgeBaseCategory(item.id);
     return redirect(`/admin/knowledge-base/bases/${params.slug}/categories/${params.lang}`);
   } else if (action === "set-orders") {
-    const items: { id: string; order: number }[] = form.getAll("orders[]").map((f: FormDataEntryValue) => {
-      return JSON.parse(f.toString());
+    const items: { id: string; order: number }[] = form.getAll("orders[]").map((f) => {
+      return JSON.parse(String(f));
     });
 
     await Promise.all(
@@ -103,7 +102,7 @@ export const action = async ({ request, params }: ActionFunctionArgs) => {
   }
 };
 
-export default function () {
+export default function CategoryEdit() {
   const data = useLoaderData<LoaderData>();
   const submit = useSubmit();
   const params = useParams();
@@ -124,7 +123,7 @@ export default function () {
 
   return (
     <div>
-      <KbCategoryForm knowledgeBase={data.knowledgeBase} language={params.lang!} item={data.item} onDelete={onDelete} />
+      <KbCategoryForm knowledgeBase={data.knowledgeBase} language={params.lang} item={data.item} onDelete={onDelete} />
       <ConfirmModal ref={confirmDelete} onYes={onConfirmedDelete} destructive />
     </div>
   );

@@ -1,6 +1,6 @@
 import { useTranslation } from "react-i18next";
 import { useEffect } from "react";
-import { ActionFunction, LoaderFunctionArgs, MetaFunction, redirect, useActionData, useLoaderData } from "react-router";
+import { ActionFunction, LoaderFunctionArgs, MetaFunction, redirect, useActionData, useLoaderData, useParams } from "react-router";
 import { getTranslations } from "~/locale/i18next.server";
 import { SubscriptionProductDto } from "~/application/dtos/subscriptions/SubscriptionProductDto";
 import PricingPlanForm from "~/components/core/pricing/PricingPlanForm";
@@ -12,7 +12,6 @@ import { getTenantIdOrNull } from "~/utils/services/.server/urlService";
 import UrlUtils from "~/utils/app/UrlUtils";
 import PortalPricingServer from "~/modules/portals/services/PortalPricing.server";
 import toast from "react-hot-toast";
-import { useParams } from "react-router";
 import EditPageLayout from "~/components/ui/layouts/EditPageLayout";
 import { Portal } from "@prisma/client";
 import { requireAuth } from "~/utils/loaders.middleware";
@@ -30,7 +29,7 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
   await requireAuth({ request, params });
   const { t } = await getTranslations(request);
   const tenantId = await getTenantIdOrNull({ request, params });
-  const portal = await getPortalById(tenantId, params.portal!);
+  const portal = await getPortalById(tenantId, params.portal);
   if (!portal) {
     throw redirect(UrlUtils.getModulePath(params, "portals"));
   }
@@ -58,7 +57,7 @@ export const action: ActionFunction = async ({ request, params }) => {
   const { t } = await getTranslations(request);
 
   const tenantId = await getTenantIdOrNull({ request, params });
-  const portal = await getPortalById(tenantId, params.portal!);
+  const portal = await getPortalById(tenantId, params.portal);
   if (!portal) {
     return redirect(UrlUtils.getModulePath(params, "portals"));
   }
@@ -83,7 +82,7 @@ export const action: ActionFunction = async ({ request, params }) => {
 
     const featuresArr = form.getAll("features[]");
     const features: SubscriptionFeatureDto[] = featuresArr.map((f: FormDataEntryValue) => {
-      return JSON.parse(f.toString());
+      return JSON.parse(String(f));
     });
 
     if (!title) {
@@ -133,7 +132,7 @@ export const action: ActionFunction = async ({ request, params }) => {
   }
 };
 
-export default function () {
+export default function PricingEditRoute() {
   const { t } = useTranslation();
   const data = useLoaderData<LoaderData>();
   const actionData = useActionData<ActionData>();

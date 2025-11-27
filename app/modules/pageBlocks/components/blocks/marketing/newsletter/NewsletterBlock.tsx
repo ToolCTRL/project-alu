@@ -2,7 +2,7 @@ import { NewsletterBlockDto } from "~/modules/pageBlocks/components/blocks/marke
 import NewsletterVariantSimple from "./NewsletterVariantSimple";
 import NewsletterVariantRightForm from "./NewsletterVariantRightForm";
 
-export default function NewsletterBlock({ item }: { item: NewsletterBlockDto }) {
+export default function NewsletterBlock({ item }: { readonly item: NewsletterBlockDto }) {
   return (
     <>
       {item.style === "simple" && <NewsletterVariantSimple item={item} />}

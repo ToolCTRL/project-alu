@@ -142,7 +142,7 @@ export const action: ActionFunction = async ({ request, params }) => {
       throw new Error(t("shared.notFound"));
     }
     const existing = data.item;
-    let jsonBody = "{}";
+    let jsonBody: string;
     if (request.method === "DELETE") {
       jsonBody = await handleDelete(params, entity, tenantId, userId, time);
     } else if (request.method === "PUT") {

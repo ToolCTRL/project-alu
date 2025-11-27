@@ -5,6 +5,57 @@ import DateUtils from "~/utils/shared/DateUtils";
 import { OnboardingWithDetails } from "../db/onboarding.db.server";
 import OnboardingBadge from "./OnboardingBadge";
 
+interface OnboardingTitleCellProps {
+  readonly item: OnboardingWithDetails;
+  readonly sessionPluralLabel: string;
+  readonly activeLabel: string;
+  readonly startedLabel: string;
+  readonly dismissedLabel: string;
+  readonly completedLabel: string;
+}
+
+function OnboardingTitleCell({ item, sessionPluralLabel, activeLabel, startedLabel, dismissedLabel, completedLabel }: OnboardingTitleCellProps) {
+  return (
+    <Link to={`/admin/onboarding/onboardings/${item.id}`} className="group flex flex-col">
+      <div className="flex items-center space-x-2">
+        <div className="text-base font-bold group-hover:underline">{item.title}</div>
+        <div>
+          <OnboardingBadge item={item} />
+        </div>
+        {item.createdAt ? (
+          <>
+            <div>•</div>
+            <div className="text-muted-foreground text-sm">
+              <span>{DateUtils.dateAgo(item.createdAt)}</span>
+            </div>
+          </>
+        ) : null}
+      </div>
+      <div className="flex items-center space-x-2">
+        <div className="text-muted-foreground text-sm">
+          {item.sessions.length} {sessionPluralLabel}
+        </div>
+        <div>•</div>
+        <div className="text-muted-foreground text-sm">
+          {item.sessions.filter((f) => f.status === "active").length} {activeLabel}
+        </div>
+        <div>•</div>
+        <div className="text-muted-foreground text-sm">
+          {item.sessions.filter((f) => f.status === "started").length} {startedLabel}
+        </div>
+        <div>•</div>
+        <div className="text-muted-foreground text-sm">
+          {item.sessions.filter((f) => f.status === "dismissed").length} {dismissedLabel}
+        </div>
+        <div>•</div>
+        <div className="text-muted-foreground text-sm">
+          {item.sessions.filter((f) => f.status === "completed").length} {completedLabel}
+        </div>
+      </div>
+    </Link>
+  );
+}
+
 export default function OnboardingsList({ items, groupByStatus }: { readonly items: OnboardingWithDetails[]; readonly groupByStatus: { status: string; count: number }[] }) {
   const { t } = useTranslation();
   return (
@@ -17,43 +68,14 @@ export default function OnboardingsList({ items, groupByStatus }: { readonly ite
           title: t("onboarding.object.title"),
           className: "w-full",
           value: (i: OnboardingWithDetails) => (
-            <Link to={`/admin/onboarding/onboardings/${i.id}`} className="group flex flex-col">
-              <div className="flex items-center space-x-2">
-                <div className="text-base font-bold group-hover:underline">{i.title}</div>
-                <div>
-                  <OnboardingBadge item={i} />
-                </div>
-                {i.createdAt ? (
-                  <>
-                    <div>•</div>
-                    <div className="text-muted-foreground text-sm">
-                      <span>{DateUtils.dateAgo(i.createdAt)}</span>
-                    </div>
-                  </>
-                ) : null}
-              </div>
-              <div className="flex items-center space-x-2">
-                <div className="text-muted-foreground text-sm">
-                  {i.sessions.length} {t("onboarding.session.plural").toLowerCase()}
-                </div>
-                <div>•</div>
-                <div className="text-muted-foreground text-sm">
-                  {i.sessions.filter((f) => f.status === "active").length} {t("onboarding.object.sessions.active").toLowerCase()}
-                </div>
-                <div>•</div>
-                <div className="text-muted-foreground text-sm">
-                  {i.sessions.filter((f) => f.status === "started").length} {t("onboarding.object.sessions.started").toLowerCase()}
-                </div>
-                <div>•</div>
-                <div className="text-muted-foreground text-sm">
-                  {i.sessions.filter((f) => f.status === "dismissed").length} {t("onboarding.object.sessions.dismissed").toLowerCase()}
-                </div>
-                <div>•</div>
-                <div className="text-muted-foreground text-sm">
-                  {i.sessions.filter((f) => f.status === "completed").length} {t("onboarding.object.sessions.completed").toLowerCase()}
-                </div>
-              </div>
-            </Link>
+            <OnboardingTitleCell
+              item={i}
+              sessionPluralLabel={t("onboarding.session.plural").toLowerCase()}
+              activeLabel={t("onboarding.object.sessions.active").toLowerCase()}
+              startedLabel={t("onboarding.object.sessions.started").toLowerCase()}
+              dismissedLabel={t("onboarding.object.sessions.dismissed").toLowerCase()}
+              completedLabel={t("onboarding.object.sessions.completed").toLowerCase()}
+            />
           ),
         },
       ]}

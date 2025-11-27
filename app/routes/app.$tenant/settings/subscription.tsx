@@ -1,6 +1,5 @@
 import { useEffect } from "react";
-import { ActionFunction, LoaderFunctionArgs, MetaFunction, redirect, useLoaderData } from "react-router";
-import { useActionData } from "react-router";
+import { ActionFunction, LoaderFunctionArgs, redirect, useLoaderData, useActionData } from "react-router";
 import {
   createCustomerPortalSession,
   createStripeSetupSession,
@@ -95,7 +94,7 @@ export const action: ActionFunction = async ({ request, params }) => {
 
   const action = form.get("action")?.toString();
 
-  if (!tenantSubscription || !tenantSubscription?.stripeCustomerId) {
+  if (!tenantSubscription?.stripeCustomerId) {
     return badRequest({
       error: "Invalid stripe customer",
     });

@@ -1,6 +1,5 @@
 import { useTranslation } from "react-i18next";
-import { ActionFunction, LoaderFunctionArgs, useLoaderData } from "react-router";
-import { useNavigate, useOutlet } from "react-router";
+import { ActionFunction, LoaderFunctionArgs, useLoaderData, useNavigate, useOutlet } from "react-router";
 import ButtonTertiary from "~/components/ui/buttons/ButtonTertiary";
 import { EntityRelationshipWithDetails, getEntityRelationshipsWithCount, updateEntityRelationship } from "~/utils/db/entities/entityRelationships.db.server";
 import { getEntityBySlug } from "~/utils/db/entities/entities.db.server";
@@ -30,8 +29,8 @@ export const action: ActionFunction = async ({ request }) => {
   const action = form.get("action")?.toString() ?? "";
 
   if (action === "set-orders") {
-    const items: { id: string; order: number }[] = form.getAll("orders[]").map((f: FormDataEntryValue) => {
-      return JSON.parse(f.toString());
+    const items: { id: string; order: number }[] = form.getAll("orders[]").map((entry: FormDataEntryValue) => {
+      return JSON.parse(entry.toString());
     });
 
     await Promise.all(

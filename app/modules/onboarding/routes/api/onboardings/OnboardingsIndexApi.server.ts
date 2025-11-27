@@ -16,7 +16,12 @@ export namespace OnboardingIndexApi {
     const { t } = await getTranslations(request);
     const urlSearchParams = new URL(request.url).searchParams;
     const status = urlSearchParams.get("status");
-    const isActive = status === "active" ? true : status === "inactive" ? false : undefined;
+    let isActive: boolean | undefined = undefined;
+    if (status === "active") {
+      isActive = true;
+    } else if (status === "inactive") {
+      isActive = false;
+    }
     const items = await getOnboardings({
       active: isActive,
     });

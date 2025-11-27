@@ -156,13 +156,15 @@ export default function ChatGptGeneratePageBlock({ page, block, onGenerated, onE
         className={clsx(isLoading && "base-spinner", error && "bg-red-100 text-red-500", finishedBlock && "bg-green-100 text-green-500")}
         onClick={() => setIsSettingParameters(true)}
       >
-        {error ? (
-          <ExclamationTriangleIcon className="h-4 w-4" />
-        ) : finishedBlock ? (
-          <CheckIcon className="h-4 w-4" />
-        ) : (
-          <ChatGptIcon className="h-4 w-4" />
-        )}
+        {(() => {
+          if (error) {
+            return <ExclamationTriangleIcon className="h-4 w-4" />;
+          }
+          if (finishedBlock) {
+            return <CheckIcon className="h-4 w-4" />;
+          }
+          return <ChatGptIcon className="h-4 w-4" />;
+        })()}
       </ButtonSecondary>
 
       <SlideOverWideEmpty title="ChatGPT Block Generator" open={isSettingParameters} onClose={() => setIsSettingParameters(false)}>

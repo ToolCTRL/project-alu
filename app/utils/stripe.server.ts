@@ -54,7 +54,7 @@ export async function createStripeCheckoutSession(data: {
       },
       billing_address_collection,
       client_reference_id,
-      allow_promotion_codes: !discounts ? true : undefined,
+      allow_promotion_codes: discounts ? undefined : true,
     })
     .catch((e) => {
       // eslint-disable-next-line no-console
@@ -108,7 +108,8 @@ export async function reactivateStripeSubscription(subscriptionId: string) {
 export async function getStripeSubscription(id: string) {
   try {
     return await stripe.subscriptions.retrieve(id);
-  } catch (e) {
+  } catch (e: unknown) {
+    console.error("Error retrieving Stripe subscription:", e);
     return null;
   }
 }
@@ -135,7 +136,8 @@ export async function getStripeInvoices(id: string | null) {
         customer: id,
       })
     ).data;
-  } catch (e) {
+  } catch (e: unknown) {
+    console.error("Error retrieving Stripe invoices:", e);
     return [];
   }
 }
@@ -154,7 +156,8 @@ export async function getStripePaymentIntents(id: string | null, status?: Stripe
       items = items.filter((item) => item.status === status);
     }
     return items;
-  } catch (e) {
+  } catch (e: unknown) {
+    console.error("Error retrieving Stripe payment intents:", e);
     return [];
   }
 }
@@ -162,7 +165,8 @@ export async function getStripePaymentIntents(id: string | null, status?: Stripe
 export async function getStripePaymentIntent(id: string) {
   try {
     return await stripe.paymentIntents.retrieve(id);
-  } catch (e) {
+  } catch (e: unknown) {
+    console.error("Error retrieving Stripe payment intent:", e);
     return null;
   }
 }
@@ -177,7 +181,8 @@ export async function getStripeUpcomingInvoice(id: string | null) {
     });
     console.log("upcoming invoice", items);
     return items;
-  } catch (e) {
+  } catch (e: unknown) {
+    console.error("Error retrieving upcoming Stripe invoice:", e);
     return null;
   }
 }
@@ -215,7 +220,8 @@ export async function getStripePaymentMethods(customer: string | null) {
         type: "card",
       })
     ).data;
-  } catch (e) {
+  } catch (e: unknown) {
+    console.error("Error retrieving Stripe payment methods:", e);
     return [];
   }
 }
@@ -258,8 +264,7 @@ export async function updateStripeProduct(id: string, data: { title: string }) {
       name: data.title,
     })
     .catch((error) => {
-      // console.error(error);
-      // ignore
+      console.error("Error updating Stripe product:", error);
     });
 }
 
@@ -313,15 +318,10 @@ export async function createStripeUsageBasedPrice(productId: string, data: Subsc
   let interval: "day" | "week" | "month" | "year" = "month";
   let interval_count: number | undefined = undefined;
   switch (data.billingPeriod) {
-    case SubscriptionBillingPeriod.MONTHLY:
-      interval = "month";
-      break;
     case SubscriptionBillingPeriod.QUARTERLY:
-      interval = "month";
       interval_count = 3;
       break;
     case SubscriptionBillingPeriod.SEMI_ANNUAL:
-      interval = "month";
       interval_count = 6;
       break;
     case SubscriptionBillingPeriod.WEEKLY:
@@ -346,18 +346,18 @@ export async function createStripeUsageBasedPrice(productId: string, data: Subsc
     aggregate_usage = "max";
   }
 
+  const sortedTiers = data.tiers.toSorted((x, y) => {
+    if (x.to && y.to) {
+      return x.to > y.to ? 1 : -1;
+    }
+    return 1;
+  });
+
   const tiers: {
     up_to: "inf" | number;
     unit_amount_decimal?: string;
     flat_amount_decimal?: string;
-  }[] = data.tiers
-    .sort((x, y) => {
-      if (x.to && y.to) {
-        return x.to > y.to ? 1 : -1;
-      }
-      return 1;
-    })
-    .map((tier) => {
+  }[] = sortedTiers.map((tier) => {
       let up_to: "inf" | number = Number(tier.to);
       if (tier.to === undefined || tier.to === null) {
         up_to = "inf";

@@ -15,7 +15,7 @@ import toast from "react-hot-toast";
 
 export default function PageBlocksRouteIndex() {
   const { t } = useTranslation();
-  const data = useLoaderData<PageBlocks_Index.LoaderData>();
+  const data = useLoaderData();
   const actionData = useActionData<PageBlocks_Index.ActionData>();
   const submit = useSubmit();
   const appOrAdminData = useAppOrAdminData();
@@ -34,9 +34,9 @@ export default function PageBlocksRouteIndex() {
     }
 
     if (actionData?.page) {
-      setBlocks(actionData?.page.blocks);
+      setBlocks(actionData.page.blocks);
     } else if (actionData?.aiGeneratedBlocks) {
-      setBlocks(actionData?.aiGeneratedBlocks);
+      setBlocks(actionData.aiGeneratedBlocks);
     }
   }, [actionData]);
 
@@ -63,14 +63,6 @@ export default function PageBlocksRouteIndex() {
     downloadAnchorNode.click();
     downloadAnchorNode.remove();
   }
-
-  // function onDelete() {
-  //   const form = new FormData();
-  //   form.set("action", "delete");
-  //   submit(form, {
-  //     method: "post",
-  //   });
-  // }
 
   function canPreview() {
     return !data.page.page || data.page.page.isPublished;

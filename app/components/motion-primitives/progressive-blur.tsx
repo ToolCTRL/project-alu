@@ -32,7 +32,7 @@ export function ProgressiveBlur({ direction = "bottom", blurLayers = 8, classNam
 
         return (
           <motion.div
-            key={`progressive-blur-layer-${index}`}
+            key={`progressive-blur-layer-${direction}-${index}`}
             className="pointer-events-none absolute inset-0 rounded-[inherit]"
             style={{
               maskImage: gradient,

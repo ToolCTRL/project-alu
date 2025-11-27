@@ -1,5 +1,4 @@
-import { LoaderFunctionArgs, useLoaderData } from "react-router";
-import { Link } from "react-router";
+import { LoaderFunctionArgs, useLoaderData, Link } from "react-router";
 import { useTranslation } from "react-i18next";
 import { DefaultEntityTypes } from "~/application/dtos/shared/DefaultEntityTypes";
 import EditPageLayout from "~/components/ui/layouts/EditPageLayout";
@@ -25,7 +24,7 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
   };
   return data;
 };
-export default function () {
+export default function EntitiesIndexRoute() {
   const { t } = useTranslation();
   const data = useLoaderData<LoaderData>();
   return (
@@ -63,7 +62,7 @@ export default function () {
               className: "w-full text-xs",
               value: (item) => (
                 <div className="max-w-xs truncate">
-                  {item.properties.filter((f) => !f.isDefault).length > 0 ? (
+                  {item.properties.some((f) => !f.isDefault) ? (
                     <Link className="truncate pb-1 hover:underline" to={item.slug}>
                       {item.properties
                         .filter((f) => !f.isDefault)

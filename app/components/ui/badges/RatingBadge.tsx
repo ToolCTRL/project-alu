@@ -5,7 +5,7 @@ export default function RatingBadge({ value, size = 4, starsCount = 5 }: Readonl
     <div>
       <div className="flex items-center">
         {Array.from({ length: starsCount }).map((_, index) => (
-          <Star key={`star-${index}`} size={size} color={index < value ? "yellow" : "gray"} />
+          <Star key={`star-${value}-${index}`} size={size} color={index < value ? "yellow" : "gray"} />
         ))}
       </div>
     </div>

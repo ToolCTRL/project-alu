@@ -19,7 +19,7 @@ import PortalStripeServer from "./PortalStripe.server";
 
 async function createPlans(portalId: string, plans: SubscriptionProductDto[]) {
   let idx = 0;
-  for (const plan of plans.sort((a, b) => a.order - b.order)) {
+  for (const plan of plans.toSorted((a, b) => a.order - b.order)) {
     // wait 5 seconds between each plan creation
     await createPlan(
       portalId,
@@ -93,7 +93,7 @@ async function createPlan(
 
   await Promise.all(
     features
-      .sort((a, b) => a.order - b.order)
+      .toSorted((a, b) => a.order - b.order)
       .map(async (feature) => {
         // Save to db
         return await createPortalSubscriptionFeature(portalId, product.id, feature);
@@ -117,7 +117,7 @@ async function syncPlan(
     stripeId: stripeProduct.id,
   });
 
-  prices.map(async (price) => {
+  prices.forEach(async (price) => {
     // Create stripe price
     const stripePrice = await PortalStripeServer.createStripePrice(stripeProduct?.id ?? "", price);
     if (!stripePrice) {
@@ -147,8 +147,8 @@ async function updatePlan(portalId: string, plan: SubscriptionProductDto, featur
     groupDescription: plan.groupDescription ?? undefined,
     public: plan.public,
     billingAddressCollection: plan.billingAddressCollection ?? "auto",
-    hasQuantity: plan.hasQuantity === undefined ? undefined : plan.hasQuantity,
-    canBuyAgain: plan.canBuyAgain === undefined ? undefined : plan.canBuyAgain,
+    hasQuantity: plan.hasQuantity ?? undefined,
+    canBuyAgain: plan.canBuyAgain ?? undefined,
   });
 
   await deletePortalSubscriptionFeatures(portalId, plan.id ?? "");

@@ -6,14 +6,13 @@ import OptionsIcon from "../icons/OptionsIcon";
 interface Props {
   right?: boolean;
   options?: ReactNode;
-  children?: ReactNode;
   className?: string;
   button?: ReactNode;
   disabled?: boolean;
   width?: "w-48" | "w-56" | "w-64" | "w-72" | "w-80" | "w-96";
 }
 
-export default function DropdownOptions({ options, right, className, button, disabled, width = "w-48" }: Props) {
+export default function DropdownOptions({ options, right, className, button, disabled, width = "w-48" }: Readonly<Props>) {
   return (
     <Menu as="div" className={clsx(className, "relative inline-block text-left")}>
       <div>

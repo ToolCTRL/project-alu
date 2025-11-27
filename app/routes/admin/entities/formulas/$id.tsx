@@ -1,5 +1,4 @@
-import { ActionFunctionArgs, LoaderFunctionArgs, redirect, useActionData, useLoaderData } from "react-router";
-import { useSubmit } from "react-router";
+import { ActionFunctionArgs, LoaderFunctionArgs, redirect, useActionData, useLoaderData, useSubmit } from "react-router";
 import ActionResultModal from "~/components/ui/modals/ActionResultModal";
 import { getTranslations } from "~/locale/i18next.server";
 import FormulaForm from "~/modules/formulas/components/FormulaForm";
@@ -13,7 +12,7 @@ type LoaderData = {
 };
 export const loader = async ({ request, params }: LoaderFunctionArgs) => {
   await verifyUserHasPermission(request, "admin.formulas.update");
-  const item = await getFormula(params.id!);
+  const item = await getFormula(params.id);
   if (!item) {
     throw redirect("/admin/entities/formulas");
   }
@@ -33,7 +32,7 @@ export const action = async ({ request, params }: ActionFunctionArgs) => {
   const form = await request.formData();
   const action = form.get("action")?.toString();
 
-  const item = await getFormula(params.id!);
+  const item = await getFormula(params.id);
   if (!item) {
     return redirect("/admin/entities/formulas");
   }
@@ -73,19 +72,19 @@ export const action = async ({ request, params }: ActionFunctionArgs) => {
     return redirect("/admin/entities/formulas");
   } else if (action === "delete") {
     await verifyUserHasPermission(request, "admin.formulas.delete");
-    await deleteFormula(params.id!);
+    await deleteFormula(params.id);
     return redirect("/admin/entities/formulas");
   } else {
     return Response.json({ error: t("shared.invalidForm") }, { status: 400 });
   }
 };
 
-export default function () {
+export default function EditFormulaRoute() {
   const data = useLoaderData<LoaderData>();
   const actionData = useActionData<ActionData>();
   const submit = useSubmit();
 
-  function onDelete() {
+  function handleDelete() {
     const form = new FormData();
     form.set("action", "delete");
     submit(form, {
@@ -94,7 +93,7 @@ export default function () {
   }
   return (
     <div>
-      <FormulaForm item={data.item} onDelete={onDelete} />
+      <FormulaForm item={data.item} onDelete={handleDelete} />
 
       <ActionResultModal actionData={actionData ?? undefined} showSuccess={false} />
     </div>

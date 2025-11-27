@@ -1,6 +1,5 @@
 import { ActionFunction, LoaderFunctionArgs, MetaFunction } from "react-router";
 import { loaderEmails } from "~/modules/emails/loaders/inbound-emails";
-import InboundEmailsRoute from "~/modules/emails/routes/InboundEmailsRoute";
 import { actionInboundEmails } from "~/modules/emails/actions/inbound-emails";
 
 export const loader = async ({ request, params }: LoaderFunctionArgs) => {

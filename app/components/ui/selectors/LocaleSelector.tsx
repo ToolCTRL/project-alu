@@ -50,8 +50,7 @@ export default function LocaleSelector({ className, disabled }: Readonly<Props>)
   }
 
   return (
-    <Fragment>
-      <DropdownMenu>
+    <DropdownMenu>
         <DropdownMenuTrigger asChild disabled={disabled}>
           <Button variant="ghost" className={clsx("flex w-10 space-x-2", className)}>
             <div
@@ -86,6 +85,5 @@ export default function LocaleSelector({ className, disabled }: Readonly<Props>)
           </DropdownMenuGroup>
         </DropdownMenuContent>
       </DropdownMenu>
-    </Fragment>
   );
 }

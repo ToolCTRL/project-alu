@@ -112,10 +112,9 @@ export default function InputRadioGroupCards({
             key={item.value}
             value={item.value}
             disabled={disabled || item.disabled}
-            className={({ checked, focus }) =>
+            className={({ checked }) =>
               clsx(
                 checked ? "ring-ring" : "",
-                focus ? "" : "",
                 "relative flex rounded-lg border p-3 shadow-2xs focus:outline-hidden",
                 disabled || item.disabled ? "text-muted-foreground cursor-not-allowed opacity-60" : "cursor-pointer"
               )

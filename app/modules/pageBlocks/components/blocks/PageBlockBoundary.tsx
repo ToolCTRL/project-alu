@@ -21,7 +21,7 @@ export default function PageBlockBoundary({ item }: { readonly item: PageBlockDt
     const block = item[getType()];
     if (block) {
       const keys = Object.keys(block);
-      return keys.some((f) => f === "data");
+      return keys.includes("data");
     }
     return false;
   }
@@ -29,17 +29,23 @@ export default function PageBlockBoundary({ item }: { readonly item: PageBlockDt
     // @ts-ignore
     return item[getType()].data;
   }
-  return (
-    <>
-      {item.error ? (
+  function renderContent() {
+    if (item.error) {
+      return (
         <div className="mx-auto max-w-7xl px-4 py-2 sm:px-6 lg:px-8">
           <ErrorBanner title={t("shared.error")} text={item.error} />
         </div>
-      ) : hasData() && getData() === undefined ? (
+      );
+    }
+    if (hasData() && getData() === undefined) {
+      return (
         <div className="mx-auto max-w-7xl px-4 py-2 sm:px-6 lg:px-8">
           <WarningBanner title={StringUtils.capitalize(getType())} text={"Data is not displayed in edit mode."} />
         </div>
-      ) : null}
-    </>
-  );
+      );
+    }
+    return null;
+  }
+
+  return <>{renderContent()}</>;
 }

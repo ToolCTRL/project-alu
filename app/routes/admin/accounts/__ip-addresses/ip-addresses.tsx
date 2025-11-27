@@ -76,6 +76,41 @@ export const action = async ({ request }: ActionFunctionArgs) => {
   }
 };
 
+const IpAddressCell = ({ item, blacklistedIps, t }: { item: IpAddress; blacklistedIps: string[]; t: any }) => (
+  <div className="flex flex-col">
+    <div className="font-medium">
+      {item.ip} {item.type && <span className="text-muted-foreground text-xs font-light">({item.type})</span>}{" "}
+      {blacklistedIps.includes(item.ip) && <SimpleBadge title="Blacklisted" color={Colors.RED} />}
+    </div>
+    <div className="text-muted-foreground text-xs">{item.provider}</div>
+  </div>
+);
+
+const CountryCell = ({ item }: { item: IpAddress }) => (
+  <div className="flex flex-col">
+    <div className="font-medium">{item.countryCode}</div>
+    <div className="text-muted-foreground text-xs">{item.countryName}</div>
+  </div>
+);
+
+const RegionCell = ({ item }: { item: IpAddress }) => (
+  <div className="flex flex-col">
+    <div className="font-medium">{item.regionCode}</div>
+    <div className="text-muted-foreground text-xs">{item.regionName}</div>
+  </div>
+);
+
+const CityCell = ({ item }: { item: IpAddress }) => (
+  <div className="flex flex-col">
+    <div className="font-medium">{item.city}</div>
+    <div className="text-muted-foreground text-xs">{item.zipCode}</div>
+  </div>
+);
+
+const IpMetadataCell = ({ item }: { item: IpAddress }) => (
+  <div className="max-w-xs truncate">{item.metadata && <ShowPayloadModalButton description={item.metadata} payload={item.metadata} />}</div>
+);
+
 export default function IpAddresses() {
   const data = useLoaderData<LoaderData>();
   const actionData = useActionData<{ success?: string; error?: string }>();
@@ -134,50 +169,27 @@ export default function IpAddresses() {
           {
             name: "ip",
             title: t("models.tenantIpAddress.object"),
-            value: (i) => (
-              <div className="flex flex-col">
-                <div className="font-medium">
-                  {i.ip} {i.type && <span className="text-muted-foreground text-xs font-light">({i.type})</span>}{" "}
-                  {data.blacklistedIps.includes(i.ip) && <SimpleBadge title="Blacklisted" color={Colors.RED} />}
-                </div>
-                <div className="text-muted-foreground text-xs">{i.provider}</div>
-              </div>
-            ),
+            value: (i) => <IpAddressCell item={i} blacklistedIps={data.blacklistedIps} t={t} />,
           },
           {
             name: "country",
             title: "Country",
-            value: (i) => (
-              <div className="flex flex-col">
-                <div className="font-medium">{i.countryCode}</div>
-                <div className="text-muted-foreground text-xs">{i.countryName}</div>
-              </div>
-            ),
+            value: (i) => <CountryCell item={i} />,
           },
           {
             name: "region",
             title: "Region",
-            value: (i) => (
-              <div className="flex flex-col">
-                <div className="font-medium">{i.regionCode}</div>
-                <div className="text-muted-foreground text-xs">{i.regionName}</div>
-              </div>
-            ),
+            value: (i) => <RegionCell item={i} />,
           },
           {
             name: "city",
             title: "City",
-            value: (i) => (
-              <div className="flex flex-col">
-                <div className="font-medium">{i.city}</div>
-                <div className="text-muted-foreground text-xs">{i.zipCode}</div>
-              </div>
-            ),
+            value: (i) => <CityCell item={i} />,
           },
           {
             name: "metadata",
             title: "Metadata",
-            value: (i) => <div className="max-w-xs truncate">{i.metadata && <ShowPayloadModalButton description={i.metadata} payload={i.metadata} />}</div>,
+            value: (i) => <IpMetadataCell item={i} />,
           },
           {
             name: "createdAt",

@@ -217,7 +217,7 @@ async function getArticle({ kb, slug, params, request }: { kb: KnowledgeBaseDto;
     slug,
     language,
   });
-  if (!item || !item.publishedAt) {
+  if (!item?.publishedAt) {
     return null;
   }
   if (!item.categoryId) {
@@ -380,9 +380,6 @@ async function duplicateCategory({ kb, language, categoryId }: { kb: KnowledgeBa
     if (!existingWithSlug) {
       break;
     }
-    // if (number > 10) {
-    //   throw Error("Too many duplicates");
-    // }
     number++;
   } while (true);
 

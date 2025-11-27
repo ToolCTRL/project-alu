@@ -1,6 +1,5 @@
 import { EntityWebhook } from "@prisma/client";
-import { ActionFunction, LoaderFunctionArgs, redirect } from "react-router";
-import { useLoaderData, useNavigate, useParams } from "react-router";
+import { ActionFunction, LoaderFunctionArgs, redirect, useLoaderData, useNavigate, useParams } from "react-router";
 import EntityWebhookForm from "~/components/entities/webhooks/EntityWebhookForm";
 import OpenModal from "~/components/ui/modals/OpenModal";
 import { getTranslations } from "~/locale/i18next.server";

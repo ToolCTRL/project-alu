@@ -7,10 +7,10 @@ import { WorkflowInputExampleDto } from "~/modules/workflowEngine/dtos/WorkflowI
 export default function WorkflowInputExamplesDropdown({
   workflow,
   onSelected,
-}: {
+}: Readonly<{
   workflow: WorkflowDto;
   onSelected: (inputExample: WorkflowInputExampleDto) => void;
-}) {
+}>) {
   return (
     <DropdownOptions
       width="w-80"

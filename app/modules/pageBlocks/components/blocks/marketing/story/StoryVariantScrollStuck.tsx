@@ -5,7 +5,7 @@ import { useRef, useState, useEffect } from "react";
 import { use3DTilt } from "~/hooks/use3DTilt";
 import { StoryBlockDto } from "./StoryBlockUtils";
 
-export default function StoryVariantScrollStuck({ item }: { item: StoryBlockDto }) {
+export default function StoryVariantScrollStuck({ item }: { readonly item: StoryBlockDto }) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [currentPhase, setCurrentPhase] = useState(0);
   const phaseRefs = useRef<(HTMLDivElement | null)[]>([]);
@@ -43,9 +43,8 @@ export default function StoryVariantScrollStuck({ item }: { item: StoryBlockDto 
     }
   };
 
-  const getGradientColors = (phase: number) => {
-    const colors = item.phases[phase];
-    switch (colors.accentColor) {
+  const getGradientColors = (accentColor: "primary" | "secondary" | "tertiary") => {
+    switch (accentColor) {
       case "tertiary":
         return "from-orange-500/20 to-purple-500/20";
       case "primary":
@@ -54,6 +53,16 @@ export default function StoryVariantScrollStuck({ item }: { item: StoryBlockDto 
         return "from-green-500/20 to-purple-500/20";
       default:
         return "from-purple-500/20 to-green-500/20";
+    }
+  };
+
+  const getBackgroundGradient = (phaseIndex: number): string => {
+    if (phaseIndex === 0) {
+      return "rgba(245, 158, 11, 0.2), rgba(168, 85, 247, 0.2)";
+    } else if (phaseIndex === 1) {
+      return "rgba(168, 85, 247, 0.2), rgba(16, 185, 129, 0.2)";
+    } else {
+      return "rgba(16, 185, 129, 0.2), rgba(168, 85, 247, 0.2)";
     }
   };
 
@@ -107,13 +116,7 @@ export default function StoryVariantScrollStuck({ item }: { item: StoryBlockDto 
               <motion.div
                 className="absolute inset-0 rounded-2xl"
                 animate={{
-                  background: `linear-gradient(135deg, ${
-                    currentPhase === 0
-                      ? "rgba(245, 158, 11, 0.2), rgba(168, 85, 247, 0.2)"
-                      : currentPhase === 1
-                      ? "rgba(168, 85, 247, 0.2), rgba(16, 185, 129, 0.2)"
-                      : "rgba(16, 185, 129, 0.2), rgba(168, 85, 247, 0.2)"
-                  })`,
+                  background: `linear-gradient(135deg, ${getBackgroundGradient(currentPhase)})`,
                 }}
                 transition={{ duration: 1.2, ease: "easeInOut" }}
               />
@@ -154,9 +157,9 @@ export default function StoryVariantScrollStuck({ item }: { item: StoryBlockDto 
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ delay: 0.3 }}
                     >
-                      {item.phases.map((_, idx) => (
+                      {item.phases.map((phase, idx) => (
                         <div
-                          key={idx}
+                          key={`phase-indicator-${idx}-${phase.headline.substring(0, 10)}`}
                           className={`h-2 rounded-full transition-all duration-500 ${
                             idx === currentPhase
                               ? `w-12 bg-${getAccentColor(item.phases[currentPhase].accentColor)}`
@@ -175,7 +178,7 @@ export default function StoryVariantScrollStuck({ item }: { item: StoryBlockDto 
           <div className="space-y-[100vh]">
             {item.phases.map((phase, idx) => (
               <div
-                key={idx}
+                key={`phase-content-${idx}-${phase.headline.substring(0, 15)}`}
                 ref={(el) => {
                   phaseRefs.current[idx] = el;
                 }}

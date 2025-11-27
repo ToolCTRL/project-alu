@@ -1,5 +1,4 @@
-import { MetaFunction } from "react-router";
-import { Link } from "react-router";
+import { MetaFunction, Link } from "react-router";
 import IndexPageLayout from "~/components/ui/layouts/IndexPageLayout";
 
 export const meta: MetaFunction = () => {

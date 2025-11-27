@@ -1,6 +1,5 @@
 import { WorkflowCredential } from "@prisma/client";
-import { MetaFunction, useLoaderData } from "react-router";
-import { Outlet, useSubmit } from "react-router";
+import { MetaFunction, useLoaderData, Outlet, useSubmit } from "react-router";
 import { useRef } from "react";
 import ButtonPrimary from "~/components/ui/buttons/ButtonPrimary";
 import DateCell from "~/components/ui/dates/DateCell";
@@ -34,9 +33,7 @@ export default function WorkflowsCredentialsView() {
     <EditPageLayout
       title="Credentials"
       buttons={
-        <>
-          <ButtonPrimary to="new">New</ButtonPrimary>
-        </>
+        <ButtonPrimary to="new">New</ButtonPrimary>
       }
     >
       <div className="space-y-3">

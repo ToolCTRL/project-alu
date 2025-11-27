@@ -92,7 +92,7 @@ const workflowToReactFlow = ({
           type: "customEdge",
           animated: true,
           deletable: false,
-          updatable: !workflowExecution ? "source" : false,
+          updatable: workflowExecution ? false : "source",
           markerEnd: {
             type: MarkerType.ArrowClosed,
             width: 10,

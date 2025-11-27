@@ -57,7 +57,7 @@ export namespace Rows_Relationships {
     );
 
     const data: LoaderData = {
-      entitiesData: entitiesData.sort((a, b) => (a.rowsData.entity.order > b.rowsData.entity.order ? 1 : -1)),
+      entitiesData: entitiesData.toSorted((a, b) => (a.rowsData.entity.order > b.rowsData.entity.order ? 1 : -1)),
       routes: EntitiesApi.getNoCodeRoutes({ request, params }),
     };
     return Response.json(data, { headers: getServerTimingHeader() });

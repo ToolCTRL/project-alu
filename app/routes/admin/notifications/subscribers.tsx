@@ -1,5 +1,4 @@
-import { LoaderFunctionArgs } from "react-router";
-import { useLoaderData } from "react-router";
+import { LoaderFunctionArgs, useLoaderData } from "react-router";
 import ServerError from "~/components/ui/errors/ServerError";
 import NotificationSubscribersTable from "~/modules/notifications/components/NotificationSubscribersTable";
 import NotificationService, { IGetSubscribersData } from "~/modules/notifications/services/.server/NotificationService";
@@ -20,23 +19,23 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
   return data;
 };
 
-export default function () {
+function NotificationSubscribersRoute() {
   const data = useLoaderData<LoaderData>();
   return (
-    <>
-      <div className="mx-auto w-full max-w-5xl space-y-3 px-4 py-2 pb-6 sm:px-6 sm:pt-3 lg:px-8 xl:max-w-full">
-        <div className="md:border-border md:border-b md:py-2">
-          <div className="flex items-center justify-between">
-            <h3 className="text-foreground text-lg font-medium leading-6">Subscribers</h3>
-            <div className="flex items-center space-x-2">{/* <InputFilters filters={[]} /> */}</div>
-          </div>
+    <div className="mx-auto w-full max-w-5xl space-y-3 px-4 py-2 pb-6 sm:px-6 sm:pt-3 lg:px-8 xl:max-w-full">
+      <div className="md:border-border md:border-b md:py-2">
+        <div className="flex items-center justify-between">
+          <h3 className="text-foreground text-lg font-medium leading-6">Subscribers</h3>
+          <div className="flex items-center space-x-2">{/* <InputFilters filters={[]} /> */}</div>
         </div>
-
-        <NotificationSubscribersTable items={data.items} />
       </div>
-    </>
+
+      <NotificationSubscribersTable items={data.items} />
+    </div>
   );
 }
+
+export default NotificationSubscribersRoute;
 
 export function ErrorBoundary() {
   return <ServerError />;

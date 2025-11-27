@@ -5,6 +5,8 @@ import EditPageLayout from "~/components/ui/layouts/EditPageLayout";
 import TableSimple from "~/components/ui/tables/TableSimple";
 import { WorkflowsVariablesApi } from "./variables.api.server";
 
+const DateCellRenderer = ({ item }: { item: { createdAt: Date | null } }) => <DateCell date={item.createdAt} />;
+
 export default function WorkflowsVariablesView() {
   const data = useLoaderData<WorkflowsVariablesApi.LoaderData>();
 
@@ -12,9 +14,7 @@ export default function WorkflowsVariablesView() {
     <EditPageLayout
       title="Variables"
       buttons={
-        <>
-          <ButtonPrimary to="new">New</ButtonPrimary>
-        </>
+        <ButtonPrimary to="new">New</ButtonPrimary>
       }
     >
       <div className="space-y-3">
@@ -34,7 +34,7 @@ export default function WorkflowsVariablesView() {
             {
               title: "Created At",
               name: "createdAt",
-              value: (item) => <DateCell date={item.createdAt} />,
+              value: (item) => <DateCellRenderer item={item} />,
             },
           ]}
           items={data.items}

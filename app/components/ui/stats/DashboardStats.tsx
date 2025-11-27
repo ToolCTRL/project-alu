@@ -1,6 +1,6 @@
 import clsx from "clsx";
 import { useTranslation } from "react-i18next";
-import { Link, useNavigation } from "react-router";
+import { Link } from "react-router";
 import { Stat } from "~/application/dtos/stats/Stat";
 import { StatChange } from "~/application/dtos/stats/StatChange";
 import { Fragment } from "react";

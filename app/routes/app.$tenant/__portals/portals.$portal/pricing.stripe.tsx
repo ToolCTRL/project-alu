@@ -33,7 +33,7 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
   }
 
   const tenantId = await getTenantIdOrNull({ request, params });
-  const item = await getPortalById(tenantId, params.portal!);
+  const item = await getPortalById(tenantId, params.portal);
   if (!item) {
     return redirect(UrlUtils.getModulePath(params, "portals"));
   }
@@ -133,7 +133,7 @@ export const action = async ({ request, params }: ActionFunctionArgs) => {
   const form = await request.formData();
   const action = form.get("action");
   const tenantId = await getTenantIdOrNull({ request, params });
-  const portal = await getPortalById(tenantId, params.portal!);
+  const portal = await getPortalById(tenantId, params.portal);
   if (!portal) {
     return redirect(UrlUtils.getModulePath(params, "portals"));
   }
@@ -153,7 +153,7 @@ export const action = async ({ request, params }: ActionFunctionArgs) => {
   return Response.json({ error: "Invalid action" }, { status: 400 });
 };
 
-export default function () {
+export default function PricingStripeRoute() {
   const { t } = useTranslation();
   const data = useLoaderData<LoaderData>();
   const actionData = useActionData<ActionData>();
@@ -205,7 +205,7 @@ export default function () {
         },
       ]}
     >
-      {!data.stripeAccount ? (
+      {data.stripeAccount === null ? (
         <div className="space-y-2">
           <p className="">Start accepting payments by connecting your Stripe account.</p>
           <Form method="post" className="space-y-2">
@@ -223,7 +223,7 @@ export default function () {
             </div>
           </Form>
         </div>
-      ) : !data.stripeAccount.charges_enabled ? (
+      ) : data.stripeAccount.charges_enabled === false ? (
         <div className="space-y-2">
           <div className="flex items-center space-x-2">
             <XIcon className="h-6 w-6 text-red-500" />

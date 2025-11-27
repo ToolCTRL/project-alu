@@ -22,8 +22,6 @@ import ButtonSecondary from "~/components/ui/buttons/ButtonSecondary";
 import InputSelect from "~/components/ui/input/InputSelect";
 import { requireAuth } from "~/utils/loaders.middleware";
 import { v2MetaFunction } from "~/utils/compat/v2MetaFunction";
-import { useFeatureFlag } from "~/hooks/useFeatureFlag";
-import { UI_REFRESH_FLAG_GROUPS } from "~/application/featureFlags/constants";
 import { KpiCard, ActionTile } from "~/components/ui/cards";
 import { Activity, ClipboardList, ChevronLeft, ChevronRight, Hammer, Radar, Sparkles, UserPlus } from "lucide-react";
 import { StatChange } from "~/application/dtos/stats/StatChange";
@@ -134,13 +132,13 @@ export default function AdminNavigationRoute() {
   );
 }
 
-type AdminDashboardRefreshProps = {
+type AdminDashboardRefreshProps = Readonly<{
   data: LoaderData;
   t: ReturnType<typeof useTranslation>["t"];
   searchParams: URLSearchParams;
   setSearchParams: ReturnType<typeof useSearchParams>[1];
   userName?: string;
-};
+}>;
 
 function AdminDashboardRefresh({ data, t, searchParams, setSearchParams, userName }: AdminDashboardRefreshProps) {
   const periodValue = searchParams.get("period")?.toString() ?? defaultPeriodFilter;
@@ -197,7 +195,9 @@ function AdminDashboardRefresh({ data, t, searchParams, setSearchParams, userNam
                 <span className="rounded-full bg-white/5 px-3 py-1 text-[11px] font-semibold text-emerald-100">Live Dashboard</span>
               </div>
               <div className="space-y-2">
-                <h1 className="text-4xl font-semibold leading-tight tracking-tight lg:text-4xl">{`Willkommen zurück${userName ? `, ${userName}.` : ","}`}</h1>
+                <h1 className="text-4xl font-semibold leading-tight tracking-tight lg:text-4xl">
+                  {userName ? `Willkommen zurück, ${userName}.` : "Willkommen zurück,"}
+                </h1>
                 <p className="text-base text-white/75">KPI-Übersicht, Workflows und Kundenlage in Echtzeit.</p>
               </div>
               <div className="flex flex-wrap gap-2 text-sm text-white/70">
@@ -254,22 +254,36 @@ function AdminDashboardRefresh({ data, t, searchParams, setSearchParams, userNam
                 <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs font-semibold uppercase tracking-[0.3em] text-white/70">Live</span>
               </div>
               <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-                {stats.map((stat, index) => (
-                  <KpiCard
-                    key={stat.name}
-                    title={stat.name}
-                    value={stat.stat}
-                    subtitle={stat.hint}
-                    badge={index === 0 ? "Aufträge" : (index === 1 ? "Pipeline" : "Service")}
-                    icon={[<ClipboardList key="kpi-0" className="h-5 w-5" />, <Hammer key="kpi-1" className="h-5 w-5" />, <Sparkles key="kpi-2" className="h-5 w-5" />][index % 3]}
-                    delta={{
-                      value: stat.change ?? "0%",
-                      direction: stat.changeType === StatChange.Decrease ? "down" : (stat.changeType === StatChange.Equal ? "flat" : "up"),
-                      label: "vs. vorher",
-                    }}
-                    sparkline={[14, 18, 17, 20, 24, 23, 28].slice(index, index + 5)}
-                  />
-                ))}
+                {stats.map((stat, index) => {
+                  const getBadge = (idx: number) => {
+                    if (idx === 0) return "Aufträge";
+                    if (idx === 1) return "Pipeline";
+                    return "Service";
+                  };
+
+                  const getDirection = (changeType: StatChange | undefined) => {
+                    if (changeType === StatChange.Decrease) return "down";
+                    if (changeType === StatChange.Equal) return "flat";
+                    return "up";
+                  };
+
+                  return (
+                    <KpiCard
+                      key={stat.name}
+                      title={stat.name}
+                      value={stat.stat}
+                      subtitle={stat.hint}
+                      badge={getBadge(index)}
+                      icon={[<ClipboardList key="kpi-0" className="h-5 w-5" />, <Hammer key="kpi-1" className="h-5 w-5" />, <Sparkles key="kpi-2" className="h-5 w-5" />][index % 3]}
+                      delta={{
+                        value: stat.change ?? "0%",
+                        direction: getDirection(stat.changeType),
+                        label: "vs. vorher",
+                      }}
+                      sparkline={[14, 18, 17, 20, 24, 23, 28].slice(index, index + 5)}
+                    />
+                  );
+                })}
               </div>
             </div>
           </div>
@@ -364,7 +378,6 @@ function TopCustomersCard({ tenants, className }: Readonly<{ tenants: TenantWith
   const maxRows = Math.max(...topTenants.map((tenant) => tenant._count?.rows ?? 0), 1);
   return (
     <section
-      role="region"
       aria-label="Top Kunden"
       className={clsx(
         "relative overflow-hidden rounded-[var(--radius-lg,1.25rem)] border border-white/10 bg-gradient-to-br from-white/10 via-white/5 to-white/0 p-6 shadow-[0px_18px_36px_rgba(7,12,20,0.35)] transition-transform duration-200 will-change-transform",
@@ -373,7 +386,6 @@ function TopCustomersCard({ tenants, className }: Readonly<{ tenants: TenantWith
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
       style={{ transformStyle: "preserve-3d" }}
-      tabIndex={0}
     >
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_20%_0%,rgba(59,130,246,0.15),transparent_45%),radial-gradient(circle_at_90%_20%,rgba(249,115,22,0.18),transparent_40%)]" />
       <div className="relative flex items-center justify-between">

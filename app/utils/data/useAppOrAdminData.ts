@@ -27,15 +27,15 @@ export type AppOrAdminData = {
   lng?: string;
   onboardingSession: OnboardingSessionWithDetails | null;
   tenantTypes: TenantTypeWithDetails[];
-  credits?: PlanFeatureUsageDto | undefined;
+  credits?: PlanFeatureUsageDto;
 };
 
 export function useAppOrAdminData(): AppOrAdminData {
-  const appPaths: string[] = ["routes/app.$tenant", "routes/app.$tenant.admin", "routes/app"];
-  const appData = (useMatches().find((f) => appPaths.includes(f.id.toLowerCase()))?.data ?? {}) as AppLoaderData;
+  const appPaths = new Set(["routes/app.$tenant", "routes/app.$tenant.admin", "routes/app"]);
+  const appData = (useMatches().find((f) => appPaths.has(f.id.toLowerCase()))?.data ?? {}) as AppLoaderData;
 
-  const adminPaths: string[] = ["routes/admin"];
-  const adminData = (useMatches().find((f) => adminPaths.includes(f.id.toLowerCase()))?.data ?? {}) as AdminLoaderData;
+  const adminPaths = new Set(["routes/admin"]);
+  const adminData = (useMatches().find((f) => adminPaths.has(f.id.toLowerCase()))?.data ?? {}) as AdminLoaderData;
   const appOrAdminData = appData.user ? appData : adminData;
   return appOrAdminData;
 }

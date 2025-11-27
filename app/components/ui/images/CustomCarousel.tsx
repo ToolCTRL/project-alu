@@ -1,5 +1,5 @@
 import clsx from "clsx";
-import { Fragment, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "../carousel";
 import { Card } from "../card";
 
@@ -10,7 +10,6 @@ interface Props {
 export default function CustomCarousel({ items, size = "full" }: Props) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [currentItem, setCurrentItem] = useState<{ type: string; title: string; src: string } | undefined>(undefined);
-  const [currentSrc, setCurrentSrc] = useState<string | undefined>(undefined);
 
   useEffect(() => {
     if (items.length > currentIndex) {
@@ -18,10 +17,6 @@ export default function CustomCarousel({ items, size = "full" }: Props) {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [items, currentIndex]);
-
-  useEffect(() => {
-    setCurrentSrc(currentItem?.src);
-  }, [currentItem]);
 
   function nextImage() {
     if (items.length > currentIndex + 1) {

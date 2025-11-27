@@ -24,19 +24,7 @@ export default function RenderOption({
 
   return (
     <Fragment>
-      {!display ? (
-        <Fragment>
-          {option.name ? (
-            option.name
-          ) : (
-            <>
-              {option.value}
-              {option.name && option.value && " - "}
-              {option.name}
-            </>
-          )}
-        </Fragment>
-      ) : (
+      {display ? (
         <div className="flex space-x-2 truncate">
           {display === "Name" && (option.name ?? option.value)}
           {display === "Value" && option.value}
@@ -105,6 +93,18 @@ export default function RenderOption({
             </Fragment>
           )}
         </div>
+      ) : (
+        <Fragment>
+          {option.name ? (
+            option.name
+          ) : (
+            <>
+              {option.value}
+              {option.name && option.value && " - "}
+              {option.name}
+            </>
+          )}
+        </Fragment>
       )}
     </Fragment>
   );

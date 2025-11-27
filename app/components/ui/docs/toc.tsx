@@ -17,7 +17,7 @@ interface TocProps {
   toc: Items;
 }
 
-export function DashboardTableOfContents({ title, toc }: TocProps) {
+export function DashboardTableOfContents({ title, toc }: Readonly<TocProps>) {
   const itemIds = useMemo(
     () =>
       toc.items

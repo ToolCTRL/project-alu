@@ -1,5 +1,4 @@
-import { ActionFunction, LoaderFunctionArgs, redirect, useLoaderData, useNavigate, useOutlet, useParams } from "react-router";
-import { Outlet } from "react-router";
+import { ActionFunction, LoaderFunctionArgs, redirect, useLoaderData, useNavigate, useOutlet, useParams, Outlet } from "react-router";
 import { Fragment, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { PropertyType } from "~/application/enums/entities/PropertyType";
@@ -63,7 +62,8 @@ export const action: ActionFunction = async ({ request, params }) => {
 
   if (action === "set-orders") {
     const items: { id: string; order: number }[] = form.getAll("orders[]").map((f: FormDataEntryValue) => {
-      return JSON.parse(f.toString());
+      const value = typeof f === "string" ? f : f.toString();
+      return JSON.parse(value);
     });
 
     await Promise.all(
@@ -84,7 +84,6 @@ export const action: ActionFunction = async ({ request, params }) => {
       properties: (await getEntityBySlug({ tenantId: null, slug: params.entity ?? "" }))?.properties,
       deleted: true,
     });
-    // return redirect(`/admin/entities/${params.entity}/properties`);
   } else if (action === "toggle-display") {
     const id = form.get("id")?.toString() ?? "";
     const existingProperty = await getProperty(id);
@@ -95,7 +94,6 @@ export const action: ActionFunction = async ({ request, params }) => {
       isDisplay: !existingProperty.isDisplay,
     });
     return Response.json({});
-    // return redirect(`/admin/entities/${params.entity}/properties`);
   } else if (action === "duplicate") {
     await verifyUserHasPermission(request, "admin.entities.create");
     try {

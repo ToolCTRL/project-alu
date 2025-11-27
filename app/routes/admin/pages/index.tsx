@@ -1,6 +1,5 @@
 import { useTranslation } from "react-i18next";
-import { ActionFunction, LoaderFunctionArgs, redirect } from "react-router";
-import { Link, useActionData, useLoaderData, useSubmit } from "react-router";
+import { ActionFunction, LoaderFunctionArgs, redirect, Link, useActionData, useLoaderData, useSubmit } from "react-router";
 import ButtonPrimary from "~/components/ui/buttons/ButtonPrimary";
 import { getUserHasPermission } from "~/utils/helpers/PermissionsHelper";
 import { verifyUserHasPermission } from "~/utils/helpers/.server/PermissionsService";
@@ -47,7 +46,7 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
     }
   });
   items.forEach((item) => {
-    if (!sortedItems.find((f) => f.slug === item.page.slug)) {
+    if (!sortedItems.some((f) => f.slug === item.page.slug)) {
       sortedItems.push(item);
     }
   });
@@ -100,7 +99,7 @@ export const action: ActionFunction = async ({ request, params }) => {
   }
 };
 
-export default function () {
+export default function AdminPagesIndexRoute() {
   const { t } = useTranslation();
   const data = useLoaderData<LoaderData>();
   const submit = useSubmit();
@@ -128,7 +127,7 @@ export default function () {
   }
 
   function pendingDefaultPages() {
-    return defaultPages.filter((defaultPage) => !data.items.find((f) => f.slug === defaultPage));
+    return defaultPages.filter((defaultPage) => !data.items.some((f) => f.slug === defaultPage));
   }
   function onCreateDefault() {
     const form = new FormData();
@@ -237,15 +236,13 @@ export default function () {
   );
 }
 
-function AddPageModal({
-  open,
-  onClose,
-  onCreate,
-}: {
-  open: boolean;
-  onClose: () => void;
-  onCreate: ({ slug, isSubpage1 }: { slug: string; isSubpage1: boolean }) => void;
-}) {
+interface AddPageModalProps {
+  readonly open: boolean;
+  readonly onClose: () => void;
+  readonly onCreate: ({ slug, isSubpage1 }: { slug: string; isSubpage1: boolean }) => void;
+}
+
+function AddPageModal({ open, onClose, onCreate }: AddPageModalProps) {
   const { t } = useTranslation();
   const [slug, setSlug] = useState("");
   const [isSubpage1, setIsSubpage1] = useState(false);

@@ -8,14 +8,13 @@ import { SurveyWithDetails } from "../db/surveys.db.server";
 import SurveyItemsList from "./SurveyItemsList";
 import { SurveyDto } from "../dtos/SurveyDtos";
 import SurveyUtils from "../utils/SurveyUtils";
-import InputCheckbox from "~/components/ui/input/InputCheckbox";
 import InputCheckboxWithDescription from "~/components/ui/input/InputCheckboxWithDescription";
 import InputNumber from "~/components/ui/input/InputNumber";
 
 interface Props {
   item: SurveyWithDetails | null;
 }
-export default function SurveyForm({ item }: Props) {
+export default function SurveyForm({ item }: Readonly<Props>) {
   const { t } = useTranslation();
   const [state, setState] = useState<SurveyDto>(
     item
@@ -49,9 +48,10 @@ export default function SurveyForm({ item }: Props) {
                 setValue={(e) => setState({ ...state, title: e.toString() })}
                 required
                 onBlur={() => {
-                  if (!item) {
-                    setState({ ...state, slug: UrlUtils.slugify(state.title) });
+                  if (item) {
+                    return;
                   }
+                  setState({ ...state, slug: UrlUtils.slugify(state.title) });
                 }}
               />
             </div>

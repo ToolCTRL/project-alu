@@ -101,11 +101,9 @@ export function createEmail(data: {
   cc: {
     create: any;
   };
-  attachments?:
-    | {
-        create?: any;
-      }
-    | undefined;
+  attachments?: {
+    create?: any;
+  };
 }) {
   return db.email.create({
     data,
@@ -137,16 +135,16 @@ export function deleteEmail(id: string) {
 }
 
 function whereInboundAddress(tenantId?: string | null) {
-  if (!tenantId) {
+  if (tenantId) {
     return {
       tenantInboundAddress: {
-        is: null,
+        tenantId,
       },
     };
   } else {
     return {
       tenantInboundAddress: {
-        tenantId,
+        is: null,
       },
     };
   }

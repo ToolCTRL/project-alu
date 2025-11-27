@@ -51,12 +51,14 @@ export default class EntityRepository {
     });
     return new RowRepository(row);
   }
-  async deleteRow(entityName: string, rowId: string, options = { checkPermissions: true }) {
+  async deleteRow(entityName: string, rowId: string, options?: { checkPermissions: boolean }) {
+    const defaultOptions = { checkPermissions: true };
+    const actualOptions = options ?? defaultOptions;
     return RowsApi.del(rowId, {
       entity: { name: entityName },
       tenantId: this.session.tenantId,
       userId: this.session?.userId,
-      checkPermissions: options.checkPermissions,
+      checkPermissions: actualOptions.checkPermissions,
     });
   }
 }

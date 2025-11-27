@@ -58,6 +58,8 @@ export function KpiCard({ title, value, subtitle, delta, badge, icon, tone = "ac
         "[&>div]:relative",
         className
       )}
+      role="region"
+      aria-label={title}
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
       style={{ transformStyle: "preserve-3d" }}

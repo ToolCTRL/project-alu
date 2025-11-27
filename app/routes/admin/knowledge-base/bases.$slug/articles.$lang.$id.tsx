@@ -1,9 +1,7 @@
-import { ActionFunctionArgs, LoaderFunctionArgs, MetaFunction, redirect, useActionData, useLoaderData } from "react-router";
-import { Form, useNavigate, useOutlet, useParams } from "react-router";
+import { ActionFunctionArgs, LoaderFunctionArgs, MetaFunction, redirect, useActionData, useLoaderData, Form, useNavigate, useOutlet, useParams } from "react-router";
 import ButtonPrimary from "~/components/ui/buttons/ButtonPrimary";
 import ButtonSecondary from "~/components/ui/buttons/ButtonSecondary";
 import EditPageLayout from "~/components/ui/layouts/EditPageLayout";
-import ActionResultModal from "~/components/ui/modals/ActionResultModal";
 import SlideOverWideEmpty from "~/components/ui/slideOvers/SlideOverWideEmpty";
 import KbArticleContent from "~/modules/knowledgeBase/components/articles/KbArticleContent";
 import { getKbArticleById, updateKnowledgeBaseArticle } from "~/modules/knowledgeBase/db/kbArticles.db.server";
@@ -57,26 +55,26 @@ export const action = async ({ request, params }: ActionFunctionArgs) => {
   const form = await request.formData();
   const action = form.get("action")?.toString() ?? "";
 
-  const item = await getKbArticleById(params.id!);
-  if (!item) {
+  const article = await getKbArticleById(params.id);
+  if (!article) {
     return Response.json({ error: "Article not found" }, { status: 400 });
   }
 
   if (action === "togglePublish") {
-    if (!item.categoryId) {
+    if (!article.categoryId) {
       return Response.json({ error: "Article must have a category. Go to settings to set one." }, { status: 400 });
     }
-    let publishedAt = item.publishedAt;
-    let contentPublished = item.contentPublished;
-    if (item.publishedAt) {
+    let contentPublished = article.contentPublished;
+    let publishedAt: Date | null;
+    if (article.publishedAt) {
       publishedAt = null;
     } else {
       publishedAt = new Date();
-      contentPublished = item.contentDraft;
+      contentPublished = article.contentDraft;
     }
 
     const text = KnowledgeBaseService.contentAsText(contentPublished);
-    await updateKnowledgeBaseArticle(item.id, {
+    await updateKnowledgeBaseArticle(article.id, {
       publishedAt,
       contentPublished,
       contentPublishedAsText: text,
@@ -87,7 +85,7 @@ export const action = async ({ request, params }: ActionFunctionArgs) => {
   return Response.json({ error: "Invalid action" }, { status: 400 });
 };
 
-export default function () {
+export default function ArticleDetail() {
   const data = useLoaderData<LoaderData>();
   const actionData = useActionData<ActionData>();
   const params = useParams();

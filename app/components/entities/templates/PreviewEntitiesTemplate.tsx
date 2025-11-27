@@ -10,27 +10,27 @@ function findChildRelationships(template: EntitiesTemplateDto, item: TemplateEnt
   return template.relationships.filter((f) => f.child === item.name) ?? [];
 }
 
-function NameCell({ item }: Readonly<{ item: TemplateEntityDto }>) {
+const NameCell = ({ item }: Readonly<{ item: TemplateEntityDto }>) => {
   return (
     <div className="flex items-baseline space-x-1">
       <div>{item.name}</div>
       <div className="text-xs italic">({item.slug})</div>
     </div>
   );
-}
+};
 
-function TitleCell({ item, t }: Readonly<{ item: TemplateEntityDto; t: (key: string) => string }>) {
+const TitleCell = ({ item, t }: Readonly<{ item: TemplateEntityDto; t: (key: string) => string }>) => {
   return (
     <div className="flex items-baseline space-x-1">
       <div>{t(item.title)}</div>
       <div className="text-xs italic">({t(item.titlePlural)})</div>
     </div>
   );
-}
+};
 
-function ViewsCell({ item }: Readonly<{ item: TemplateEntityDto }>) {
+const ViewsCell = ({ item }: Readonly<{ item: TemplateEntityDto }>) => {
   return <div>{item.views?.map((view) => view.title + (view.isDefault ? " (default)" : "")).join(", ")}</div>;
-}
+};
 
 export default function PreviewEntitiesTemplate({ template }: Readonly<{ template: EntitiesTemplateDto }>) {
   const { t } = useTranslation();

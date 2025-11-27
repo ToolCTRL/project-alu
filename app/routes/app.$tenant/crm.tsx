@@ -1,5 +1,4 @@
-import { LoaderFunctionArgs, MetaFunction } from "react-router";
-import { Outlet } from "react-router";
+import { LoaderFunctionArgs, MetaFunction, Outlet } from "react-router";
 import ServerError from "~/components/ui/errors/ServerError";
 import CrmService from "~/modules/crm/services/CrmService";
 import { getTenantIdOrNull } from "~/utils/services/.server/urlService";

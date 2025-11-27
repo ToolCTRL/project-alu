@@ -1,5 +1,4 @@
-import { ActionFunction, LoaderFunctionArgs, MetaFunction, redirect, useLoaderData } from "react-router";
-import { Form, useActionData, useSubmit, Link } from "react-router";
+import { ActionFunction, LoaderFunctionArgs, MetaFunction, redirect, useLoaderData, Form, useActionData, useSubmit, Link } from "react-router";
 import { useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { MetaTagsDto } from "~/application/dtos/seo/MetaTagsDto";
@@ -31,7 +30,7 @@ type LoaderData = {
 export const loader = async ({ request, params }: LoaderFunctionArgs) => {
   await verifyUserHasPermission(request, "admin.onboarding.update");
   const { t } = await getTranslations(request);
-  const item = await getOnboarding(params.id!);
+  const item = await getOnboarding(params.id);
   if (!item) {
     throw redirect("/admin/onboarding/onboardings");
   }
@@ -52,7 +51,7 @@ export const action: ActionFunction = async ({ request, params }) => {
   const { t } = await getTranslations(request);
   const form = await request.formData();
   const action = form.get("action");
-  const item = await getOnboarding(params.id!);
+  const item = await getOnboarding(params.id);
   if (!item) {
     throw redirect("/admin/onboarding/onboardings");
   }
@@ -85,7 +84,18 @@ export const action: ActionFunction = async ({ request, params }) => {
   }
 };
 
-export default function () {
+function canBeActivated(item: OnboardingWithDetails) {
+  if (item.filters.length > 0 && item.steps.length > 0) {
+    return true;
+  }
+  return false;
+}
+
+function canBeInactivated() {
+  return true;
+}
+
+function OnboardingOverviewRoute() {
   const { t } = useTranslation();
   const data = useLoaderData<LoaderData>();
   const actionData = useActionData<ActionData>();
@@ -118,15 +128,6 @@ export default function () {
       method: "post",
     });
   }
-
-  function canBeActivated() {
-    if (data.item.filters.length > 0 && data.item.steps.length > 0) {
-      return true;
-    }
-  }
-  function canBeInactivated() {
-    return true;
-  }
   return (
     <div className="mx-auto max-w-2xl flex-1 space-y-5 overflow-x-auto px-2 py-2 xl:overflow-y-auto">
       {data.item.active && <InfoBanner title={t("shared.active")} text="This onboarding is active and will be shown to users." />}
@@ -151,97 +152,95 @@ export default function () {
       <InputGroup
         title={t("onboarding.step.plural")}
         right={
-          <>
-            <Link
-              to={`/admin/onboarding/onboardings/${data.item.id}/steps`}
-              className="text-muted-foreground hover:text-foreground text-sm font-medium hover:underline"
-            >
-              {t("onboarding.step.set")}
-            </Link>
-          </>
+          <Link
+            to={`/admin/onboarding/onboardings/${data.item.id}/steps`}
+            className="text-muted-foreground hover:text-foreground text-sm font-medium hover:underline"
+          >
+            {t("onboarding.step.set")}
+          </Link>
         }
       >
         <div className="space-y-2">
-          {data.item.steps.length === 0 && (
+          {data.item.steps.length === 0 ? (
             <Link
               to={`/admin/onboarding/onboardings/${data.item.id}/steps`}
               className="border-border hover:border-border relative block w-full rounded-lg border-2 border-dashed p-4 text-center focus:outline-hidden focus:ring-2 focus:ring-gray-500"
             >
               <span className="text-muted-foreground block text-xs font-normal">{t("onboarding.step.empty.title")}</span>
             </Link>
+          ) : (
+            data.item.steps.map((step, idx) => {
+              return (
+                <div key={`step-${step.id || idx}`} className="border-border bg-secondary relative block w-full rounded-lg border-2 border-dashed p-3 text-center">
+                  {OnboardingStepUtils.getStepDescription(OnboardingStepUtils.parseStepToBlock(step))}
+                </div>
+              );
+            })
           )}
-          {data.item.steps.map((step, idx) => {
-            return (
-              <div key={idx} className="border-border bg-secondary relative block w-full rounded-lg border-2 border-dashed p-3 text-center">
-                {OnboardingStepUtils.getStepDescription(OnboardingStepUtils.parseStepToBlock(step))}
-              </div>
-            );
-          })}
         </div>
       </InputGroup>
 
       <InputGroup
         title={t("onboarding.filter.plural")}
         right={
-          <>
-            <Link
-              to={`/admin/onboarding/onboardings/${data.item.id}/filters`}
-              className="text-muted-foreground hover:text-foreground text-sm font-medium hover:underline"
-            >
-              {t("onboarding.filter.set")}
-            </Link>
-          </>
+          <Link
+            to={`/admin/onboarding/onboardings/${data.item.id}/filters`}
+            className="text-muted-foreground hover:text-foreground text-sm font-medium hover:underline"
+          >
+            {t("onboarding.filter.set")}
+          </Link>
         }
       >
         <div className="space-y-2">
-          {data.item.filters.length === 0 && (
+          {data.item.filters.length === 0 ? (
             <Link
               to={`/admin/onboarding/onboardings/${data.item.id}/filters`}
               className="border-border hover:border-border relative block w-full rounded-lg border-2 border-dashed p-4 text-center focus:outline-hidden focus:ring-2 focus:ring-gray-500"
             >
               <span className="text-muted-foreground block text-xs font-normal">{t("onboarding.filter.empty.title")}</span>
             </Link>
-          )}
-          {data.item.filters.map((filter, idx) => {
-            return (
-              <div key={idx} className="border-border bg-secondary relative block w-full rounded-lg border-2 border-dashed p-3 text-center">
-                <div className="flex items-center space-x-2 text-sm">
-                  <div className="font-medium">{filter.type}</div>
-                  {filter.value !== null && (
-                    <>
-                      <div>→</div>
-                      <div className="text-muted-foreground italic">{OnboardingFilterUtils.parseValue({ t, filter, metadata: data.metadata })}</div>
-                    </>
-                  )}
+          ) : (
+            data.item.filters.map((filter, idx) => {
+              return (
+                <div key={`filter-${filter.id || idx}`} className="border-border bg-secondary relative block w-full rounded-lg border-2 border-dashed p-3 text-center">
+                  <div className="flex items-center space-x-2 text-sm">
+                    <div className="font-medium">{filter.type}</div>
+                    {filter.value !== null && (
+                      <>
+                        <div>→</div>
+                        <div className="text-muted-foreground italic">{OnboardingFilterUtils.parseValue({ t, filter, metadata: data.metadata })}</div>
+                      </>
+                    )}
+                  </div>
                 </div>
-              </div>
-            );
-          })}
+              );
+            })
+          )}
         </div>
       </InputGroup>
 
-      {!canBeActivated() && (
+      {canBeActivated(data.item) ? null : (
         <WarningBanner title={t("onboarding.errors.cannotBeActivated.title")} text={t("onboarding.errors.cannotBeActivated.description")} />
       )}
 
       <div className="flex justify-between">
         <div></div>
         <div className="flex justify-between space-x-2">
-          {!data.item.active ? (
-            <ButtonPrimary
-              disabled={!canBeActivated() || !getUserHasPermission(appOrAdminData, "admin.onboarding.update")}
-              onClick={() => onActivate(true)}
-              className="bg-teal-600 text-white hover:bg-teal-700"
-            >
-              {t("onboarding.prompts.activate.title")}
-            </ButtonPrimary>
-          ) : (
+          {data.item.active ? (
             <ButtonPrimary
               destructive
               disabled={!canBeInactivated() || !getUserHasPermission(appOrAdminData, "admin.onboarding.update")}
               onClick={() => onActivate(false)}
             >
               {t("onboarding.prompts.deactivate.title")}
+            </ButtonPrimary>
+          ) : (
+            <ButtonPrimary
+              disabled={!canBeActivated(data.item) || !getUserHasPermission(appOrAdminData, "admin.onboarding.update")}
+              onClick={() => onActivate(true)}
+              className="bg-teal-600 text-white hover:bg-teal-700"
+            >
+              {t("onboarding.prompts.activate.title")}
             </ButtonPrimary>
           )}
         </div>
@@ -252,6 +251,8 @@ export default function () {
     </div>
   );
 }
+
+export default OnboardingOverviewRoute;
 
 export function ErrorBoundary() {
   return <ServerError />;

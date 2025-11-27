@@ -15,11 +15,11 @@ export default function WorkflowBlockExecution({
   execution,
   onBack,
 }: {
-  workflow: WorkflowDto;
-  block: WorkflowBlockDto;
-  blockRun: WorkflowBlockExecutionDto | null;
-  execution: WorkflowExecutionDto | null;
-  onBack: () => void;
+  readonly workflow: WorkflowDto;
+  readonly block: WorkflowBlockDto;
+  readonly blockRun: WorkflowBlockExecutionDto | null;
+  readonly execution: WorkflowExecutionDto | null;
+  readonly onBack: () => void;
 }) {
   const workflowBlock = WorkflowBlockTypes.find((x) => x.value === block.type);
 
@@ -95,7 +95,7 @@ export default function WorkflowBlockExecution({
                     <div className="text-foreground/80 text-sm font-medium">Workflow Block Input</div>
                     <div className="space-y-1">
                       <div className="overflow-hidden">
-                        {typeof globalThis.window !== "undefined" && (
+                        {globalThis.window !== undefined && (
                           <Editor
                             value={blockRun.input ? JSON.stringify(blockRun.input, null, 2) : "{}"}
                             language="json"

@@ -157,9 +157,19 @@ export default function ThemeSelector({ className, variant = "primary", disabled
         </Select>
   );
 
+  const renderContent = () => {
+    if (variant === "primary" || variant === "secondary") {
+      return renderPrimaryOrSecondary();
+    }
+    if (variant === "tertiary") {
+      return renderTertiary();
+    }
+    return null;
+  };
+
   return (
     <Fragment>
-      {variant === "primary" || variant === "secondary" ? renderPrimaryOrSecondary() : variant === "tertiary" ? renderTertiary() : null}
+      {renderContent()}
     </Fragment>
   );
 }

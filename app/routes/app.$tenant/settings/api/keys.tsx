@@ -1,5 +1,4 @@
-import { LoaderFunctionArgs, useLoaderData } from "react-router";
-import { Outlet, useParams } from "react-router";
+import { LoaderFunctionArgs, useLoaderData, Outlet, useParams } from "react-router";
 import { useTranslation } from "react-i18next";
 import { DefaultFeatures } from "~/application/dtos/shared/DefaultFeatures";
 import { PlanFeatureUsageDto } from "~/application/dtos/subscriptions/PlanFeatureUsageDto";
@@ -37,8 +36,7 @@ export default function AdminApiKeysRoute() {
   const appData = useAppData();
   const params = useParams();
   return (
-    <>
-      <EditPageLayout
+    <EditPageLayout
         tabs={[
           {
             name: t("shared.overview"),
@@ -83,6 +81,5 @@ export default function AdminApiKeysRoute() {
           <Outlet />
         </CheckPlanFeatureLimit>
       </EditPageLayout>
-    </>
   );
 }

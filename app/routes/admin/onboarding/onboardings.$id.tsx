@@ -1,7 +1,6 @@
 import { useTranslation } from "react-i18next";
-import { Outlet, useLoaderData, useParams } from "react-router";
+import { Outlet, useLoaderData, useParams, LoaderFunctionArgs, redirect } from "react-router";
 import { getOnboarding, OnboardingWithDetails } from "~/modules/onboarding/db/onboarding.db.server";
-import { LoaderFunctionArgs, redirect } from "react-router";
 import EditPageLayout from "~/components/ui/layouts/EditPageLayout";
 import TabsVertical from "~/components/ui/tabs/TabsVertical";
 import { verifyUserHasPermission } from "~/utils/helpers/.server/PermissionsService";
@@ -18,7 +17,7 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
   return Response.json({ item });
 };
 
-export default function () {
+function OnboardingDetail() {
   const { t } = useTranslation();
   const data = useLoaderData<LoaderData>();
   const params = useParams();
@@ -76,3 +75,5 @@ export default function () {
     </div>
   );
 }
+
+export default OnboardingDetail;

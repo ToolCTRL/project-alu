@@ -70,7 +70,6 @@ function parseForwardedHeader(value: string | null): string | null {
   if (!value) return null;
   for (let part of value.split(";")) {
     if (part.startsWith("for=")) return part.slice(4);
-    continue;
   }
   return null;
 }

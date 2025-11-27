@@ -1,4 +1,4 @@
-import { ActionFunction, LoaderFunctionArgs, MetaFunction, useFetcher, Form, useActionData, useLoaderData, useNavigation } from "react-router";
+import { ActionFunction, LoaderFunctionArgs, MetaFunction, useFetcher, Form, useActionData, useLoaderData } from "react-router";
 import { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import ButtonPrimary from "~/components/ui/buttons/ButtonPrimary";
@@ -117,7 +117,7 @@ async function handleDeleteEmailTemplate(request: Request, form: FormData) {
 
 async function handleSendTest(request: Request, form: FormData, user: Awaited<ReturnType<typeof requireUser>>) {
   const email = stringOrEmpty(form.get("email"));
-  const templateName = form.get("template")?.toString();
+  const templateName = String(form.get("template") ?? "");
   if (email === "") {
     return { error: "Invalid email" };
   }
@@ -148,13 +148,13 @@ async function handleSendTest(request: Request, form: FormData, user: Awaited<Re
 
 async function handleUpdateAppConfiguration(request: Request, form: FormData, t: Awaited<ReturnType<typeof getTranslations>>["t"]) {
   const data = {
-    emailProvider: form.get("emailProvider")?.toString(),
-    emailFromEmail: form.get("emailFromEmail")?.toString(),
-    emailFromName: form.get("emailFromName")?.toString(),
-    emailSupportEmail: form.get("emailSupportEmail")?.toString(),
+    emailProvider: String(form.get("emailProvider") ?? ""),
+    emailFromEmail: String(form.get("emailFromEmail") ?? ""),
+    emailFromName: String(form.get("emailFromName") ?? ""),
+    emailSupportEmail: String(form.get("emailSupportEmail") ?? ""),
   };
   await updateAppConfiguration(data);
-  const apiKey = form.get("apiKey")?.toString();
+  const apiKey = String(form.get("apiKey") ?? "");
   if (data.emailProvider && apiKey !== undefined) {
     await db.credential.upsert({
       where: { name: data.emailProvider },
@@ -192,7 +192,7 @@ export const action: ActionFunction = async ({ request, params }) => {
   return { error: t("shared.invalidForm") };
 };
 
-export default function () {
+export default function TransactionalEmailsRoute() {
   const adminData = useAdminData();
   const data = useLoaderData<LoaderData>();
   const actionData = useActionData<ActionData>();
@@ -221,22 +221,12 @@ export default function () {
     }
   }, [actionData]);
 
-  // function templateUrl(item: { alias: string }) {
-  //   return `https://account.postmarkapp.com/servers/${item.associatedServerId}/templates/${item.templateId}/edit`;
-  // }
-  // function performPrimaryAction(item: EmailTemplate) {
-  //   if (item.associatedServerId > 0) {
-  //     sendTest(item);
-  //   } else {
-  //     createTemplate(item);
-  //   }
-  // }
   function sendTest(templateName: string): void {
     let to = adminData.user?.email;
     if (to === "admin@email.com") {
       to = data.appConfiguration.email.supportEmail;
     }
-    const email = window.prompt("Email", to);
+    const email = globalThis.prompt("Email", to);
     if (!email || email.trim() === "") {
       return;
     }
@@ -255,25 +245,6 @@ export default function () {
       method: "post",
     });
   }
-  // function createTemplate(item: EmailTemplate): void {
-  //   const form = new FormData();
-  //   form.set("action", "create-email-template");
-  //   form.set("alias", item.alias);
-  //   submit(form, {
-  //     method: "post",
-  //   });
-  // }
-  // function deleteTemplate(item: EmailTemplate): void {
-  //   const form = new FormData();
-  //   form.set("action", "delete-postmark-email");
-  //   form.set("alias", item.alias);
-  //   submit(form, {
-  //     method: "post",
-  //   });
-  // }
-  // function createdTemplates() {
-  //   return data.items.filter((f) => f.active).length;
-  // }
   function getProviderEnvName() {
     switch (emailProvider) {
       case "postmark":

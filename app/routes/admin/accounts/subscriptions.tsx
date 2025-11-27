@@ -121,7 +121,6 @@ const PeriodCell = ({ item }: { item: TenantSubscriptionProductWithTenant }) => 
 );
 
 const CancelledAtCell = ({ item }: { item: TenantSubscriptionProductWithTenant }) => {
-  const { t } = useTranslation();
   return <div>{item.cancelledAt ? <DateCell date={item.cancelledAt} displays={["mdy"]} /> : "-"}</div>;
 };
 

@@ -1,5 +1,4 @@
-import { ActionFunction, LoaderFunctionArgs, redirect, useActionData } from "react-router";
-import { useLoaderData, useSubmit } from "react-router";
+import { ActionFunction, LoaderFunctionArgs, redirect, useActionData, useLoaderData, useSubmit } from "react-router";
 import { useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { DefaultAdminRoles } from "~/application/dtos/shared/DefaultAdminRoles";
@@ -51,7 +50,7 @@ export const action: ActionFunction = async ({ request, params }) => {
   const user = await getUser(userInfo.userId);
   if (!user?.admin && !tenantId) {
     const userRoles = await getUserRoles(userInfo.userId);
-    if (!userRoles.find((f) => f.role.name === DefaultAdminRoles.SuperAdmin)) {
+    if (!userRoles.some((f) => f.role.name === DefaultAdminRoles.SuperAdmin)) {
       return Response.json({ error: t("shared.invalidForm") }, { status: 400 });
     }
   }
@@ -81,7 +80,7 @@ export const action: ActionFunction = async ({ request, params }) => {
   return Response.json({ error: t("shared.invalidForm") }, { status: 400 });
 };
 
-export default function () {
+export default function EntityDangerRoute() {
   const { t } = useTranslation();
   const data = useLoaderData<LoaderData>();
   const actionData = useActionData<ActionData>();
@@ -92,15 +91,12 @@ export default function () {
 
   function onDelete(action: string) {
     confirmDelete.current?.setValue(action);
-    let title = t("shared.delete");
-    let button = t("shared.delete");
-    if (action === "delete") {
-      title = `Delete ${t(data.entity.title)} entity`;
-      button = `Delete ${t(data.entity.title)} entity`;
-    } else {
-      title = `Delete ${t(data.entity.title)} rows (${data.count})`;
-      button = `Delete ${t(data.entity.title)} rows (${data.count})`;
-    }
+    const title = action === "delete"
+      ? `Delete ${t(data.entity.title)} entity`
+      : `Delete ${t(data.entity.title)} rows (${data.count})`;
+    const button = action === "delete"
+      ? `Delete ${t(data.entity.title)} entity`
+      : `Delete ${t(data.entity.title)} rows (${data.count})`;
     confirmDelete.current?.show(title, button, t("shared.cancel"), t("shared.warningCannotUndo"));
   }
 

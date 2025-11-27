@@ -1,5 +1,4 @@
-import { LoaderFunctionArgs, useLoaderData, useNavigate, useOutlet, useParams } from "react-router";
-import { Outlet } from "react-router";
+import { LoaderFunctionArgs, useLoaderData, useNavigate, useOutlet, useParams, Outlet } from "react-router";
 import { getTranslations } from "~/locale/i18next.server";
 import RolesTable from "~/components/core/roles/RolesTable";
 import { getAllRolesWithUsers, RoleWithPermissionsAndUsers } from "~/utils/db/permissions/roles.db.server";
@@ -57,7 +56,7 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
   return Response.json(data, { headers: getServerTimingHeader() });
 };
 
-export default function () {
+export default function RolesRoute() {
   const data = useLoaderData<LoaderData>();
   const adminData = useAdminData();
   const navigate = useNavigate();

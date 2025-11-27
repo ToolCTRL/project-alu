@@ -1,8 +1,6 @@
 import { useTranslation } from "react-i18next";
-import { useEffect, useRef } from "react";
-import ErrorModal, { RefErrorModal } from "~/components/ui/modals/ErrorModal";
-import { ActionFunction, LoaderFunctionArgs, MetaFunction, redirect, useLoaderData } from "react-router";
-import { useActionData } from "react-router";
+import { useEffect } from "react";
+import { ActionFunction, LoaderFunctionArgs, MetaFunction, redirect, useLoaderData, useActionData } from "react-router";
 import { getTranslations } from "~/locale/i18next.server";
 import { SubscriptionProductDto } from "~/application/dtos/subscriptions/SubscriptionProductDto";
 import { createPlan } from "~/utils/services/.server/pricingService";
@@ -13,7 +11,6 @@ import { SubscriptionBillingPeriod } from "~/application/enums/subscriptions/Sub
 import { SubscriptionFeatureDto } from "~/application/dtos/subscriptions/SubscriptionFeatureDto";
 import { verifyUserHasPermission } from "~/utils/helpers/.server/PermissionsService";
 import { SubscriptionUsageBasedPriceDto } from "~/application/dtos/subscriptions/SubscriptionUsageBasedPriceDto";
-import BreadcrumbSimple from "~/components/ui/breadcrumbs/BreadcrumbSimple";
 import BackButtonWithTitle from "~/components/ui/buttons/BackButtonWithTitle";
 import EditPageLayout from "~/components/ui/layouts/EditPageLayout";
 import { toast } from "sonner";
@@ -65,13 +62,15 @@ export const action: ActionFunction = async ({ request }) => {
 
   const featuresArr = form.getAll("features[]");
   const features: SubscriptionFeatureDto[] = featuresArr.map((f: FormDataEntryValue) => {
-    return JSON.parse(f.toString());
+    const featureString = typeof f === 'string' ? f : f.toString();
+    return JSON.parse(featureString);
   });
 
   const prices: { billingPeriod: SubscriptionBillingPeriod; price: number; currency: string; trialDays?: number }[] = form
     .getAll("prices[]")
     .map((f: FormDataEntryValue) => {
-      return JSON.parse(f.toString());
+      const priceString = typeof f === 'string' ? f : f.toString();
+      return JSON.parse(priceString);
     });
 
   const oneTimePricesWithZero = prices.filter((p) => p.billingPeriod === SubscriptionBillingPeriod.ONCE && p.price === 0);
@@ -80,7 +79,8 @@ export const action: ActionFunction = async ({ request }) => {
   }
 
   const usageBasedPrices: SubscriptionUsageBasedPriceDto[] = form.getAll("usage-based-prices[]").map((f: FormDataEntryValue) => {
-    return JSON.parse(f.toString());
+    const usageString = typeof f === 'string' ? f : f.toString();
+    return JSON.parse(usageString);
   });
 
   if (!title) {

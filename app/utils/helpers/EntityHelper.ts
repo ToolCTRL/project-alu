@@ -15,26 +15,12 @@ import EntityViewHelper from "./EntityViewHelper";
 import { mapToEntityTemplateType } from "./PropertyHelper";
 import Constants from "~/application/Constants";
 
-// const getEntityFromParams = async (params: Params) => {
-//   return await getEntityBySlug(params.entity ?? "");
-// };
 
 const getFieldTitle = (field: Property, _ = false): string => {
-  switch (field.type) {
-    // case PropertyType.USER:
-    // case PropertyType.ROLE:
-    // case PropertyType.ID:
-    //   if (isDefault) {
-    //     return "entities.defaultFields." + PropertyType[field.type];
-    //   } else {
-    //     return "entities.fields." + PropertyType[field.type];
-    //   }
-    default:
-      return field.title;
-  }
+  return field.title;
 };
 
-function getFilters({ t, entity, pagination }: { t: TFunction; entity: EntityWithDetails; pagination?: PaginationDto }) {
+function getFilters({ t, entity }: { t: TFunction; entity: EntityWithDetails; pagination?: PaginationDto }) {
   const filters: FilterDto[] = [
     ...entity.properties
       .filter((f) => RowFiltersHelper.isPropertyFilterable(f))
@@ -116,37 +102,12 @@ function getRoutes({
       .replace(":id", item?.id ?? ""),
     group: routes.group?.split(":entity").join(entity.slug),
   };
-  if (entity.onEdit === "overviewRoute") {
-    entityRoutes.edit = entityRoutes.overview + "?editing";
-  } else if (entity.onEdit === "overviewAlwaysEditable") {
+  if (entity.onEdit === "overviewRoute" || entity.onEdit === "overviewAlwaysEditable") {
     entityRoutes.edit = entityRoutes.overview + "?editing";
   }
   return entityRoutes;
 }
 
-// function getAdminNoCodeRoutes(): EntitiesApi.Routes {
-//   const routes: EntitiesApi.Routes = {
-//     list: `/admin/entities/:entity/no-code/:entity`,
-//     new: `/admin/entities/:entity/no-code/:entity/new`,
-//     overview: `/admin/entities/:entity/no-code/:entity/:id`,
-//     edit: `/admin/entities/:entity/no-code/:entity/:id/edit`,
-//     import: `/admin/entities/:entity/no-code/:entity/import`,
-//     publicUrl: getBaseURL(request) + `/public/:entity/:id`,
-//   };
-//   return routes;
-// }
-
-// function getTenantNoCodeRoutes(tenant: string): EntitiesApi.Routes {
-//   const routes: EntitiesApi.Routes = {
-//     list: `/app/${tenant}/:entity`,
-//     new: `/app/${tenant}/:entity/new`,
-//     overview: `/app/${tenant}/:entity/:id`,
-//     edit: `/app/${tenant}/:entity/:id/edit`,
-//     import: `/app/${tenant}/:entity/import`,
-//     publicUrl: getBaseURL(request) + `/public/:entity/:id`,
-//   };
-//   return routes;
-// }
 
 function getLayoutBreadcrumbsMenu({
   type,

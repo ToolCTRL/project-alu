@@ -1,5 +1,4 @@
 import { ActionFunctionArgs, LoaderFunctionArgs, redirect, useActionData, useLoaderData, Link, useLocation, useNavigate, useOutlet, useParams, useSubmit } from "react-router";
-import clsx from "clsx";
 import { useRef, useState } from "react";
 import { Colors } from "~/application/enums/shared/Colors";
 import ColorBadge from "~/components/ui/badges/ColorBadge";
@@ -64,8 +63,8 @@ type ActionData = {
 
 const stringOrEmpty = (value: FormDataEntryValue | null) => (typeof value === "string" ? value : "");
 async function handleSetOrders(form: FormData) {
-  const items: { id: string; order: number }[] = form.getAll("orders[]").map((f: FormDataEntryValue) => {
-    return JSON.parse(f.toString());
+  const items: { id: string; order: number }[] = form.getAll("orders[]").map((f) => {
+    return JSON.parse(String(f));
   });
 
   await Promise.all(
@@ -79,8 +78,8 @@ async function handleSetOrders(form: FormData) {
 }
 
 async function handleSetSectionOrders(form: FormData) {
-  const items: { id: string; order: number }[] = form.getAll("orders[]").map((f: FormDataEntryValue) => {
-    return JSON.parse(f.toString());
+  const items: { id: string; order: number }[] = form.getAll("orders[]").map((f) => {
+    return JSON.parse(String(f));
   });
 
   await Promise.all(
@@ -94,8 +93,8 @@ async function handleSetSectionOrders(form: FormData) {
 }
 
 async function handleSetArticleOrders(form: FormData) {
-  const items: { id: string; order: number }[] = form.getAll("orders[]").map((f: FormDataEntryValue) => {
-    return JSON.parse(f.toString());
+  const items: { id: string; order: number }[] = form.getAll("orders[]").map((f) => {
+    return JSON.parse(String(f));
   });
 
   await Promise.all(
@@ -229,7 +228,7 @@ export const action = async ({ request, params }: ActionFunctionArgs) => {
   return Response.json({ error: "Invalid action" }, { status: 400 });
 };
 
-export default function () {
+export default function CategoriesLang() {
   const data = useLoaderData<LoaderData>();
   const actionData = useActionData<ActionData>();
   const params = useParams();
@@ -317,18 +316,9 @@ export default function () {
 
   function getOutletTitle() {
     if (location.pathname.includes("/sections/")) {
-      if (params.section) {
-        return "Edit section";
-      } else {
-        return "Create section";
-      }
-    } else {
-      if (params.id) {
-        return "Edit category";
-      } else {
-        return "Create category";
-      }
+      return params.section ? "Edit section" : "Create section";
     }
+    return params.id ? "Edit category" : "Create category";
   }
   function onUpdateArticleTitle(article: { id: string; title: string }) {
     const form = new FormData();
@@ -351,23 +341,9 @@ export default function () {
       ]}
     >
       <div className="space-y-2">
-        {/* {JSON.stringify({
-          articles: data.items.map((f) => {
-            return {
-              title: f.title,
-              articles: f.articles.filter((a) => !a.sectionId).map((a) => a.title),
-              sections: f.sections.map((s) => {
-                return {
-                  title: s.title,
-                  articles: f.articles.filter((a) => a.sectionId === s.id).map((a) => a.title),
-                };
-              }),
-            };
-          }),
-        })} */}
         {data.items.map((item, idx) => {
           return (
-            <div key={idx} className="space-y-2">
+            <div key={item.id} className="space-y-2">
               <div className="border-border bg-background rounded-md border px-4 py-0.5 shadow-2xs">
                 <div className="space-y-2">
                   <div className="flex items-center justify-between space-x-2">

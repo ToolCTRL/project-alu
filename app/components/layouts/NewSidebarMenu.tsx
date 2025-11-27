@@ -424,7 +424,7 @@ layout === "admin" ? "dark" : ""
             </button>
 
             {/* Separator */}
-            <div aria-hidden="true" className="bg-foreground/10 h-6 w-px lg:hidden" />
+            <div aria-hidden="true" className="bg-foreground/10 h-6 w-px lg:hidden" role="presentation" />
 
             <div className="flex flex-1 gap-x-4 self-stretch lg:gap-x-6">
               <NavBar

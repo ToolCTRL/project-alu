@@ -18,7 +18,7 @@ function getNumber({ urlSearchParams, property }: { urlSearchParams: URLSearchPa
   }
   // see if it's a number
   const numberValue = Number(value);
-  if (isNaN(numberValue)) {
+  if (Number.isNaN(numberValue)) {
     return undefined;
   }
   return numberValue;
@@ -45,11 +45,11 @@ function getDate({ urlSearchParams, property }: { urlSearchParams: URLSearchPara
   }
   try {
     const dateValue = new Date(value);
-    if (isNaN(dateValue.getTime())) {
+    if (Number.isNaN(dateValue.getTime())) {
       return undefined;
     }
     return dateValue;
-  } catch (error) {
+  } catch {
     return undefined;
   }
 }
@@ -80,10 +80,14 @@ function getRange({ urlSearchParams, property }: { urlSearchParams: URLSearchPar
     let numberMax: Decimal = new Decimal(0);
     try {
       numberMin = new Decimal(min);
-    } catch (error) {}
+    } catch {
+      // ignore
+    }
     try {
       numberMax = new Decimal(max);
-    } catch (error) {}
+    } catch {
+      // ignore
+    }
     return {
       rowValueId: "",
       numberMin,

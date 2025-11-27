@@ -62,7 +62,7 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
   return data;
 };
 
-export default function () {
+export default function CreditsRoute() {
   const { t } = useTranslation();
   const data = useLoaderData<LoaderData>();
   return (

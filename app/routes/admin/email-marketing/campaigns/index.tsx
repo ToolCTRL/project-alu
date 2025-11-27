@@ -4,4 +4,6 @@ import { Campaigns_List } from "~/modules/emailMarketing/routes/Campaigns_List";
 
 export const loader = (args: LoaderFunctionArgs) => Campaigns_List.loader(args);
 
-export default () => <CampaignsListRoute />;
+export default function CampaignsIndexRoute() {
+  return <CampaignsListRoute />;
+}

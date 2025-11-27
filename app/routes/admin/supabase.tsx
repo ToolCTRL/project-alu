@@ -1,5 +1,4 @@
-import { LoaderFunctionArgs, MetaFunction } from "react-router";
-import { useLoaderData } from "react-router";
+import { LoaderFunctionArgs, MetaFunction, useLoaderData } from "react-router";
 import { SupabaseClient, createClient } from "@supabase/supabase-js";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -29,21 +28,7 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
   return data;
 };
 
-// type ActionData = {
-//   success?: string;
-//   error?: string;
-// };
-// export const action: ActionFunction = async ({ request }) => {
-//   const form = await request.formData();
-//   const action = form.get("action");
-//   if (action === "") {
-//     return Response.json({success: ""})
-//   } else {
-//     return Response.json({ error: "Invalid action" }, { status: 400 });
-//   }
-// };
-
-export default function () {
+export default function SupabasePlaygroundRoute() {
   const { t } = useTranslation();
   const data = useLoaderData<LoaderData>();
 

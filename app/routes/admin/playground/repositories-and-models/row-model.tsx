@@ -121,7 +121,7 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
 
 export const meta: MetaFunction<typeof loader> = ({ data }) => data?.metatags || [];
 
-export default function () {
+export default function PlaygroundRowModel() {
   const data = useLoaderData<LoaderData>();
   const companies = data.companies.items.map((item) => {
     return new RowController(item);

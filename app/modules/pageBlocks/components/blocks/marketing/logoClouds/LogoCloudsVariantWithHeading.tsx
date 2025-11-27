@@ -1,7 +1,7 @@
 import { useTranslation } from "react-i18next";
 import { LogoCloudDto } from "~/modules/pageBlocks/components/blocks/marketing/logoClouds/LogoCloudsBlockUtils";
 
-export default function LogoCloudsVariantWithHeading({ headline, items }: { headline?: string; items: LogoCloudDto[] }) {
+export default function LogoCloudsVariantWithHeading({ headline, items }: { readonly headline?: string; readonly items: LogoCloudDto[] }) {
   const { t } = useTranslation();
   return (
     <div className="ring-ring text-foreground rounded-lg py-8 ring-2">
@@ -13,19 +13,19 @@ export default function LogoCloudsVariantWithHeading({ headline, items }: { head
               {items.map((item, idx) => {
                 return (
                   <a
-                    key={idx}
+                    key={item.src + idx}
                     href={item.href}
                     className="ml-8 mt-4 flex shrink-0 grow justify-center lg:ml-4 lg:grow-0"
                     target="_blank"
                     rel="noreferrer"
                   >
-                    {!item.srcDark ? (
-                      <img className="h-12" src={item.src} alt={item.alt} />
-                    ) : (
+                    {item.srcDark ? (
                       <>
                         <img className="h-12 dark:hidden" src={item.src} alt={item.alt} />
                         <img className="hidden h-12 dark:block" src={item.srcDark} alt={item.alt} />
                       </>
+                    ) : (
+                      <img className="h-12" src={item.src} alt={item.alt} />
                     )}
                   </a>
                 );

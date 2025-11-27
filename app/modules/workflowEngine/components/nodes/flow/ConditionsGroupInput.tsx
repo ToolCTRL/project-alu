@@ -14,14 +14,14 @@ function ConditionsGroupInput({
   conditionsGroup,
   onSave,
   onCancel,
-}: {
+}: Readonly<{
   workflow: WorkflowDto;
   block: WorkflowBlockDto;
   type: "if" | "switch";
   conditionsGroup: WorkflowConditionsGroupDto;
   onSave: (conditionsGroup: WorkflowConditionsGroupDto) => void;
   onCancel: () => void;
-}) {
+}>) {
   const [conditions, setConditions] = useState<WorkflowConditionsDto[]>(
     conditionsGroup.conditions.length > 0
       ? conditionsGroup.conditions
@@ -85,7 +85,7 @@ function ConditionsGroupInput({
           </div>
           <div className="space-y-1 pb-2">
             {conditions.map((condition, idx) => (
-              <div key={idx} className="group relative">
+              <div key={`condition-${condition.variable}-${idx}`} className="group relative">
                 <button
                   onClick={() => removeConditionFromGroup(idx)}
                   className="text-muted-foreground absolute right-2 top-2.5 hidden rounded-md hover:text-red-500 focus:outline-hidden focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 group-hover:block"
@@ -111,7 +111,7 @@ function ConditionsGroupInput({
                   <select
                     className="border-border bg-secondary hover:bg-secondary/90 col-span-2 w-full rounded-lg border px-2 py-2 text-sm focus:outline-hidden"
                     value={condition.operator}
-                    onChange={(e) => updateConditionInGroup(idx, { ...condition, operator: e.target.value as any })}
+                    onChange={(e) => updateConditionInGroup(idx, { ...condition, operator: e.target.value })}
                   >
                     {WorkflowConditionOperators.map((operator) => {
                       return (

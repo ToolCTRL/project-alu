@@ -4,8 +4,8 @@ export default function StoryBlockForm({
   item = defaultStoryBlock,
   onUpdate,
 }: {
-  item?: StoryBlockDto;
-  onUpdate: (item: StoryBlockDto) => void;
+  readonly item?: StoryBlockDto;
+  readonly onUpdate: (item: StoryBlockDto) => void;
 }) {
   return (
     <div className="space-y-4">

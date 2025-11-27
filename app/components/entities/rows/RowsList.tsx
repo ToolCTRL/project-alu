@@ -220,7 +220,7 @@ function RowsListWrapped({
             />
           ) : (
             <div className="space-y-2">
-              <GridContainer {...(currentView ? EntityViewHelper.getGridLayout(currentView) : { columns: 3, gap: "xs" })}>
+              <GridContainer {...(currentView ? EntityViewHelper.getGridLayout(currentView) : { columns: 3 as const, gap: "xs" as const })}>
                 {items.map((item) => {
                   const href = onClickRoute
                     ? onClickRoute(item)
@@ -263,11 +263,12 @@ function RowsListWrapped({
                     card
                   );
                 })}
-                {items.length === 0 ? (
-                  readOnly ? <EmptyCard className="w-full" /> : <AddMoreCard entity={entity} routes={routes} />
-                ) : (
-                  <RowsLoadMoreCard pagination={pagination} currentView={currentView} />
-                )}
+                {(() => {
+                  if (items.length === 0) {
+                    return readOnly ? <EmptyCard className="w-full" /> : <AddMoreCard entity={entity} routes={routes} />;
+                  }
+                  return <RowsLoadMoreCard pagination={pagination} currentView={currentView} />;
+                })()}
               </GridContainer>
             </div>
           )}
@@ -361,15 +362,15 @@ function AdvancedBoard({
   readOnly,
   t,
 }: {
-  entity: EntityWithDetails;
-  columnsDef: ColumnDto[];
-  groupBy?: PropertyWithDetails;
-  items: RowWithDetails[];
-  routes?: EntitiesApi.Routes;
-  actions?: (row: RowWithDetails) => { title?: string; href?: string; onClick?: () => void; isLoading?: boolean; render?: React.ReactNode }[];
-  allEntities: EntityWithDetails[];
-  readOnly?: boolean;
-  t: ReturnType<typeof useTranslation>["t"];
+  readonly entity: EntityWithDetails;
+  readonly columnsDef: ColumnDto[];
+  readonly groupBy?: PropertyWithDetails;
+  readonly items: RowWithDetails[];
+  readonly routes?: EntitiesApi.Routes;
+  readonly actions?: (row: RowWithDetails) => { title?: string; href?: string; onClick?: () => void; isLoading?: boolean; render?: React.ReactNode }[];
+  readonly allEntities: EntityWithDetails[];
+  readonly readOnly?: boolean;
+  readonly t: ReturnType<typeof useTranslation>["t"];
 }) {
   const fetcher = useFetcher();
   const columnWidth = 240;
@@ -379,7 +380,7 @@ function AdvancedBoard({
     return list.map((row) => map[row.id] ?? row);
   }
 
-  function MinimalCard({ row }: { row: RowWithDetails }) {
+  function MinimalCard({ row }: { readonly row: RowWithDetails }) {
     const displayProp = entity.properties.find((p) => p.isDisplay);
     const title = displayProp
       ? RowHelper.getPropertyValue({ entity, item: row, property: displayProp }) ?? RowHelper.getPropertyValue({ entity, item: row, propertyName: displayProp.name })
@@ -462,9 +463,9 @@ function AdvancedBoard({
   }, [groupBy]);
 
   const resolveAggregateProperty = useMemo(() => {
-    const preferred = ["value", "amount"];
+    const preferred = new Set(["value", "amount"]);
     const numeric = entity.properties.filter((p) => p.type === PropertyType.NUMBER);
-    return numeric.find((p) => preferred.includes(p.name)) ?? numeric[0] ?? null;
+    return numeric.find((p) => preferred.has(p.name)) ?? numeric[0] ?? null;
   }, [entity.properties]);
 
   const buildColumnState = useMemo(
@@ -529,7 +530,7 @@ function AdvancedBoard({
         }
       } else {
         if (fetcher.data.updated) {
-          setOverrides((prev) => ({ ...prev, [fetcher.data.updated.id]: fetcher.data.updated as RowWithDetails }));
+          setOverrides((prev) => ({ ...prev, [fetcher.data.updated.id]: fetcher.data.updated }));
           setColumnItems(buildColumnState(applyOverrides(items, { ...overrides, [fetcher.data.updated.id]: fetcher.data.updated })));
         }
         setPendingMove(null);
@@ -656,7 +657,7 @@ function AdvancedBoard({
                           <div className="text-muted-foreground shrink-0 text-xs">• {agg.count}</div>
                           {agg.sum !== null && <div className="text-muted-foreground shrink-0 text-xs">• {NumberUtils.numberFormat(agg.sum)}</div>}
                         </div>
-                        {!readOnly && routes && (
+                        {readOnly || !routes ? null : (
                           <Link
                             className="text-muted-foreground hover:text-foreground rounded-md px-2 py-1 text-sm font-semibold"
                             to={(EntityHelper.getRoutes({ routes, entity })?.new ?? "") + (colId !== "__undefined" ? `?${groupBy?.name}=${colId}` : "")}
@@ -801,7 +802,7 @@ function BoardColumn({
           )}
           {rows.map((row, idx) => renderDraggableCard(row, idx))}
           {provided.placeholder}
-          {!readOnly && routes && (
+          {readOnly || !routes ? null : (
             <Link
               className="text-muted-foreground hover:text-foreground border-border flex items-center justify-center rounded-md border border-dashed px-2 py-2 text-xs font-medium"
               to={(EntityHelper.getRoutes({ routes, entity })?.new ?? "") + (colId !== "__undefined" ? `?${groupBy?.name}=${colId}` : "")}
@@ -815,37 +816,33 @@ function BoardColumn({
   );
 }
 
-export function AddMoreCard({ entity, routes, className }: { entity: EntityWithDetails; routes?: EntitiesApi.Routes; className?: string }) {
+export function AddMoreCard({ entity, routes, className }: Readonly<{ entity: EntityWithDetails; routes?: EntitiesApi.Routes; className?: string }>) {
   const { t } = useTranslation();
   return (
-    <Fragment>
-      <div className={className}>
-        {routes && (
-          <Link
-            className={clsx(
-              "border-border hover:border-border group flex h-full items-center rounded-md border-2 border-dashed p-2 text-left align-middle shadow-2xs hover:border-dotted hover:bg-slate-100",
-              className
-            )}
-            to={EntityHelper.getRoutes({ routes, entity })?.new ?? ""}
-          >
-            <div className="text-foreground/80 mx-auto flex justify-center text-center align-middle text-sm font-medium">{t("shared.add")}</div>
-          </Link>
-        )}
-      </div>
-    </Fragment>
+    <div className={className}>
+      {routes && (
+        <Link
+          className={clsx(
+            "border-border hover:border-border group flex h-full items-center rounded-md border-2 border-dashed p-2 text-left align-middle shadow-2xs hover:border-dotted hover:bg-slate-100",
+            className
+          )}
+          to={EntityHelper.getRoutes({ routes, entity })?.new ?? ""}
+        >
+          <div className="text-foreground/80 mx-auto flex justify-center text-center align-middle text-sm font-medium">{t("shared.add")}</div>
+        </Link>
+      )}
+    </div>
   );
 }
 
-export function EmptyCard({ className }: { className?: string }) {
+export function EmptyCard({ className }: Readonly<{ className?: string }>) {
   const { t } = useTranslation();
   return (
-    <Fragment>
-      <div className={className}>
-        <div className="bg-background border-border group inline-block h-full w-full truncate rounded-md border-2 border-dashed p-12 text-left align-middle shadow-2xs">
-          <div className="text-foreground/80 mx-auto flex justify-center text-center align-middle text-sm font-medium">{t("shared.noRecords")}</div>
-        </div>
+    <div className={className}>
+      <div className="bg-background border-border group inline-block h-full w-full truncate rounded-md border-2 border-dashed p-12 text-left align-middle shadow-2xs">
+        <div className="text-foreground/80 mx-auto flex justify-center text-center align-middle text-sm font-medium">{t("shared.noRecords")}</div>
       </div>
-    </Fragment>
+    </div>
   );
 }
 
@@ -855,13 +852,13 @@ function ButtonSelectWrapper({
   selectedRows,
   children,
   className,
-}: {
+}: Readonly<{
   item: RowWithDetails;
   selectedRows: RowWithDetails[];
   onSelected: (item: RowWithDetails[]) => void;
   children: React.ReactNode;
   className?: string;
-}) {
+}>) {
   const isSelected = selectedRows.find((f) => f.id === item.id);
   return (
     <div className={clsx(className, "group relative rounded-md text-left", isSelected ? "bg-theme-50 hover:bg-theme-50" : "hover:bg-secondary bg-background")}>
@@ -909,7 +906,7 @@ function ButtonSelectWrapper({
   );
 }
 
-function RemoveButton({ item, readOnly, onRemove }: { item: RowWithDetails; readOnly?: boolean; onRemove?: (item: RowWithDetails) => void }) {
+function RemoveButton({ item, readOnly, onRemove }: Readonly<{ item: RowWithDetails; readOnly?: boolean; onRemove?: (item: RowWithDetails) => void }>) {
   return (
     <Fragment>
       {onRemove && (

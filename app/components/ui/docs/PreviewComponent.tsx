@@ -25,7 +25,7 @@ export type PreviewComponentProps = {
   withToc?: boolean;
   overflow?: "hidden" | "visible";
 };
-export default function PreviewComponent({ title, description, variants, className, withToc = true, overflow = "hidden" }: PreviewComponentProps) {
+export default function PreviewComponent({ title, description, variants, className, withToc = true, overflow = "hidden" }: Readonly<PreviewComponentProps>) {
   return (
     <main className={clsx("relative pb-6 lg:gap-10 lg:pb-8", withToc && "xl:grid xl:grid-cols-[1fr_150px]")}>
       <div className="space-y-8 overflow-hidden">
@@ -33,8 +33,8 @@ export default function PreviewComponent({ title, description, variants, classNa
           <h1 className="scroll-m-20 text-4xl font-bold tracking-tight">{title}</h1>
           <p className="text-muted-foreground mt-1 text-lg">{description}</p>
         </div>
-        {variants.map((variant, index) => (
-          <div key={tab.id} className="space-y-2">
+        {variants.map((variant) => (
+          <div key={variant.id} className="space-y-2">
             <div className="space-y-1">
               <h3 id={variant.id} className="text-xl font-bold tracking-tight">
                 {variant.title}

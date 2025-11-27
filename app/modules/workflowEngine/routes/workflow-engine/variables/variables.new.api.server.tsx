@@ -31,7 +31,7 @@ export namespace WorkflowsVariablesNewApi {
       try {
         const existing = await getWorkflowVariableByName(name, { tenantId });
         if (existing) {
-          throw Error("Variable already exists with name: " + name);
+          throw new Error("Variable already exists with name: " + name);
         }
         await createWorkflowVariable({
           tenantId,

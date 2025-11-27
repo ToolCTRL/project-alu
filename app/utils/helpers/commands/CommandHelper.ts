@@ -12,8 +12,8 @@ function getSidebarCommands({ items }: { items: SideBarItem[] }): Action[] {
 function getCommandsFromItem(item: SideBarItem, commands: Action[], parent: string[]) {
   if (item.path && item.title) {
     let description = item.description ?? "";
-    if (parent.filter((f) => f).length > 0) {
-      description = parent.filter((f) => f).join(" / ");
+    if (parent.filter(Boolean).length > 0) {
+      description = parent.filter(Boolean).join(" / ");
     }
     commands.push({
       id: item.path,

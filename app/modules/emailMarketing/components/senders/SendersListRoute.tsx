@@ -52,23 +52,19 @@ export default function SendersListRoute() {
           </div>
         </div>
 
-        {data.items.length === 0 ? (
+        {data.items.length === 0 && (
           <InfoBanner title={t("shared.note")} text="">
-            Go to your{" "}
-            <a className="underline" target="_blank" rel="noreferrer" href="https://account.postmarkapp.com/servers">
+            Go to your <a className="underline" target="_blank" rel="noreferrer" href="https://account.postmarkapp.com/servers">
               Postmark server
-            </a>
-            , click on the "API Tokens" tab, and copy the API token.
+            </a>, click on the "API Tokens" tab, and copy the API token.
           </InfoBanner>
-        ) : data.hasSetWebhooks ? null : (
+        )}
+        {data.items.length > 0 && !data.hasSetWebhooks && (
           <WarningBanner title={t("shared.warning")} text="">
-            Go to your{" "}
-            <a className="underline" target="_blank" rel="noreferrer" href="https://account.postmarkapp.com/servers">
+            Go to your <a className="underline" target="_blank" rel="noreferrer" href="https://account.postmarkapp.com/servers">
               Postmark server
-            </a>
-            , click on the Message stream <i>(e.g. Default Broadcast Stream)</i>, then on the "<b>Webhooks</b>" tab, click "<b>Add webhook</b>", set the URL to
-            "<b className="select-all">{appConfiguration.app.url}/webhooks/email/postmark</b>", and select every event you want to track{" "}
-            <i>(Deliveries, Bounces, Opens, Link Clicks, Unsubscribes...)</i>.
+            </a>, click on the Message stream <i>(e.g. Default Broadcast Stream)</i>, then on the "<b>Webhooks</b>" tab, click "<b>Add webhook</b>", set the URL to
+            "<b className="select-all">{appConfiguration.app.url}/webhooks/email/postmark</b>", and select every event you want to track <i>(Deliveries, Bounces, Opens, Link Clicks, Unsubscribes...)</i>.
             <p className="mt-2">
               Finally, before clicking "<b>Save webhook</b>", click on the "<b>Send test</b>" button to make sure it works.
             </p>

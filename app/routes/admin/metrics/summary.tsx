@@ -1,6 +1,5 @@
 import { Prisma } from "@prisma/client";
-import { LoaderFunctionArgs, useLoaderData } from "react-router";
-import { Link, useSearchParams } from "react-router";
+import { LoaderFunctionArgs, useLoaderData, Link, useSearchParams } from "react-router";
 import clsx from "clsx";
 import { useEffect, useState } from "react";
 import { FilterablePropertyDto } from "~/application/dtos/data/FilterablePropertyDto";
@@ -94,7 +93,7 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
 function getGroupByValues(searchParams: URLSearchParams) {
   const groupByValues = searchParams
     .getAll("groupBy")
-    .filter((x) => x)
+    .filter(Boolean)
     .sort((a, b) => a.localeCompare(b));
   const groupBy: Prisma.MetricLogScalarFieldEnum[] = [];
   for (const param of groupByValues) {
@@ -104,6 +103,24 @@ function getGroupByValues(searchParams: URLSearchParams) {
   }
   return groupBy.length > 0 ? groupBy.map((x) => x.toString()) : defaultGroupBy;
 }
+
+const FunctionCell = ({ functionName }: { functionName: string }) => (
+  <div className={clsx(functionName === "_unidentifiedFunction_" && "text-red-500")}>
+    <FilterableValueLink name="function" value={functionName} />
+  </div>
+);
+
+const CountCell = ({ link, count }: { link: string; count: number }) => (
+  <Link to={link} className="hover:underline">
+    {NumberUtils.intFormat(count)}
+  </Link>
+);
+
+const SpeedCell = ({ duration }: { duration: number }) => <SpeedBadge duration={duration} />;
+
+const DurationCell = ({ duration }: { duration: number }) => (
+  <div>{NumberUtils.custom(duration, "0,0.001")} ms</div>
+);
 
 export default function MetricsSummary() {
   const data = useLoaderData<LoaderData>();
@@ -189,11 +206,7 @@ export default function MetricsSummary() {
       headers.push({
         name: "function",
         title: "Function",
-        value: (item) => (
-          <div className={clsx(item.function === "_unidentifiedFunction_" && "text-red-500")}>
-            <FilterableValueLink name="function" value={item.function} />
-          </div>
-        ),
+        value: (item) => <FunctionCell functionName={item.function} />,
         className: "w-full",
       });
     }
@@ -215,21 +228,17 @@ export default function MetricsSummary() {
       {
         name: "count",
         title: "Count",
-        value: (item) => (
-          <Link to={getCountLink(item)} className="hover:underline">
-            {NumberUtils.intFormat(Number(item._count._all))}
-          </Link>
-        ),
+        value: (item) => <CountCell link={getCountLink(item)} count={Number(item._count._all)} />,
       },
       {
         name: "speed",
         title: "Speed",
-        value: (item) => <SpeedBadge duration={Number(item._avg.duration)} />,
+        value: (item) => <SpeedCell duration={Number(item._avg.duration)} />,
       },
       {
         name: "duration",
         title: "Avg. duration",
-        value: (item) => <div>{NumberUtils.custom(Number(item._avg.duration), "0,0.001")} ms</div>,
+        value: (item) => <DurationCell duration={Number(item._avg.duration)} />,
       }
     );
 

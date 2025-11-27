@@ -70,12 +70,10 @@ function handleOperator(component: any, state: CalculationState) {
     } else {
       state.result = BinaryOperatorUtils.binaryOperators[state.currentOperator](state.result, state.currentOperand);
     }
+  } else if (state.insideParentheses) {
+    throw new Error("Invalid formula: parentheses must be used in pairs");
   } else {
-    if (!state.insideParentheses) {
-      state.result = state.currentOperand;
-    } else {
-      throw new Error("Invalid formula: parentheses must be used in pairs");
-    }
+    state.result = state.currentOperand;
   }
   state.currentOperand = null;
   state.currentOperator = FormulaHelpers.getOperatorType(component.value);
@@ -85,11 +83,10 @@ function handleParenthesis(component: any, state: CalculationState, formula: For
   const parenthesis = FormulaHelpers.getParenthesisType(component.value);
   if (parenthesis === "OPEN") {
     state.openParenthesesCount++;
-    if (!state.insideParentheses) {
-      state.insideParentheses = { name: "", description: "", resultAs: "number", calculationTrigger: formula.calculationTrigger, components: [] };
-    } else {
+    if (state.insideParentheses) {
       throw new Error("Invalid formula: parentheses must be used in pairs");
     }
+    state.insideParentheses = { name: "", description: "", resultAs: "number", calculationTrigger: formula.calculationTrigger, components: [] };
   } else {
     handleCloseParenthesis(state);
   }
@@ -131,13 +128,16 @@ function finalizeCalculation(state: CalculationState): FormulaValueType {
 function convertResult(result: FormulaValueType, resultAs: FormulaResultAsType): FormulaEndResult {
   switch (resultAs) {
     case "number":
-      return result !== null ? Number(result) : null;
+      return result === null ? null : Number(result);
     case "boolean":
-      return result !== null ? Boolean(result) : null;
+      return result === null ? null : Boolean(result);
     case "date":
       return result instanceof Date ? result : null;
     case "string":
-      return result !== null ? String(result) : null;
+      if (result === null) {
+        return null;
+      }
+      return typeof result === 'object' ? JSON.stringify(result) : String(result);
     default:
       throw new Error("Invalid resultAs value in formula");
   }

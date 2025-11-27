@@ -1,5 +1,4 @@
-import { LoaderFunctionArgs, useLoaderData } from "react-router";
-import { useSearchParams } from "react-router";
+import { LoaderFunctionArgs, useLoaderData, useSearchParams } from "react-router";
 import { useAppData } from "~/utils/data/useAppData";
 import { DashboardLoaderData, loadDashboardData } from "~/utils/data/useDashboardData";
 import { getTranslations } from "~/locale/i18next.server";

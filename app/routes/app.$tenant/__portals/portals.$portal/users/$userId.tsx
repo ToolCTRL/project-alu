@@ -20,11 +20,11 @@ type LoaderData = {
 export const loader = async ({ request, params }: LoaderFunctionArgs) => {
   await requireAuth({ request, params });
   const tenantId = await getTenantIdOrNull({ request, params });
-  const portal = await getPortalById(tenantId, params.portal!);
+  const portal = await getPortalById(tenantId, params.portal ?? "");
   if (!portal) {
     return redirect(UrlUtils.getModulePath(params, "portals"));
   }
-  const user = await getPortalUserById(portal.id, params.userId!);
+  const user = await getPortalUserById(portal.id, params.userId ?? "");
   if (!user) {
     return redirect(UrlUtils.getModulePath(params, `portals/${params.portal}/users`));
   }
@@ -46,12 +46,12 @@ export const action = async ({ request, params }: ActionFunctionArgs) => {
   const action = form.get("action")?.toString();
 
   const tenantId = await getTenantIdOrNull({ request, params });
-  const portal = await getPortalById(tenantId, params.portal!);
+  const portal = await getPortalById(tenantId, params.portal ?? "");
   if (!portal) {
     return redirect(UrlUtils.getModulePath(params, "portals"));
   }
 
-  const user = await getPortalUserById(portal.id, params.userId!);
+  const user = await getPortalUserById(portal.id, params.userId ?? "");
   if (!user) {
     return redirect(UrlUtils.getModulePath(params, `portals/${portal.id}/users`));
   }
@@ -80,7 +80,7 @@ export const action = async ({ request, params }: ActionFunctionArgs) => {
   }
 };
 
-export default function () {
+export default function UserEditPage() {
   const { t } = useTranslation();
   const data = useLoaderData<LoaderData>();
   const actionData = useActionData<ActionData>();

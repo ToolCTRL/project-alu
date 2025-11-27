@@ -7,7 +7,15 @@ interface Props {
 }
 
 function getProductHuntImage(theme: string | undefined, postId: string, title: string) {
-  const themeParam = theme === "light" ? "light" : theme === "neutral" ? "neutral" : theme === "dark" ? "dark" : "light";
+  let themeParam = "light";
+  if (theme === "neutral") {
+    themeParam = "neutral";
+  } else if (theme === "dark") {
+    themeParam = "dark";
+  } else if (theme === "light") {
+    themeParam = "light";
+  }
+
   return (
     <img
       src={`https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=${postId}&theme=${themeParam}`}

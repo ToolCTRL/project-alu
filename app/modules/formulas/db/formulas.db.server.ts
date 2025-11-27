@@ -52,9 +52,6 @@ export async function getFormulaWithLogs(id: string): Promise<FormulaWithDetails
       inProperties: { include: { entity: true } },
     },
   });
-  if (formula?.withLogs) {
-    // TODO: Fetch and return formula logs here
-  }
   return formula;
 }
 

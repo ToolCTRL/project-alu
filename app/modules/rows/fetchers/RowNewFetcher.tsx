@@ -10,12 +10,11 @@ import RowForm from "../../../components/entities/rows/RowForm";
 import { useFetcher } from "react-router";
 
 interface Props {
-  url: string;
-  parentEntity?: EntityWithDetails;
-  onCreated?: (row: RowWithDetails) => void;
-  allEntities: EntityWithDetails[];
-  customSearchParams?: URLSearchParams;
-  // onSelected: (entity: EntityWithDetails, item: RowWithDetails) => void;
+  readonly url: string;
+  readonly parentEntity?: EntityWithDetails;
+  readonly onCreated?: (row: RowWithDetails) => void;
+  readonly allEntities: EntityWithDetails[];
+  readonly customSearchParams?: URLSearchParams;
 }
 export default function RowNewFetcher({ url, parentEntity, onCreated, allEntities, customSearchParams }: Props) {
   const { t } = useTranslation();
@@ -25,13 +24,6 @@ export default function RowNewFetcher({ url, parentEntity, onCreated, allEntitie
     routes?: EntitiesApi.Routes;
     relationshipRows?: RowsApi.GetRelationshipRowsData;
   }>();
-  // const actionData = useActionData<{ newRow?: RowWithDetails }>();
-
-  // useEffect(() => {
-  //   if (actionData?.newRow && onCreated) {
-  //     onCreated(actionData.newRow);
-  //   }
-  // }, [actionData, onCreated]);
 
   const [data, setData] = useState<{
     newRow?: RowWithDetails;
@@ -42,7 +34,6 @@ export default function RowNewFetcher({ url, parentEntity, onCreated, allEntitie
 
   useEffect(() => {
     if (data?.newRow && onCreated) {
-      // console.log("added", data.newRow);
       onCreated(data.newRow);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -66,13 +57,17 @@ export default function RowNewFetcher({ url, parentEntity, onCreated, allEntitie
     });
   }
 
-  return (
-    <div>
-      {!fetcher.data ? (
-        <Loading small loading />
-      ) : !data?.entityData ? (
-        <div>No data</div>
-      ) : data ? (
+  function renderContent() {
+    if (!fetcher.data) {
+      return <Loading small loading />;
+    }
+
+    if (!data?.entityData) {
+      return <div>No data</div>;
+    }
+
+    if (data) {
+      return (
         <CheckPlanFeatureLimit item={data.entityData.featureUsageEntity}>
           {data.routes && (
             <RowForm
@@ -91,9 +86,11 @@ export default function RowNewFetcher({ url, parentEntity, onCreated, allEntitie
             />
           )}
         </CheckPlanFeatureLimit>
-      ) : (
-        <div>{t("shared.unknownError")}</div>
-      )}
-    </div>
-  );
+      );
+    }
+
+    return <div>{t("shared.unknownError")}</div>;
+  }
+
+  return <div>{renderContent()}</div>;
 }

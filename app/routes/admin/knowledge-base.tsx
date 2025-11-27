@@ -25,7 +25,7 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
   return data;
 };
 
-export default () => {
+export default function KnowledgeBaseLayout() {
   const { t } = useTranslation();
   return (
     <SidebarIconsLayout
@@ -94,7 +94,7 @@ export default () => {
       <Outlet />
     </SidebarIconsLayout>
   );
-};
+}
 
 export function ErrorBoundary() {
   return <ServerError />;

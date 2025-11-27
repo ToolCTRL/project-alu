@@ -78,22 +78,6 @@ export default function AppCommandPalette({ onClosed, isOpen }: Readonly<Props>)
             });
           });
 
-          // items.push({
-          //   title: `${t("app.commands.tenants.viewAll")}`,
-          //   description: ``,
-          //   command: "V",
-          //   bgClassName: "bg-gray-600",
-          //   textClassName: "text-white",
-          //   toPath: "/app",
-          // });
-          // items.push({
-          //   title: `${t("app.commands.tenants.edit")}`,
-          //   description: ``,
-          //   command: "V",
-          //   bgClassName: "bg-gray-600",
-          //   textClassName: "text-white",
-          //   toPath: UrlUtils.currentTenantUrl(params, "settings/account"),
-          // });
           items.push({
             title: `${t("app.commands.tenants.create")}`,
             description: ``,

@@ -12,7 +12,6 @@ interface Props {
 export default function FloatingLoader({ loading }: Readonly<Props>) {
   const { t } = useTranslation();
   const navigation = useNavigation();
-  const [words, setWords] = useState<Array<string>>([]);
   const [pendingPath, setPendingPath] = useState("");
   const showLoader = useSpinDelay(Boolean(navigation.state !== "idle" || loading), {
     delay: 400,

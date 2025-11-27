@@ -1,6 +1,5 @@
 import { Role } from "@prisma/client";
-import { ActionFunctionArgs, LoaderFunctionArgs, redirect, useActionData, useLoaderData } from "react-router";
-import { Form, useNavigate, useNavigation } from "react-router";
+import { ActionFunctionArgs, LoaderFunctionArgs, redirect, useActionData, useLoaderData, Form, useNavigate, useNavigation } from "react-router";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { useTranslation } from "react-i18next";
@@ -43,15 +42,12 @@ export const action = async ({ request, params }: ActionFunctionArgs) => {
     const password = form.get("password")?.toString();
 
     const arrRoles: { id: string; tenantId: string | undefined }[] = form.getAll("roles[]").map((f: FormDataEntryValue) => {
-      return JSON.parse(f.toString());
+      return JSON.parse(String(f));
     });
 
     if (!email || !password || !firstName) {
       return Response.json({ error: "Missing required fields." }, { status: 400 });
     }
-    // if (arrRoles.length === 0) {
-    //   return Response.json({ error: "You must select at least one role." }, { status: 400 });
-    // }
 
     const existingUser = await getUserByEmail(email);
     if (existingUser) {

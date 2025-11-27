@@ -385,8 +385,7 @@ const search = (entity: EntityWithDetails, item: RowWithValues, searchInput: str
     return true;
   }
   const properties = entity.properties.filter((f) => !f.isHidden);
-  for (let idx = 0; idx < properties.length; idx++) {
-    const property = properties[idx];
+  for (const property of properties) {
     const rowValue = getPropertyValue({ entity, item, property });
     if (rowValue?.toString()?.toUpperCase().trim().includes(searchInput.toUpperCase().trim())) {
       return true;
@@ -411,7 +410,7 @@ const getValueFromType = (type: PropertyType, value: any) => {
   switch (type) {
     case PropertyType.NUMBER:
       if (typeof value === "string") {
-        return { numberValue: !value ? null : Number(value) };
+        return { numberValue: value ? Number(value) : null };
       }
       return { numberValue: value ?? null };
     case PropertyType.TEXT:
@@ -476,8 +475,8 @@ function parseRangeFromForm(
     return {
       numberMin: null,
       numberMax: null,
-      dateMin: min ? new Date(String(min)) : null,
-      dateMax: max ? new Date(String(max)) : null,
+      dateMin: min ? new Date(min.toString()) : null,
+      dateMax: max ? new Date(max.toString()) : null,
     };
   }
   return null;
@@ -497,7 +496,7 @@ function parseMediaFromForm(
     media = propertyValue.media;
   } else {
     media = getFormDataEntryValues({ name, form, values }).map((f: FormDataEntryValue) => {
-      return JSON.parse(String(f));
+      return JSON.parse(f.toString());
     });
   }
   if (!skipValidation) {
@@ -520,7 +519,7 @@ function parseMultipleFromForm(
     multiple = propertyValue.multiple;
   } else {
     multiple = getFormDataEntryValues({ name, form, values }).map((f: FormDataEntryValue) => {
-      return JSON.parse(String(f));
+      return JSON.parse(f.toString());
     });
   }
   if (!skipValidation) {
@@ -660,7 +659,7 @@ const getRowPropertiesFromForm = ({
     if (form?.has(name)) {
       parentRows = parentRows ?? [];
     }
-    const rowIds = getFormDataEntryValues({ name, form, values }).map((f) => String(f));
+    const rowIds = getFormDataEntryValues({ name, form, values }).map((f) => f.toString());
     const parentRowIds = rowIds.map((parentId) => {
       return { relationshipId: relationship.id, parentId };
     });
@@ -675,7 +674,7 @@ const getRowPropertiesFromForm = ({
     if (form?.has(name)) {
       childRows = childRows ?? [];
     }
-    const rowIds = getFormDataEntryValues({ name, form, values }).map((f) => String(f));
+    const rowIds = getFormDataEntryValues({ name, form, values }).map((f) => f.toString());
     const childRowIds = rowIds.map((childId) => {
       return { relationshipId: relationship.id, childId };
     });

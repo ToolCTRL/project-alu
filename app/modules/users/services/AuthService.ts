@@ -36,7 +36,7 @@ async function loginFromRequest(request: Request, form: FormData) {
   const password = form.get("password");
   const redirectTo = form.get("redirectTo");
   if (typeof email !== "string" || typeof password !== "string" || typeof redirectTo !== "string") {
-    throw new Error("Invalid form data");
+    throw new TypeError("Invalid form data");
   }
 
   const fields = { email, password };
@@ -72,7 +72,7 @@ async function loginFromRequest(request: Request, form: FormData) {
       return Response.json({ fields: { email, password }, error: "You cannot use this account in production." }, { status: 400 });
     }
   }
-  if (!user) {
+  if (user === null) {
     return Response.json({ fields, error: t("api.errors.invalidPassword") }, { status: 400 });
   }
 
@@ -85,13 +85,12 @@ async function loginFromRequest(request: Request, form: FormData) {
   console.log("[AUTH_SERVICE] bcrypt.compare Ergebnis:", isCorrectPassword ? "✅ ERFOLGREICH" : "❌ FEHLGESCHLAGEN");
   console.log("=".repeat(80));
 
-  if (!isCorrectPassword) {
+  if (isCorrectPassword === false) {
     return Response.json({ fields, error: t("api.errors.invalidPassword") }, { status: 400 });
   }
 
   await createLogLogin(request, user);
   const userSession = await setLoggedUser(user);
-  // const tenant = await getTenant(userSession.defaultTenantId);
   const appHome = await getHome({
     isAdmin: !!user.admin,
     tenantId: userSession.defaultTenantId,

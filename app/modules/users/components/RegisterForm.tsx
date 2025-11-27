@@ -195,7 +195,7 @@ export const RegisterForm = ({ requireRecaptcha = false, isVerifyingEmail = fals
             {t("account.register.termsAndConditions")}
           </a>{" "}
           {t("account.register.andOur")}{" "}
-          <a target="_blank" href="/privacy-policy" className="text-primary underline">
+          <a target="_blank" rel="noreferrer" href="/privacy-policy" className="text-primary underline">
             {t("account.register.privacyPolicy")}
           </a>
           .

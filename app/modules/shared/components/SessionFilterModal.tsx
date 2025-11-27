@@ -21,7 +21,7 @@ export default function SessionFilterModal({
   onSave,
   metadata,
   onRemove,
-}: {
+}: Readonly<{
   filters: string[];
   item?: { type: string; value: string | null };
   idx: number | undefined;
@@ -44,7 +44,7 @@ export default function SessionFilterModal({
       campaign: { name: string; count: number }[];
     };
   };
-}) {
+}>) {
   const { t } = useTranslation();
   const [filter, setFilter] = useState<{ type: string; value: string | null }>();
 
@@ -154,64 +154,79 @@ export default function SessionFilterModal({
                 };
               })}
             />
-          ) : ["session.darkMode", "session.logged", "tenant.subscription.active", "tenant.api.used"].includes(filter?.type ?? "") ? (
-            <FilterSelector
-              filter={filter}
-              setFilter={setFilter}
-              options={[
-                { value: "true", name: "True" },
-                { value: "false", name: "False" },
-              ]}
-            />
-          ) : ["user.language", "session.language"].includes(filter?.type ?? "") ? (
-            <FilterSelector
-              filter={filter}
-              setFilter={setFilter}
-              options={i18nConfig.supportedLngs.map((f) => {
-                return {
-                  value: f,
-                  name: f,
-                };
-              })}
-            />
-          ) : metadata.analytics && filter?.type.startsWith("analytics.") ? (
-            <AnalyticsSelector filter={filter} setFilter={setFilter} analytics={metadata.analytics} />
-          ) : filter?.type === "page" ? (
-            <FilterSelector
-              filter={filter}
-              setFilter={setFilter}
-              options={[
-                { name: "Landing", value: "/" },
-                { name: "Pricing", value: "/pricing" },
-                { name: "Contact", value: "/contact" },
-                { name: "Blog", value: "/blog" },
-                { name: "Newsletter", value: "/newsletter" },
-                { name: "Login", value: "/login" },
-                { name: "Register", value: "/register" },
-                { name: "Forgot password", value: "/forgot-password" },
-                { name: "Reset password", value: "/reset" },
-                { name: "Docs", value: "/docs" },
-              ]}
-            />
-          ) : ["user.createdAfter", "user.createdBefore"].includes(filter?.type ?? "") ? (
-            <InputDate
-              name="value"
-              title={t("shared.value")}
-              disabled={!filter?.type}
-              value={filter?.value ? new Date(filter?.value) : undefined}
-              onChange={(e) => setFilter({ type: filter?.type ?? "", value: e?.toString() ?? null })}
-              required
-            />
-          ) : (
-            <InputText
-              name="value"
-              title={t("shared.value")}
-              disabled={!filter?.type}
-              value={filter?.value ?? undefined}
-              setValue={(e) => setFilter({ type: filter?.type ?? "", value: e.toString() ?? null })}
-              required
-            />
-          )}
+          ) : (() => {
+            if (["session.darkMode", "session.logged", "tenant.subscription.active", "tenant.api.used"].includes(filter?.type ?? "")) {
+              return (
+                <FilterSelector
+                  filter={filter}
+                  setFilter={setFilter}
+                  options={[
+                    { value: "true", name: "True" },
+                    { value: "false", name: "False" },
+                  ]}
+                />
+              );
+            }
+            if (["user.language", "session.language"].includes(filter?.type ?? "")) {
+              return (
+                <FilterSelector
+                  filter={filter}
+                  setFilter={setFilter}
+                  options={i18nConfig.supportedLngs.map((f) => {
+                    return {
+                      value: f,
+                      name: f,
+                    };
+                  })}
+                />
+              );
+            }
+            if (metadata.analytics && filter?.type.startsWith("analytics.")) {
+              return <AnalyticsSelector filter={filter} setFilter={setFilter} analytics={metadata.analytics} />;
+            }
+            if (filter?.type === "page") {
+              return (
+                <FilterSelector
+                  filter={filter}
+                  setFilter={setFilter}
+                  options={[
+                    { name: "Landing", value: "/" },
+                    { name: "Pricing", value: "/pricing" },
+                    { name: "Contact", value: "/contact" },
+                    { name: "Blog", value: "/blog" },
+                    { name: "Newsletter", value: "/newsletter" },
+                    { name: "Login", value: "/login" },
+                    { name: "Register", value: "/register" },
+                    { name: "Forgot password", value: "/forgot-password" },
+                    { name: "Reset password", value: "/reset" },
+                    { name: "Docs", value: "/docs" },
+                  ]}
+                />
+              );
+            }
+            if (["user.createdAfter", "user.createdBefore"].includes(filter?.type ?? "")) {
+              return (
+                <InputDate
+                  name="value"
+                  title={t("shared.value")}
+                  disabled={!filter?.type}
+                  value={filter?.value ? new Date(filter?.value) : undefined}
+                  onChange={(e) => setFilter({ type: filter?.type ?? "", value: e?.toString() ?? null })}
+                  required
+                />
+              );
+            }
+            return (
+              <InputText
+                name="value"
+                title={t("shared.value")}
+                disabled={!filter?.type}
+                value={filter?.value ?? undefined}
+                setValue={(e) => setFilter({ type: filter?.type ?? "", value: e.toString() ?? null })}
+                required
+              />
+            );
+          })()}
         </div>
         <div className="mt-3 flex justify-between space-x-2">
           <div>
@@ -239,11 +254,11 @@ function FilterSelector({
   filter,
   setFilter,
   options,
-}: {
+}: Readonly<{
   filter: { type: string; value: string | null } | undefined;
   setFilter: Dispatch<SetStateAction<{ type: string; value: string | null } | undefined>>;
   options: { name: string; value: string }[];
-}) {
+}>) {
   const { t } = useTranslation();
   return (
     <Fragment>
@@ -276,7 +291,7 @@ function AnalyticsSelector({
   filter,
   setFilter,
   analytics,
-}: {
+}: Readonly<{
   filter: { type: string; value: string | null } | undefined;
   setFilter: Dispatch<SetStateAction<{ type: string; value: string | null } | undefined>>;
   analytics: {
@@ -288,7 +303,7 @@ function AnalyticsSelector({
     medium: { name: string; count: number }[];
     campaign: { name: string; count: number }[];
   };
-}) {
+}>) {
   const [options, setOptions] = useState<{ name: string; count: number }[]>([]);
 
   useEffect(() => {

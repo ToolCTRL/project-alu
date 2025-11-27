@@ -38,7 +38,6 @@ const badRequest = (data: ActionData) => Response.json(data, { status: 400 });
 export const action: ActionFunction = async ({ request, params }) => {
   await verifyUserHasPermission(request, "admin.entities.update");
   const { t } = await getTranslations(request);
-  // const entity = await getEntityBySlug({ tenantId: null, slug: params.entity! });
   let existing = await getEntityRelationship(params.id ?? "");
   if (!existing) {
     return badRequest({ error: t("shared.notFound") });
@@ -46,7 +45,6 @@ export const action: ActionFunction = async ({ request, params }) => {
 
   const form = await request.formData();
   const action = form.get("action")?.toString() ?? "";
-  // const order = Number(form.get("order"));
   let title = form.get("title")?.toString() ?? null;
   const type = form.get("relationshipType")?.toString() ?? "one-to-many";
   const required = Boolean(form.get("required"));
@@ -66,7 +64,6 @@ export const action: ActionFunction = async ({ request, params }) => {
     }
     try {
       await updateEntityRelationship(params.id ?? "", {
-        // order,
         title,
         type,
         required,

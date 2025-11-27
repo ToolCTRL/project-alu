@@ -315,9 +315,9 @@ export async function updatePortal(
             // eslint-disable-next-line no-console
             console.log("Clearing portal cache succeeded", await response.json());
           })
-          .catch(async (response) => {
+          .catch(async (error_) => {
             // eslint-disable-next-line no-console
-            console.error("Clearing portal cache failed", response);
+            console.error("Clearing portal cache failed", error_);
           });
       }
       return item;

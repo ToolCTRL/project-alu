@@ -1,5 +1,5 @@
 import SaasRockProFeature from "~/components/ui/misc/SaasRockProFeature";
 
-export default function () {
+export default function PlaygroundHandlebars() {
   return <SaasRockProFeature />;
 }

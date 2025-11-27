@@ -8,7 +8,7 @@ export const loader = async () => {
   return data;
 };
 
-export default function () {
+export default function PlaygroundNovelEditor() {
   const [content, setContent] = useLocalStorage("playground-novel-editor", DEFAULT_EDITOR_CONTENT);
   return (
     <div>

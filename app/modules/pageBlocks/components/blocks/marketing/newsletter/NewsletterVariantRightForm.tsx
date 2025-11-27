@@ -8,12 +8,17 @@ import InputText from "~/components/ui/input/InputText";
 import ButtonPrimary from "~/components/ui/buttons/ButtonPrimary";
 import { useState } from "react";
 
-export default function NewsletterVariantRightForm({ item }: { item: NewsletterBlockDto }) {
+export default function NewsletterVariantRightForm({ item }: { readonly item: NewsletterBlockDto }) {
   const { csrf } = useRootData();
   const { t } = useTranslation();
   const fetcher = useFetcher<{ success?: string; error?: string }>();
-  const state: "idle" | "success" | "error" | "submitting" =
-    fetcher.state === "submitting" ? "submitting" : fetcher.data?.success ? "success" : fetcher.data?.error ? "error" : "idle";
+  const getFormState = (): "idle" | "success" | "error" | "submitting" => {
+    if (fetcher.state === "submitting") return "submitting";
+    if (fetcher.data?.success) return "success";
+    if (fetcher.data?.error) return "error";
+    return "idle";
+  };
+  const state = getFormState();
 
   const [email, setEmail] = useState("");
   return (
@@ -88,7 +93,13 @@ export default function NewsletterVariantRightForm({ item }: { item: NewsletterB
               </ButtonPrimary>
             </div>
             <div className="mt-3">
-              {fetcher.data?.success ? <p>{fetcher.data.success}</p> : fetcher.data?.error ? <p>{fetcher.data.error}</p> : <div className="invisible">...</div>}
+              {fetcher.data?.success ? (
+                <p>{fetcher.data.success}</p>
+              ) : fetcher.data?.error ? (
+                <p>{fetcher.data.error}</p>
+              ) : (
+                <div className="invisible">...</div>
+              )}
             </div>
             <div className="text-muted-foreground mt-3 text-xs">
               {t("front.newsletter.weCare")}{" "}

@@ -10,12 +10,12 @@ export default function WorkflowKeyValueInputs({
   initialData,
   onChange,
 }: {
-  workflow: WorkflowDto;
-  block: WorkflowBlockDto;
-  initialData: {
+  readonly workflow: WorkflowDto;
+  readonly block: WorkflowBlockDto;
+  readonly initialData: {
     [key: string]: string;
   };
-  onChange: (data: any) => void;
+  readonly onChange: (data: any) => void;
 }) {
   const initialPairs = Object.keys(initialData).map((key) => ({
     id: uuidv4(),

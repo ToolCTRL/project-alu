@@ -1,5 +1,4 @@
-import { LoaderFunctionArgs, MetaFunction } from "react-router";
-import { Outlet } from "react-router";
+import { LoaderFunctionArgs, MetaFunction, Outlet } from "react-router";
 import MegaphoneFilled from "~/components/ui/icons/MegaphoneFilled";
 import MegaphoneIcon from "~/components/ui/icons/emails/MegaphoneIcon";
 import SidebarIconsLayout from "~/components/ui/layouts/SidebarIconsLayout";
@@ -19,7 +18,7 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
 
 export const meta: MetaFunction<typeof loader> = ({ data }) => [{ title: data?.title }];
 
-export default () => {
+export default function AdminAffiliatesLayout() {
   return (
     <SidebarIconsLayout
       label={{ align: "right" }}
@@ -36,4 +35,4 @@ export default () => {
       <Outlet />
     </SidebarIconsLayout>
   );
-};
+}

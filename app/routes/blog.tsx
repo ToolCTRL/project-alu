@@ -1,6 +1,6 @@
 import FooterBlock from "~/modules/pageBlocks/components/blocks/marketing/footer/FooterBlock";
 import HeaderBlock from "~/modules/pageBlocks/components/blocks/marketing/header/HeaderBlock";
-import { ActionFunction, LoaderFunctionArgs, useLoaderData } from "react-router";
+import { LoaderFunctionArgs, useLoaderData } from "react-router";
 import { useTranslation } from "react-i18next";
 import { getTranslations } from "~/locale/i18next.server";
 import ServerError from "~/components/ui/errors/ServerError";

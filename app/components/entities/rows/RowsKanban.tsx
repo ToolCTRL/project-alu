@@ -14,7 +14,7 @@ interface Props {
   items: RowWithDetails[];
   className?: string;
 }
-export default function RowsKanban({ entity, items, className }: Props) {
+export default function RowsKanban({ entity, items, className }: Readonly<Props>) {
   const [columns, setColumns] = useState<{ name: string; title: string; color?: Colors }[]>([]);
   const [columnsProperty, setColumnsProperty] = useState<Property>();
 

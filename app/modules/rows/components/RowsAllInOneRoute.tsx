@@ -77,15 +77,13 @@ export default function RowsAllInOneRoute() {
         open={!!editing}
         onClose={() => setEditing(undefined)}
         buttons={
-          <>
-            <Link
-              to={EntityHelper.getRoutes({ routes: data.routes, entity: data.rowsData.entity, item: editing })?.overview ?? ""}
-              className="hover:text-muted-foreground text-muted-foreground bg-background rounded-md focus:outline-hidden focus:ring-2 focus:ring-gray-500 focus:ring-offset-2"
-            >
-              <span className="sr-only">Close panel</span>
-              <ExternalLinkEmptyIcon className="h-6 w-6" aria-hidden="true" />
-            </Link>
-          </>
+          <Link
+            to={EntityHelper.getRoutes({ routes: data.routes, entity: data.rowsData.entity, item: editing })?.overview ?? ""}
+            className="hover:text-muted-foreground text-muted-foreground bg-background rounded-md focus:outline-hidden focus:ring-2 focus:ring-gray-500 focus:ring-offset-2"
+          >
+            <span className="sr-only">Close panel</span>
+            <ExternalLinkEmptyIcon className="h-6 w-6" aria-hidden="true" />
+          </Link>
         }
       >
         <RowEditFetcher

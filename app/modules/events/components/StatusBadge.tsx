@@ -17,7 +17,7 @@ enum State {
   ServerError = "Server error",
   Unknown = "Unknown",
 }
-export default function StatusBadge({ startedAt, finishedAt, endpoint, status }: readonly Props) {
+export default function StatusBadge({ startedAt, finishedAt, endpoint, status }: Readonly<Props>) {
   function getStatusCategory() {
     if (status === null) return null;
     if (status >= 200 && status < 300) return "success";

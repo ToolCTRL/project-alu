@@ -12,7 +12,7 @@ import InputText from "~/components/ui/input/InputText";
 import CollapsibleRow from "~/components/ui/tables/CollapsibleRow";
 import PageBlockUtils from "~/modules/pageBlocks/components/blocks/PageBlockUtils";
 
-export default function LogoCloudsBlockForm({ item, onUpdate }: { item?: LogoCloudsBlockDto; onUpdate: (item: LogoCloudsBlockDto) => void }) {
+export default function LogoCloudsBlockForm({ item, onUpdate }: { readonly item?: LogoCloudsBlockDto; readonly onUpdate: (item: LogoCloudsBlockDto) => void }) {
   const { t } = useTranslation();
   const [state, setState] = useState<LogoCloudsBlockDto>(item || PageBlockUtils.defaultBlocks.logoClouds!);
   useEffect(() => {
@@ -39,7 +39,7 @@ export default function LogoCloudsBlockForm({ item, onUpdate }: { item?: LogoClo
         <div className="flex flex-col space-y-2">
           {state.logos?.map((item, index) => (
             <CollapsibleRow
-              key={index}
+              key={item.href + index}
               title={item.href}
               value={item.href}
               initial={!item.alt}

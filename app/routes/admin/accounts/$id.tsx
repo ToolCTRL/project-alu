@@ -1,6 +1,5 @@
 import { useTranslation } from "react-i18next";
-import { ActionFunction, LoaderFunctionArgs, MetaFunction, redirect, useLoaderData } from "react-router";
-import { useActionData, useParams, useSubmit } from "react-router";
+import { ActionFunction, LoaderFunctionArgs, MetaFunction, redirect, useLoaderData, useActionData, useParams, useSubmit } from "react-router";
 import { getTranslations } from "~/locale/i18next.server";
 import { getTenant, getTenantBySlug, getTenantUsers, TenantWithDetails, updateTenant } from "~/utils/db/tenants.db.server";
 import UpdateTenantDetailsForm from "~/components/core/tenants/UpdateTenantDetailsForm";
@@ -51,7 +50,7 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
   await verifyUserHasPermission(request, "admin.account.view");
   const { t } = await getTranslations(request);
 
-  const tenant = await getTenant(params.id!);
+  const tenant = await getTenant(params.id);
   if (!tenant) {
     throw redirect("/admin/accounts");
   }
@@ -93,7 +92,7 @@ async function validateTenantEdit(name: string, slug: string, typeIds: string[])
 
   const tenantTypes = await getAllTenantTypes();
   for (const type of typeIds) {
-    if (!tenantTypes.find((t) => t.id === type)) {
+    if (!tenantTypes.some((t) => t.id === type)) {
       return badRequest({
         updateDetailsError: "Invalid tenant type",
       });
@@ -127,7 +126,7 @@ async function handleEditAction(form: FormData, params: any) {
     return validationError;
   }
 
-  const existing = await getTenant(params.id!);
+  const existing = await getTenant(params.id);
   if (!existing) {
     return badRequest({ updateDetailsError: "Invalid tenant" });
   }
@@ -294,33 +293,6 @@ export default function TenantRoute() {
           </div>
         </Fragment>
       )}
-
-      {/* Tenant Subscription */}
-      {/* {getUserHasPermission(adminData, "admin.account.subscription") && (
-          <>
-            <div className="md:grid lg:grid-cols-3 md:gap-2">
-              <div className="md:col-span-1">
-                <div className="sm:px-0">
-                  <h3 className="text-lg font-medium leading-6 text-foreground">{t("models.subscriptionProduct.object")}</h3>
-                </div>
-              </div>
-              <div className="mt-5 md:mt-0 md:col-span-2">
-                <UpdateTenantSubscriptionForm
-                  tenant={data.tenant}
-                  subscription={data.subscription}
-                  subscriptionProducts={data.subscriptionProducts}
-                  isStripeTest={data.isStripeTest}
-                />
-              </div>
-            </div>
-
-            <div className="block">
-              <div className="py-5">
-                <div className="border-t border-border"></div>
-              </div>
-            </div>
-          </>
-        )} */}
 
       {/*Danger */}
       {getUserHasPermission(adminData, "admin.account.delete") && (

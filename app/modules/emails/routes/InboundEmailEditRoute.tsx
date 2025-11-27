@@ -1,6 +1,5 @@
 import { useLoaderData, useNavigate, useSubmit } from "react-router";
 import clsx from "clsx";
-import { useTranslation } from "react-i18next";
 import DateUtils from "~/utils/shared/DateUtils";
 import { LoaderDataInboundEmailEdit } from "../loaders/inbound-email-edit";
 import SlideOverWideEmpty from "~/components/ui/slideOvers/SlideOverWideEmpty";
@@ -18,7 +17,6 @@ export default function InboundEmailRoute() {
     });
   }
   function htmlBodyWithImages() {
-    const imagesInBody: string[] = [];
     let htmlBody = data.item.htmlBody;
 
     const regex = /<img.*?src="(.*?)"/g;
@@ -35,7 +33,6 @@ export default function InboundEmailRoute() {
         const fileName = exact.split("@")[0].replace("cid:", "");
         const file = data.item.attachments.find((file) => file.name === fileName);
         if (file) {
-          imagesInBody.push(file.name);
           htmlBody = htmlBody.replace(exact, `${file.content}`);
         }
       }

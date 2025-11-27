@@ -19,9 +19,9 @@ export function EntityGroupForm({
   allEntities,
   systemViews,
 }: {
-  item: EntityGroupWithDetails | undefined;
-  allEntities: EntitySimple[];
-  systemViews: EntityViewWithTenantAndUser[];
+  readonly item: EntityGroupWithDetails | undefined;
+  readonly allEntities: EntitySimple[];
+  readonly systemViews: EntityViewWithTenantAndUser[];
 }) {
   const { t } = useTranslation();
   const appOrAdminData = useAppOrAdminData();

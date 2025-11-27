@@ -1,5 +1,4 @@
-import { LoaderFunctionArgs, MetaFunction, useLoaderData } from "react-router";
-import { Link, useParams } from "react-router";
+import { LoaderFunctionArgs, MetaFunction, useLoaderData, Link, useParams } from "react-router";
 import { useTranslation } from "react-i18next";
 import { Colors } from "~/application/enums/shared/Colors";
 import RowsList from "~/components/entities/rows/RowsList";
@@ -30,7 +29,7 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
 
 export const meta: MetaFunction<typeof loader> = ({ data }) => [{ title: data?.title }];
 
-export default function () {
+export default function CrmIndexRoute() {
   const { t } = useTranslation();
   const data = useLoaderData<LoaderData>();
   const params = useParams();

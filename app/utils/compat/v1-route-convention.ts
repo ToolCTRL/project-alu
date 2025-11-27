@@ -13,10 +13,10 @@ let escapeEnd = "]" as const;
 let optionalStart = "(" as const;
 let optionalEnd = ")" as const;
 
-let routeModuleExts = [".js", ".jsx", ".ts", ".tsx", ".md", ".mdx"];
+const routeModuleExtsSet = new Set([".js", ".jsx", ".ts", ".tsx", ".md", ".mdx"]);
 
 function isRouteModuleFile(filename: string): boolean {
-  return routeModuleExts.includes(path.extname(filename));
+  return routeModuleExtsSet.has(path.extname(filename));
 }
 
 export type CreateRoutesFromFoldersOptions = {
@@ -57,7 +57,7 @@ export function createRoutesFromFolders(defineRoutes: DefineRoutesFunction, opti
 
   // First, find all route modules in app/routes
   visitFiles(appRoutesDirectory, (file) => {
-    if (ignoredFilePatterns.length > 0 && ignoredFilePatterns.some((pattern) => minimatch(file, pattern))) {
+    if (ignoredFilePatterns.some((pattern) => minimatch(file, pattern))) {
       return;
     }
 
@@ -272,7 +272,7 @@ export function createRoutePath(partialRouteId: string): string | undefined {
       if (nextChar === optionalEnd) {
         throw new Error(`Invalid route path: ${partialRouteId}. Splat route $ is already optional`);
       }
-      result += typeof nextChar === "undefined" ? "*" : ":";
+      result += nextChar === undefined ? "*" : ":";
       continue;
     }
 
@@ -360,31 +360,27 @@ interface DefineRouteOptions {
   id?: string;
 }
 
-interface DefineRouteChildren {
-  (): void;
-}
+type DefineRouteChildren = () => void;
 
-interface DefineRouteFunction {
-  (
-    /**
-     * The path this route uses to match the URL pathname.
-     */
-    path: string | undefined,
+type DefineRouteFunction = (
+  /**
+   * The path this route uses to match the URL pathname.
+   */
+  path: string | undefined,
 
-    /**
-     * The path to the file that exports the React component rendered by this
-     * route as its default export, relative to the `app` directory.
-     */
-    file: string,
+  /**
+   * The path to the file that exports the React component rendered by this
+   * route as its default export, relative to the `app` directory.
+   */
+  file: string,
 
-    /**
-     * Options for defining routes, or a function for defining child routes.
-     */
-    optionsOrChildren?: DefineRouteOptions | DefineRouteChildren,
+  /**
+   * Options for defining routes, or a function for defining child routes.
+   */
+  optionsOrChildren?: DefineRouteOptions | DefineRouteChildren,
 
-    /**
-     * A function for defining child routes.
-     */
-    children?: DefineRouteChildren
-  ): void;
-}
+  /**
+   * A function for defining child routes.
+   */
+  children?: DefineRouteChildren
+) => void;

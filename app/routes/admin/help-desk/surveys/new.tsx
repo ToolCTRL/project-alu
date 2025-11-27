@@ -41,18 +41,17 @@ export const action = async ({ request, params }: ActionFunctionArgs) => {
         isPublic: item.isPublic,
         minSubmissions: item.minSubmissions,
         image: item.image || null,
-        items: item.items.map((item, idx) => ({
-          title: item.title,
-          description: item.description || "",
-          type: item.type,
+        items: item.items.map((surveyItem, idx) => ({
+          title: surveyItem.title,
+          description: surveyItem.description || "",
+          type: surveyItem.type,
           order: idx + 1,
-          categories: item.categories || [],
-          href: item.href || "",
-          color: item.color,
-          style: item.style || "default",
-          options: item.options.map((option) => ({
+          categories: surveyItem.categories || [],
+          href: surveyItem.href || "",
+          color: surveyItem.color,
+          style: surveyItem.style || "default",
+          options: surveyItem.options.map((option) => ({
             title: option.title,
-            // link: option.link || "",
             isOther: option.isOther || false,
             icon: option.icon || "",
             shortName: option.shortName || "",
@@ -69,7 +68,7 @@ export const action = async ({ request, params }: ActionFunctionArgs) => {
   return Response.json({ error: "Invalid action" }, { status: 400 });
 };
 
-export default function () {
+export default function NewSurveyRoute() {
   const actionData = useActionData<{ success?: string; error?: string }>();
 
   useEffect(() => {

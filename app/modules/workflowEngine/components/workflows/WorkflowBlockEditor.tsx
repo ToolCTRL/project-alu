@@ -164,7 +164,7 @@ export default function WorkflowBlockEditor({
                         key={input.name}
                         workflow={workflow}
                         block={block}
-                        input={input as WorkflowBlockInput}
+                        input={input}
                         onChange={(value) => {
                           block.input[input.name] = value;
                           onSaveBlock({
@@ -196,152 +196,163 @@ export default function WorkflowBlockEditor({
             </Fragment>
           )}
           <div className="border-border border-t"></div>
-          {block.type === "if" ? (
-            <div className="space-y-3">
-              <div className="space-y-0.5 text-sm">
-                <div className="text-foreground/80 font-medium">Next blocks</div>
-                <div className="text-muted-foreground">Add blocks that will run after this one.</div>
-              </div>
-              <div className="space-y-2">
-                <div className="space-y-1">
-                  <NextBlockWithCondition
-                    title="True"
-                    block={block}
-                    condition="true"
-                    workflow={workflow}
-                    onDeleteConnection={onDeleteConnection}
-                    onAddingNextBlock={onAddingNextBlock}
-                    onSelectedBlock={onSelectedBlock}
-                  />
-                  <NextBlockWithCondition
-                    title="False"
-                    block={block}
-                    condition="false"
-                    workflow={workflow}
-                    onDeleteConnection={onDeleteConnection}
-                    onAddingNextBlock={onAddingNextBlock}
-                    onSelectedBlock={onSelectedBlock}
-                  />
-                </div>
-              </div>
-            </div>
-          ) : block.type === "switch" ? (
-            <div className="space-y-3">
-              <div className="space-y-0.5 text-sm">
-                <div className="text-foreground/80 font-medium">Next blocks</div>
-                <div className="text-muted-foreground">Add blocks that will run after this one.</div>
-              </div>
-              <div className="space-y-2">
-                <div className="space-y-1">
-                  {block.conditionGroups.map((group, idx) => {
-                    return (
+          {(() => {
+            if (block.type === "if") {
+              return (
+                <div className="space-y-3">
+                  <div className="space-y-0.5 text-sm">
+                    <div className="text-foreground/80 font-medium">Next blocks</div>
+                    <div className="text-muted-foreground">Add blocks that will run after this one.</div>
+                  </div>
+                  <div className="space-y-2">
+                    <div className="space-y-1">
                       <NextBlockWithCondition
-                        key={idx}
-                        title={`Case #${idx + 1}`}
+                        title="True"
                         block={block}
-                        condition={`case${idx + 1}`}
+                        condition="true"
                         workflow={workflow}
                         onDeleteConnection={onDeleteConnection}
                         onAddingNextBlock={onAddingNextBlock}
                         onSelectedBlock={onSelectedBlock}
                       />
+                      <NextBlockWithCondition
+                        title="False"
+                        block={block}
+                        condition="false"
+                        workflow={workflow}
+                        onDeleteConnection={onDeleteConnection}
+                        onAddingNextBlock={onAddingNextBlock}
+                        onSelectedBlock={onSelectedBlock}
+                      />
+                    </div>
+                  </div>
+                </div>
+              );
+            }
+            if (block.type === "switch") {
+              return (
+                <div className="space-y-3">
+                  <div className="space-y-0.5 text-sm">
+                    <div className="text-foreground/80 font-medium">Next blocks</div>
+                    <div className="text-muted-foreground">Add blocks that will run after this one.</div>
+                  </div>
+                  <div className="space-y-2">
+                    <div className="space-y-1">
+                      {block.conditionGroups.map((group, idx) => {
+                        return (
+                          <NextBlockWithCondition
+                            key={`case-${idx}`}
+                            title={`Case #${idx + 1}`}
+                            block={block}
+                            condition={`case${idx + 1}`}
+                            workflow={workflow}
+                            onDeleteConnection={onDeleteConnection}
+                            onAddingNextBlock={onAddingNextBlock}
+                            onSelectedBlock={onSelectedBlock}
+                          />
+                        );
+                      })}
+                      <NextBlockWithCondition
+                        title={`Default case`}
+                        block={block}
+                        condition={`default`}
+                        workflow={workflow}
+                        onDeleteConnection={onDeleteConnection}
+                        onAddingNextBlock={onAddingNextBlock}
+                        onSelectedBlock={onSelectedBlock}
+                      />
+                    </div>
+                  </div>
+                </div>
+              );
+            }
+            if (block.type === "iterator") {
+              return (
+                <div className="space-y-3">
+                  <div className="space-y-0.5 text-sm">
+                    <div className="text-foreground/80 font-medium">Next blocks</div>
+                    <div className="text-muted-foreground">Add blocks that will run after this one.</div>
+                  </div>
+                  <div className="space-y-2">
+                    <div className="space-y-1">
+                      <NextBlockWithCondition
+                        title="Loop next"
+                        block={block}
+                        condition="loopNext"
+                        workflow={workflow}
+                        onDeleteConnection={onDeleteConnection}
+                        onAddingNextBlock={onAddingNextBlock}
+                        onSelectedBlock={onSelectedBlock}
+                      />
+                      <NextBlockWithCondition
+                        title="Loop end"
+                        block={block}
+                        condition="loopEnd"
+                        workflow={workflow}
+                        onDeleteConnection={onDeleteConnection}
+                        onAddingNextBlock={onAddingNextBlock}
+                        onSelectedBlock={onSelectedBlock}
+                      />
+                    </div>
+                  </div>
+                </div>
+              );
+            }
+            return (
+              <div className="space-y-3">
+                <div className="space-y-0.5 text-sm">
+                  <div className="text-foreground/80 font-medium">Next block</div>
+                  <div className="text-muted-foreground">Add a block that will run after this one.</div>
+                </div>
+                <div className="space-y-1">
+                  {block.toBlocks.map(({ toBlockId }) => {
+                    const nextWorkflowBlock = workflow.blocks.find((x) => x.id === toBlockId);
+                    if (!nextWorkflowBlock) {
+                      return <div key={toBlockId}>Unknown toBlockId: {toBlockId}</div>;
+                    }
+                    const workflowBlock = WorkflowBlockTypes.find((x) => x.value === nextWorkflowBlock.type);
+                    if (!workflowBlock) {
+                      return <div key={toBlockId}>Unknown block type: {nextWorkflowBlock.type}</div>;
+                    }
+                    return (
+                      <button
+                        type="button"
+                        key={toBlockId}
+                        className="hover:bg-secondary border-border bg-background group w-full rounded-lg border p-2 text-left"
+                        onClick={() => onSelectedBlock(nextWorkflowBlock)}
+                      >
+                        <div className="flex justify-between space-x-2 text-sm font-medium">
+                          <div>
+                            {workflowBlock.name}{" "}
+                            {nextWorkflowBlock.description && (
+                              <span className="text-muted-foreground text-xs font-normal">({nextWorkflowBlock.description || ""})</span>
+                            )}
+                          </div>
+                          <button
+                            type="button"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              onDeleteConnection({ fromBlockId: block.id, toBlockId });
+                            }}
+                            className="hidden shrink-0 text-xs text-red-600 group-hover:block"
+                          >
+                            Disconnect
+                          </button>
+                        </div>
+                      </button>
                     );
                   })}
-                  <NextBlockWithCondition
-                    title={`Default case`}
-                    block={block}
-                    condition={`default`}
-                    workflow={workflow}
-                    onDeleteConnection={onDeleteConnection}
-                    onAddingNextBlock={onAddingNextBlock}
-                    onSelectedBlock={onSelectedBlock}
-                  />
+                  <button
+                    type="button"
+                    className="bg-background hover:bg-secondary/90 border-border w-full rounded-lg border border-dashed p-2 text-left text-sm font-medium hover:border-dotted hover:border-gray-800"
+                    onClick={() => onAddingNextBlock({ fromBlock: block, condition: null })}
+                  >
+                    Add next block
+                  </button>
                 </div>
               </div>
-            </div>
-          ) : block.type === "iterator" ? (
-            <div className="space-y-3">
-              <div className="space-y-0.5 text-sm">
-                <div className="text-foreground/80 font-medium">Next blocks</div>
-                <div className="text-muted-foreground">Add blocks that will run after this one.</div>
-              </div>
-              <div className="space-y-2">
-                <div className="space-y-1">
-                  <NextBlockWithCondition
-                    title="Loop next"
-                    block={block}
-                    condition="loopNext"
-                    workflow={workflow}
-                    onDeleteConnection={onDeleteConnection}
-                    onAddingNextBlock={onAddingNextBlock}
-                    onSelectedBlock={onSelectedBlock}
-                  />
-                  <NextBlockWithCondition
-                    title="Loop end"
-                    block={block}
-                    condition="loopEnd"
-                    workflow={workflow}
-                    onDeleteConnection={onDeleteConnection}
-                    onAddingNextBlock={onAddingNextBlock}
-                    onSelectedBlock={onSelectedBlock}
-                  />
-                </div>
-              </div>
-            </div>
-          ) : (
-            <div className="space-y-3">
-              <div className="space-y-0.5 text-sm">
-                <div className="text-foreground/80 font-medium">Next block</div>
-                <div className="text-muted-foreground">Add a block that will run after this one.</div>
-              </div>
-              <div className="space-y-1">
-                {block.toBlocks.map(({ toBlockId }) => {
-                  const nextWorkflowBlock = workflow.blocks.find((x) => x.id === toBlockId);
-                  if (!nextWorkflowBlock) {
-                    return <div key={toBlockId}>Unknown toBlockId: {toBlockId}</div>;
-                  }
-                  const workflowBlock = WorkflowBlockTypes.find((x) => x.value === nextWorkflowBlock.type);
-                  if (!workflowBlock) {
-                    return <div key={toBlockId}>Unknown block type: {nextWorkflowBlock.type}</div>;
-                  }
-                  return (
-                    <button
-                      type="button"
-                      key={toBlockId}
-                      className="hover:bg-secondary border-border bg-background group w-full rounded-lg border p-2 text-left"
-                      onClick={() => onSelectedBlock(nextWorkflowBlock)}
-                    >
-                      <div className="flex justify-between space-x-2 text-sm font-medium">
-                        <div>
-                          {workflowBlock.name}{" "}
-                          {nextWorkflowBlock.description && (
-                            <span className="text-muted-foreground text-xs font-normal">({nextWorkflowBlock.description || ""})</span>
-                          )}
-                        </div>
-                        <button
-                          type="button"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            onDeleteConnection({ fromBlockId: block.id, toBlockId });
-                          }}
-                          className="hidden shrink-0 text-xs text-red-600 group-hover:block"
-                        >
-                          Disconnect
-                        </button>
-                      </div>
-                    </button>
-                  );
-                })}
-                <button
-                  type="button"
-                  className="bg-background hover:bg-secondary/90 border-border w-full rounded-lg border border-dashed p-2 text-left text-sm font-medium hover:border-dotted hover:border-gray-800"
-                  onClick={() => onAddingNextBlock({ fromBlock: block, condition: null })}
-                >
-                  Add next block
-                </button>
-              </div>
-            </div>
-          )}
+            );
+          })()}
 
           <div></div>
         </div>
@@ -356,10 +367,10 @@ function BlockInput({
   input,
   onChange,
 }: {
-  workflow: WorkflowDto;
-  block: WorkflowBlockDto;
-  input: WorkflowBlockInput;
-  onChange: (value: string) => void;
+  readonly workflow: WorkflowDto;
+  readonly block: WorkflowBlockDto;
+  readonly input: WorkflowBlockInput;
+  readonly onChange: (value: string) => void;
 }) {
   const params = useParams();
   const refMonaco = useRef(null);
@@ -386,6 +397,7 @@ function BlockInput({
     try {
       return JSON.parse(block.input[input.name]) || {};
     } catch (e) {
+      console.error("Failed to parse key-value input data:", e);
       return {};
     }
   }
@@ -465,7 +477,7 @@ function BlockInput({
       )}
       {input.type === "monaco" && (
         <div className=" overflow-hidden">
-          {typeof globalThis.window !== "undefined" && (
+          {globalThis.window !== undefined && (
             <Editor
               onMount={(editor: any, monaco: any) => {
                 refMonaco.current = editor;
@@ -509,7 +521,7 @@ function BlockInput({
   );
 }
 
-function BlockOutput({ block, output }: { block: WorkflowBlockDto; output: WorkflowBlockOutput }) {
+function BlockOutput({ block, output }: { readonly block: WorkflowBlockDto; readonly output: WorkflowBlockOutput }) {
   return (
     <div key={output.name}>
       <div className="flex items-center justify-between space-x-2">
@@ -537,13 +549,13 @@ function NextBlockWithCondition({
   onAddingNextBlock,
   onSelectedBlock,
 }: {
-  title: string;
-  block: WorkflowBlockDto;
-  condition: string;
-  workflow: WorkflowDto;
-  onDeleteConnection: (connection: { fromBlockId: string; toBlockId: string }) => void;
-  onAddingNextBlock: ({ fromBlock, condition }: { fromBlock: WorkflowBlockDto; condition: string | null }) => void;
-  onSelectedBlock: (workflowBlock: WorkflowBlockDto | null) => void;
+  readonly title: string;
+  readonly block: WorkflowBlockDto;
+  readonly condition: string;
+  readonly workflow: WorkflowDto;
+  readonly onDeleteConnection: (connection: { fromBlockId: string; toBlockId: string }) => void;
+  readonly onAddingNextBlock: ({ fromBlock, condition }: { fromBlock: WorkflowBlockDto; condition: string | null }) => void;
+  readonly onSelectedBlock: (workflowBlock: WorkflowBlockDto | null) => void;
 }) {
   const nextBlock = block.toBlocks.find((x) => x.condition === condition);
   if (!nextBlock) {

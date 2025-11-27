@@ -1,5 +1,4 @@
-import { LoaderFunctionArgs, useLoaderData } from "react-router";
-import { Link } from "react-router";
+import { LoaderFunctionArgs, useLoaderData, Link } from "react-router";
 import { Fragment, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { EntityWithDetails, getAllEntities } from "~/utils/db/entities/entities.db.server";
@@ -17,7 +16,7 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
   return data;
 };
 
-export default () => {
+export default function NoCodeIndexRoute() {
   const { t } = useTranslation();
   const data = useLoaderData<LoaderData>();
   const [previews] = useState<NoCodeEntityViewsDto[]>(NoCodeViewsHelper.getBlockPreviews({ t, entities: data.entities }));
@@ -42,7 +41,16 @@ export default () => {
                 <div className="grid gap-2 md:grid-cols-2 lg:grid-cols-3">
                   {item.views.map((view) => (
                     <Fragment key={view.name}>
-                      {!view.error ? (
+                      {view.error ? (
+                        <div className="relative flex w-full flex-col justify-center space-y-2 rounded-lg border-2 border-dashed border-red-300 bg-red-50 p-3 text-center">
+                          {view.icon}
+                          <div className="text-foreground block text-sm font-medium">
+                            {view.name} {view.error && <span className="text-xs lowercase text-red-500">({view.error})</span>}
+                            {view.underConstruction && <span className="text-xs lowercase text-orange-500">(Under 🚧 Construction)</span>}
+                          </div>
+                          <div className="text-muted-foreground block text-xs">{view.description}</div>
+                        </div>
+                      ) : (
                         <Link
                           to={`${view.href}`}
                           reloadDocument={view.reloadDocument}
@@ -55,15 +63,6 @@ export default () => {
                           <div className="text-muted-foreground block text-xs">{view.description}</div>
                           {view.underConstruction && <div className="text-xs lowercase text-orange-500">(Under 🚧 Construction)</div>}
                         </Link>
-                      ) : (
-                        <div className="relative flex w-full flex-col justify-center space-y-2 rounded-lg border-2 border-dashed border-red-300 bg-red-50 p-3 text-center">
-                          {view.icon}
-                          <div className="text-foreground block text-sm font-medium">
-                            {view.name} {view.error && <span className="text-xs lowercase text-red-500">({view.error})</span>}
-                            {view.underConstruction && <span className="text-xs lowercase text-orange-500">(Under 🚧 Construction)</span>}
-                          </div>
-                          <div className="text-muted-foreground block text-xs">{view.description}</div>
-                        </div>
                       )}
                     </Fragment>
                   ))}
@@ -75,4 +74,4 @@ export default () => {
       )}
     </div>
   );
-};
+}

@@ -339,9 +339,7 @@ export async function updatePromptFlow(
                 propertyId: mapping.propertyId,
               },
             })
-            .catch((e) => {
-              // console.error(e);
-            });
+            .catch(() => {});
         }
       });
     })

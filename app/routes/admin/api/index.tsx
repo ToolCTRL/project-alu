@@ -31,7 +31,7 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
   }
 };
 
-export default function () {
+export default function AdminApiIndex() {
   const { t } = useTranslation();
   const data = useLoaderData<LoaderData>();
   return (

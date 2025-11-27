@@ -15,17 +15,131 @@ import XIcon from "~/components/ui/icons/XIcon";
 import Modal from "~/components/ui/modals/Modal";
 import TableSimple from "~/components/ui/tables/TableSimple";
 
+interface EmailCellProps {
+  item: OutboundEmailWithDetails;
+  contactEntity?: EntityWithDetails;
+  t: (key: string) => string;
+}
+
+function EmailCell({ item, contactEntity, t }: Readonly<EmailCellProps>) {
+  return (
+    <div className="flex flex-col">
+      <div>
+        {item.contactRow && contactEntity ? (
+          <div>{RowHelper.getTextDescription({ entity: contactEntity, item: item.contactRow, t })}</div>
+        ) : (
+          <div className="text-muted-foreground text-xs italic">
+            <div>{item.email}</div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function SentAtCell({ item }: Readonly<{ item: OutboundEmailWithDetails }>) {
+  return (
+    <div className="flex justify-center">
+      {item.sentAt ? <OutboundEmailDateFormat date={item.sentAt} /> : <XIcon className="h-4 w-4 text-red-500" />}
+    </div>
+  );
+}
+
+function DeliveredCell({ item }: Readonly<{ item: OutboundEmailWithDetails }>) {
+  return (
+    <div className="flex justify-center">
+      {item.deliveredAt ? <CheckIcon className="h-4 w-4 text-teal-500" /> : <XIcon className="h-4 w-4 text-red-500" />}
+    </div>
+  );
+}
+
+interface ActivityCellProps {
+  item: OutboundEmailWithDetails;
+  onSelectEmail: (email: OutboundEmailWithDetails) => void;
+  t: (key: string) => string;
+}
+
+function ActivityCell({ item, onSelectEmail, t }: Readonly<ActivityCellProps>) {
+  return (
+    <div className="flex flex-col justify-start space-y-1 text-left">
+      <button
+        type="button"
+        disabled={item.opens.length === 0}
+        onClick={() => onSelectEmail(item)}
+        className={clsx(
+          item.opens.length === 0 ? "text-muted-foreground cursor-not-allowed text-left" : "text-blue-600 underline",
+          "text-muted-foreground lowercase"
+        )}
+      >
+        {item.opens.length} {t("emails.opens")}
+      </button>
+      <button
+        type="button"
+        disabled={item.clicks.length === 0}
+        onClick={() => onSelectEmail(item)}
+        className={clsx(
+          item.clicks.length === 0 ? "text-muted-foreground cursor-not-allowed text-left" : "text-blue-600 underline",
+          "text-muted-foreground lowercase"
+        )}
+      >
+        {item.clicks.length} {t("emails.clicks")}
+      </button>
+    </div>
+  );
+}
+
+function ErrorCell({ item }: Readonly<{ item: OutboundEmailWithDetails }>) {
+  return <div className="text-red-500">{item.error}</div>;
+}
+
+interface CampaignCellProps {
+  item: OutboundEmailWithDetails;
+  tenant?: string;
+  t: (key: string) => string;
+}
+
+function CampaignCell({ item, tenant, t }: Readonly<CampaignCellProps>) {
+  return (
+    <div>
+      {item.campaignId ? (
+        <Link
+          to={tenant ? `/admin/${tenant}/email-marketing/campaigns/${item.campaignId}` : `/admin/email-marketing/campaigns/${item.campaignId}`}
+          className="focus:bg-secondary/90 hover:border-border rounded-md border-b border-dashed border-transparent"
+        >
+          {item.campaign?.name}
+        </Link>
+      ) : (
+        <div>{item.isPreview ? <SimpleBadge title={t("shared.preview")} color={Colors.GRAY} /> : <div>-</div>}</div>
+      )}
+    </div>
+  );
+}
+
+function DateCell({ item }: Readonly<{ item: OutboundEmailWithDetails }>) {
+  return (
+    <div className="text-muted-foreground">{DateUtils.dateYMDHMS(item.createdAt)}</div>
+  );
+}
+
+function TypeCell({ item }: Readonly<{ item: { type: "click" | "open" } }>) {
+  return <>{item.type === "open" ? "Open" : "Click"}</>;
+}
+
+function DescriptionCell({ item }: Readonly<{ item: { description: string } }>) {
+  return <>{item.description}</>;
+}
+
 export default function OutboundEmailsTable({
   items,
   pagination,
   withCampaign,
   allEntities,
-}: {
+}: Readonly<{
   items: OutboundEmailWithDetails[];
   pagination?: PaginationDto;
   withCampaign?: boolean;
   allEntities: EntityWithDetails[];
-}) {
+}>) {
   const { t } = useTranslation();
   const params = useParams();
   const [headers, setHeaders] = useState<RowHeaderDisplayDto<OutboundEmailWithDetails>[]>([]);
@@ -41,70 +155,27 @@ export default function OutboundEmailsTable({
       {
         name: "email",
         title: t("emails.to"),
-        value: (i) => (
-          <div className="flex flex-col">
-            <div>
-              {i.contactRow && contactEntity ? (
-                <div>{RowHelper.getTextDescription({ entity: contactEntity, item: i.contactRow, t })}</div>
-              ) : (
-                <div className="text-muted-foreground text-xs italic">
-                  <div>{i.email}</div>
-                </div>
-              )}
-            </div>
-          </div>
-        ),
+        value: (i) => <EmailCell item={i} contactEntity={contactEntity} t={t} />,
       },
       {
         name: "sentAt",
         title: t("emails.sentAt"),
-        value: (i) => (
-          <div className="flex justify-center">{i.sentAt ? <OutboundEmailDateFormat date={i.sentAt} /> : <XIcon className="h-4 w-4 text-red-500" />}</div>
-        ),
+        value: (i) => <SentAtCell item={i} />,
       },
       {
         name: "delivered",
         title: t("emails.delivered"),
-        value: (i) => (
-          <div className="flex justify-center">
-            {i.deliveredAt ? <CheckIcon className="h-4 w-4 text-teal-500" /> : <XIcon className="h-4 w-4 text-red-500" />}
-          </div>
-        ),
+        value: (i) => <DeliveredCell item={i} />,
       },
       {
         name: "activity",
         title: t("emailMarketing.activity"),
-        value: (i) => (
-          <div className="flex flex-col justify-start space-y-1 text-left">
-            <button
-              type="button"
-              disabled={i.opens.length === 0}
-              onClick={() => setSelectedEmail(i)}
-              className={clsx(
-                i.opens.length === 0 ? "text-muted-foreground cursor-not-allowed text-left" : "text-blue-600 underline",
-                "text-muted-foreground lowercase"
-              )}
-            >
-              {i.opens.length} {t("emails.opens")}
-            </button>
-            <button
-              type="button"
-              disabled={i.clicks.length === 0}
-              onClick={() => setSelectedEmail(i)}
-              className={clsx(
-                i.clicks.length === 0 ? "text-muted-foreground cursor-not-allowed text-left" : "text-blue-600 underline",
-                "text-muted-foreground lowercase"
-              )}
-            >
-              {i.clicks.length} {t("emails.clicks")}
-            </button>
-          </div>
-        ),
+        value: (i) => <ActivityCell item={i} onSelectEmail={setSelectedEmail} t={t} />,
       },
       {
         name: "error",
         title: t("shared.error"),
-        value: (i) => <div className="text-red-500">{i.error}</div>,
+        value: (i) => <ErrorCell item={i} />,
       },
       {
         name: "unsubscribedAt",
@@ -127,30 +198,13 @@ export default function OutboundEmailsTable({
         {
           name: "campaignId",
           title: t("emailMarketing.campaign"),
-          value: (item) => (
-            <div>
-              {item.campaignId ? (
-                <Link
-                  to={
-                    params.tenant
-                      ? `/admin/${params.tenant}/email-marketing/campaigns/${item.campaignId}`
-                      : `/admin/email-marketing/campaigns/${item.campaignId}`
-                  }
-                  className="focus:bg-secondary/90 hover:border-border rounded-md border-b border-dashed border-transparent"
-                >
-                  {item.campaign?.name}
-                </Link>
-              ) : (
-                <div>{item.isPreview ? <SimpleBadge title={t("shared.preview")} color={Colors.GRAY} /> : <div>-</div>}</div>
-              )}
-            </div>
-          ),
+          value: (item) => <CampaignCell item={item} tenant={params.tenant} t={t} />,
         },
         ...headers,
       ];
     }
     setHeaders(headers);
-  }, [contactEntity, params.tenant, t, withCampaign]);
+  }, [contactEntity, params.tenant, t, withCampaign, setSelectedEmail]);
   return (
     <div>
       <TableSimple headers={headers} items={items} pagination={pagination} />
@@ -168,7 +222,7 @@ export default function OutboundEmailsTable({
   );
 }
 
-function OutboundEmailDateFormat({ date }: { date: Date | null }) {
+function OutboundEmailDateFormat({ date }: Readonly<{ date: Date | null }>) {
   return (
     <>
       {date && (
@@ -181,7 +235,7 @@ function OutboundEmailDateFormat({ date }: { date: Date | null }) {
   );
 }
 
-function OutboundEmailActivity({ email }: { email: OutboundEmailWithDetails }) {
+function OutboundEmailActivity({ email }: Readonly<{ email: OutboundEmailWithDetails }>) {
   const [items, setItems] = useState<{ type: "click" | "open"; createdAt: Date; description: string }[]>([]);
   useEffect(() => {
     const items: { type: "click" | "open"; createdAt: Date; description: string }[] = [];
@@ -199,7 +253,7 @@ function OutboundEmailActivity({ email }: { email: OutboundEmailWithDetails }) {
         description: c.link,
       });
     });
-    setItems(items.sort((a, b) => (b.createdAt > a.createdAt ? -1 : 1)));
+    setItems(items.toSorted((a, b) => (b.createdAt > a.createdAt ? -1 : 1)));
   }, [email]);
   return (
     <TableSimple
@@ -208,17 +262,17 @@ function OutboundEmailActivity({ email }: { email: OutboundEmailWithDetails }) {
         {
           name: "createdAt",
           title: "Date",
-          value: (i) => <div className="text-muted-foreground">{DateUtils.dateYMDHMS(i.createdAt)}</div>,
+          value: (i) => <DateCell item={i as any} />,
         },
         {
           name: "type",
           title: "Type",
-          value: (i) => (i.type === "open" ? "Open" : "Click"),
+          value: (i) => <TypeCell item={i} />,
         },
         {
           name: "description",
           title: "Description",
-          value: (i) => i.description,
+          value: (i) => <DescriptionCell item={i} />,
           className: "w-full",
         },
       ]}

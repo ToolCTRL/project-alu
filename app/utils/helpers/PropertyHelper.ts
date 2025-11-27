@@ -169,9 +169,9 @@ export function validatePropertyValue({ t, property, value }: { t?: TFunction; p
 
 function throwError({ t, property, error }: { t?: TFunction; property: Property; error: string }) {
   if (t) {
-    throw Error(`${t(property.title)}: ${error}`);
+    throw new Error(`${t(property.title)}: ${error}`);
   }
-  throw Error(`${property.name}: ${error}`);
+  throw new Error(`${property.name}: ${error}`);
 }
 
 export function validatePropertyValue_Media({ t, property, media }: { t?: TFunction; property: PropertyWithDetails; media: MediaDto[] }) {

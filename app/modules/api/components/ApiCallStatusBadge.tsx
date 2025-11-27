@@ -1,4 +1,3 @@
-import { Fragment } from "react";
 import { Colors } from "~/application/enums/shared/Colors";
 import SimpleBadge from "~/components/ui/badges/SimpleBadge";
 import { ApiKeyLogDto } from "../dtos/ApiKeyLogDto";

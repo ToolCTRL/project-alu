@@ -9,7 +9,9 @@ export const meta: v2MetaFunction<Rows_Share.LoaderData> = ({ data }) => data?.m
 export const loader = (args: LoaderFunctionArgs) => Rows_Share.loader(args);
 export const action: ActionFunction = (args) => Rows_Share.action(args);
 
-export default () => <RowShareRoute />;
+export default function AdminCrmEntityShareRoute() {
+  return <RowShareRoute />;
+}
 
 export function ErrorBoundary() {
   return <ServerError />;

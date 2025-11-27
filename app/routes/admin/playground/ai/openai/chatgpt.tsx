@@ -1,4 +1,4 @@
-import { Form, useActionData, useSubmit, useNavigation } from "react-router";
+import { Form, useActionData, useSubmit, useNavigation, ActionFunctionArgs } from "react-router";
 import clsx from "clsx";
 import { useEffect, useRef, useState } from "react";
 import InputText from "~/components/ui/input/InputText";
@@ -6,7 +6,6 @@ import ErrorBanner from "~/components/ui/banners/ErrorBanner";
 import InputSelect from "~/components/ui/input/InputSelect";
 import OpenAIService from "~/modules/ai/lib/OpenAIService";
 import ServerError from "~/components/ui/errors/ServerError";
-import { ActionFunctionArgs } from "react-router";
 import { requireAuth } from "~/utils/loaders.middleware";
 import { Textarea } from "~/components/ui/textarea";
 
@@ -18,7 +17,7 @@ export const action = async ({ request, params }: ActionFunctionArgs) => {
   await requireAuth({ request, params });
   const form = await request.formData();
   const action = form.get("action")?.toString() ?? "";
-  if (action !== "generateImages") {
+  if (action === "generateImages") {
     const prompt = form.get("prompt")?.toString() ?? "";
     try {
       const images = await OpenAIService.generateImages({
@@ -175,7 +174,7 @@ export default function Index() {
         ) : type === "DALL-E" ? (
           <div className="overflow-y-scroll">
             <div className="mx-auto">
-              <div role="status" className="space-y-8 md:flex md:items-center md:space-y-0 md:space-x-8">
+              <div className="space-y-8 md:flex md:items-center md:space-y-0 md:space-x-8">
                 <img
                   alt="Generated with DAll-E"
                   src={
@@ -186,7 +185,9 @@ export default function Index() {
               </div>
             </div>
           </div>
-        ) : null}
+        ) : (
+          <div />
+        )}
       </div>
     </div>
   );

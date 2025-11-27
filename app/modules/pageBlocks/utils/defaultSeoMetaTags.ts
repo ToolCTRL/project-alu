@@ -62,15 +62,19 @@ function parseMetaTags(tags: SiteTags): MetaTagsDto {
     metatags.push({ property: "twitter:image", content: tags.thumbnail });
   }
   if (tags.twitterCreator) {
-    metatags.push({ property: "twitter:creator", content: tags.twitterCreator });
-    metatags.push({ property: "og:creator", content: tags.twitterCreator });
+    metatags.push(
+      { property: "twitter:creator", content: tags.twitterCreator },
+      { property: "og:creator", content: tags.twitterCreator }
+    );
   }
   if (tags.twitterSite) {
     metatags.push({ property: "twitter:site", content: tags.twitterSite });
   }
   if (tags.image || tags.thumbnail) {
-    metatags.push({ property: "twitter:card", content: "summary_large_image" });
-    metatags.push({ property: "og:card", content: "summary_large_image" });
+    metatags.push(
+      { property: "twitter:card", content: "summary_large_image" },
+      { property: "og:card", content: "summary_large_image" }
+    );
   }
 
   return metatags;

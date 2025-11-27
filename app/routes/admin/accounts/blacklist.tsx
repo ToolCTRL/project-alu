@@ -1,6 +1,5 @@
 import { useTranslation } from "react-i18next";
-import { ActionFunction, LoaderFunctionArgs, MetaFunction, useLoaderData } from "react-router";
-import { Form, useNavigation, useSubmit } from "react-router";
+import { ActionFunction, LoaderFunctionArgs, MetaFunction, useLoaderData, Form, useNavigation, useSubmit } from "react-router";
 import { getTranslations } from "~/locale/i18next.server";
 import { verifyUserHasPermission } from "~/utils/helpers/.server/PermissionsService";
 import { addToBlacklist, deleteFromBlacklist, getBlacklist } from "~/utils/db/blacklist.db.server";
@@ -10,7 +9,6 @@ import { getPaginationFromCurrentUrl } from "~/utils/helpers/RowPaginationHelper
 import { PaginationDto } from "~/application/dtos/data/PaginationDto";
 import InputText from "~/components/ui/input/InputText";
 import DateUtils from "~/utils/shared/DateUtils";
-import OpenModal from "~/components/ui/modals/OpenModal";
 import { useEffect, useRef, useState } from "react";
 import ButtonPrimary from "~/components/ui/buttons/ButtonPrimary";
 import SimpleBadge from "~/components/ui/badges/SimpleBadge";
@@ -71,6 +69,19 @@ export const action: ActionFunction = async ({ request }) => {
   }
 };
 
+function getColor(type: string) {
+  switch (type) {
+    case "email":
+      return Colors.TEAL;
+    case "domain":
+      return Colors.INDIGO;
+    case "ip":
+      return Colors.RED;
+    default:
+      return Colors.GRAY;
+  }
+}
+
 export default function BlacklistRoute() {
   const data = useLoaderData<LoaderData>();
   const { t } = useTranslation();
@@ -99,27 +110,13 @@ export default function BlacklistRoute() {
       method: "post",
     });
   }
-  function getColor(type: string) {
-    switch (type) {
-      case "email":
-        return Colors.TEAL;
-      case "domain":
-        return Colors.INDIGO;
-      case "ip":
-        return Colors.RED;
-      default:
-        return Colors.GRAY;
-    }
-  }
   return (
     <EditPageLayout
       title={t("models.blacklist.object")}
       buttons={
-        <>
-          <ButtonPrimary disabled={isAdding} onClick={() => setAdding(true)}>
-            {t("shared.new")}
-          </ButtonPrimary>
-        </>
+        <ButtonPrimary disabled={isAdding} onClick={() => setAdding(true)}>
+          {t("shared.new")}
+        </ButtonPrimary>
       }
     >
       <TableSimple

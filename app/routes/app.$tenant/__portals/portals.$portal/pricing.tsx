@@ -36,7 +36,7 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
   }
 
   const tenantId = await getTenantIdOrNull({ request, params });
-  const item = await getPortalById(tenantId, params.portal!);
+  const item = await getPortalById(tenantId, params.portal);
   if (!item) {
     return redirect(UrlUtils.getModulePath(params, "portals"));
   }
@@ -50,19 +50,12 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
       stripeAccountId: null,
     });
   }
-  // if (!stripeAccount && item.stripeAccountId) {
-  //   await updatePortal(item, { stripeAccountId: null });
-  //   item.stripeAccountId = null;
-  // }
-  if (stripeAccount && !stripeAccount.charges_enabled) {
-    // return redirect(UrlUtils.getModulePath(params, `portals/${params.portal}/pricing/stripe`));
-  }
   const portalUrl = PortalServer.getPortalUrl(item);
   const items = await getAllPortalSubscriptionProductsWithUsers(item.id);
   const data: LoaderData = {
     item,
     stripeAccount,
-    items: items.sort((x, y) => {
+    items: items.toSorted((x, y) => {
       return x?.order > y?.order ? 1 : -1;
     }),
     portalUrl,
@@ -70,7 +63,61 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
   return data;
 };
 
-export default function () {
+function ProductBadge({ item }: { item: SubscriptionProductDto }) {
+  const { t } = useTranslation();
+  return (
+    <>
+      {t(item.title)}{" "}
+      {item.badge && <span className=" border-border bg-theme-50 text-theme-800 ml-1 rounded-md border px-1 py-0.5 text-xs">{t(item.badge)}</span>}
+    </>
+  );
+}
+
+function ProductModel({ item }: { item: SubscriptionProductDto }) {
+  const { t } = useTranslation();
+  return <>{t("pricing." + PricingModel[item.model])}</>;
+}
+
+function ProductSubscriptions({ item }: { item: SubscriptionProductDto }) {
+  const { t } = useTranslation();
+  return (
+    <div className=" text-muted-foreground lowercase">
+      {item.tenantProducts?.length ?? 0} {t("shared.active")}
+    </div>
+  );
+}
+
+function ProductStatus({ item }: { item: SubscriptionProductDto }) {
+  const { t } = useTranslation();
+  return (
+    <>
+      {item.active ? (
+        <>
+          {item.public ? (
+            <SimpleBadge title={t("models.subscriptionProduct.public")} color={Colors.TEAL} />
+          ) : (
+            <SimpleBadge title={t("models.subscriptionProduct.custom")} color={Colors.ORANGE} />
+          )}
+        </>
+      ) : (
+        <SimpleBadge title={t("shared.inactive")} color={Colors.RED} />
+      )}
+    </>
+  );
+}
+
+function ProductActions({ item }: { item: SubscriptionProductDto }) {
+  const { t } = useTranslation();
+  return (
+    <div className="flex items-center space-x-2">
+      <ButtonTertiary disabled={!item.id} to={"edit/" + item.id}>
+        {t("shared.edit")}
+      </ButtonTertiary>
+    </div>
+  );
+}
+
+export default function PricingPage() {
   const { t } = useTranslation();
   const data = useLoaderData<LoaderData>();
   const params = useParams();
@@ -100,10 +147,6 @@ export default function () {
         </>
       }
       menu={[
-        // {
-        //   title: t("models.portal.plural"),
-        //   routePath: UrlUtils.getModulePath(params, "portals"),
-        // },
         {
           title: data.item.title,
           routePath: UrlUtils.getModulePath(params, `portals/${data.item.subdomain}`),
@@ -121,7 +164,7 @@ export default function () {
             Click here to connect your Stripe account.
           </Link>
         </WarningBanner>
-      ) : !data.stripeAccount.charges_enabled ? (
+      ) : data.stripeAccount.charges_enabled === false ? (
         <WarningBanner title="Stripe Integration Pending">
           Your Stripe integration is pending.{" "}
           <Link to={UrlUtils.getModulePath(params, `portals/${params.portal}/pricing/stripe`)} className="underline">
@@ -141,63 +184,27 @@ export default function () {
             {
               name: "title",
               title: t("models.subscriptionProduct.title"),
-              value: (item) => (
-                <>
-                  {t(item.title)}{" "}
-                  {item.badge && <span className=" border-border bg-theme-50 text-theme-800 ml-1 rounded-md border px-1 py-0.5 text-xs">{t(item.badge)}</span>}
-                </>
-              ),
+              value: (item) => <ProductBadge item={item} />,
             },
             {
               name: "model",
               title: t("models.subscriptionProduct.model"),
-              value: (item) => <>{t("pricing." + PricingModel[item.model])}</>,
+              value: (item) => <ProductModel item={item} />,
             },
-            // ...allFeatures.map((feature) => {
-            //   return {
-            //     name: feature.name,
-            //     title: feature.name,
-            //     value: (item: SubscriptionProductDto) => <PlanFeatureValue item={getFeatureValue(item, feature.name)} />,
-            //   };
-            // }),
             {
               name: "subscriptions",
               title: t("models.subscriptionProduct.plural"),
-              value: (item) => (
-                <div className=" text-muted-foreground lowercase">
-                  {item.tenantProducts?.length ?? 0} {t("shared.active")}
-                </div>
-              ),
+              value: (item) => <ProductSubscriptions item={item} />,
             },
             {
               name: "active",
               title: t("models.subscriptionProduct.status"),
-              value: (item) => (
-                <>
-                  {item.active ? (
-                    <>
-                      {item.public ? (
-                        <SimpleBadge title={t("models.subscriptionProduct.public")} color={Colors.TEAL} />
-                      ) : (
-                        <SimpleBadge title={t("models.subscriptionProduct.custom")} color={Colors.ORANGE} />
-                      )}
-                    </>
-                  ) : (
-                    <SimpleBadge title={t("shared.inactive")} color={Colors.RED} />
-                  )}
-                </>
-              ),
+              value: (item) => <ProductStatus item={item} />,
             },
             {
               name: "actions",
               title: t("shared.actions"),
-              value: (item) => (
-                <div className="flex items-center space-x-2">
-                  <ButtonTertiary disabled={!item.id} to={"edit/" + item.id}>
-                    {t("shared.edit")}
-                  </ButtonTertiary>
-                </div>
-              ),
+              value: (item) => <ProductActions item={item} />,
             },
           ]}
         />

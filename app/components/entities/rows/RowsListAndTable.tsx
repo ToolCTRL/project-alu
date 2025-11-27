@@ -48,7 +48,7 @@ export default function RowsListAndTable({
   rightHeaders,
   allEntities,
   onRemove,
-}: Props) {
+}: Readonly<Props>) {
   const { t } = useTranslation();
 
   const [headers, setHeaders] = useState<RowHeaderDisplayDto<RowWithDetails>[]>([]);
@@ -81,8 +81,8 @@ export default function RowsListAndTable({
     if (editable) {
       actions.push({
         title: t("shared.edit"),
-        onClickRoute: (_, item) => (onEditClick !== undefined ? undefined : EntityHelper.getRoutes({ routes, entity, item })?.edit ?? ""),
-        onClick: (_, item) => (onEditClick !== undefined ? onEditClick(item) : undefined),
+        onClickRoute: (_, item) => (onEditClick === undefined ? EntityHelper.getRoutes({ routes, entity, item })?.edit ?? "" : undefined),
+        onClick: (_, item) => (onEditClick === undefined ? undefined : onEditClick(item)),
         hidden: (item) => !editable || !EntityHelper.getRoutes({ routes, entity, item })?.edit,
       });
     }

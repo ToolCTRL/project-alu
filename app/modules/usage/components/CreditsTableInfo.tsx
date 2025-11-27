@@ -3,6 +3,13 @@ import { CreditTypes } from "../dtos/CreditType";
 import NumberUtils from "~/utils/shared/NumberUtils";
 import { useTranslation } from "react-i18next";
 
+const NameCell = ({ item }: { item: { name: string; description: string } }) => (
+  <div className="flex flex-col">
+    <div className="font-bold">{item.name}</div>
+    <div className="text-muted-foreground text-xs">{item.description}</div>
+  </div>
+);
+
 export default function CreditsTableInfo() {
   const { t } = useTranslation();
   return (
@@ -18,12 +25,7 @@ export default function CreditsTableInfo() {
             name: "name",
             title: t("shared.name"),
             className: "w-full",
-            value: (item) => (
-              <div className="flex flex-col">
-                <div className="font-bold">{item.name}</div>
-                <div className="text-muted-foreground text-xs">{item.description}</div>
-              </div>
-            ),
+            value: (item) => <NameCell item={item} />,
           },
           {
             name: "amount",

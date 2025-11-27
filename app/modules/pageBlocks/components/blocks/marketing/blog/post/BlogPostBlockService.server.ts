@@ -58,7 +58,7 @@ export namespace BlogPostBlockService {
     };
   }
   export async function publish({ params, form }: PageBlockActionArgs) {
-    const postId = form.get("id")?.toString() ?? "";
+    const postId = (form.get("id") as string | null) ?? "";
     const post = await getBlogPost({ tenantId: null, idOrSlug: postId });
     if (!post) {
       throw Response.json({ error: "Post not found with id: " + postId }, { status: 404 });

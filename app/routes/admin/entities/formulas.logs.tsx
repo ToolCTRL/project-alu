@@ -139,7 +139,7 @@ export const action: ActionFunction = async ({ request }) => {
 
 export const meta: MetaFunction<typeof loader> = ({ data }) => [{ title: data?.title }];
 
-export default function () {
+export default function FormulasLogsRoute() {
   const { t } = useTranslation();
   const data = useLoaderData<LoaderData>();
   const appOrAdminData = useAppOrAdminData();
@@ -201,23 +201,36 @@ export default function () {
             {
               name: "status",
               title: "Status",
-              value: (item) => (
-                <div>
-                  {item.error ? (
-                    <FilterableValueLink name="status" value="error">
-                      <SimpleBadge title="Error" color={Colors.RED} />
-                    </FilterableValueLink>
-                  ) : item.result.length === 0 ? (
-                    <FilterableValueLink name="status" value="empty">
-                      <SimpleBadge title="No result" color={Colors.YELLOW} />
-                    </FilterableValueLink>
-                  ) : item.result.length > 0 ? (
-                    <FilterableValueLink name="status" value="success">
-                      <SimpleBadge title="Success" color={Colors.GREEN} />
-                    </FilterableValueLink>
-                  ) : null}
-                </div>
-              ),
+              value: (item) => {
+                if (item.error) {
+                  return (
+                    <div>
+                      <FilterableValueLink name="status" value="error">
+                        <SimpleBadge title="Error" color={Colors.RED} />
+                      </FilterableValueLink>
+                    </div>
+                  );
+                }
+                if (item.result.length === 0) {
+                  return (
+                    <div>
+                      <FilterableValueLink name="status" value="empty">
+                        <SimpleBadge title="No result" color={Colors.YELLOW} />
+                      </FilterableValueLink>
+                    </div>
+                  );
+                }
+                if (item.result.length > 0) {
+                  return (
+                    <div>
+                      <FilterableValueLink name="status" value="success">
+                        <SimpleBadge title="Success" color={Colors.GREEN} />
+                      </FilterableValueLink>
+                    </div>
+                  );
+                }
+                return null;
+              },
             },
             {
               name: "result",

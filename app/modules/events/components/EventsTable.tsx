@@ -16,6 +16,45 @@ interface Props {
   readonly items: EventWithAttempts[];
   readonly pagination: PaginationDto;
 }
+
+function EventBadge({ name }: { readonly name: string }) {
+  return <Badge variant="secondary">{name}</Badge>;
+}
+
+function DataButton({ item, onClick }: { readonly item: EventWithAttempts; readonly onClick: (item: EventWithAttempts) => void }) {
+  return (
+    <button type="button" onClick={() => onClick(item)} className="hover:text-theme-500 truncate underline">
+      {item.description}
+    </button>
+  );
+}
+
+function TenantInfo({ item, tenant }: { readonly item: EventWithAttempts; readonly tenant: string | undefined }) {
+  if (!item.tenant) {
+    return <span className="text-muted-foreground italic">?</span>;
+  }
+  return (
+    <Fragment>
+      <div className="font-medium">{item.tenant?.name}</div>
+      <Link
+        to={"/app/" + item.tenant?.slug}
+        target="_blank"
+        className="text-muted-foreground focus:bg-secondary/90 hover:border-border rounded-md border-b border-dashed text-xs hover:border-dashed"
+      >
+        <span>/{item.tenant.slug}</span>
+      </Link>
+    </Fragment>
+  );
+}
+
+function CreatedAtInfo({ item }: { readonly item: EventWithAttempts }) {
+  return (
+    <div className="text-xs">
+      <div>{item.user?.email ?? <span className="text-muted-foreground italic">?</span>}</div>
+      <div className="text-muted-foreground text-xs">{DateUtils.dateAgo(item.createdAt)}</div>
+    </div>
+  );
+}
 export default function EventsTable({ items, pagination }: Props) {
   const { t } = useTranslation();
   const params = useParams();
@@ -43,16 +82,12 @@ export default function EventsTable({ items, pagination }: Props) {
             name: "event",
             title: t("models.event.object"),
             value: (i) => i.name,
-            formattedValue: (i) => <Badge variant="secondary">{i.name}</Badge>,
+            formattedValue: (i) => <EventBadge name={i.name} />,
           },
           {
             name: "data",
             title: t("models.event.data"),
-            value: (i) => (
-              <button type="button" onClick={() => setSelectedData(i)} className="hover:text-theme-500 truncate underline">
-                {i.description}
-              </button>
-            ),
+            value: (i) => <DataButton item={i} onClick={setSelectedData} />,
             className: "w-full",
           },
           {
@@ -60,20 +95,7 @@ export default function EventsTable({ items, pagination }: Props) {
             title: t("models.tenant.object"),
             value: (i) => (
               <div className="text-xs">
-                {i.tenant ? (
-                  <Fragment>
-                    <div className="font-medium">{i.tenant?.name}</div>
-                    <Link
-                      to={"/app/" + i.tenant?.slug}
-                      target="_blank"
-                      className="text-muted-foreground focus:bg-secondary/90 hover:border-border rounded-md border-b border-dashed text-xs hover:border-dashed"
-                    >
-                      <span>/{i.tenant.slug}</span>
-                    </Link>
-                  </Fragment>
-                ) : (
-                  <span className="text-muted-foreground italic">?</span>
-                )}
+                <TenantInfo item={i} tenant={params.tenant} />
               </div>
             ),
             hidden: !!params.tenant,
@@ -81,12 +103,7 @@ export default function EventsTable({ items, pagination }: Props) {
           {
             name: "createdAt",
             title: t("shared.createdAt"),
-            value: (i) => (
-              <div className="text-xs">
-                <div>{i.user?.email ?? <span className="text-muted-foreground italic">?</span>}</div>
-                <div className="text-muted-foreground text-xs">{DateUtils.dateAgo(i.createdAt)}</div>
-              </div>
-            ),
+            value: (i) => <CreatedAtInfo item={i} />,
           },
         ]}
       />

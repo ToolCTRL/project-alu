@@ -8,7 +8,7 @@ type LoaderData = {
   item: OnboardingSessionWithDetails | null;
 };
 export const loader = async ({ request, params }: LoaderFunctionArgs) => {
-  const item = await getOnboardingSession(params.id!);
+  const item = await getOnboardingSession(params.id ?? "");
   const data: LoaderData = {
     item,
   };
@@ -19,12 +19,12 @@ export const action: ActionFunction = async ({ request, params }) => {
   const { t } = await getTranslations(request);
   const form = await request.formData();
   const action = form.get("action");
-  const session = await getOnboardingSession(params.id!);
+  const session = await getOnboardingSession(params.id ?? "");
   if (!session) {
     return Response.json({ error: "Session not found" }, { status: 404 });
   }
   const actions: OnboardingSessionActionDto[] = form.getAll("actions[]").map((f: FormDataEntryValue) => {
-    return JSON.parse(f.toString());
+    return JSON.parse(String(f));
   });
   if (action === "started") {
     await OnboardingSessionService.started(session);

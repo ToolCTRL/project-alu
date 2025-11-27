@@ -1,5 +1,4 @@
-import { LoaderFunctionArgs, useLoaderData } from "react-router";
-import { Link } from "react-router";
+import { LoaderFunctionArgs, useLoaderData, Link } from "react-router";
 import EntityViewsTable from "~/components/entities/views/EntityViewsTable";
 import PlusIcon from "~/components/ui/icons/PlusIcon";
 import { EntityWithDetails, getEntityBySlug } from "~/utils/db/entities/entities.db.server";

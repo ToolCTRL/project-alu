@@ -77,7 +77,7 @@ export namespace WorkflowsExecutionsApi {
 
     if (action === "delete") {
       const id = form.get("id")?.toString() ?? "";
-      const execution = getWorkflowExecution(id, { tenantId });
+      const execution = await getWorkflowExecution(id, { tenantId });
       if (!execution) {
         return Response.json({ error: "Not found" }, { status: 404 });
       }

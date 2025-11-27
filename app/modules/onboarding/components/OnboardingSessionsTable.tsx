@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { TFunction } from "i18next";
 import { RowHeaderDisplayDto } from "~/application/dtos/data/RowHeaderDisplayDto";
 import TenantCell from "~/components/core/tenants/TenantCell";
 import UserBadge from "~/components/core/users/UserBadge";
@@ -17,6 +18,95 @@ import { OnboardingFilterMetadataDto } from "../dtos/OnboardingFilterMetadataDto
 import OnboardingSessionUtils, { OnboardingSessionActivityDto } from "../utils/OnboardingSessionUtils";
 import OnboardingBadge from "./OnboardingBadge";
 import OnboardingSessionBadge from "./OnboardingSessionBadge";
+
+interface UserCellProps {
+  readonly user: OnboardingSessionWithDetails["user"];
+  readonly tenant: OnboardingSessionWithDetails["tenant"];
+}
+
+function UserCell({ user, tenant }: UserCellProps) {
+  return (
+    <div>
+      <UserBadge item={user} />
+      <TenantCell item={tenant} />
+    </div>
+  );
+}
+
+interface ActivityCellProps {
+  readonly item: OnboardingSessionWithDetails;
+  readonly metadata: OnboardingFilterMetadataDto;
+  readonly t: TFunction;
+  readonly onSelect: (item: OnboardingSessionWithDetails) => void;
+}
+
+function ActivityCell({ item, metadata, t, onSelect }: ActivityCellProps) {
+  return (
+    <div>
+      <button type="button" onClick={() => onSelect(item)} className="hover:border-theme-400 border-border border-b border-dotted hover:border-dashed">
+        {OnboardingSessionUtils.getActivity({ t, item, metadata }).length} activities
+      </button>
+    </div>
+  );
+}
+
+interface StepsCellProps {
+  readonly item: OnboardingSessionWithDetails;
+  readonly completedLabel: string;
+  readonly onSelect: (item: OnboardingSessionWithDetails) => void;
+}
+
+function StepsCell({ item, completedLabel, onSelect }: StepsCellProps) {
+  return (
+    <div>
+      <button type="button" onClick={() => onSelect(item)} className="hover:border-theme-400 border-border border-b border-dotted hover:border-dashed">
+        {item.sessionSteps.filter((f) => f.completedAt).length}/{item.sessionSteps.length} {completedLabel}
+      </button>
+    </div>
+  );
+}
+
+interface DateOrIconCellProps {
+  readonly date: Date | null;
+}
+
+function DateOrIconCell({ date }: DateOrIconCellProps) {
+  return <div className="flex justify-center">{date ? <DateCell date={date} /> : <XIcon className="h-4 w-4 text-red-500" />}</div>;
+}
+
+interface OnboardingHeaderCellProps {
+  readonly item: OnboardingSessionWithDetails;
+}
+
+function OnboardingHeaderCell({ item }: OnboardingHeaderCellProps) {
+  return (
+    <div className="flex items-center space-x-2">
+      <div className="text-base font-bold">{item.onboarding.title}</div>
+      <div>
+        <OnboardingBadge item={item.onboarding} />
+      </div>
+    </div>
+  );
+}
+
+interface DeleteActionCellProps {
+  readonly item: OnboardingSessionWithDetails;
+  readonly onDelete: ((item: OnboardingSessionWithDetails) => void) | undefined;
+  readonly canDelete: boolean;
+  readonly deleteLabel: string;
+}
+
+function DeleteActionCell({ item, onDelete, canDelete, deleteLabel }: DeleteActionCellProps) {
+  return (
+    <div className="flex items-center space-x-2">
+      {onDelete && (
+        <ButtonTertiary disabled={!canDelete} destructive type="button" onClick={() => onDelete(item)}>
+          {deleteLabel}
+        </ButtonTertiary>
+      )}
+    </div>
+  );
+}
 
 export default function OnboardingSessionsTable({
   items,
@@ -44,40 +134,17 @@ export default function OnboardingSessionsTable({
       {
         name: "user",
         title: t("models.user.object"),
-        value: (i: OnboardingSessionWithDetails) => (
-          <div>
-            <UserBadge item={i.user} />
-            <TenantCell item={i.tenant} />
-          </div>
-        ),
+        value: (i: OnboardingSessionWithDetails) => <UserCell user={i.user} tenant={i.tenant} />,
       },
-      // {
-      //   name: "tenant",
-      //   title: t("models.tenant.object"),
-      //   // eslint-disable-next-line react/jsx-no-undef
-      //   value: (item) => <TenantCell item={item.tenant} />,
-      // },
       {
         name: "activity",
         title: t("onboarding.session.activity"),
-        value: (i: OnboardingSessionWithDetails) => (
-          <div>
-            <button type="button" onClick={() => setSelected(i)} className="hover:border-theme-400 border-border border-b border-dotted hover:border-dashed">
-              {OnboardingSessionUtils.getActivity({ t, item: i, metadata }).length} activities
-            </button>
-          </div>
-        ),
+        value: (i: OnboardingSessionWithDetails) => <ActivityCell item={i} metadata={metadata} t={t} onSelect={setSelected} />,
       },
       {
         name: "steps",
         title: t("onboarding.session.steps"),
-        value: (i: OnboardingSessionWithDetails) => (
-          <div>
-            <button type="button" onClick={() => setSelected(i)} className="hover:border-theme-400 border-border border-b border-dotted hover:border-dashed">
-              {i.sessionSteps.filter((f) => f.completedAt).length}/{i.sessionSteps.length} {t("shared.completed").toLowerCase()}
-            </button>
-          </div>
-        ),
+        value: (i: OnboardingSessionWithDetails) => <StepsCell item={i} completedLabel={t("shared.completed").toLowerCase()} onSelect={setSelected} />,
       },
       {
         name: "actions",
@@ -87,54 +154,35 @@ export default function OnboardingSessionsTable({
       {
         name: "createdAt",
         title: t("shared.createdAt"),
-        value: (i: OnboardingSessionWithDetails) => <div className="flex justify-center">{i.createdAt ? <DateCell date={i.createdAt} /> : <XIcon className="h-4 w-4 text-red-500" />}</div>,
+        value: (i: OnboardingSessionWithDetails) => <DateOrIconCell date={i.createdAt} />,
       },
       {
         name: "startedAt",
         title: t("onboarding.session.startedAt"),
-        value: (i: OnboardingSessionWithDetails) => <div className="flex justify-center">{i.startedAt ? <DateCell date={i.startedAt} /> : <XIcon className="h-4 w-4 text-red-500" />}</div>,
+        value: (i: OnboardingSessionWithDetails) => <DateOrIconCell date={i.startedAt} />,
       },
       {
         name: "dismissedAt",
         title: t("onboarding.session.dismissedAt"),
-        value: (i: OnboardingSessionWithDetails) => (
-          <div className="flex justify-center">{i.dismissedAt ? <DateCell date={i.dismissedAt} /> : <XIcon className="h-4 w-4 text-red-500" />}</div>
-        ),
+        value: (i: OnboardingSessionWithDetails) => <DateOrIconCell date={i.dismissedAt} />,
       },
       {
         name: "completedAt",
         title: t("onboarding.session.completedAt"),
-        value: (i: OnboardingSessionWithDetails) => (
-          <div className="flex justify-center">{i.completedAt ? <DateCell date={i.completedAt} /> : <XIcon className="h-4 w-4 text-red-500" />}</div>
-        ),
+        value: (i: OnboardingSessionWithDetails) => <DateOrIconCell date={i.completedAt} />,
       },
     ];
     if (withOnboarding) {
       headers.unshift({
         name: "onboarding",
         title: t("onboarding.title"),
-        value: (i: OnboardingSessionWithDetails) => (
-          <div className="flex items-center space-x-2">
-            <div className="text-base font-bold">{i.onboarding.title}</div>
-            <div>
-              <OnboardingBadge item={i.onboarding} />
-            </div>
-          </div>
-        ),
+        value: (i: OnboardingSessionWithDetails) => <OnboardingHeaderCell item={i} />,
       });
     }
     headers.push({
       name: "actions",
       title: t("shared.actions"),
-      value: (i: OnboardingSessionWithDetails) => (
-        <div className="flex items-center space-x-2">
-          {onDelete && (
-            <ButtonTertiary disabled={!getUserHasPermission(appOrAdminData, "admin.onboarding.delete")} destructive type="button" onClick={() => onDelete(i)}>
-              {t("shared.delete")}
-            </ButtonTertiary>
-          )}
-        </div>
-      ),
+      value: (i: OnboardingSessionWithDetails) => <DeleteActionCell item={i} onDelete={onDelete} canDelete={getUserHasPermission(appOrAdminData, "admin.onboarding.delete")} deleteLabel={t("shared.delete")} />,
     });
     setHeaders(headers);
   }, [appOrAdminData, metadata, onDelete, t, withOnboarding]);

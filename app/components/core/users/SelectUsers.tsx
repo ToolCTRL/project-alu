@@ -106,11 +106,10 @@ const SelectUsers = ({ items, allowSearch, onClosed, onSelected }: Props, ref: R
               leaveFrom="opacity-100 translate-y-0 sm:scale-100"
               leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
             >
-              <div
+              <dialog
                 // v-show="showing"
+                open
                 className="bg-background my-8 inline-block w-full transform overflow-visible rounded-sm px-4 pb-4 pt-5 text-left align-bottom shadow-xl transition-all sm:max-w-lg sm:p-6 sm:align-middle"
-                role="dialog"
-                aria-modal="true"
                 aria-labelledby="modal-headline"
               >
                 <div className="just absolute right-0 top-0 -mt-4 pr-4">
@@ -285,7 +284,7 @@ const SelectUsers = ({ items, allowSearch, onClosed, onSelected }: Props, ref: R
                     </div>
                   </div>
                 </div>
-              </div>
+              </dialog>
             </Transition>
           </div>
           <ErrorModal ref={errorModal} />

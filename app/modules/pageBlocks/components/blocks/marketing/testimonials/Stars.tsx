@@ -1,6 +1,6 @@
 import clsx from "clsx";
 
-export default function Stars({ color = "text-yellow-400" }: { color?: string }) {
+export default function Stars({ color = "text-yellow-400" }: { readonly color?: string }) {
   return (
     <div className="flex items-center">
       <svg className={clsx("ms-1 h-4 w-4", color)} aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 22 20">

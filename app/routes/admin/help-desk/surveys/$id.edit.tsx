@@ -52,22 +52,21 @@ export const action = async ({ request, params }: ActionFunctionArgs) => {
         isEnabled: item.isEnabled,
         isPublic: item.isPublic,
         image: item.image || null,
-        items: item.items.map((item, idx) => ({
-          title: item.title,
-          description: item.description || "",
-          type: item.type,
+        items: item.items.map((surveyItem, idx) => ({
+          title: surveyItem.title,
+          description: surveyItem.description || "",
+          type: surveyItem.type,
           order: idx + 1,
-          categories: item.categories || [],
-          href: item.href || "",
-          color: item.color,
-          options: item.options.map((option) => ({
+          categories: surveyItem.categories || [],
+          href: surveyItem.href || "",
+          color: surveyItem.color,
+          options: surveyItem.options.map((option) => ({
             title: option.title,
-            // link: option.link || "",
             isOther: option.isOther || false,
             icon: option.icon || "",
             shortName: option.shortName || "",
           })),
-          style: item.style === "grid" ? "grid" : "default",
+          style: surveyItem.style === "grid" ? "grid" : "default",
         })),
         minSubmissions: item.minSubmissions,
       });
@@ -79,7 +78,7 @@ export const action = async ({ request, params }: ActionFunctionArgs) => {
   return Response.json({ error: "Invalid action" }, { status: 400 });
 };
 
-export default function () {
+export default function EditSurveyRoute() {
   const { t } = useTranslation();
   const data = useLoaderData<LoaderData>();
   const actionData = useActionData<{ success?: string; error?: string }>();

@@ -20,7 +20,7 @@ export type LoginActionData = {
   };
 };
 
-export default function LoginForm({ actionData, redirectTo }: { actionData: LoginActionData | null | undefined; redirectTo?: string }) {
+export default function LoginForm({ actionData, redirectTo }: Readonly<{ actionData: LoginActionData | null | undefined; redirectTo?: string }>) {
   const { t } = useTranslation();
   const { appConfiguration } = useRootData();
   const navigation = useNavigation();

@@ -58,7 +58,7 @@ export const action = async ({ request }: ActionFunctionArgs) => {
   }
 };
 
-export default function () {
+export default function NewFormulaRoute() {
   const actionData = useActionData<ActionData>();
 
   return (

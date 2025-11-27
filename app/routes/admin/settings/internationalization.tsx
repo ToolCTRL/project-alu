@@ -1,5 +1,4 @@
-import { ActionFunction, LoaderFunctionArgs, MetaFunction } from "react-router";
-import { Form } from "react-router";
+import { ActionFunction, LoaderFunctionArgs, MetaFunction, Form } from "react-router";
 import { useTranslation } from "react-i18next";
 import UnderConstruction from "~/components/ui/misc/UnderConstruction";
 import { getTranslations } from "~/locale/i18next.server";
@@ -27,7 +26,6 @@ export const action: ActionFunction = async ({ request }) => {
   const form = await request.formData();
   const action = form.get("action");
   if (action === "update") {
-    // TODO
     return Response.json({});
   } else {
     return Response.json({ error: t("shared.invalidForm") }, { status: 400 });

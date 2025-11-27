@@ -29,6 +29,77 @@ import RowHelper from "~/utils/helpers/RowHelper";
 import RowsList from "../rows/RowsList";
 import { defaultDisplayProperties } from "~/utils/helpers/PropertyHelper";
 
+type ViewLayout = "table" | "board" | "grid" | "card";
+
+function FilterValueInput({
+  idx,
+  item,
+  propertyType,
+  propertyOptions,
+  filters,
+  setFilters,
+  t,
+}: Readonly<{
+  idx: number;
+  item: { name: string; condition: string; value: string; match: string };
+  propertyType?: PropertyType;
+  propertyOptions?: { name: string | null; value: string; order: number }[];
+  filters: { name: string; condition: string; value: string; match: string }[];
+  setFilters: (filters: { name: string; condition: string; value: string; match: string }[]) => void;
+  t: (key: string) => string;
+}>) {
+  if (propertyType === PropertyType.BOOLEAN) {
+    return (
+      <div className="sm:col-span-3">
+        <InputSelector
+          withSearch={false}
+          name={"filters[" + idx + "].value"}
+          title="Value"
+          value={item.value}
+          setValue={(e) => updateItemByIdx(filters, setFilters, idx, { value: e })}
+          options={[
+            { name: "True", value: "true" },
+            { name: "False", value: "false" },
+          ]}
+        />
+      </div>
+    );
+  }
+
+  if (propertyType === PropertyType.SELECT) {
+    return (
+      <div className="sm:col-span-3">
+        <InputSelector
+          withSearch={false}
+          name={"filters[" + idx + "].value"}
+          title="Value"
+          value={item.value}
+          setValue={(e) => updateItemByIdx(filters, setFilters, idx, { value: e })}
+          options={
+            propertyOptions?.map((i) => {
+              return {
+                name: i.name ? i.value + " - " + t(i.name) : i.value,
+                value: i.value,
+              };
+            }) ?? []
+          }
+        />
+      </div>
+    );
+  }
+
+  return (
+    <div className="sm:col-span-3">
+      <InputText
+        name={"filters[" + idx + "].value"}
+        title="Value"
+        value={item.value}
+        setValue={(e) => updateItemByIdx(filters, setFilters, idx, { value: e })}
+      />
+    </div>
+  );
+}
+
 interface Props {
   entity: EntityWithDetails | undefined;
   item?: EntityViewWithDetails | null;
@@ -66,7 +137,7 @@ export default function EntityViewForm({
 
   const [fakeItems, setFakeItems] = useState<RowWithDetails[]>([]);
 
-  const [layout, setLayout] = useState<"table" | "board" | "grid" | "card">("table");
+  const [layout, setLayout] = useState<ViewLayout>("table");
   const [name, setName] = useState("");
   const [title, setTitle] = useState("");
   const [order, setOrder] = useState<number | undefined>(item?.order ?? OrderHelper.getNextOrder(entity.views));
@@ -75,7 +146,6 @@ export default function EntityViewForm({
 
   const [properties, setProperties] = useState<{ propertyId: string | null; name: string | null; order: number; title?: string }[]>([]);
   const [filters, setFilters] = useState<{ name: string; condition: string; value: string; match: string }[]>(item?.filters ?? []);
-  // const [sort, setSort] = useState<{ name: string; asc: boolean; order: number }[]>(item?.sort ?? []);
 
   // Board
   const [groupBy, setGroupBy] = useState<string | number | undefined>(item?.groupByPropertyId ? "byProperty" : undefined);
@@ -102,7 +172,7 @@ export default function EntityViewForm({
     } else if (item) {
       setName(item.name);
       setTitle(item.title);
-      setLayout(item.layout as "table" | "board" | "grid" | "card");
+      setLayout(item.layout as ViewLayout);
     }
   }, [entity, isSystem, item, t]);
 
@@ -284,7 +354,7 @@ export default function EntityViewForm({
             name="layout"
             title="Layout"
             value={layout}
-            onChange={(e) => setLayout((e?.toString() ?? "table") as "table" | "board" | "grid" | "card")}
+            onChange={(e) => setLayout((e?.toString() ?? "table") as ViewLayout)}
             options={EntityViewLayoutTypes.map((f) => {
               return {
                 name: f.name,
@@ -312,8 +382,7 @@ export default function EntityViewForm({
             onBlur={() => {
               if (!item) {
                 let title = StringUtils.capitalize(name.toLowerCase());
-                // replace - occurrences with spaces
-                title = title.replace(/-/g, " ");
+                title = title.replaceAll("-", " ");
                 setTitle(title);
               }
             }}
@@ -351,22 +420,20 @@ export default function EntityViewForm({
       {layout === "board" && (
         <InputGroup title="Board">
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-12">
-            <>
-              <InputSelect className="sm:col-span-6" name="groupBy" title="Group by" value={groupBy} setValue={setGroupBy} options={groupByOptions} />
-              <InputSelect
-                className="sm:col-span-6"
-                name="groupByPropertyId"
-                title="Property"
-                value={groupByPropertyId}
-                setValue={setGroupByPropertyId}
-                options={selectProperties.map((item) => {
-                  return {
-                    name: t(item.title),
-                    value: item.id,
-                  };
-                })}
-              />
-            </>
+            <InputSelect className="sm:col-span-6" name="groupBy" title="Group by" value={groupBy} setValue={setGroupBy} options={groupByOptions} />
+            <InputSelect
+              className="sm:col-span-6"
+              name="groupByPropertyId"
+              title="Property"
+              value={groupByPropertyId}
+              setValue={setGroupByPropertyId}
+              options={selectProperties.map((item) => {
+                return {
+                  name: t(item.title),
+                  value: item.id,
+                };
+              })}
+            />
           </div>
         </InputGroup>
       )}
@@ -401,7 +468,7 @@ export default function EntityViewForm({
       <div>
         <div className="divide-border divide-y">
           {properties.map((item, idx) => (
-            <input key={idx} type="text" name="properties[]" readOnly hidden value={JSON.stringify(item)} />
+            <input key={`property-${item.propertyId}-${item.name}-${idx}`} type="text" name="properties[]" readOnly hidden value={JSON.stringify(item)} />
           ))}
           <div className="grid gap-2 sm:grid-cols-2">
             <div className="space-y-1">
@@ -438,7 +505,7 @@ export default function EntityViewForm({
                           </div>
                         </div>
                       }
-                      value={properties.find((f) => f.name === item.name) !== undefined}
+                      value={properties.some((f) => f.name === item.name)}
                       setValue={(e) => {
                         if (e) {
                           setProperties([
@@ -466,7 +533,7 @@ export default function EntityViewForm({
                 {properties
                   .sort((a, b) => a.order - b.order)
                   .map((item, idx) => (
-                    <div key={idx} className="flex items-baseline space-x-1 text-sm">
+                    <div key={`displayed-${item.propertyId}-${item.name}-${idx}`} className="flex items-baseline space-x-1 text-sm">
                       <div className="shrink-0">
                         <OrderIndexButtons
                           idx={idx}
@@ -495,14 +562,14 @@ export default function EntityViewForm({
         <Fragment>
           <InputGroup title="Filters">
             {filters.map((item, idx) => (
-              <input key={idx} type="text" name="filters[]" readOnly hidden value={JSON.stringify(item)} />
+              <input key={`filter-${item.name}-${item.condition}-${idx}`} type="text" name="filters[]" readOnly hidden value={JSON.stringify(item)} />
             ))}
             <div className="mb-2 space-y-2">
               {filters.map((item, idx) => (
                 <CollapsibleRow
                   className="bg-secondary"
                   initial={true}
-                  key={idx}
+                  key={`filter-row-${item.name}-${item.condition}-${idx}`}
                   title={`${item.name} (${item.condition}) ${item.value}`}
                   value={
                     <div className="flex items-center space-x-1 text-sm">
@@ -559,50 +626,15 @@ export default function EntityViewForm({
                         options={getPropertyConditionsByName(item.name)}
                       />
                     </div>
-                    <Fragment>
-                      {getPropertyByName(item.name)?.type === PropertyType.BOOLEAN ? (
-                        <div className="sm:col-span-3">
-                          <InputSelector
-                            withSearch={false}
-                            name={"filters[" + idx + "].value"}
-                            title="Value"
-                            value={item.value}
-                            setValue={(e) => updateItemByIdx(filters, setFilters, idx, { value: e })}
-                            options={[
-                              { name: "True", value: "true" },
-                              { name: "False", value: "false" },
-                            ]}
-                          />
-                        </div>
-                      ) : getPropertyByName(item.name)?.type === PropertyType.SELECT ? (
-                        <div className="sm:col-span-3">
-                          <InputSelector
-                            withSearch={false}
-                            name={"filters[" + idx + "].value"}
-                            title="Value"
-                            value={item.value}
-                            setValue={(e) => updateItemByIdx(filters, setFilters, idx, { value: e })}
-                            options={
-                              getPropertyByName(item.name)?.options.map((i) => {
-                                return {
-                                  name: i.name ? i.value + " - " + t(i.name) : i.value,
-                                  value: i.value,
-                                };
-                              }) ?? []
-                            }
-                          />
-                        </div>
-                      ) : (
-                        <div className="sm:col-span-3">
-                          <InputText
-                            name={"filters[" + idx + "].value"}
-                            title="Value"
-                            value={item.value}
-                            setValue={(e) => updateItemByIdx(filters, setFilters, idx, { value: e })}
-                          />
-                        </div>
-                      )}
-                    </Fragment>
+                    <FilterValueInput
+                      idx={idx}
+                      item={item}
+                      propertyType={getPropertyByName(item.name)?.type}
+                      propertyOptions={getPropertyByName(item.name)?.options}
+                      filters={filters}
+                      setFilters={setFilters}
+                      t={t}
+                    />
                   </div>
                 </CollapsibleRow>
               ))}
@@ -626,72 +658,6 @@ export default function EntityViewForm({
               <span className="text-muted-foreground block text-xs font-normal">{filters.length === 0 ? "No filters" : "Add filter"}</span>
             </button>
           </InputGroup>
-
-          {/* <InputGroup title="Sort">
-        {sort.map((item, idx) => (
-          <input key={idx} type="text" name="sort[]" readOnly hidden value={JSON.stringify(item)} />
-        ))}
-        <div className="space-y-2 mb-2">
-          {sort
-            .sort((a, b) => a.order - b.order)
-            .map((item, idx) => (
-              <CollapsibleRow
-                className="bg-secondary"
-                key={idx}
-                initial={true}
-                title={`${item.name} (${item.asc ? "asc" : "desc"})`}
-                value={
-                  <div className="flex space-x-1 items-center text-sm">
-                    <div className="font-medium">{item.name}</div>
-                    <div className="font-light text-muted-foreground">{item.asc ? "asc" : "desc"}</div>
-                  </div>
-                }
-                onRemove={() => setSort(sort.filter((_, i) => i !== idx))}
-              >
-                <div className="grid grid-cols-2 gap-3">
-                  <InputSelector
-                    withSearch={false}
-                    name={"sort[" + idx + "].name"}
-                    title="Property"
-                    value={item.name}
-                    setValue={(e) => updateItemByIdx(sort, setSort, idx, { name: e })}
-                    options={entity.properties.map((property) => {
-                      return {
-                        name: t(property.title),
-                        value: property.name,
-                      };
-                    })}
-                  />
-                  <InputSelect
-                    name={"sort[" + idx + "].order"}
-                    title="Order"
-                    value={item.asc ? "asc" : "desc"}
-                    setValue={(e) => updateItemByIdx(sort, setSort, idx, { asc: e?.toString() === "asc" })}
-                    options={[
-                      {
-                        name: "Ascending",
-                        value: "asc",
-                      },
-                      {
-                        name: "Descending",
-                        value: "desc",
-                      },
-                    ]}
-                  />
-                </div>
-              </CollapsibleRow>
-            ))}
-        </div>
-        <button
-          type="button"
-          onClick={() =>
-            setSort([...sort, { name: entity.properties.find((f) => !f.isDefault)?.name ?? "", asc: true, order: OrderHelper.getNextOrder(sort) }])
-          }
-          className="relative block w-full border-2 border-border border-dashed rounded-lg p-4 text-center hover:border-border focus:outline-hidden focus:ring-2 focus:ring-gray-500"
-        >
-          <span className="block text-xs font-normal text-muted-foreground">{filters.length === 0 ? "No sort fields" : "Add sort"}</span>
-        </button>
-      </InputGroup> */}
         </Fragment>
       )}
 

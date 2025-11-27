@@ -36,7 +36,17 @@ interface Props {
     isSuperAdmin: boolean;
   } | null;
 }
-export default function RowsViewRoute({ title, rowsData, items, routes, onNewRow, onEditRow, saveCustomViews, permissions, currentSession }: Props) {
+export default function RowsViewRoute({
+  title,
+  rowsData,
+  items,
+  routes,
+  onNewRow,
+  onEditRow,
+  saveCustomViews,
+  permissions,
+  currentSession,
+}: Readonly<Props>) {
   const { t } = useTranslation();
   const actionData = useActionData<Rows_List.ActionData>();
   const appData = useAppData();
@@ -217,7 +227,7 @@ export default function RowsViewRoute({ title, rowsData, items, routes, onNewRow
                 })}
               />
             ) : rowsData.currentView?.layout === "board" && ["opportunity", "ticket"].includes(rowsData.entity.name) ? null : (
-              title ?? <h3 className="flex flex-1 items-center truncate font-bold">{t(rowsData.currentView?.title ?? rowsData.entity.titlePlural)}</h3>
+              title || <h3 className="flex flex-1 items-center truncate font-bold">{t(rowsData.currentView?.title ?? rowsData.entity.titlePlural)}</h3>
             )}
           </Fragment>
         )}
@@ -242,7 +252,7 @@ export default function RowsViewRoute({ title, rowsData, items, routes, onNewRow
           onEditRow={onEditRow}
           currentView={rowsData.currentView}
           selectedRows={selectedRows}
-          onSelected={!bulkActions.length ? undefined : (rows) => setSelectedRows(rows)}
+          onSelected={bulkActions.length ? (rows) => setSelectedRows(rows) : undefined}
         />
         <div className="mt-2 flex items-center justify-between space-x-2">
           <div>
@@ -253,11 +263,9 @@ export default function RowsViewRoute({ title, rowsData, items, routes, onNewRow
                   to={EntityHelper.getRoutes({ routes, entity: rowsData.entity })?.export + "?" + searchParams}
                   reloadDocument
                 >
-                  {rowsData.pagination.totalItems === 1 ? (
-                    <div>{t("shared.exportResult")}</div>
-                  ) : (
-                    <div>{t("shared.exportResults", { 0: rowsData.pagination.totalItems })}</div>
-                  )}
+                  <div>
+                    {rowsData.pagination.totalItems === 1 ? t("shared.exportResult") : t("shared.exportResults", { 0: rowsData.pagination.totalItems })}
+                  </div>
                 </Link>
               )}
             </div>
@@ -265,7 +273,11 @@ export default function RowsViewRoute({ title, rowsData, items, routes, onNewRow
 
           {saveCustomViews && rowsData.entity.hasViews && (
             <Fragment>
-              {canUpdateCurrentView() ? (
+              {!canUpdateCurrentView() ? (
+                <button type="button" className="text-muted-foreground text-xs font-medium hover:underline" onClick={onCreateView}>
+                  {t("models.view.actions.create")}
+                </button>
+              ) : (
                 <div className="text-muted-foreground flex items-center space-x-2">
                   <button type="button" className="text-xs font-medium hover:underline" disabled={!canUpdateCurrentView()} onClick={onUpdateView}>
                     {t("models.view.actions.update")}
@@ -275,10 +287,6 @@ export default function RowsViewRoute({ title, rowsData, items, routes, onNewRow
                     {t("models.view.actions.create")}
                   </button>
                 </div>
-              ) : (
-                <button type="button" className="text-muted-foreground text-xs font-medium hover:underline" onClick={onCreateView}>
-                  {t("models.view.actions.create")}
-                </button>
               )}
             </Fragment>
           )}
@@ -318,7 +326,7 @@ export default function RowsViewRoute({ title, rowsData, items, routes, onNewRow
   );
 }
 
-function DeleteIconButton({ onClick }: { onClick: () => void }) {
+function DeleteIconButton({ onClick }: Readonly<{ onClick: () => void }>) {
   const navigation = useNavigation();
   return (
     <button

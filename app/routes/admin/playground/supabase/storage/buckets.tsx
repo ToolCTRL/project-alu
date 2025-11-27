@@ -1,4 +1,4 @@
-import { ActionFunction, ActionFunctionArgs, LoaderFunctionArgs, MetaFunction, Form, useActionData, useLoaderData, useSubmit, useNavigation } from "react-router";
+import { ActionFunctionArgs, LoaderFunctionArgs, MetaFunction, Form, useActionData, useLoaderData, useSubmit, useNavigation } from "react-router";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Colors } from "~/application/enums/shared/Colors";
@@ -43,19 +43,21 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
   };
   if (process.env.NODE_ENV !== "development") {
     data.error = "Not available in production";
-  } else if (!process.env.SUPABASE_API_URL) {
-    data.error = "Missing SUPABASE_API_URL .env variable";
-  } else if (!process.env.SUPABASE_KEY) {
-    data.error = "Missing SUPABASE_KEY .env variable (service_role, secret)";
-  } else {
-    data.buckets = await getSupabaseBuckets();
-    if (data.buckets.data) {
-      await Promise.all(
-        data.buckets.data.map(async (bucket) => {
-          data.files[bucket.id] = await getSupabaseFiles(bucket.id);
-        })
-      );
+  } else if (process.env.SUPABASE_API_URL) {
+    if (process.env.SUPABASE_KEY) {
+      data.buckets = await getSupabaseBuckets();
+      if (data.buckets.data) {
+        await Promise.all(
+          data.buckets.data.map(async (bucket) => {
+            data.files[bucket.id] = await getSupabaseFiles(bucket.id);
+          })
+        );
+      }
+    } else {
+      data.error = "Missing SUPABASE_KEY .env variable (service_role, secret)";
     }
+  } else {
+    data.error = "Missing SUPABASE_API_URL .env variable";
   }
   return data;
 };
@@ -128,9 +130,7 @@ export default function BucketsList() {
     <IndexPageLayout
       title="Supabase Playground - Buckets"
       buttons={
-        <>
-          <ButtonPrimary onClick={() => setIsAdding(true)}>Create</ButtonPrimary>
-        </>
+        <ButtonPrimary onClick={() => setIsAdding(true)}>Create</ButtonPrimary>
       }
     >
       {data.error ?? data.buckets.error ? (

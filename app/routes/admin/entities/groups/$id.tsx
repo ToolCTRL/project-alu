@@ -13,7 +13,7 @@ type LoaderData = {
 };
 export const loader = async ({ request, params }: LoaderFunctionArgs) => {
   await verifyUserHasPermission(request, "admin.entities.update");
-  const item = await getEntityGroup(params.id!);
+  const item = await getEntityGroup(params.id);
   if (!item) {
     return redirect("/admin/entities/groups");
   }
@@ -31,7 +31,7 @@ export const action = async ({ request, params }: ActionFunctionArgs) => {
   const form = await request.formData();
   const action = form.get("action")?.toString();
 
-  const item = await getEntityGroup(params.id!);
+  const item = await getEntityGroup(params.id);
   if (!item) {
     return redirect("/admin/entities/groups");
   }
@@ -50,7 +50,7 @@ export const action = async ({ request, params }: ActionFunctionArgs) => {
     if (slug && existing) {
       return Response.json({ error: "Group with this slug already exists" }, { status: 400 });
     }
-    await updateEntityGroup(params.id!, {
+    await updateEntityGroup(params.id, {
       slug,
       title,
       icon,
@@ -61,14 +61,14 @@ export const action = async ({ request, params }: ActionFunctionArgs) => {
     return redirect("/admin/entities/groups");
   } else if (action === "delete") {
     await verifyUserHasPermission(request, "admin.entities.delete");
-    await deleteEntityGroup(params.id!);
+    await deleteEntityGroup(params.id);
     return Response.json({ success: t("shared.deleted") });
   } else {
     return Response.json({ error: t("shared.invalidForm") }, { status: 400 });
   }
 };
 
-export default function () {
+export default function EditEntityGroupRoute() {
   const data = useLoaderData<LoaderData>();
 
   return (

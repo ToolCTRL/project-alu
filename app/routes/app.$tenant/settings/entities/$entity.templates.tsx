@@ -1,6 +1,5 @@
 import { useTranslation } from "react-i18next";
-import { LoaderFunctionArgs, useLoaderData } from "react-router";
-import { Outlet, useParams } from "react-router";
+import { LoaderFunctionArgs, useLoaderData, Outlet, useParams } from "react-router";
 import ButtonTertiary from "~/components/ui/buttons/ButtonTertiary";
 import TableSimple from "~/components/ui/tables/TableSimple";
 import { EntityWithDetails, getEntityBySlug } from "~/utils/db/entities/entities.db.server";
@@ -29,16 +28,12 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
   return data;
 };
 
-export default function EntityTemplatesIndex() {
-  const { t } = useTranslation();
-  const data = useLoaderData<LoaderData>();
-  const params = useParams();
-
+function TemplateCell({ item, entity, t }: { item: EntityTemplate; entity: EntityWithDetails; t: any }) {
   function getConfig(item: EntityTemplate) {
     try {
       const config = JSON.parse(item.config);
       const values: string[] = [];
-      data.entity.properties
+      entity.properties
         .filter((f) => !f.isDefault)
         .sort((a, b) => a.order - b.order)
         .forEach((property) => {
@@ -54,10 +49,18 @@ export default function EntityTemplatesIndex() {
           }
         });
       return values.join(", ");
-    } catch (e) {
+    } catch {
       return "";
     }
   }
+  return <ShowPayloadModalButton title={`Template: ${item.title}`} payload={getConfig(item)} />;
+}
+
+export default function EntityTemplatesIndex() {
+  const { t } = useTranslation();
+  const data = useLoaderData<LoaderData>();
+  const params = useParams();
+
   return (
     <EditPageLayout
       title={t(data.entity.titlePlural) + " - " + t("models.entity.templates")}
@@ -85,7 +88,7 @@ export default function EntityTemplatesIndex() {
               title: "Template",
               name: "template",
               className: "max-w-xs",
-              value: (item) => <ShowPayloadModalButton title={`Template: ${item.title}`} payload={getConfig(item)} />,
+              value: (item) => <TemplateCell item={item} entity={data.entity} t={t} />,
             },
           ]}
           items={data.items}

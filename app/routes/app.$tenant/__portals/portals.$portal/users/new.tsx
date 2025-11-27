@@ -17,7 +17,7 @@ type LoaderData = {};
 export const loader = async ({ request, params }: LoaderFunctionArgs) => {
   await requireAuth({ request, params });
   const tenantId = await getTenantIdOrNull({ request, params });
-  const portal = await getPortalById(tenantId, params.portal!);
+  const portal = await getPortalById(tenantId, params.portal ?? "");
   if (!portal) {
     return redirect(UrlUtils.getModulePath(params, "portals"));
   }
@@ -37,7 +37,7 @@ export const action = async ({ request, params }: ActionFunctionArgs) => {
   const action = form.get("action")?.toString();
 
   const tenantId = await getTenantIdOrNull({ request, params });
-  const portal = await getPortalById(tenantId, params.portal!);
+  const portal = await getPortalById(tenantId, params.portal ?? "");
   if (!portal) {
     return redirect(UrlUtils.getModulePath(params, "portals"));
   }
@@ -74,7 +74,7 @@ export const action = async ({ request, params }: ActionFunctionArgs) => {
   }
 };
 
-export default function () {
+export default function UserNewPage() {
   const { t } = useTranslation();
   const actionData = useActionData<ActionData>();
   const params = useParams();

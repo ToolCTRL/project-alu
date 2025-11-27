@@ -23,7 +23,7 @@ export namespace Rows_Import {
     const data: LoaderData = {
       meta: [{ title: `${t("shared.import")} ${t(entity.titlePlural)} | ${process.env.APP_NAME}` }],
       entity,
-      allTenants: !tenantId ? await adminGetAllTenantsIdsAndNames() : [],
+      allTenants: tenantId ? [] : await adminGetAllTenantsIdsAndNames(),
     };
     return Response.json(data);
   };
@@ -41,13 +41,16 @@ export namespace Rows_Import {
     const { t, userId, tenantId, entity, form } = await RowsRequestUtils.getAction({ request, params });
     const action = form.get("action");
     if (action === "import") {
-      const tag = form.get("tag")?.toString() ?? "import";
+      const tagValue = form.get("tag");
+      const tag = (typeof tagValue === "string" ? tagValue : tagValue?.toString()) ?? "import";
       const rawRows: ImportRow[] = form.getAll("rows[]").map((f: FormDataEntryValue) => {
-        return JSON.parse(f.toString());
+        const strValue = typeof f === "string" ? f : f?.toString();
+        return JSON.parse(strValue);
       });
       let tenantToImport = tenantId;
       if (tenantId === null) {
-        const selectedTenantId = form.get("selectedTenantId")?.toString() || "{null}";
+        const selectedTenantIdValue = form.get("selectedTenantId");
+        const selectedTenantId = (typeof selectedTenantIdValue === "string" ? selectedTenantIdValue : selectedTenantIdValue?.toString()) || "{null}";
         if (selectedTenantId === "{null}") {
           tenantToImport = null;
         } else {

@@ -28,10 +28,9 @@ export default function CampaignsNewRoute() {
   const [senderId, setSenderId] = useState<string | number | undefined>(data.emailSenders.length > 0 ? data.emailSenders[0].id : "");
   const [contentType, setContentType] = useState<"wysiwyg" | "markdown">("wysiwyg");
   const [htmlBody, setHtmlBody] = useState(defaultHtmlBody);
-  // const [track, setTrack] = useState(true);
 
   const [selectedContactsViewId, setSelectedContactsViewId] = useState<string>(data.contactsViews.length > 0 ? data.contactsViews[0].view?.id ?? "" : "");
-  const [selectedContactsView, setSelectedContactsView] = useState<EntityViewsApi.GetEntityViewsWithRows>();
+  const [selectedContactsView] = useState<EntityViewsApi.GetEntityViewsWithRows>();
 
   useEffect(() => {
     if (actionData?.success) {

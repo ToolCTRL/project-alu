@@ -31,19 +31,21 @@ export default function PageWithIdRoute() {
 
   const hasNoData = !data?.blocks?.length;
 
-  return (
-    <>
-      {hasNoData ? (
-        <Page404 />
-      ) : data.error ? (
+  const renderContent = () => {
+    if (hasNoData) {
+      return <Page404 />;
+    }
+    if (data.error) {
+      return (
         <div className="mx-auto max-w-7xl px-4 py-2 sm:px-6 lg:px-8">
           <ErrorBanner title={t("shared.error")} text={data.error} />
         </div>
-      ) : (
-        <PageBlocks items={blocks} onChange={setBlocks} />
-      )}
-    </>
-  );
+      );
+    }
+    return <PageBlocks items={blocks} onChange={setBlocks} />;
+  };
+
+  return <>{renderContent()}</>;
 }
 
 export function ErrorBoundary() {

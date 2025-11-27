@@ -1,6 +1,20 @@
 import TableSimple from "~/components/ui/tables/TableSimple";
 import { KnowledgeBasesTemplateDto } from "../../dtos/KnowledgeBasesTemplateDto";
 
+interface TitleCellProps {
+  readonly title: string;
+  readonly description: string;
+}
+
+function TitleCell({ title, description }: TitleCellProps) {
+  return (
+    <div className="flex-col">
+      <div>{title}</div>
+      <div className="text-muted-foreground text-xs">{description}</div>
+    </div>
+  );
+}
+
 export default function PreviewKbsTemplate({ template }: { readonly template: KnowledgeBasesTemplateDto }) {
   return (
     <div className="space-y-2">
@@ -12,12 +26,7 @@ export default function PreviewKbsTemplate({ template }: { readonly template: Kn
           {
             name: "title",
             title: "Title",
-            value: (i) => (
-              <div className="flex-col">
-                <div>{i.title}</div>
-                <div className="text-muted-foreground text-xs">{i.description}</div>
-              </div>
-            ),
+            value: (i) => <TitleCell title={i.title} description={i.description} />,
           },
           { name: "enabled", title: "Enabled", value: (i) => i.enabled },
         ]}
@@ -31,12 +40,7 @@ export default function PreviewKbsTemplate({ template }: { readonly template: Kn
           {
             name: "title",
             title: "Title",
-            value: (i) => (
-              <div className="flex-col">
-                <div>{i.title}</div>
-                <div className="text-muted-foreground text-xs">{i.description}</div>
-              </div>
-            ),
+            value: (i) => <TitleCell title={i.title} description={i.description} />,
           },
           {
             name: "sections",
@@ -55,12 +59,7 @@ export default function PreviewKbsTemplate({ template }: { readonly template: Kn
           {
             name: "title",
             title: "Title",
-            value: (i) => (
-              <div className="flex-col">
-                <div>{i.title}</div>
-                <div className="text-muted-foreground text-xs">{i.description}</div>
-              </div>
-            ),
+            value: (i) => <TitleCell title={i.title} description={i.description} />,
           },
           { name: "knowledgeBase", title: "Knowledge Base", value: (i) => i.knowledgeBaseSlug },
         ]}

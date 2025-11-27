@@ -4,4 +4,6 @@ import { OutboundEmails_List } from "~/modules/emailMarketing/routes/OutboundEma
 
 export const loader = (args: LoaderFunctionArgs) => OutboundEmails_List.loader(args);
 
-export default () => <OutboundEmailsListRoute />;
+export default function ActivityRoute() {
+  return <OutboundEmailsListRoute />;
+}

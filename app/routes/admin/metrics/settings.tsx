@@ -1,5 +1,4 @@
-import { ActionFunction, LoaderFunctionArgs, MetaFunction } from "react-router";
-import { Form, useActionData, useLoaderData, useNavigation, useSubmit } from "react-router";
+import { ActionFunction, LoaderFunctionArgs, Form, useActionData, useLoaderData, useNavigation, useSubmit } from "react-router";
 import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { RowValueMultipleDto } from "~/application/dtos/entities/RowValueMultipleDto";
@@ -66,7 +65,7 @@ export const action: ActionFunction = async ({ request }) => {
   }
 };
 
-export default function () {
+export default function MetricsSettings() {
   const { t } = useTranslation();
   const appOrAdminData = useAppOrAdminData();
   const data = useLoaderData<LoaderData>();

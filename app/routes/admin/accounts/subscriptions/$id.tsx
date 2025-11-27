@@ -13,7 +13,7 @@ type LoaderData = {
 };
 export const loader = async ({ request, params }: LoaderFunctionArgs) => {
   await verifyUserHasPermission(request, "admin.account.settings.update");
-  const item = await getTenantSubscriptionProductById(params.id!);
+  const item = await getTenantSubscriptionProductById(params.id);
   if (!item) {
     return Response.json({ error: "Not found" }, { status: 404 });
   }
@@ -23,7 +23,7 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
   return data;
 };
 
-export default function () {
+export default function AdminAccountsSubscriptionDetails() {
   const { t } = useTranslation();
   const data = useLoaderData<LoaderData>();
   return (
@@ -43,9 +43,7 @@ export default function () {
                     <InputText defaultValue={price.subscriptionPrice.price?.toString() ?? ""} readOnly />
                     <InputText defaultValue={SubscriptionBillingPeriod[price.subscriptionPrice.billingPeriod]} readOnly />
                   </div>
-                ) : (
-                  <Fragment></Fragment>
-                )}
+                ) : null}
               </Fragment>
             ))}
           </div>

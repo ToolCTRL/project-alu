@@ -95,7 +95,7 @@ export const action: ActionFunction = async ({ request, params }) => {
       data: {
         user: { email: invitation.email, firstName: invitation.firstName, lastName: invitation.lastName, type: TenantUserType[invitation.type] },
         tenant: { id: tenant.id, name: tenant.name },
-        fromUser: { id: fromUser!.id, email: fromUser!.email },
+        fromUser: { id: fromUser.id, email: fromUser.email },
       } satisfies MemberInvitationCreatedDto,
     });
 

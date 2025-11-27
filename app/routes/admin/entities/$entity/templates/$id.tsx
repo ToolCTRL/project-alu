@@ -1,6 +1,5 @@
 import { EntityTemplate } from "@prisma/client";
-import { ActionFunction, LoaderFunctionArgs, redirect, useLoaderData } from "react-router";
-import { useNavigate, useParams } from "react-router";
+import { ActionFunction, LoaderFunctionArgs, redirect, useLoaderData, useNavigate, useParams } from "react-router";
 import EntityTemplateForm from "~/components/entities/entityTemplates/EntityTemplateForm";
 import SlideOverWideEmpty from "~/components/ui/slideOvers/SlideOverWideEmpty";
 import { getTranslations } from "~/locale/i18next.server";

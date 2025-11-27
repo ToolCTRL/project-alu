@@ -41,7 +41,7 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
   return data;
 };
 
-export default () => {
+export default function PortalLayout() {
   const { t } = useTranslation();
   const params = useParams();
   const rootData = useRootData();
@@ -116,7 +116,7 @@ export default () => {
       <Outlet />
     </SidebarIconsLayout>
   );
-};
+}
 
 export function ErrorBoundary() {
   return <ServerError />;

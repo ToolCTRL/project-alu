@@ -1,5 +1,4 @@
-import { ActionFunctionArgs, LoaderFunctionArgs, redirect, useLoaderData } from "react-router";
-import { useParams } from "react-router";
+import { ActionFunctionArgs, LoaderFunctionArgs, redirect, useLoaderData, useParams } from "react-router";
 import KbCategoryForm from "~/modules/knowledgeBase/components/bases/KbCategoryForm";
 import { createKnowledgeBaseCategory, getAllKnowledgeBaseCategories, getKbCategoryBySlug } from "~/modules/knowledgeBase/db/kbCategories.db.server";
 import { KnowledgeBaseDto } from "~/modules/knowledgeBase/dtos/KnowledgeBaseDto";
@@ -78,13 +77,13 @@ export const action = async ({ request, params }: ActionFunctionArgs) => {
   }
 };
 
-export default function () {
+export default function NewCategory() {
   const data = useLoaderData<LoaderData>();
   const params = useParams();
 
   return (
     <div>
-      <KbCategoryForm knowledgeBase={data.knowledgeBase} language={params.lang!} />
+      <KbCategoryForm knowledgeBase={data.knowledgeBase} language={params.lang} />
     </div>
   );
 }

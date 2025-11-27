@@ -1,6 +1,6 @@
 import { useMemo, useEffect } from "react";
 import { useTranslation } from "react-i18next";
-import { ActionFunctionArgs, Link, LoaderFunctionArgs, MetaFunction, useActionData, useLoaderData } from "react-router";
+import { ActionFunctionArgs, Link, LoaderFunctionArgs, useActionData, useLoaderData, useNavigate, useOutlet } from "react-router";
 import { adminGetAllUsers, getUser, updateUserPassword, UserWithDetails } from "~/utils/db/users.db.server";
 import { createUserSession, getUserInfo, setLoggedUser } from "~/utils/session.server";
 import { getTranslations } from "~/locale/i18next.server";
@@ -17,17 +17,15 @@ import { adminGetAllTenantsIdsAndNames, getTenant } from "~/utils/db/tenants.db.
 import { PaginationDto } from "~/application/dtos/data/PaginationDto";
 import { Log } from "@prisma/client";
 import { getLastUserLog } from "~/utils/db/logs.db.server";
-import { useNavigate, useOutlet } from "react-router";
 import { createMetrics } from "~/modules/metrics/services/.server/MetricTracker";
 import SlideOverWideEmpty from "~/components/ui/slideOvers/SlideOverWideEmpty";
 import toast from "react-hot-toast";
 import { Button } from "~/components/ui/button";
 import { ActionTile } from "~/components/ui/cards";
 import { Badge } from "~/components/ui/badge";
-import { ShieldCheck, Users as UsersIcon, Clock3, UserPlus, ShieldHalf, KeySquare, ActivitySquare } from "lucide-react";
+import { ShieldCheck, Users as UsersIcon, Clock3, UserPlus, KeySquare } from "lucide-react";
 export { serverTimingHeaders as headers } from "~/modules/metrics/utils/defaultHeaders.server";
 
-// export const meta: MetaFunction<typeof loader> = ({ data }) => [{ title: data?.title }];
 export const meta = ({ data }: { data: LoaderData }) => [{ title: data.title }];
 
 type LoaderData = {

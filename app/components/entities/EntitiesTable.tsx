@@ -16,7 +16,7 @@ interface Props {
   onSelected?: (items: EntityWithCount[]) => void;
 }
 
-export default function EntitiesTable({ items, selected, onSelected }: Props) {
+export default function EntitiesTable({ items, selected, onSelected }: Readonly<Props>) {
   const appOrAdminData = useAppOrAdminData();
   const { t } = useTranslation();
 
@@ -63,7 +63,7 @@ export default function EntitiesTable({ items, selected, onSelected }: Props) {
         className: "w-full text-xs",
         value: (item) => (
           <div className="max-w-xs truncate">
-            {item.properties.filter((f) => !f.isDefault).length > 0 ? (
+            {item.properties.some((f) => !f.isDefault) ? (
               <Link className="truncate pb-1 hover:underline" to={"/admin/entities/" + item.slug + "/properties"}>
                 {item.properties
                   .filter((f) => !f.isDefault)

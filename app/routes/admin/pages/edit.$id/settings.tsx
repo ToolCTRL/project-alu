@@ -5,4 +5,8 @@ import { PageSettings_Index } from "~/modules/pageBlocks/routes/pages/PageSettin
 export const loader = (args: LoaderFunctionArgs) => PageSettings_Index.loader(args);
 export const action: ActionFunction = (args) => PageSettings_Index.action(args);
 
-export default () => <PageSettingsRouteIndex />;
+function PageSettingsRoute() {
+  return <PageSettingsRouteIndex />;
+}
+
+export default PageSettingsRoute;

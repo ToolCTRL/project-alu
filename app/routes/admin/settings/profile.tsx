@@ -3,10 +3,8 @@ import { useEffect, useRef, useState } from "react";
 import ErrorModal, { RefErrorModal } from "~/components/ui/modals/ErrorModal";
 import SuccessModal, { RefSuccessModal } from "~/components/ui/modals/SuccessModal";
 import ConfirmModal, { RefConfirmModal } from "~/components/ui/modals/ConfirmModal";
-import ButtonTertiary from "~/components/ui/buttons/ButtonTertiary";
 import UploadImage from "~/components/ui/uploaders/UploadImage";
-import { ActionFunction, LoaderFunctionArgs, MetaFunction } from "react-router";
-import { Form, useActionData, useSubmit, useNavigation, useLocation, useSearchParams } from "react-router";
+import { ActionFunction, LoaderFunctionArgs, MetaFunction, Form, useActionData, useSubmit, useNavigation, useLocation, useSearchParams } from "react-router";
 import { updateUserPassword, updateUserProfile } from "~/utils/db/users.db.server";
 import { getUserInfo } from "~/utils/session.server";
 import UploadDocuments from "~/components/ui/uploaders/UploadDocument";
@@ -294,17 +292,13 @@ export default function ProfileRoute() {
                     <div className="mt-2 flex items-center space-x-3">
                       <input hidden id="avatar" name="avatar" defaultValue={avatar ?? actionData?.fields?.avatar} />
                       <div className="bg-secondary/90 h-12 w-12 overflow-hidden rounded-md">
-                        {(() => {
-                          if (avatar) {
-                            return <img id="avatar" alt="Avatar" src={avatar} />;
-                          } else {
-                            return (
-                              <svg id="avatar" className="h-full w-full text-gray-300" fill="currentColor" viewBox="0 0 24 24">
-                                <path d="M24 20.993V24H0v-2.996A14.977 14.977 0 0112.004 15c4.904 0 9.26 2.354 11.996 5.993zM16.002 8.999a4 4 0 11-8 0 4 4 0 018 0z" />
-                              </svg>
-                            );
-                          }
-                        })()}
+                        {avatar ? (
+                          <img id="avatar" alt="Avatar" src={avatar} />
+                        ) : (
+                          <svg id="avatar" className="h-full w-full text-gray-300" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M24 20.993V24H0v-2.996A14.977 14.977 0 0112.004 15c4.904 0 9.26 2.354 11.996 5.993zM16.002 8.999a4 4 0 11-8 0 4 4 0 018 0z" />
+                          </svg>
+                        )}
                       </div>
 
                       {avatar ? (
@@ -322,11 +316,9 @@ export default function ProfileRoute() {
                 <div className="flex justify-between">
                   <div id="form-success-message" className="flex items-center space-x-2">
                     {actionData?.profileSuccess ? (
-                      <>
-                        <p className="py-2 text-sm text-teal-500" role="alert">
-                          {actionData.profileSuccess}
-                        </p>
-                      </>
+                      <p className="py-2 text-sm text-teal-500" role="alert">
+                        {actionData.profileSuccess}
+                      </p>
                     ) : actionData?.profileError ? (
                       <p className="py-2 text-sm text-red-500" role="alert">
                         {actionData?.profileError}

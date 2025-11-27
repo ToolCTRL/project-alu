@@ -5,7 +5,7 @@ import { useState, useEffect } from "react";
 import ScrollReveal from "~/components/ui/animations/ScrollReveal";
 import { TestimonialsBlockDto } from "./TestimonialsBlockUtils";
 
-export default function TestimonialsVariantCarousel({ item }: { item: TestimonialsBlockDto }) {
+export default function TestimonialsVariantCarousel({ item }: { readonly item: TestimonialsBlockDto }) {
   const [activeIndex, setActiveIndex] = useState(0);
   const [autoRotate, setAutoRotate] = useState(true);
 
@@ -102,9 +102,9 @@ export default function TestimonialsVariantCarousel({ item }: { item: Testimonia
               {/* Stars (if provided) */}
               {item.items[activeIndex].stars && (
                 <div className="mt-4 flex items-center gap-1">
-                  {[...Array(5)].map((_, i) => (
+                  {[...new Array(5)].map((_, i) => (
                     <svg
-                      key={i}
+                      key={`star-${i}`}
                       className={`w-5 h-5 ${
                         i < (item.items[activeIndex].stars || 0)
                           ? "text-yellow-400"
@@ -169,9 +169,9 @@ export default function TestimonialsVariantCarousel({ item }: { item: Testimonia
           {/* Navigation Dots */}
           {item.items.length > 1 && (
             <div className="flex justify-center gap-2 mt-8">
-              {item.items.map((_, i) => (
+              {item.items.map((testimonial, i) => (
                 <button
-                  key={i}
+                  key={`dot-${i}-${testimonial.name}`}
                   onClick={() => handleDotClick(i)}
                   className={`h-2 rounded-full transition-all ${
                     i === activeIndex

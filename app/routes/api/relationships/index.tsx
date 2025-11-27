@@ -8,7 +8,6 @@ import { ApiAccessValidation, validateApiKey } from "~/utils/services/apiService
 // POST
 export const action: ActionFunction = async ({ request, params }) => {
   const { time, getServerTimingHeader } = await createMetrics({ request, params }, `[Relationships_API_POST]`);
-  // const { t } = await time(getTranslations(request), "getTranslations");
   let apiAccessValidation: ApiAccessValidation | undefined = undefined;
   const startTime = performance.now();
   try {

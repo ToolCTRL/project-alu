@@ -6,6 +6,46 @@ import TableSimple from "~/components/ui/tables/TableSimple";
 import DateUtils from "~/utils/shared/DateUtils";
 import { IGetSubscribersData } from "../services/.server/NotificationService";
 
+interface SubscriberInfo {
+  readonly subscriberId: string;
+  readonly email: string | null;
+  readonly firstName: string | null;
+  readonly lastName: string | null;
+}
+
+interface SubscriberCellProps {
+  readonly subscriber: SubscriberInfo;
+}
+
+function SubscriberCell({ subscriber }: SubscriberCellProps) {
+  return (
+    <div>
+      {subscriber.email ? (
+        <Link to={"/admin/notifications/messages?subscriberId=" + subscriber.subscriberId}>
+          <UserBadge
+            item={{
+              id: subscriber.subscriberId,
+              email: subscriber.email,
+              firstName: subscriber.firstName,
+              lastName: subscriber.lastName,
+            }}
+          />
+        </Link>
+      ) : (
+        <div>-</div>
+      )}
+    </div>
+  );
+}
+
+interface DeletedStatusCellProps {
+  readonly deleted: boolean;
+}
+
+function DeletedStatusCell({ deleted }: DeletedStatusCellProps) {
+  return <div>{deleted ? <CheckIcon className="text-theme-500 h-4 w-4" /> : <XIcon className="text-muted-foreground h-4 w-4" />}</div>;
+}
+
 export default function NotificationSubscribersTable({ items }: { readonly items: IGetSubscribersData | null }) {
   return (
     <TableSimple
@@ -21,22 +61,14 @@ export default function NotificationSubscribersTable({ items }: { readonly items
           name: "subscriber",
           title: "Subscriber",
           value: (i) => (
-            <div>
-              {i.email ? (
-                <Link to={"/admin/notifications/messages?subscriberId=" + i.subscriberId}>
-                  <UserBadge
-                    item={{
-                      id: i.subscriberId,
-                      email: i.email,
-                      firstName: i.firstName,
-                      lastName: i.lastName,
-                    }}
-                  />
-                </Link>
-              ) : (
-                <div>-</div>
-              )}
-            </div>
+            <SubscriberCell
+              subscriber={{
+                subscriberId: i.subscriberId,
+                email: i.email,
+                firstName: i.firstName,
+                lastName: i.lastName,
+              }}
+            />
           ),
         },
         { name: "createdAt", title: "createdAt", value: (i) => DateUtils.dateAgo(new Date(i.createdAt)) },
@@ -44,7 +76,7 @@ export default function NotificationSubscribersTable({ items }: { readonly items
         {
           name: "deleted",
           title: "deleted",
-          value: (i) => <div>{i.deleted ? <CheckIcon className="text-theme-500 h-4 w-4" /> : <XIcon className="text-muted-foreground h-4 w-4" />}</div>,
+          value: (i) => <DeletedStatusCell deleted={i.deleted} />,
         },
       ]}
     ></TableSimple>

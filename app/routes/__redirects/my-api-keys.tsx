@@ -17,7 +17,9 @@ export const loader: LoaderFunction = async ({ request }) => {
     try {
       return redirect("/app/" + encodeURIComponent(myTenants[0].slug) + "/" + redirectTo);
     } catch (e) {
-      // Redirect failed, continue to fallback
+      // eslint-disable-next-line no-console
+      console.error("Redirect failed:", e);
+      // Continue to fallback
     }
   }
   return redirect("/app");

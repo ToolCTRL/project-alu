@@ -1,5 +1,4 @@
-import { ActionFunctionArgs, LoaderFunctionArgs, redirect, useActionData, useLoaderData } from "react-router";
-import { Link, useNavigate, useOutlet, useParams, useSubmit } from "react-router";
+import { ActionFunctionArgs, LoaderFunctionArgs, redirect, useActionData, useLoaderData, Link, useNavigate, useOutlet, useParams, useSubmit } from "react-router";
 import { useTranslation } from "react-i18next";
 import { FilterablePropertyDto } from "~/application/dtos/data/FilterablePropertyDto";
 import { PaginationDto } from "~/application/dtos/data/PaginationDto";
@@ -121,8 +120,8 @@ async function handleNewArticle(request: Request, form: FormData, userInfo: any)
 }
 
 async function handleSetOrders(form: FormData, updateFunction: (id: string, data: any) => Promise<any>) {
-  const items: { id: string; order: number }[] = form.getAll("orders[]").map((f: FormDataEntryValue) => {
-    return JSON.parse(f.toString());
+  const items: { id: string; order: number }[] = form.getAll("orders[]").map((orderData: FormDataEntryValue) => {
+    return JSON.parse(orderData.toString());
   });
 
   await Promise.all(
@@ -181,11 +180,49 @@ export const action = async ({ request }: ActionFunctionArgs) => {
   return Response.json({ error: "Invalid action" }, { status: 400 });
 };
 
-export default function () {
+const ArticleTitleCell = ({ item }: { item: KnowledgeBaseArticleWithDetails }) => (
+  <div className="space-y-1">
+    <Link to={`/admin/knowledge-base/bases/${item.knowledgeBase.slug}/articles/${item.language}/${item.id}`} className="flex items-center space-x-2 font-medium hover:underline">
+      <div>{item.publishedAt ? <ColorBadge size="sm" color={Colors.TEAL} /> : <ColorBadge size="sm" color={Colors.GRAY} />}</div>
+      <div>{item.title}</div>
+    </Link>
+  </div>
+);
+
+const ArticleCategoryCell = ({ item }: { item: KnowledgeBaseArticleWithDetails }) => (
+  <div>
+    {item.category ? (
+      <div className="flex flex-col">
+        <div>{item.category.title}</div>
+        {item.section && <div className="text-muted-foreground text-xs">{item.section.title}</div>}
+      </div>
+    ) : (
+      <Link to={`${item.id}/settings`} className="text-muted-foreground text-xs italic hover:underline">
+        No category
+      </Link>
+    )}
+  </div>
+);
+
+const ArticleCreatedByCell = ({ item }: { item: KnowledgeBaseArticleWithDetails }) => (
+  <div className="flex flex-col">
+    <DateCell date={item.createdAt} displays={["ymd"]} />
+    <div>
+      {item.createdByUser ? (
+        <div>
+          {item.createdByUser.firstName} {item.createdByUser.lastName}
+        </div>
+      ) : (
+        <div className="text-muted-foreground text-xs italic hover:underline">No author</div>
+      )}
+    </div>
+  </div>
+);
+
+export default function ArticlesListRoute() {
   const { t } = useTranslation();
   const data = useLoaderData<LoaderData>();
   const actionData = useActionData<ActionData>();
-  const params = useParams();
   const outlet = useOutlet();
   const navigate = useNavigate();
   const submit = useSubmit();
@@ -281,39 +318,12 @@ export default function () {
               name: "title",
               title: "Title",
               className: "w-full",
-              value: (i) => (
-                <div className="space-y-1">
-                  <Link
-                    to={`/admin/knowledge-base/bases/${i.knowledgeBase.slug}/articles/${i.language}/${i.id}`}
-                    className="flex items-center space-x-2 font-medium hover:underline"
-                  >
-                    <div>{!i.publishedAt ? <ColorBadge size="sm" color={Colors.GRAY} /> : <ColorBadge size="sm" color={Colors.TEAL} />}</div>
-                    <div>{i.title}</div>
-                  </Link>
-                  {/* <div className="text-muted-foreground text-sm">{i.description}</div> */}
-                  {/* <div className="text-sm text-muted-foreground">{i.slug}</div>
-                  <div className="text-muted-foreground text-sm">{i.description}</div> */}
-                </div>
-              ),
+              value: (i) => <ArticleTitleCell item={i} />,
             },
             {
               name: "category",
               title: "Category",
-              value: (i) => (
-                <div>
-                  {i.category ? (
-                    <div className="flex flex-col">
-                      <div>{i.category.title}</div>
-
-                      {i.section && <div className="text-muted-foreground text-xs">{i.section.title}</div>}
-                    </div>
-                  ) : (
-                    <Link to={`${i.id}/settings`} className="text-muted-foreground text-xs italic hover:underline">
-                      No category
-                    </Link>
-                  )}
-                </div>
-              ),
+              value: (i) => <ArticleCategoryCell item={i} />,
             },
             {
               title: t("shared.language"),
@@ -342,27 +352,12 @@ export default function () {
             {
               name: "featured",
               title: "Featured",
-              value: (i) => {
-                return <InputCheckbox asToggle value={i.featuredOrder ? true : false} setValue={(checked) => onToggle(i, Boolean(checked))} />;
-              },
+              value: (i) => <InputCheckbox asToggle value={Boolean(i.featuredOrder)} setValue={(checked) => onToggle(i, Boolean(checked))} />,
             },
             {
               name: "createdBy",
               title: t("shared.createdBy"),
-              value: (i) => (
-                <div className="flex flex-col">
-                  <DateCell date={i.createdAt} displays={["ymd"]} />
-                  <div>
-                    {i.createdByUser ? (
-                      <div>
-                        {i.createdByUser.firstName} {i.createdByUser.lastName}
-                      </div>
-                    ) : (
-                      <div className="text-muted-foreground text-xs italic hover:underline">No author</div>
-                    )}
-                  </div>
-                </div>
-              ),
+              value: (i) => <ArticleCreatedByCell item={i} />,
             },
           ]}
         />

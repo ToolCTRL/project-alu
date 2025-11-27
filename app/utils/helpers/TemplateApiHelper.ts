@@ -48,15 +48,15 @@ function getTemplateValue({
     variable: {},
     row: row ? {} : undefined,
     session: {
-      user: !session.user
-        ? null
-        : {
-            firstName: session.user!.firstName,
-            lastName: session.user!.lastName,
-            email: session.user!.email,
-            createdAt: session.user!.createdAt,
-          },
-      tenant: !session.tenant ? null : TenantHelper.apiFormat({ tenant: session.tenant, subscriptions: null, tenantSettingsEntity, t }),
+      user: session.user
+        ? {
+            firstName: session.user.firstName,
+            lastName: session.user.lastName,
+            email: session.user.email,
+            createdAt: session.user.createdAt,
+          }
+        : null,
+      tenant: session.tenant ? TenantHelper.apiFormat({ tenant: session.tenant, subscriptions: null, tenantSettingsEntity, t }) : null,
     },
     promptFlow: {
       results: [],

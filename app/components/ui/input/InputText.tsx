@@ -62,8 +62,8 @@ export type InputTextProps = (WithDefaultValue | WithValueAndSetValue) & {
   hint?: ReactNode;
   help?: string;
   icon?: string;
-  editor?: string; // monaco
-  editorLanguage?: string; // "javascript" | "typescript" | "html" | "css" | "json";
+  editor?: string;
+  editorLanguage?: string;
   editorHideLineNumbers?: boolean;
   editorTheme?: "vs-dark" | "light";
   editorFontSize?: number;
@@ -73,7 +73,7 @@ export type InputTextProps = (WithDefaultValue | WithValueAndSetValue) & {
   borderless?: boolean;
   editorSize?: EditorSize;
   autoFocus?: boolean;
-  promptFlows?: { rowId: string; prompts: PromptFlowWithDetails[] } | undefined;
+  promptFlows?: { rowId: string; prompts: PromptFlowWithDetails[] };
   hideChars?: boolean;
   onPaste?: (e: React.ClipboardEvent<HTMLInputElement>) => void;
 };

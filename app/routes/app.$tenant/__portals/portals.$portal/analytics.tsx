@@ -22,7 +22,7 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
   }
 
   const tenantId = await getTenantIdOrNull({ request, params });
-  const item = await getPortalById(tenantId, params.portal!);
+  const item = await getPortalById(tenantId, params.portal);
   if (!item) {
     return redirect(UrlUtils.getModulePath(params, "portals"));
   }
@@ -69,7 +69,7 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
   return data;
 };
 
-export default function () {
+export default function AnalyticsRoute() {
   const { t } = useTranslation();
   const data = useLoaderData<LoaderData>();
   const params = useParams();

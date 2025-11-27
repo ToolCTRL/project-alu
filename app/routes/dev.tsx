@@ -28,7 +28,7 @@ export const action = async ({ request, params }: ActionFunctionArgs) => {
   }
 };
 
-export default function () {
+export default function DevRoute() {
   const fetcher = useFetcher<ActionData | null>();
 
   useEffect(() => {
@@ -65,7 +65,7 @@ export default function () {
   );
 }
 
-function ActionMessage({ title, data }: { title: string; data: ActionData | null | undefined }) {
+function ActionMessage({ title, data }: Readonly<{ title: string; data: ActionData | null | undefined }>) {
   if (data?.success) {
     return (
       <Fragment>

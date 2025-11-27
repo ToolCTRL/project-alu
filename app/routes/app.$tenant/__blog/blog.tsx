@@ -5,7 +5,6 @@ import BlogView from "~/modules/blog/routes/views/BlogRoutes.Index.View";
 
 export const meta: MetaFunction<typeof loader> = ({ data }) => data?.metatags || [];
 export const loader = (args: LoaderFunctionArgs) => BlogRoutesIndexApi.loader(args);
-// export const action = (args: ActionFunctionArgs) => BlogRoutesIndexApi.action(args);
 
 export default function Blog() {
   return <BlogView />;

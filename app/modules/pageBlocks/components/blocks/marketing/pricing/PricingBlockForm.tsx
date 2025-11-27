@@ -4,7 +4,7 @@ import InputCheckboxWithDescription from "~/components/ui/input/InputCheckboxWit
 import InputRadioGroup from "~/components/ui/input/InputRadioGroup";
 import { defaultPricingBlock, PricingBlockDto, PricingBlockStyle, PricingBlockStyles } from "./PricingBlockUtils";
 
-export default function PricingBlockForm({ item, onUpdate }: { item?: PricingBlockDto; onUpdate: (item: PricingBlockDto) => void }) {
+export default function PricingBlockForm({ item, onUpdate }: { readonly item?: PricingBlockDto; readonly onUpdate: (item: PricingBlockDto) => void }) {
   const [state, setState] = useState<PricingBlockDto>(item || defaultPricingBlock);
   useEffect(() => {
     onUpdate(state);

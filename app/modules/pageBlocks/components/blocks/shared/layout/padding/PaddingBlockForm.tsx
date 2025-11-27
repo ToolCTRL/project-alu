@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next";
 import InputSelector from "~/components/ui/input/InputSelector";
 import { PaddingBlockDto, paddingX, paddingY } from "./PaddingBlockUtils";
 
-export default function PaddingBlockForm({ item, onUpdate }: { item?: PaddingBlockDto; onUpdate: (item: PaddingBlockDto) => void }) {
+export default function PaddingBlockForm({ item, onUpdate }: { readonly item?: PaddingBlockDto; readonly onUpdate: (item: PaddingBlockDto) => void }) {
   const { t } = useTranslation();
   const [x, setX] = useState(item?.x);
   const [y, setY] = useState(item?.y);

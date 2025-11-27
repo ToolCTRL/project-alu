@@ -5,11 +5,11 @@ import { cn } from "~/lib/utils"
 import { buttonVariants } from "~/components/ui/button"
 import { ChevronLeftIcon, ChevronRightIcon } from "@radix-ui/react-icons"
 
-function IconLeft({ className, ...props }: { className?: string; style?: React.CSSProperties }) {
+function IconLeft({ className, ...props }: Readonly<{ className?: string; style?: React.CSSProperties }>) {
   return <ChevronLeftIcon className={cn("size-4", className)} style={props.style} />;
 }
 
-function IconRight({ className, ...props }: { className?: string; style?: React.CSSProperties }) {
+function IconRight({ className, ...props }: Readonly<{ className?: string; style?: React.CSSProperties }>) {
   return <ChevronRightIcon className={cn("size-4", className)} style={props.style} />;
 }
 

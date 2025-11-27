@@ -9,7 +9,7 @@ import ShowMoreLinesText from "~/components/ui/json/ShowMoreLinesText";
 import UserAvatarBadge from "~/components/core/users/UserAvatarBadge";
 import { Stars } from "lucide-react";
 
-export default function TestimonialsVariantSimple({ item }: { item: TestimonialsBlockDto }) {
+export default function TestimonialsVariantSimple({ item }: { readonly item: TestimonialsBlockDto }) {
   const { t } = useTranslation();
   return (
     <section className="">
@@ -25,7 +25,7 @@ export default function TestimonialsVariantSimple({ item }: { item: Testimonials
           {item.items.map((testimonial, idx) => {
             return (
               <div
-                key={idx}
+                key={`testimonial-${idx}-${testimonial.name}`}
                 className={clsx(
                   "w-full p-2",
                   item.items.length === 1 && "mx-auto max-w-xl md:w-full",

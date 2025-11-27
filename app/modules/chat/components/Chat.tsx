@@ -15,9 +15,9 @@ function formatTime(date: Date) {
 }
 
 interface Props {
-  messages: ChatMessageDto[];
-  onSendMessage: (message: string) => void;
-  onDeleteMessage?: (message: ChatMessageDto, index: number) => void;
+  readonly messages: ChatMessageDto[];
+  readonly onSendMessage: (message: string) => void;
+  readonly onDeleteMessage?: (message: ChatMessageDto, index: number) => void;
   readonly className?: string;
   readonly entitiesMetadata?: {
     allEntities: EntityWithDetails[];

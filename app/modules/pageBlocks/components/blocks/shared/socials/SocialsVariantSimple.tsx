@@ -2,8 +2,8 @@ import ButtonEvent from "~/components/ui/buttons/ButtonEvent";
 import { SocialsBlockDto } from "~/modules/pageBlocks/components/blocks/shared/socials/SocialsBlockDto";
 
 interface Props {
-  item?: SocialsBlockDto;
-  iconClassName?: string;
+  readonly item?: SocialsBlockDto;
+  readonly iconClassName?: string;
 }
 export default function SocialsVariantSimple({ item, iconClassName = "text-muted-foreground hover:text-muted-foreground" }: Props) {
   return (

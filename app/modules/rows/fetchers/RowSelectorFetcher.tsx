@@ -12,15 +12,13 @@ import RowModel from "../repositories/RowModel";
 import { useFetcher } from "react-router";
 
 interface Props {
-  entity: EntityWithDetails;
-  // listUrl: string;
-  // newUrl: string;
-  routes: EntitiesApi.Routes;
-  allEntities: EntityWithDetails[];
-  initial?: string;
-  onSelected: (row: RowWithDetails) => void;
-  onClear?: () => void;
-  className?: string;
+  readonly entity: EntityWithDetails;
+  readonly routes: EntitiesApi.Routes;
+  readonly allEntities: EntityWithDetails[];
+  readonly initial?: string;
+  readonly onSelected: (row: RowWithDetails) => void;
+  readonly onClear?: () => void;
+  readonly className?: string;
 }
 export default function RowSelectorFetcher({ entity, routes, allEntities, initial, onSelected, onClear, className }: Props) {
   const { t } = useTranslation();
@@ -42,7 +40,6 @@ export default function RowSelectorFetcher({ entity, routes, allEntities, initia
     }
     if (selected === "{new}") {
       setAdding(true);
-      // setSelected(undefined);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selected]);

@@ -93,7 +93,7 @@ export default function WorkflowsIdRunManualView() {
           <div className="text-lg font-semibold">Run Workflow Manually</div>
         </div>
 
-        {!execution ? (
+        {execution ? null : (
           <div>
             <div className="space-y-1">
               <div className="flex items-center justify-between space-x-2">
@@ -126,11 +126,9 @@ export default function WorkflowsIdRunManualView() {
                 to={UrlUtils.getModulePath(params, `workflow-engine/workflows/${data.workflow.id}/executions?executionId=${execution.id}`)}
                 className="border-border bg-background flex w-full flex-col items-center rounded-lg border-2 border-dotted p-3 text-sm font-medium hover:border-dashed hover:border-gray-800"
               >
-                <>
-                  <div className="flex justify-center">
-                    <div className=" ">View execution flow</div>
-                  </div>
-                </>
+                <div className="flex justify-center">
+                  <div className=" ">View execution flow</div>
+                </div>
               </Link>
               <button
                 type="button"
@@ -248,7 +246,17 @@ function WorkflowRun({ workflow }: Readonly<{ workflow: WorkflowExecutionDto }>)
         <div className="flex justify-center"> Workflow Input and Output</div>
       </button>
       {isExpanded && (
-        <div onClick={(e) => e.preventDefault()} className="border-border bg-secondary/90 overflow-hidden rounded-md border p-2">
+        <div
+          role="button"
+          tabIndex={0}
+          onClick={(e) => e.preventDefault()}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+              e.preventDefault();
+            }
+          }}
+          className="border-border bg-secondary/90 overflow-hidden rounded-md border p-2"
+        >
           <InputOutput input={workflow.input} output={workflow.output} />
         </div>
       )}
@@ -256,7 +264,7 @@ function WorkflowRun({ workflow }: Readonly<{ workflow: WorkflowExecutionDto }>)
   );
 }
 
-function InputOutput({ input, output }: { input?: any; output?: any }) {
+function InputOutput({ input, output }: Readonly<{ input?: any; output?: any }>) {
   return (
     <div className="space-y-1">
       {!input || JSON.stringify(input) === "{}" ? (

@@ -13,7 +13,7 @@ import ButtonTertiary from "~/components/ui/buttons/ButtonTertiary";
 
 export default function PageSettingsRouteIndex() {
   const { t } = useTranslation();
-  const data = useLoaderData<PageSettings_Index.LoaderData>();
+  const data = useLoaderData();
   const actionData = useActionData<PageSettings_Index.ActionData>();
   const submit = useSubmit();
   const appOrAdminData = useAppOrAdminData();
@@ -41,7 +41,6 @@ export default function PageSettingsRouteIndex() {
     submit(form, {
       method: "post",
     });
-    // setBlocks(data.page.blocks);
   }
 
   function canUpdate() {

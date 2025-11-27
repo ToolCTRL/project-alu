@@ -12,12 +12,12 @@ export default function ConditionsGroupsInfo({
   block,
   type,
   onUpdateConditionsGroups,
-}: {
+}: Readonly<{
   workflow: WorkflowDto;
   block: WorkflowBlockDto;
   type: "if" | "switch";
   onUpdateConditionsGroups: (conditionsGroups: WorkflowConditionsGroupDto[]) => void;
-}) {
+}>) {
   const [selectedConditionsGroup, setSelectedConditionsGroup] = useState<WorkflowConditionsGroupDto | null>(null);
   const [addingNewGroup, setAddingNewGroup] = useState(false);
 
@@ -42,6 +42,14 @@ export default function ConditionsGroupsInfo({
             {type === "switch" && <div className="text-muted-foreground text-xs font-medium uppercase">Case #{group.index + 1}</div>}
             <div
               onClick={() => setSelectedConditionsGroup(group)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" || e.key === " ") {
+                  e.preventDefault();
+                  setSelectedConditionsGroup(group);
+                }
+              }}
+              role="button"
+              tabIndex={0}
               className={clsx(
                 "border-border group relative cursor-pointer rounded-lg border border-dashed px-2 py-2 text-sm hover:border-dotted focus:outline-hidden",
                 group.conditions.length === 0
@@ -67,21 +75,29 @@ export default function ConditionsGroupsInfo({
                 </button>
               )}
               <div className="space-y-0.5">
-                {group.conditions.length === 0 ? (
-                  <div>
-                    <div className="font-medium">No conditions</div>
-                  </div>
-                ) : group.conditions.length === 1 ? (
-                  <div className=" border-border bg-secondary/90 flex flex-col items-center justify-center rounded-md border p-2 text-center">
-                    <div key={group.index} className="flex items-center space-x-2">
-                      <div className="font-medium">{WorkflowConditionUtils.getConditionString(group.conditions[0])}</div>
+                {(() => {
+                  if (group.conditions.length === 0) {
+                    return (
+                      <div>
+                        <div className="font-medium">No conditions</div>
+                      </div>
+                    );
+                  }
+                  if (group.conditions.length === 1) {
+                    return (
+                      <div className=" border-border bg-secondary/90 flex flex-col items-center justify-center rounded-md border p-2 text-center">
+                        <div key={group.index} className="flex items-center space-x-2">
+                          <div className="font-medium">{WorkflowConditionUtils.getConditionString(group.conditions[0])}</div>
+                        </div>
+                      </div>
+                    );
+                  }
+                  return (
+                    <div>
+                      <div className="font-medium">{group.conditions.length} conditions</div>
                     </div>
-                  </div>
-                ) : (
-                  <div>
-                    <div className="font-medium">{group.conditions.length} conditions</div>
-                  </div>
-                )}
+                  );
+                })()}
               </div>
             </div>
           </div>
@@ -99,7 +115,7 @@ export default function ConditionsGroupsInfo({
 
       <SlideOverWideEmpty
         className="sm:max-w-2xl"
-        title={!selectedConditionsGroup ? "" : type === "if" ? "If Condition" : `Case ${selectedConditionsGroup.index + 1}`}
+        title={selectedConditionsGroup ? (type === "if" ? "If Condition" : `Case ${selectedConditionsGroup.index + 1}`) : ""}
         open={!!selectedConditionsGroup}
         onClose={() => setSelectedConditionsGroup(null)}
       >

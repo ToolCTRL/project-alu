@@ -1,6 +1,5 @@
 import { useState, useEffect, useRef, Fragment } from "react";
-import { ActionFunction, LoaderFunction, LoaderFunctionArgs, MetaFunction, redirect, useFetcher, useLoaderData } from "react-router";
-import { Link, useSearchParams } from "react-router";
+import { ActionFunction, LoaderFunctionArgs, MetaFunction, redirect, useFetcher, useLoaderData, Link, useSearchParams } from "react-router";
 import HeaderBlock from "~/modules/pageBlocks/components/blocks/marketing/header/HeaderBlock";
 import FooterBlock from "~/modules/pageBlocks/components/blocks/marketing/footer/FooterBlock";
 import ButtonSecondary from "~/components/ui/buttons/ButtonSecondary";
@@ -99,11 +98,6 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
           percentage,
         });
       });
-      // options.forEach((option) => {
-      //   if (option.shortName) {
-      //     option.title = option.shortName;
-      //   }
-      // });
       survey.results?.items.push(surveyItemResult);
     });
   }
@@ -235,18 +229,10 @@ export default function Surveys() {
   const showingResults = searchParams.get("results") !== null || searchParams.get("success") !== null;
 
   return (
-    <div className={clsx("container mx-auto space-y-4 px-4 sm:px-6 lg:px-8", data.item.results ? "" : "")}>
+    <div className="container mx-auto space-y-4 px-4 sm:px-6 lg:px-8">
       <HeaderBlock />
 
-      {/* <HeadingBlock
-        item={{
-          style: "centered",
-          headline: data.item.title,
-          subheadline: data.item.description || "",
-        }}
-      /> */}
-
-      <div className={clsx("mx-auto space-y-6", data.item.results ? "max-w-4xl" : "max-w-4xl")}>
+      <div className="mx-auto max-w-4xl space-y-6">
         <div className="space-y-3">
           <div className="text-left">
             <BreadcrumbSimple
@@ -269,7 +255,7 @@ export default function Surveys() {
           </div>
         </div>
       </div>
-      <div className={clsx("mx-auto space-y-6", data.item.results ? "max-w-4xl" : "max-w-4xl")}>
+      <div className="mx-auto max-w-4xl space-y-6">
         {!data.alreadyVoted && data.item.minSubmissions > 0 && showingResults && (
           <WarningBanner title="You haven't voted yet" text="Please vote to see the results." />
         )}
@@ -292,13 +278,13 @@ function SurveyGroup({
   alreadyVoted,
   canShowResults,
   showingResults,
-}: {
+}: Readonly<{
   survey: SurveyDto;
   disabled: boolean;
   alreadyVoted: boolean;
   canShowResults: boolean;
   showingResults: boolean;
-}) {
+}>) {
   const { t } = useTranslation();
   const rootData = useRootData();
   const fetcher = useFetcher<{ success?: string; error?: string }>();
@@ -314,12 +300,11 @@ function SurveyGroup({
   );
 
   useEffect(() => {
-    setShowModal(searchParams.get("success") ? true : false);
+    setShowModal(!!searchParams.get("success"));
   }, [searchParams]);
 
   useEffect(() => {
     if (fetcher.data?.success) {
-      // toast.success(fetcher.data.success);
       setShowModal(true);
     } else if (fetcher.data?.error) {
       toast.error(fetcher.data.error);
@@ -344,22 +329,8 @@ function SurveyGroup({
     <fetcher.Form method="post" className="space-y-4">
       <input type="hidden" name="action" value="vote" hidden readOnly />
       <input type="hidden" name="results" value={JSON.stringify(results)} hidden readOnly />
-      {/* {JSON.stringify(results)} */}
-      {/* <div className="space-y-2">
-        <div className="flex items-center space-x-2">
-          <h2 className="text-2xl font-medium">
-            {survey.title} <span className="text-muted-foreground text-base font-normal">({DateUtils.dateAgo(survey.createdAt)})</span>
-          </h2>
-        </div>
-        <p className="text-muted-foreground text-base">{survey.description}</p>
-      </div> */}
 
-      <div
-        className={clsx(
-          "border-border grid grid-cols-1 gap-6 pt-4"
-          // survey.results && survey.items.length > 2 ? "sm:grid-cols-3" : "sm:grid-cols-1"
-        )}
-      >
+      <div className="border-border grid grid-cols-1 gap-6 pt-4">
         {survey.items.map((item, idx) => {
           const value = results.find((r) => r.item === item.title) || {
             item: item.title,
@@ -376,7 +347,7 @@ function SurveyGroup({
           };
           return (
             <SurveyItem
-              key={idx}
+              key={`survey-item-${item.title}-${idx}`}
               survey={survey}
               item={item}
               value={value}
@@ -387,17 +358,7 @@ function SurveyGroup({
         })}
       </div>
 
-      {!survey.isEnabled ? (
-        <WarningBanner title="Disabled" text="Voting is closed for this survey." />
-      ) : //   :
-      //   survey.results ? (
-      //   <InfoBanner title="Results">
-      //     <ul className="">
-      //       <li>Total votes: {survey.results.totalVotes}</li>
-      //     </ul>
-      //   </InfoBanner>
-      // )
-      null}
+      {survey.isEnabled ? null : <WarningBanner title="Disabled" text="Voting is closed for this survey." />}
 
       <div className="flex justify-end space-x-2">
         {canShowResults && (
@@ -563,13 +524,13 @@ function SurveyItem({
   value,
   onChange,
   disabled,
-}: {
+}: Readonly<{
   survey: SurveyDto;
   item: SurveyItemDto;
   value: SurveryItemResultDto;
   onChange: (value: SurveryItemResultDto) => void;
   disabled: boolean;
-}) {
+}>) {
   const itemResults = survey.results?.items.find((r) => r.item === item.title);
   const mainInput = useRef<HTMLInputElement>(null);
 
@@ -595,18 +556,13 @@ function SurveyItem({
             {item.categories && (
               <div className="ml-2 flex flex-wrap items-center gap-2">
                 {item.categories.map((category, idx) => (
-                  <span key={idx} className="text-muted-foreground bg-secondary rounded-md px-2 py-1 text-xs">
+                  <span key={`category-${category}-${idx}`} className="text-muted-foreground bg-secondary rounded-md px-2 py-1 text-xs">
                     {category}
                   </span>
                 ))}
               </div>
             )}
           </div>
-          {/* {item.href && (
-            <Link to={item.href}>
-              <ExternalLinkEmptyIcon className="h-4 w-4" />
-            </Link>
-          )} */}
         </div>
         {item.description && !survey.results && <p className="text-muted-foreground text-sm">{item.description}</p>}
       </div>
@@ -631,10 +587,10 @@ function SurveyItem({
             >
               {item.options.map((option, idx) => (
                 <div
-                  key={idx}
+                  key={`option-${option.title}-${idx}`}
                   className={clsx("flex flex-wrap items-center gap-3", item.style === "grid" && "bg-background border-border rounded-md border px-5 py-3")}
                 >
-                  <label key={idx} className={clsx("flex select-none items-center space-x-2", disabled ? " cursor-not-allowed " : "cursor-pointer")}>
+                  <label className={clsx("flex select-none items-center space-x-2", disabled ? " cursor-not-allowed " : "cursor-pointer")}>
                     {(() => {
                       if (item.type === "multi-select") {
                         return (

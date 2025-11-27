@@ -20,14 +20,11 @@ type EditRowOptions = {
 };
 
 interface Props {
-  layout?: "edit" | "simple";
-  children?: ReactNode;
-  title?: ReactNode;
-  rowFormChildren?: ReactNode;
-  options?: EditRowOptions;
+  readonly rowFormChildren?: ReactNode;
+  readonly options?: EditRowOptions;
 }
 
-export default function RowEditRoute({ rowFormChildren, options }: Props) {
+export default function RowEditRoute({ rowFormChildren, options }: Readonly<Props>) {
   const { rowData, routes, allEntities, relationshipRows } = useLoaderData<Rows_Edit.LoaderData>();
   const appOrAdminData = useAppOrAdminData();
   const navigate = useNavigate();

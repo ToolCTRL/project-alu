@@ -1,6 +1,5 @@
-import { useMatches } from "react-router";
+import { useMatches, Params } from "react-router";
 import { getTenantUsersCount } from "../db/tenants.db.server";
-import { Params } from "react-router";
 import { getTenantIdFromUrl } from "../services/.server/urlService";
 
 export type DashboardLoaderData = {

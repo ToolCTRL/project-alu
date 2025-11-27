@@ -4,7 +4,7 @@ import PricingVariantSimple from "./PricingVariantSimple";
 import { useEffect } from "react";
 import toast from "react-hot-toast";
 
-export default function PricingBlock({ item }: { item: PricingBlockDto }) {
+export default function PricingBlock({ item }: { readonly item: PricingBlockDto }) {
   const actionData = useActionData<{ error?: string }>();
   useEffect(() => {
     if (actionData?.error) {

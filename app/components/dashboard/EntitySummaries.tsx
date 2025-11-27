@@ -10,19 +10,19 @@ import EntityIcon from "../layouts/icons/EntityIcon";
 import ButtonSecondary from "../ui/buttons/ButtonSecondary";
 import { RowsApi } from "~/utils/api/.server/RowsApi";
 
-export default function EntitySummaries({ items, routes }: { items: EntitySummaryDto[]; routes: EntitiesApi.Routes }) {
+export default function EntitySummaries({ items, routes }: { readonly items: EntitySummaryDto[]; readonly routes: EntitiesApi.Routes }) {
   return (
     <Fragment>
       {items
         .toSorted((a, b) => a.order - b.order)
-        .map(({ rowsData }, idx) => {
-          return <LatestRows key={idx} rowsData={rowsData} routes={routes} />;
+        .map(({ rowsData }) => {
+          return <LatestRows key={rowsData.entity.id} rowsData={rowsData} routes={routes} />;
         })}
     </Fragment>
   );
 }
 
-function LatestRows({ rowsData, routes }: { rowsData: RowsApi.GetRowsData; routes: EntitiesApi.Routes }) {
+function LatestRows({ rowsData, routes }: { readonly rowsData: RowsApi.GetRowsData; readonly routes: EntitiesApi.Routes }) {
   const { t } = useTranslation();
   const appOrAdminData = useAppOrAdminData();
   const params = useParams();

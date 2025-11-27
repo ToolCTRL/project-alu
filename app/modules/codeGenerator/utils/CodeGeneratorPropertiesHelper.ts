@@ -419,8 +419,10 @@ function uiCell({ code, imports, property }: { code: string[]; imports: string[]
             value: (item) => <RowDateCell value={item.${property.name}} ${props.join(" ")} />,
           },`);
   } else if (property.type === PropertyType.SELECT) {
-    imports.push(`import RowSelectedOptionCell from "~/components/entities/rows/cells/RowSelectedOptionCell";`);
-    imports.push(`import { Colors } from "~/application/enums/shared/Colors";`);
+    imports.push(
+      `import RowSelectedOptionCell from "~/components/entities/rows/cells/RowSelectedOptionCell";`,
+      `import { Colors } from "~/application/enums/shared/Colors";`
+    );
     const optionName = (option: { name: string | null; value: string }) => option.name === null ? "null" : `"${option.name}"`;
     const optionValue = (option: { value: string }) => option.value;
     const optionsStr = property.options.map((option) => `{ name: ${optionName(option)}, value: "${optionValue(option)}", color: ${getColor(option.color)} }`).join(", ");
@@ -461,7 +463,7 @@ function uiCell({ code, imports, property }: { code: string[]; imports: string[]
             value: (item) => <RowMediaCell media={item.${property.name}} ${props.join(" ")} />,
           },`);
     }
-  } else if (property.type === PropertyType.MULTI_SELECT) {
+  } else if (property.type === PropertyType.MULTI_SELECT || property.type === PropertyType.MULTI_TEXT) {
     imports.push(`import PropertyMultipleValueBadge from "~/components/entities/properties/PropertyMultipleValueBadge";`);
     const optionName = (option: { name: string | null; value: string }) => option.name === null ? "null" : `"${option.name}"`;
     const optionValue = (option: { value: string }) => option.value;
@@ -494,17 +496,6 @@ function uiCell({ code, imports, property }: { code: string[]; imports: string[]
             title: t("${property.title}"),
             value: (item) => <RowRangeDateCell value={item.${property.name}} ${props.join(" ")} />,
           },`);
-  } else if (property.type === PropertyType.MULTI_TEXT) {
-    imports.push(`import PropertyMultipleValueBadge from "~/components/entities/properties/PropertyMultipleValueBadge";`);
-    const optionName = (option: { name: string | null; value: string }) => option.name === null ? "null" : `"${option.name}"`;
-    const optionValue = (option: { value: string }) => option.value;
-    const optionsStr = property.options.map((option) => `{ name: ${optionName(option)}, value: "${optionValue(option)}" }`).join(", ");
-    props.push(`options={[${optionsStr}]}`);
-    code.push(`{
-            name: "${property.name}",
-            title: t("${property.title}"),
-            value: (item) => <PropertyMultipleValueBadge values={item.${property.name}} ${props.join(" ")} />,
-          },`);
   } else {
     code.push(`{
             name: "${property.name}",
@@ -514,48 +505,21 @@ function uiCell({ code, imports, property }: { code: string[]; imports: string[]
   }
 }
 
+function getSchemaType(propertyType: PropertyType): string {
+  const typeMap: Record<number, string> = {
+    [PropertyType.TEXT]: "String",
+    [PropertyType.SELECT]: "String",
+    [PropertyType.NUMBER]: "Decimal",
+    [PropertyType.DATE]: "DateTime",
+    [PropertyType.BOOLEAN]: "Boolean",
+  };
+  return typeMap[propertyType] || "TODO";
+}
+
 function schema({ code, property }: { code: string[]; property: PropertyWithDetails }) {
-  if (property.type === PropertyType.TEXT) {
-    if (property.isRequired) {
-      code.push(`  ${property.name} String`);
-    } else {
-      code.push(`  ${property.name} String?`);
-    }
-  } else if (property.type === PropertyType.NUMBER) {
-    if (property.isRequired) {
-      code.push(`  ${property.name} Decimal`);
-    } else {
-      code.push(`  ${property.name} Decimal?`);
-    }
-  } else if (property.type === PropertyType.DATE) {
-    if (property.isRequired) {
-      code.push(`  ${property.name} DateTime`);
-    } else {
-      code.push(`  ${property.name} DateTime?`);
-    }
-  } else if (property.type === PropertyType.SELECT) {
-    if (property.isRequired) {
-      code.push(`  ${property.name} String`);
-    } else {
-      code.push(`  ${property.name} String?`);
-    }
-  } else if (property.type === PropertyType.BOOLEAN) {
-    if (property.isRequired) {
-      code.push(`  ${property.name} Boolean`);
-    } else {
-      code.push(`  ${property.name} Boolean?`);
-    }
-  } else if (property.type === PropertyType.MEDIA) {
-    if (PropertyAttributeHelper.getPropertyAttributeValue_Number(property, PropertyAttributeName.Max) === 1) {
-      if (property.isRequired) {
-        code.push(`  TODO`);
-      } else {
-        code.push(`  TODO`);
-      }
-    } else {
-      code.push(`  TODO`);
-    }
-  }
+  const schemaType = getSchemaType(property.type);
+  const nullable = property.isRequired ? "" : "?";
+  code.push(`  ${property.name} ${schemaType}${nullable}`);
 }
 
 export default {

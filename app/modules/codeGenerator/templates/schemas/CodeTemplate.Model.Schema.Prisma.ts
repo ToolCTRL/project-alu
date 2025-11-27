@@ -17,11 +17,7 @@ function generate({ entity }: { entity: EntityWithDetails }): string {
       CodeGeneratorPropertiesHelper.schema({ code, property });
     });
 
-  code.push("}");
-
-  code.push("");
-
-  code.push(`// Add at the end of the Row model
+  code.push("}", "", `// Add at the end of the Row model
 model Row {
 //   ...
   ${name}           ${capitalized}?

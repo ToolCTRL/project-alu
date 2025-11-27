@@ -9,7 +9,7 @@ import { WorkflowDto } from "../../dtos/WorkflowDto";
 import { WorkflowInputExampleDto } from "../../dtos/WorkflowInputExampleDto";
 import ButtonPrimary from "~/components/ui/buttons/ButtonPrimary";
 
-export default function WorkflowInputExamples({ workflow }: { workflow: WorkflowDto }) {
+export default function WorkflowInputExamples({ workflow }: { readonly workflow: WorkflowDto }) {
   const submit = useSubmit();
   const [addingInputExample, setAddingInputExample] = useState(false);
   const [selectedInputExample, setSelectedInputExample] = useState<WorkflowInputExampleDto | null>(null);
@@ -114,10 +114,10 @@ function WorkflowInputExampleForm({
   onCancel,
   onDelete,
 }: {
-  item: WorkflowInputExampleDto | null;
-  onSave: (item: WorkflowInputExampleDto) => void;
-  onCancel: () => void;
-  onDelete?: (item: WorkflowInputExampleDto) => void;
+  readonly item: WorkflowInputExampleDto | null;
+  readonly onSave: (item: WorkflowInputExampleDto) => void;
+  readonly onCancel: () => void;
+  readonly onDelete?: (item: WorkflowInputExampleDto) => void;
 }) {
   const [title, setTitle] = useState(item?.title || "");
   const [input, setInput] = useState(
@@ -145,6 +145,7 @@ function WorkflowInputExampleForm({
     try {
       inputJson = JSON.parse(input);
     } catch (e) {
+      console.error("Failed to parse input JSON:", e);
       toast.error("Invalid JSON");
       return;
     }

@@ -1,5 +1,4 @@
-import { ActionFunction, LoaderFunctionArgs, MetaFunction } from "react-router";
-import { useActionData, useLoaderData, useSubmit } from "react-router";
+import { ActionFunction, LoaderFunctionArgs, MetaFunction, useActionData, useLoaderData, useSubmit } from "react-router";
 import { getTranslations } from "~/locale/i18next.server";
 import { useTranslation } from "react-i18next";
 import { useEffect, useRef } from "react";
@@ -92,7 +91,7 @@ export const action: ActionFunction = async ({ request }) => {
 
 export const meta: MetaFunction<typeof loader> = ({ data }) => [{ title: data?.title }];
 
-export default function () {
+export default function SeedRoute() {
   const { t } = useTranslation();
   const data = useLoaderData<LoaderData>();
   const actionData = useActionData<ActionData>();

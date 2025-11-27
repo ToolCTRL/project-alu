@@ -13,7 +13,7 @@ export const NumberFormats: { name: string; value: NumberFormatType }[] = [
 const numberFormat = (value: number): string => {
   try {
     return numeral(value).format("0,0");
-  } catch (e) {
+  } catch (e: unknown) {
     console.error("Error formatting number:", e);
     return value?.toString() ?? "";
   }
@@ -21,7 +21,8 @@ const numberFormat = (value: number): string => {
 const decimalFormat = (value: number, decimalPlaces: number = 2): string => {
   try {
     return numeral(value).format(`0,0.${"0".repeat(decimalPlaces)}`);
-  } catch (e) {
+  } catch (e: unknown) {
+    console.error("Error formatting decimal:", e);
     return value?.toString() ?? "";
   }
 };

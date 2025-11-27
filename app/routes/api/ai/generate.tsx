@@ -16,7 +16,7 @@ export const action = async ({ request, params }: ActionFunctionArgs) => {
     return new Response("No prompt in the request", { status: 400, headers: getServerTimingHeader() });
   }
 
-  prompt = prompt.replace(/\n/g, " ").replace(/\/$/, "").slice(0, 5000);
+  prompt = prompt.replaceAll(/\n/g, " ").replace(/\/$/, "").slice(0, 5000);
 
   if (!prompt) {
     return new Response("No prompt", { status: 400, headers: getServerTimingHeader() });
@@ -31,14 +31,6 @@ export const action = async ({ request, params }: ActionFunctionArgs) => {
   if (!max_tokens) {
     max_tokens = undefined;
   }
-  // eslint-disable-next-line no-console
-  console.log({ prompt, systemContent });
-
-  // if (!systemContent) {
-  //   systemContent =
-  //     "You are an AI writing assistant that continues existing text based on context from prior text. " +
-  //     "Give more weight/priority to the later characters than the beginning ones. Make sure to construct complete sentences.";
-  // }
   const messages: ChatGPTMessage[] = [];
   if (systemContent) {
     messages.push({

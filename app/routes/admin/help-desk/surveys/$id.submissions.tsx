@@ -1,5 +1,4 @@
-import { LoaderFunctionArgs, redirect, useActionData, useLoaderData } from "react-router";
-import { useParams, useSubmit } from "react-router";
+import { LoaderFunctionArgs, redirect, useActionData, useLoaderData, useParams, useSubmit } from "react-router";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { useTranslation } from "react-i18next";
@@ -23,7 +22,7 @@ type LoaderData = {
   submissions: SurveySubmissionWithDetails[];
 };
 
-function renderSubmissionResult(submission: SurveySubmissionWithDetails, itemTitle: string) {
+const renderSubmissionResult = (submission: SurveySubmissionWithDetails, itemTitle: string) => {
   const result = submission.results.find((r) => r.surveItemTitle === itemTitle);
   if (!result) {
     return <div>-</div>;
@@ -42,7 +41,19 @@ function renderSubmissionResult(submission: SurveySubmissionWithDetails, itemTit
     return <div>{result.value.join(", ")}</div>;
   }
   return <div>{JSON.stringify(result.value)}</div>;
-}
+};
+
+const SubmissionResultsCell = ({ item, idx }: { item: SurveySubmissionWithDetails; idx: number }) => (
+  <div>
+    <ShowPayloadModalButton description={<div className=" text-muted-foreground text-xs font-medium">#{idx + 1}</div>} payload={JSON.stringify(item.results, null, 2)} />
+  </div>
+);
+
+const SubmissionDateCell = ({ item }: { item: SurveySubmissionWithDetails }) => (
+  <time title={DateUtils.dateYMDHMS(item.createdAt)} className="text-muted-foreground text-xs">
+    {DateUtils.dateAgo(item.createdAt)}
+  </time>
+);
 
 export const loader = async ({ request, params }: LoaderFunctionArgs) => {
   await requireAuth({ request, params });
@@ -77,7 +88,7 @@ export const action = async ({ request, params }: LoaderFunctionArgs) => {
   }
 };
 
-export default function () {
+export default function SurveySubmissionsRoute() {
   const { t } = useTranslation();
   const data = useLoaderData<LoaderData>();
   const actionData = useActionData<{ success?: string; error?: string }>();
@@ -99,31 +110,19 @@ export default function () {
       {
         name: "results",
         title: "",
-        value: (item, idx) => (
-          <div>
-            <ShowPayloadModalButton
-              description={<div className=" text-muted-foreground text-xs font-medium">#{idx + 1}</div>}
-              payload={JSON.stringify(item.results, null, 2)}
-            />
-          </div>
-        ),
+        value: (item, idx) => <SubmissionResultsCell item={item} idx={idx ?? 0} />,
       },
       {
         name: "date",
         title: "Date",
-        value: (i) => (
-          <time title={DateUtils.dateYMDHMS(i.createdAt)} className="text-muted-foreground text-xs">
-            {DateUtils.dateAgo(i.createdAt)}
-          </time>
-        ),
+        value: (i) => <SubmissionDateCell item={i} />,
       },
     ];
-    data.item.items.forEach((item, idx) => {
+    data.item.items.forEach((surveyItem) => {
       headers.push({
-        name: item.title,
-        title: item.title,
-        // className: idx === data.item.items.length - 1 ? "w-full" : "",
-        value: (submission) => renderSubmissionResult(submission, item.title),
+        name: surveyItem.title,
+        title: surveyItem.title,
+        value: (submission) => renderSubmissionResult(submission, surveyItem.title),
       });
     });
     headers.push(
@@ -147,20 +146,8 @@ export default function () {
       withHome={false}
       title={data.item.title}
       buttons={
-        <>
-          <ButtonSecondary to={`/admin/help-desk/surveys/${params.id}/edit`}>{t("shared.edit")}</ButtonSecondary>
-        </>
+        <ButtonSecondary to={`/admin/help-desk/surveys/${params.id}/edit`}>{t("shared.edit")}</ButtonSecondary>
       }
-      // menu={[
-      //   {
-      //     title: "Surveys",
-      //     routePath: "/admin/help-desk/surveys",
-      //   },
-      //   {
-      //     title: t("shared.overview"),
-      //     routePath: "",
-      //   },
-      // ]}
       tabs={[
         { name: "Overview", routePath: `/admin/help-desk/surveys/${params.id}` },
         { name: "Submissions", routePath: `/admin/help-desk/surveys/${params.id}/submissions` },

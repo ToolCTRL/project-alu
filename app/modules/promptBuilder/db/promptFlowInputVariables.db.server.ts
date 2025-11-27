@@ -1,7 +1,7 @@
 import { PromptFlowInputVariable } from "@prisma/client";
 import { db } from "~/utils/db.server";
 
-export type PromptFlowInputVariableWithDetails = PromptFlowInputVariable & {};
+export type PromptFlowInputVariableWithDetails = PromptFlowInputVariable;
 
 export async function getPromptFlowVariables(promptFlowId: string): Promise<PromptFlowInputVariableWithDetails[]> {
   return await db.promptFlowInputVariable.findMany({

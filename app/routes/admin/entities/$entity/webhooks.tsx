@@ -1,6 +1,5 @@
 import { useTranslation } from "react-i18next";
-import { LoaderFunctionArgs, redirect } from "react-router";
-import { Outlet, useLoaderData } from "react-router";
+import { LoaderFunctionArgs, redirect, Outlet, useLoaderData } from "react-router";
 import ButtonTertiary from "~/components/ui/buttons/ButtonTertiary";
 import TableSimple from "~/components/ui/tables/TableSimple";
 import { getEntityBySlug } from "~/utils/db/entities/entities.db.server";

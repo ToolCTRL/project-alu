@@ -1,5 +1,4 @@
-import { ActionFunction } from "react-router";
-import { useActionData, useSubmit, useNavigation } from "react-router";
+import { ActionFunction, useActionData, useSubmit, useNavigation } from "react-router";
 import { useEffect, useState } from "react";
 import { Colors } from "~/application/enums/shared/Colors";
 import SimpleBadge from "~/components/ui/badges/SimpleBadge";
@@ -35,7 +34,7 @@ export const action: ActionFunction = async ({ request }) => {
 
     // TODO - START: Simulate long-running task
     let items: ItemToImportDto[] = form.getAll("items[]").map((f: FormDataEntryValue) => {
-      return JSON.parse(f.toString());
+      return JSON.parse(String(f));
     });
     const itemsToImport = items.slice(from, to);
     await Promise.all(
@@ -67,7 +66,7 @@ export const action: ActionFunction = async ({ request }) => {
     return Response.json({ next, items });
   } else if (action === "process") {
     const items: ItemToImportDto[] = form.getAll("items[]").map((f: FormDataEntryValue) => {
-      return JSON.parse(f.toString());
+      return JSON.parse(String(f));
     });
     await Promise.all(
       items.map(async (item) => {
@@ -85,7 +84,7 @@ type ItemToImportDto = {
   name: string;
   processed: boolean;
 };
-export default function () {
+export default function PlaygroundLongRunningTasks() {
   const actionData = useActionData<ActionData>();
   const submit = useSubmit();
   const navigation = useNavigation();
@@ -174,11 +173,8 @@ export default function () {
           </ButtonPrimary>
         </div>
 
-        {actionData?.success ? (
-          <InfoBanner title="Success" text={actionData.success} />
-        ) : actionData?.error ? (
-          <ErrorBanner title="Error" text={actionData.error} />
-        ) : null}
+        {actionData?.success && <InfoBanner title="Success" text={actionData.success} />}
+        {actionData?.error && <ErrorBanner title="Error" text={actionData.error} />}
 
         <TableSimple
           items={items}

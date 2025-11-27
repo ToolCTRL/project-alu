@@ -13,17 +13,17 @@ export async function setRowCommentReaction(data: { createdByUserId: string; row
       reaction: data.reaction,
     },
   });
-  if (!existing) {
-    await db.rowCommentReaction.create({
-      data,
-    });
-    return true;
-  } else {
+  if (existing) {
     await db.rowCommentReaction.deleteMany({
       where: {
         ...data,
       },
     });
     return false;
+  } else {
+    await db.rowCommentReaction.create({
+      data,
+    });
+    return true;
   }
 }

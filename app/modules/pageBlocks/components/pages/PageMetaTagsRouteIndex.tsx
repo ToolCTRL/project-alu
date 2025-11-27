@@ -3,7 +3,6 @@ import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import InfoBanner from "~/components/ui/banners/InfoBanner";
 import WarningBanner from "~/components/ui/banners/WarningBanner";
-import ButtonSecondary from "~/components/ui/buttons/ButtonSecondary";
 import ButtonTertiary from "~/components/ui/buttons/ButtonTertiary";
 import LoadingButton from "~/components/ui/buttons/LoadingButton";
 import XIcon from "~/components/ui/icons/XIcon";
@@ -44,26 +43,8 @@ export default function PageMetaTagsRoute_Index() {
     setMetaTags([...metaTags, { name: "", content: "", order: metaTags.length + 1 }]);
   }
   function removeTag(index: number) {
-    // const newMetaTags = { ...metaTags };
-    // delete newMetaTags[index];
-    // setMetaTags(newMetaTags);
     setMetaTags(metaTags.filter((_, idx) => idx !== index));
   }
-  // function updateTagName(index: number, name: string) {
-  //   const newMetaTags = { ...metaTags };
-  //   delete newMetaTags[index];
-  //   newMetaTags[name] = metaTags[index];
-  //   setMetaTags(newMetaTags);
-  // }
-  // function updateTagValue(index: number, value: string) {
-  //   const newMetaTags = { ...metaTags };
-  //   Object.keys(metaTags).forEach((tag, idx) => {
-  //     if (idx === index) {
-  //       newMetaTags[tag] = value;
-  //     }
-  //   });
-  //   setMetaTags(newMetaTags);
-  // }
 
   function onReset() {
     const form = new FormData();
@@ -111,7 +92,7 @@ export default function PageMetaTagsRoute_Index() {
           .map((tag, idx) => {
             return (
               <input
-                key={idx}
+                key={`meta-${tag.name}-${idx}`}
                 name={`metaTags[]`}
                 value={JSON.stringify({
                   name: tag.name,
@@ -128,9 +109,9 @@ export default function PageMetaTagsRoute_Index() {
             <div className="flex flex-col space-y-2">
               {metaTags
                 .sort((a, b) => a.order - b.order)
-                .map((_, index) => {
+                .map((tag, index) => {
                   return (
-                    <div key={index} className="group relative grid grid-cols-4 gap-2">
+                    <div key={`tag-${tag.name}-${index}`} className="group relative grid grid-cols-4 gap-2">
                       <button
                         onClick={() => removeTag(index)}
                         type="button"

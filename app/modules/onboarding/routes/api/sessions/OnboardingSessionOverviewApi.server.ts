@@ -19,7 +19,7 @@ export namespace OnboardingSessionOverviewApi {
     await verifyUserHasPermission(request, "admin.onboarding.view");
     const { t } = await getTranslations(request);
     const item = await getOnboardingSession(params.id!);
-    if (item === null || item === undefined) {
+    if (!item) {
       throw redirect("/onboarding/sessions");
     }
     const data: LoaderData = {
@@ -38,7 +38,7 @@ export namespace OnboardingSessionOverviewApi {
     const form = await request.formData();
     const action = form.get("action");
     const item = await getOnboardingSession(params.id!);
-    if (item === null || item === undefined) {
+    if (!item) {
       return redirect("/onboarding/sessions");
     }
     if (action === "update") {
@@ -47,10 +47,10 @@ export namespace OnboardingSessionOverviewApi {
       const completedAt = form.get("completedAt")?.toString();
       const dismissedAt = form.get("dismissedAt")?.toString();
       await updateOnboardingSession(item.id, {
-        status: status !== undefined ? (status as OnboardingSessionStatus) : undefined,
-        startedAt: startedAt !== undefined ? new Date(startedAt) : undefined,
-        completedAt: completedAt !== undefined ? new Date(completedAt) : undefined,
-        dismissedAt: dismissedAt !== undefined ? new Date(dismissedAt) : undefined,
+        status: status ? (status as OnboardingSessionStatus) : undefined,
+        startedAt: startedAt ? new Date(startedAt) : undefined,
+        completedAt: completedAt ? new Date(completedAt) : undefined,
+        dismissedAt: dismissedAt ? new Date(dismissedAt) : undefined,
       });
       return Response.json({ success: true });
     } else if (action === "delete") {

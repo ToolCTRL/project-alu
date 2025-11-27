@@ -30,7 +30,7 @@ export namespace RowsOverviewBlockService {
     };
   }
   export async function create({ request, params, form }: PageBlockActionArgs) {
-    const entityName = form.get("rows-entity")?.toString();
+    const entityName = form.get("rows-entity")?.toString() ?? "";
     const tenantId = form.get("rows-tenant")?.toString() ?? null;
 
     const userInfo = await getUserInfo(request);
@@ -45,7 +45,7 @@ export namespace RowsOverviewBlockService {
       userId: userInfo.userId,
       rowValues,
     });
-    const redirectTo = form.get("redirect")?.toString() || new URL(request.url).searchParams.get("redirect")?.toString();
+    const redirectTo = form.get("redirect")?.toString() ?? new URL(request.url).searchParams.get("redirect")?.toString() ?? "";
     if (redirectTo) {
       return redirect(redirectTo);
     }

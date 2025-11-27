@@ -116,7 +116,7 @@ function parseSimpleValue(
 }
 
 function getPropertyValueFromJson(t: TFunction | undefined, property: PropertyWithDetails, object: any, existing?: RowWithDetails) {
-  let jsonValue: any | null = null;
+  let jsonValue: unknown | null = null;
   let media: MediaDto[] = [];
   let multiple: RowValueMultipleDto[] = [];
   let range: RowValueRangeDto | null = null;
@@ -267,7 +267,7 @@ function getRelationship({
           if (!r.row) {
             return;
           }
-          const rowApiFormat = getApiFormat(entity!, r.row, options);
+          const rowApiFormat = getApiFormat(entity, r.row, options);
           apiFormat[entity.name].push({
             // relationshipId: r.id,
             ...rowApiFormat,
@@ -277,7 +277,7 @@ function getRelationship({
     } else {
       const row = rows?.find((f) => f.relationshipId === id);
       if (row) {
-        const rowApiFormat = getApiFormat(entity!, row.row, options);
+        const rowApiFormat = getApiFormat(entity, row.row, options);
         apiFormat[entity.name] = {
           // relationshipId: row.id,
           ...rowApiFormat,
@@ -317,14 +317,7 @@ const getPropertyApiFormat = ({ entity, item, property }: { entity: EntityWithPr
         };
       }) ?? []
     );
-  } else if (property.type === PropertyType.MULTI_SELECT) {
-    const multiple = value as RowValueMultiple[];
-    return (
-      multiple?.map((f) => {
-        return f.value;
-      }) ?? []
-    );
-  } else if (property.type === PropertyType.MULTI_TEXT) {
+  } else if (property.type === PropertyType.MULTI_SELECT || property.type === PropertyType.MULTI_TEXT) {
     const multiple = value as RowValueMultiple[];
     return (
       multiple?.map((f) => {

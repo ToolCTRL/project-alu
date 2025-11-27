@@ -16,6 +16,40 @@ import toast from "react-hot-toast";
 import TenantBadge from "~/components/core/tenants/TenantBadge";
 import { useTranslation } from "react-i18next";
 
+const StatusToggleCell = ({ item, onToggle }: { item: WorkflowDto; onToggle: (item: WorkflowDto, type: string, enabled: boolean) => void }) => (
+  <InputCheckbox asToggle value={item.status === "live"} setValue={(checked) => onToggle(item, "toggle-status", Boolean(checked))} />
+);
+
+const TenantCell = ({ item, params, t }: { item: WorkflowDto; params: any; t: any }) => {
+  if (params.tenant) return null;
+  return item.tenant ? <TenantBadge item={item.tenant} /> : <span className="text-muted-foreground italic">Admin</span>;
+};
+
+const TitleCell = ({ item }: { item: WorkflowDto }) => (
+  <div className="flex flex-col">
+    <div className="flex flex-col">
+      <Link to={`${item.id}`} className="text-base font-bold hover:underline">
+        {item.name}
+      </Link>
+      <div className="text-muted-foreground text-xs">{item.description || "No description"}</div>
+    </div>
+  </div>
+);
+
+const BlocksCell = ({ item }: { item: WorkflowDto }) => (
+  <Link to={`${item.id}`} className="text-muted-foreground hover:text-foreground text-sm underline">
+    {NumberUtils.numberFormat(item.blocks.length)}
+  </Link>
+);
+
+const ExecutionsCell = ({ item }: { item: WorkflowDto }) => (
+  <Link to={`${item.id}/executions`} className="text-muted-foreground hover:text-foreground text-sm underline">
+    {NumberUtils.numberFormat(item._count.executions)}
+  </Link>
+);
+
+const CreatedAtCell = ({ item }: { item: WorkflowDto }) => <DateCell date={item.createdAt ?? null} />;
+
 export default function WorkflowsIndexView() {
   const { t } = useTranslation();
   const params = useParams();
@@ -93,22 +127,22 @@ export default function WorkflowsIndexView() {
           <TabsWithIcons
             tabs={[
               {
-                name: `All ${countStatus() ? `(${countStatus()})` : ""}`,
+                name: `All ${countStatus() ? "(" + countStatus() + ")" : ""}`,
                 href: "?",
                 current: !searchParams.get("status") || searchParams.get("status") === "all",
               },
               {
-                name: `Live ${countStatus("live") ? `(${countStatus("live")})` : ""}`,
+                name: `Live ${countStatus("live") ? "(" + countStatus("live") + ")" : ""}`,
                 href: "?status=live",
                 current: searchParams.get("status") === "live",
               },
               {
-                name: `Draft ${countStatus("draft") ? `(${countStatus("draft")})` : ""}`,
+                name: `Draft ${countStatus("draft") ? "(" + countStatus("draft") + ")" : ""}`,
                 href: "?status=draft",
                 current: searchParams.get("status") === "draft",
               },
               {
-                name: `Archived ${countStatus("archived") ? `(${countStatus("archived")})` : ""}`,
+                name: `Archived ${countStatus("archived") ? "(" + countStatus("archived") + ")" : ""}`,
                 href: "?status=archived",
                 current: searchParams.get("status") === "archived",
               },
@@ -144,51 +178,34 @@ export default function WorkflowsIndexView() {
           {
             name: "status",
             title: "Status",
-            value: (i) => <InputCheckbox asToggle value={i.status === "live"} setValue={(checked) => onToggle(i, "toggle-status", Boolean(checked))} />,
+            value: (i) => <StatusToggleCell item={i} onToggle={onToggle} />,
           },
           {
             name: "tenant",
             title: t("models.tenant.object"),
-            value: (i) => (i.tenant ? <TenantBadge item={i.tenant} /> : <span className="text-muted-foreground italic">Admin</span>),
+            value: (i) => <TenantCell item={i} params={params} t={t} />,
             hidden: !!params.tenant,
           },
           {
             name: "title",
             title: "Title",
             className: "w-full",
-            value: (i) => (
-              <div className="flex flex-col">
-                <div className="flex flex-col">
-                  <Link to={`${i.id}`} className="text-base font-bold hover:underline">
-                    {i.name}
-                  </Link>
-                  <div className="text-muted-foreground text-xs">{i.description || "No description"}</div>
-                </div>
-              </div>
-            ),
+            value: (i) => <TitleCell item={i} />,
           },
           {
             name: "blocks",
             title: "Blocks",
-            value: (i) => (
-              <Link to={`${i.id}`} className="text-muted-foreground hover:text-foreground text-sm underline">
-                {NumberUtils.numberFormat(i.blocks.length)}
-              </Link>
-            ),
+            value: (i) => <BlocksCell item={i} />,
           },
           {
             name: "executions",
             title: "Executions",
-            value: (i) => (
-              <Link to={`${i.id}/executions`} className="text-muted-foreground hover:text-foreground text-sm underline">
-                {NumberUtils.numberFormat(i._count.executions)}
-              </Link>
-            ),
+            value: (i) => <ExecutionsCell item={i} />,
           },
           {
             name: "createdAt",
             title: "Created at",
-            value: (i) => <DateCell date={i.createdAt ?? null} />,
+            value: (i) => <CreatedAtCell item={i} />,
           },
         ]}
         noRecords={

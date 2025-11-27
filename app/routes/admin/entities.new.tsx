@@ -8,7 +8,6 @@ import { createEntityPermissions } from "~/utils/db/permissions/permissions.db.s
 import { EntitiesApi } from "~/utils/api/.server/EntitiesApi";
 import { verifyUserHasPermission } from "~/utils/helpers/.server/PermissionsService";
 import Constants from "~/application/Constants";
-import { getAllTenantTypes } from "~/utils/db/tenants/tenantTypes.db.server";
 import { cache } from "~/utils/cache.server";
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
@@ -28,7 +27,6 @@ export const action: ActionFunction = async ({ request }) => {
   if (action === "create") {
     const name = form.get("name")?.toString() ?? "";
     const slug = form.get("slug")?.toString().toLowerCase() ?? "";
-    // const order = Number(form.get("order"));
     const prefix = form.get("prefix")?.toString() ?? "";
     const title = form.get("title")?.toString() ?? "";
     const titlePlural = form.get("title-plural")?.toString() ?? "";

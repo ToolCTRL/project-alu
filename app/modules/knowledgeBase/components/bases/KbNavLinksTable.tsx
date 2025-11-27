@@ -2,20 +2,43 @@ import OrderIndexButtons from "~/components/ui/sort/OrderIndexButtons";
 import TableSimple from "~/components/ui/tables/TableSimple";
 import { KbNavLinkDto } from "~/modules/knowledgeBase/dtos/KbNavLinkDto";
 
+type SetItemsFn = React.Dispatch<
+  React.SetStateAction<
+    {
+      name: string;
+      href: string;
+      order: number;
+    }[]
+  >
+>;
+
+function OrderCell({ idx, items, setItems }: { readonly idx: number; readonly items: KbNavLinkDto[]; readonly setItems: SetItemsFn }) {
+  return (
+    <OrderIndexButtons
+      idx={idx}
+      items={items.map((f, idx) => {
+        return {
+          idx: idx,
+          order: f.order,
+        };
+      })}
+      onChange={(newItems) => {
+        setItems(
+          newItems.map((f, i) => {
+            return { ...items[i], order: f.order };
+          })
+        );
+      }}
+    />
+  );
+}
+
 export default function KbNavLinksTable({
   items,
   setItems,
 }: Readonly<{
   items: KbNavLinkDto[];
-  setItems: React.Dispatch<
-    React.SetStateAction<
-      {
-        name: string;
-        href: string;
-        order: number;
-      }[]
-    >
-  >;
+  setItems: SetItemsFn;
 }>) {
   return (
     <div>
@@ -33,24 +56,7 @@ export default function KbNavLinksTable({
             {
               name: "order",
               title: "",
-              value: (_item, idx) => (
-                <OrderIndexButtons
-                  idx={idx}
-                  items={items.map((f, idx) => {
-                    return {
-                      idx: idx,
-                      order: f.order,
-                    };
-                  })}
-                  onChange={(newItems) => {
-                    setItems(
-                      newItems.map((f, i) => {
-                        return { ...items[i], order: f.order };
-                      })
-                    );
-                  }}
-                />
-              ),
+              value: (_item, idx) => <OrderCell idx={idx} items={items} setItems={setItems} />,
             },
             {
               name: "title",

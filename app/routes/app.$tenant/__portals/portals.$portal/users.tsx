@@ -30,7 +30,7 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
   await requireAuth({ request, params });
   const { t } = await getTranslations(request);
   const tenantId = await getTenantIdOrNull({ request, params });
-  const item = await getPortalById(tenantId, params.portal!);
+  const item = await getPortalById(tenantId, params.portal ?? "");
   if (!item) {
     throw redirect(UrlUtils.getModulePath(params, "portals"));
   }
@@ -91,7 +91,19 @@ export const action = async ({ request, params }: ActionFunctionArgs) => {
   }
 };
 
-export default function () {
+function UserTableCell({ item }: { item: PortalUserDto }) {
+  return <UserBadge item={item} withAvatar={true} />;
+}
+
+function UserCreatedAtCell({ item }: { item: PortalUserDto }) {
+  return (
+    <time dateTime={DateUtils.dateYMDHMS(item.createdAt)} title={DateUtils.dateYMDHMS(item.createdAt)}>
+      {DateUtils.dateAgo(item.createdAt)}
+    </time>
+  );
+}
+
+export default function UsersPage() {
   const { t } = useTranslation();
   const data = useLoaderData<LoaderData>();
   const actionData = useActionData<ActionData>();
@@ -154,11 +166,7 @@ export default function () {
           title: t("models.user.plural"),
         },
       ]}
-      buttons={
-        <>
-          <ButtonPrimary to="new">{t("shared.new")}</ButtonPrimary>
-        </>
-      }
+      buttons={<ButtonPrimary to="new">{t("shared.new")}</ButtonPrimary>}
     >
       <TableSimple
         items={data.items}
@@ -182,16 +190,12 @@ export default function () {
           {
             name: "user",
             title: t("models.user.object"),
-            value: (item) => <UserBadge item={item} withAvatar={true} />,
+            value: (item) => <UserTableCell item={item} />,
           },
           {
             name: "createdAt",
             title: t("shared.createdAt"),
-            value: (item) => (
-              <time dateTime={DateUtils.dateYMDHMS(item.createdAt)} title={DateUtils.dateYMDHMS(item.createdAt)}>
-                {DateUtils.dateAgo(item.createdAt)}
-              </time>
-            ),
+            value: (item) => <UserCreatedAtCell item={item} />,
           },
         ]}
       />

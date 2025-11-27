@@ -16,10 +16,10 @@ import toast from "react-hot-toast";
 import { useAppOrAdminData } from "~/utils/data/useAppOrAdminData";
 
 interface Props {
-  showBreadcrumb?: boolean;
-  className?: string;
+  readonly showBreadcrumb?: boolean;
+  readonly className?: string;
 }
-export default function RowNewRoute({ showBreadcrumb = true, className }: Props) {
+export default function RowNewRoute({ showBreadcrumb = true, className }: Readonly<Props>) {
   const appOrAdminData = useAppOrAdminData();
   const data = useLoaderData<Rows_New.LoaderData>();
   const params = useParams();
@@ -35,8 +35,7 @@ export default function RowNewRoute({ showBreadcrumb = true, className }: Props)
   }, [actionData, t]);
 
   return (
-    <Fragment>
-      <NewPageLayout
+    <NewPageLayout
         className={className}
         title={t("shared.create") + " " + t(data.entityData.entity.title)}
         menu={
@@ -102,13 +101,15 @@ export default function RowNewRoute({ showBreadcrumb = true, className }: Props)
           )}
         </div>
       </NewPageLayout>
-    </Fragment>
   );
 }
 
-function RowCreated({ entityData, routes, newRow }: { entityData: EntitiesApi.GetEntityData; routes: EntitiesApi.Routes; newRow: RowWithDetails }) {
+function RowCreated({
+  entityData,
+  routes,
+  newRow,
+}: Readonly<{ entityData: EntitiesApi.GetEntityData; routes: EntitiesApi.Routes; newRow: RowWithDetails }>) {
   const { t } = useTranslation();
-  // const params = useParams();
   return (
     <div>
       {/* <NotificationSimple /> */}

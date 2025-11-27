@@ -1,5 +1,4 @@
-import { LoaderFunctionArgs, MetaFunction, useLoaderData } from "react-router";
-import { Outlet } from "react-router";
+import { LoaderFunctionArgs, MetaFunction, useLoaderData, Outlet } from "react-router";
 import { getTranslations } from "~/locale/i18next.server";
 import { getUserPermission } from "~/utils/helpers/.server/PermissionsService";
 import { getTenantIdFromUrl } from "~/utils/services/.server/urlService";

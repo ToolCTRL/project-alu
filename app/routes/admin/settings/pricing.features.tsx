@@ -1,5 +1,4 @@
-import { ActionFunctionArgs, LoaderFunctionArgs, MetaFunction, useActionData, useLoaderData } from "react-router";
-import { Form, useSubmit } from "react-router";
+import { ActionFunctionArgs, LoaderFunctionArgs, MetaFunction, useActionData, useLoaderData, Form, useSubmit } from "react-router";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { RowHeaderDisplayDto } from "~/application/dtos/data/RowHeaderDisplayDto";
@@ -73,7 +72,7 @@ export const action = async ({ request }: ActionFunctionArgs) => {
     await Promise.all(
       plans.map(async (plan) => {
         await deleteSubscriptionFeatures(plan.id ?? "");
-        const features = featuresInPlans.filter((f) => f.plans.find((p) => p.id === plan.id));
+        const features = featuresInPlans.filter((f) => f.plans.some((p) => p.id === plan.id));
         const sortedFeatures = features.toSorted((a, b) => a.order - b.order);
         await Promise.all(
           sortedFeatures.map(async ({ order, name, href, badge, plans, accumulate }) => {
@@ -135,7 +134,7 @@ function getInitialItems(plans: SubscriptionProductDto[]) {
 
   plans.forEach((plan) => {
     items.forEach((feature) => {
-      if (!feature.plans.find((p) => p.id === plan.id)) {
+      if (!feature.plans.some((p) => p.id === plan.id)) {
         feature.plans.push({
           id: plan.id!,
           title: "?",
@@ -149,7 +148,7 @@ function getInitialItems(plans: SubscriptionProductDto[]) {
   return items;
 }
 
-export default function () {
+export default function PricingFeaturesRoute() {
   const { t } = useTranslation();
   const data = useLoaderData<LoaderData>();
   const actionData = useActionData<ActionData>();
@@ -405,7 +404,7 @@ export default function () {
             <ClosedOpenedValue
               closed={
                 <div>
-                  {!item.name || !existing || !existing?.title?.trim() || existing?.title === "?" ? (
+                  {!item.name || !existing || !existing.title?.trim() || existing.title === "?" ? (
                     <div className="text-red-600 underline">Click to set</div>
                   ) : (
                     <PlanFeatureDescription

@@ -69,147 +69,147 @@ function GroupInputs({ prefix, properties, attributes }: readonly { readonly pre
   );
 }
 
-function JsonPropertyInput({ prefix, property, attributes }: readonly { readonly prefix: string; readonly property: JsonPropertyDto; readonly attributes: JsonPropertiesValuesDto | null }) {
+function getValueOrDefault<T>(value: JsonValue | undefined, defaultValue: JsonValue | undefined, converter: (val: JsonValue) => T): T | undefined {
+  const actualValue = value === undefined ? undefined : converter(value);
+  const actualDefault = defaultValue === undefined ? undefined : converter(defaultValue);
+  return actualValue !== undefined ? actualValue : actualDefault;
+}
+
+function StringInput({ prefix, property, value }: readonly { readonly prefix: string; readonly property: JsonPropertyDto; readonly value: JsonValue | undefined }) {
   const { t } = useTranslation();
-  let value: JsonValue | undefined = attributes ? attributes[property.name] : undefined;
+  const stringValue = getValueOrDefault(value, property.defaultValue, (v) => v as string);
+  return (
+    <div>
+      <InputText name={`${prefix}[${property.name}]`} title={t(property.title)} defaultValue={stringValue} required={property.required} />
+    </div>
+  );
+}
+
+function NumberInput({ prefix, property, value }: readonly { readonly prefix: string; readonly property: JsonPropertyDto; readonly value: JsonValue | undefined }) {
+  const { t } = useTranslation();
+  const numberValue = getValueOrDefault(value, property.defaultValue, (v) => v as number);
+  return (
+    <div>
+      <InputNumber name={`${prefix}[${property.name}]`} title={t(property.title)} defaultValue={numberValue} required={property.required} />
+    </div>
+  );
+}
+
+function BooleanInput({ prefix, property, value }: readonly { readonly prefix: string; readonly property: JsonPropertyDto; readonly value: JsonValue | undefined }) {
+  const { t } = useTranslation();
+  const booleanValue = getValueOrDefault(
+    value,
+    property.defaultValue,
+    (v) => v === "true" || v === true || v === 1 || v === "1"
+  );
+  return (
+    <div>
+      <InputCheckbox name={`${prefix}[${property.name}]`} title={t(property.title)} value={booleanValue} required={property.required} />
+    </div>
+  );
+}
+
+function DateInput({ prefix, property, value }: readonly { readonly prefix: string; readonly property: JsonPropertyDto; readonly value: JsonValue | undefined }) {
+  const { t } = useTranslation();
+  const dateValue = getValueOrDefault(value, property.defaultValue, (v) => new Date(v as string));
+  return (
+    <div>
+      <InputDate name={`${prefix}[${property.name}]`} title={t(property.title)} defaultValue={dateValue} required={property.required} />
+    </div>
+  );
+}
+
+function ImageInput({ prefix, property, value }: readonly { readonly prefix: string; readonly property: JsonPropertyDto; readonly value: JsonValue | undefined }) {
+  const { t } = useTranslation();
+  const imageValue = getValueOrDefault(value, property.defaultValue, (v) => v as string);
+  return (
+    <div>
+      <InputImage name={`${prefix}[${property.name}]`} title={t(property.title)} defaultValue={imageValue} required={property.required} />
+    </div>
+  );
+}
+
+function SelectInput({ prefix, property, value }: readonly { readonly prefix: string; readonly property: JsonPropertyDto; readonly value: JsonValue | undefined }) {
+  const { t } = useTranslation();
+  const stringValue = getValueOrDefault(value, property.defaultValue, (v) => v as string);
+  const selectOptions = property.options?.filter((f) => f.value) || [];
+  return (
+    <div>
+      <InputSelect
+        name={`${prefix}[${property.name}]`}
+        title={t(property.title)}
+        defaultValue={stringValue}
+        required={property.required}
+        options={selectOptions}
+        placeholder={`${t("shared.select")}...`}
+      />
+    </div>
+  );
+}
+
+function WysiwygInput({ prefix, property, value }: readonly { readonly prefix: string; readonly property: JsonPropertyDto; readonly value: JsonValue | undefined }) {
+  const { t } = useTranslation();
+  const stringValue = getValueOrDefault(value, property.defaultValue, (v) => v as string);
+  return (
+    <div>
+      <InputText
+        name={`${prefix}[${property.name}]`}
+        title={t(property.title)}
+        defaultValue={stringValue}
+        required={property.required}
+        editor="wysiwyg"
+        editorSize="md"
+      />
+    </div>
+  );
+}
+
+function MonacoInput({ prefix, property, value }: readonly { readonly prefix: string; readonly property: JsonPropertyDto; readonly value: JsonValue | undefined }) {
+  const { t } = useTranslation();
+  const stringValue = getValueOrDefault(value, property.defaultValue, (v) => v as string);
+  return (
+    <div>
+      <InputText
+        name={`${prefix}[${property.name}]`}
+        title={t(property.title)}
+        defaultValue={stringValue}
+        required={property.required}
+        editor="monaco"
+        editorLanguage="markdown"
+        editorSize="md"
+      />
+    </div>
+  );
+}
+
+function JsonPropertyInput({ prefix, property, attributes }: readonly { readonly prefix: string; readonly property: JsonPropertyDto; readonly attributes: JsonPropertiesValuesDto | null }) {
+  const value: JsonValue | undefined = attributes ? attributes[property.name] : undefined;
 
   switch (property.type) {
-    case "string": {
-      let stringValue = value === undefined ? undefined : (value as string);
-      const defaultStringValue = property.defaultValue === undefined ? undefined : (property.defaultValue as string);
-      if (stringValue === undefined && defaultStringValue !== undefined) {
-        stringValue = defaultStringValue;
-      }
-      return (
-        <div>
-          <InputText name={`${prefix}[${property.name}]`} title={t(property.title)} defaultValue={stringValue} required={property.required} />
-        </div>
-      );
-    }
-    case "number": {
-      let numberValue = value === undefined ? undefined : (value as number);
-      const defaultNumberValue = property.defaultValue === undefined ? undefined : (property.defaultValue as number);
-      if (numberValue === undefined && defaultNumberValue !== undefined) {
-        numberValue = defaultNumberValue;
-      }
-      return (
-        <div>
-          <InputNumber name={`${prefix}[${property.name}]`} title={t(property.title)} defaultValue={numberValue} required={property.required} />
-        </div>
-      );
-    }
-    case "boolean": {
-      let booleanValue = value === undefined ? undefined : value === "true" || value === true || value === 1 || value === "1";
-      const defaultBooleanValue =
-        property.defaultValue === undefined
-          ? undefined
-          : property.defaultValue === "true" || property.defaultValue === true || property.defaultValue === 1 || property.defaultValue === "1";
-      if (booleanValue === undefined && defaultBooleanValue !== undefined) {
-        booleanValue = defaultBooleanValue;
-      }
-      return (
-        <div>
-          <InputCheckbox name={`${prefix}[${property.name}]`} title={t(property.title)} value={booleanValue} required={property.required} />
-        </div>
-      );
-    }
-    case "date": {
-      let dateValue = value ? new Date(value as string) : undefined;
-      const defaultDateValue = property.defaultValue === undefined ? undefined : new Date(property.defaultValue as string);
-      if (dateValue === undefined && defaultDateValue !== undefined) {
-        dateValue = defaultDateValue;
-      }
-      return (
-        <div>
-          <InputDate name={`${prefix}[${property.name}]`} title={t(property.title)} defaultValue={dateValue} required={property.required} />
-        </div>
-      );
-    }
-    case "image": {
-      let imageValue = value === undefined ? undefined : (value as string);
-      const defaultImageValue = property.defaultValue === undefined ? undefined : (property.defaultValue as string);
-      if (imageValue === undefined && defaultImageValue !== undefined) {
-        imageValue = defaultImageValue;
-      }
-      return (
-        <div>
-          <InputImage name={`${prefix}[${property.name}]`} title={t(property.title)} defaultValue={imageValue} required={property.required} />
-        </div>
-      );
-    }
-    case "select": {
-      let stringValue = value === undefined ? undefined : (value as string);
-      const defaultStringValue = property.defaultValue === undefined ? undefined : (property.defaultValue as string);
-      if (stringValue === undefined && defaultStringValue !== undefined) {
-        stringValue = defaultStringValue;
-      }
-      const selectOptions = property.options?.filter((f) => f.value) || [];
-      return (
-        <div>
-          <InputSelect
-            name={`${prefix}[${property.name}]`}
-            title={t(property.title)}
-            defaultValue={stringValue}
-            required={property.required}
-            options={selectOptions}
-            placeholder={`${t("shared.select")}...`}
-          />
-        </div>
-      );
-    }
+    case "string":
+      return <StringInput prefix={prefix} property={property} value={value} />;
+    case "number":
+      return <NumberInput prefix={prefix} property={property} value={value} />;
+    case "boolean":
+      return <BooleanInput prefix={prefix} property={property} value={value} />;
+    case "date":
+      return <DateInput prefix={prefix} property={property} value={value} />;
+    case "image":
+      return <ImageInput prefix={prefix} property={property} value={value} />;
+    case "select":
+      return <SelectInput prefix={prefix} property={property} value={value} />;
     case "multiselect": {
-      let arrValue = value === undefined ? [] : (value as Array<string>);
+      const arrValue = value === undefined ? [] : (value as Array<string>);
       const defaultArrValue = property.defaultValue === undefined ? [] : (property.defaultValue as Array<string>);
-      if (value === undefined && defaultArrValue.length > 0) {
-        arrValue = defaultArrValue;
-      }
-      return <JsonMultiSelectInput prefix={prefix} property={property} initial={arrValue} />;
+      const finalValue = value === undefined && defaultArrValue.length > 0 ? defaultArrValue : arrValue;
+      return <JsonMultiSelectInput prefix={prefix} property={property} initial={finalValue} />;
     }
-    case "wysiwyg": {
-      let stringValue = value === undefined ? undefined : (value as string);
-      const defaultStringValue = property.defaultValue === undefined ? undefined : (property.defaultValue as string);
-      if (stringValue === undefined && defaultStringValue !== undefined) {
-        stringValue = defaultStringValue;
-      }
-      return (
-        <div>
-          <InputText
-            name={`${prefix}[${property.name}]`}
-            title={t(property.title)}
-            defaultValue={stringValue}
-            required={property.required}
-            editor="wysiwyg"
-            editorSize="md"
-          />
-        </div>
-      );
-    }
-    case "monaco": {
-      let stringValue = value === undefined ? undefined : (value as string);
-      const defaultStringValue = property.defaultValue === undefined ? undefined : (property.defaultValue as string);
-      if (stringValue === undefined && defaultStringValue !== undefined) {
-        stringValue = defaultStringValue;
-      }
-      return (
-        <div>
-          <InputText
-            name={`${prefix}[${property.name}]`}
-            title={t(property.title)}
-            defaultValue={stringValue}
-            required={property.required}
-            editor="monaco"
-            editorLanguage="markdown"
-            editorSize="md"
-          />
-        </div>
-      );
-    }
+    case "wysiwyg":
+      return <WysiwygInput prefix={prefix} property={property} value={value} />;
+    case "monaco":
+      return <MonacoInput prefix={prefix} property={property} value={value} />;
     case "content": {
-      let stringValue = value === undefined ? undefined : (value as string);
-      const defaultStringValue = property.defaultValue === undefined ? undefined : (property.defaultValue as string);
-      if (stringValue === undefined && defaultStringValue !== undefined) {
-        stringValue = defaultStringValue;
-      }
+      const stringValue = getValueOrDefault(value, property.defaultValue, (v) => v as string);
       return <ContentForm prefix={prefix} property={property} value={stringValue} />;
     }
     default:

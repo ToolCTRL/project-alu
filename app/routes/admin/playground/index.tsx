@@ -1,6 +1,6 @@
 import { Link } from "react-router";
 
-export default function () {
+export default function PlaygroundIndex() {
   return (
     <div className="prose dark:prose-dark p-4">
       <h2>Playground</h2>

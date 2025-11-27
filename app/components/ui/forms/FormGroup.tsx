@@ -139,7 +139,7 @@ const FormGroup = (
     if (confirmationPrompt) {
       setFormData(formData);
       confirmSubmit.current?.show(confirmationPrompt.title, confirmationPrompt.yesTitle, confirmationPrompt.noTitle, confirmationPrompt.description);
-    } else if (onSubmit !== undefined) {
+    } else if (onSubmit) {
       onSubmit(formData);
     } else {
       submit(formData, {

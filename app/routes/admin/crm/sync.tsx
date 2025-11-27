@@ -109,7 +109,65 @@ export const action = async ({ request, params }: ActionFunctionArgs) => {
   }
 };
 
-export default function () {
+// Extracted render functions for table columns
+function renderSource(item: UserInCrmDto) {
+  if (item.source === "user") {
+    return <SimpleBadge title="User" color={Colors.BLUE} />;
+  } else if (item.source === "convertkit") {
+    return <SimpleBadge title="ConvertKit" color={Colors.PINK} />;
+  }
+  return "?";
+}
+
+function renderStatus(item: UserInCrmDto) {
+  if (item.status === "synced") {
+    return <SimpleBadge title="Synced" color={Colors.GREEN} />;
+  } else if (item.status === "to-create") {
+    return <SimpleBadge title="To create" color={Colors.RED} />;
+  } else if (item.status === "to-update") {
+    return <SimpleBadge title="To update" color={Colors.YELLOW} />;
+  }
+  return <SimpleBadge title="Not synced" color={Colors.RED} />;
+}
+
+function renderUser(item: UserInCrmDto) {
+  return (
+  <div className="flex flex-col">
+    <div className="font-medium">{item.email}</div>
+    <div className="text-muted-foreground text-sm">
+      {item.firstName} {item.lastName}
+    </div>
+  </div>
+  );
+}
+
+const renderContact = (item: UserInCrmDto) => {
+  if (!item.contact) {
+    return null;
+  }
+  return (
+    <div className="flex flex-col">
+      <div className="font-medium">{item.contact.email}</div>
+      <div className="text-muted-foreground text-sm">
+        {item.contact.firstName} {item.contact.lastName}
+      </div>
+    </div>
+  );
+};
+
+const renderIsContact = (item: UserInCrmDto) => (
+  <div>{item.isContact ? <CheckIcon className="h-5 w-5 text-green-500" /> : <XIcon className="text-muted-foreground h-5 w-5" />}</div>
+);
+
+const renderIsMarketingSubscriber = (item: UserInCrmDto) => (
+  <div>
+    {item.contact?.marketingSubscriber ? <CheckIcon className="h-5 w-5 text-green-500" /> : <XIcon className="text-muted-foreground h-5 w-5" />}
+  </div>
+);
+
+const renderUpdatedAt = (item: UserInCrmDto) => <DateCell date={item.updatedAt} />;
+
+export default function SyncRoute() {
   const data = useLoaderData<LoaderData>();
   const fetcher = useFetcher<{ success?: string; error?: string }>();
   useEffect(() => {
@@ -193,85 +251,39 @@ export default function () {
             {
               name: "source",
               title: "Source",
-              value: (item) => {
-                if (item.source === "user") {
-                  return <SimpleBadge title="User" color={Colors.BLUE} />;
-                } else if (item.source === "convertkit") {
-                  return <SimpleBadge title="ConvertKit" color={Colors.PINK} />;
-                }
-                return "?";
-              },
+              value: renderSource,
             },
             {
               name: "status",
               title: "Status",
-              value: (item) => {
-                if (item.status === "synced") {
-                  return <SimpleBadge title="Synced" color={Colors.GREEN} />;
-                } else if (item.status === "to-create") {
-                  return <SimpleBadge title="To create" color={Colors.RED} />;
-                } else if (item.status === "to-update") {
-                  return <SimpleBadge title="To update" color={Colors.YELLOW} />;
-                }
-                return <SimpleBadge title="Not synced" color={Colors.RED} />;
-              },
+              value: renderStatus,
             },
             {
               name: "user",
               title: "User",
               className: "w-full",
-              value: (item) => (
-                <div className="flex flex-col">
-                  <div className="font-medium">{item.email}</div>
-                  <div className="text-muted-foreground text-sm">
-                    {item.firstName} {item.lastName}
-                  </div>
-                </div>
-              ),
+              value: renderUser,
             },
             {
               name: "contact",
               title: "Contact",
               className: "w-full",
-              value: (item) => {
-                if (!item.contact) {
-                  return null;
-                }
-                return (
-                  <div className="flex flex-col">
-                    <div className="font-medium">{item.contact.email}</div>
-                    <div className="text-muted-foreground text-sm">
-                      {item.contact.firstName} {item.contact.lastName}
-                    </div>
-                  </div>
-                );
-              },
+              value: renderContact,
             },
             {
               name: "isContact",
               title: "Is contact",
-              value: (item) => (
-                <div>{item.isContact ? <CheckIcon className="h-5 w-5 text-green-500" /> : <XIcon className="text-muted-foreground h-5 w-5" />}</div>
-              ),
+              value: renderIsContact,
             },
             {
               name: "isMarketingSubscriber",
               title: "Marketing subscriber",
-              value: (item) => (
-                <div>
-                  {item.contact?.marketingSubscriber ? <CheckIcon className="h-5 w-5 text-green-500" /> : <XIcon className="text-muted-foreground h-5 w-5" />}
-                </div>
-              ),
+              value: renderIsMarketingSubscriber,
             },
-            // {
-            //   name: "createdAt",
-            //   title: "Created at",
-            //   value: (item) => <DateCell date={item.createdAt} />,
-            // },
             {
               name: "updatedAt",
               title: "Updated at",
-              value: (item) => <DateCell date={item.updatedAt} />,
+              value: renderUpdatedAt,
             },
           ]}
         />

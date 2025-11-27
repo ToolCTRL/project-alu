@@ -67,12 +67,8 @@ export function getPossibleCurrencies(prices: SubscriptionPriceDto[]) {
 }
 
 export function getCurrenciesAndPeriods(prices: SubscriptionPriceDto[], defaultCurrency?: string, defaultBillingPeriod?: SubscriptionBillingPeriod) {
-  if (!defaultCurrency) {
-    defaultCurrency = currencies.find((f) => f.default)?.value ?? "usd";
-  }
-  if (!defaultBillingPeriod) {
-    defaultBillingPeriod = billingPeriods.find((f) => f.default)?.value ?? SubscriptionBillingPeriod.MONTHLY;
-  }
+  defaultCurrency ??= currencies.find((f) => f.default)?.value ?? "usd";
+  defaultBillingPeriod ??= billingPeriods.find((f) => f.default)?.value ?? SubscriptionBillingPeriod.MONTHLY;
 
   const currencyState: { value: string; options: string[] } = { value: defaultCurrency, options: getPossibleCurrencies(prices) };
   if (!currencyState.options.includes(defaultCurrency) && currencyState.options.length > 0) {
@@ -113,34 +109,6 @@ export function getBillingPeriodParams(billingPeriod: SubscriptionBillingPeriod)
   }
 }
 
-// export function findDiscounts({
-//   currency,
-//   billingPeriods,
-//   products,
-// }: {
-//   currency: string;
-//   billingPeriods: SubscriptionBillingPeriod[];
-//   products: SubscriptionProductDto[];
-// }) {
-//   const discounts: { billingPeriod: SubscriptionBillingPeriod; discount: number }[] = [];
-//   // iterate each product and find discounts against the highest price
-//   products.forEach((product) => {
-//     const prices = product.prices.filter((f) => f.currency === currency && billingPeriods.includes(f.billingPeriod));
-//     if (prices.length > 0) {
-//       const highestPrice = prices.reduce((prev, current) => (prev.price > current.price ? prev : current));
-//       console.log("[highestPrice]", highestPrice.price);
-//       prices.forEach((price) => {
-//         if (price.price < highestPrice.price) {
-//           const discount = 100 - (Number(price.price) * 100) / Number(highestPrice.price);
-//           if (discount !== 0) {
-//             discounts.push({ billingPeriod: price.billingPeriod, discount });
-//           }
-//         }
-//       });
-//     }
-//   });
-//   return discounts;
-// }
 
 export function getDefaultCurrency(request: Request) {
   const searchParams = new URL(request.url).searchParams;
@@ -215,6 +183,6 @@ function formatPrice(price: number, thousandSeparator: string = ",", decimalSepa
       minimumFractionDigits: decimals,
       maximumFractionDigits: decimals,
     })
-    .replace(/,/g, thousandSeparator)
-    .replace(/\./g, decimalSeparator);
+    .replaceAll(",", thousandSeparator)
+    .replaceAll(".", decimalSeparator);
 }

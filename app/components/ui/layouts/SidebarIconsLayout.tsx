@@ -33,7 +33,6 @@ export default function SidebarIconsLayout({
 }>) {
   const location = useLocation();
   const mainElement = useRef<HTMLDivElement>(null);
-  // useElementScrollRestoration({ apply: scrollRestoration ?? false }, mainElement);
 
   function findExactRoute(element: IconDto) {
     if (element.exact) {
@@ -46,7 +45,7 @@ export default function SidebarIconsLayout({
 
   const topItems = items.filter((f) => !f.bottom && !f.hidden);
   const bottomItems = items.filter((f) => f.bottom && !f.hidden);
-  const hasBottomItems = bottomItems.some((f) => f);
+  const hasBottomItems = bottomItems.some(Boolean);
 
   return (
     <div className="sm:flex sm:flex-row">

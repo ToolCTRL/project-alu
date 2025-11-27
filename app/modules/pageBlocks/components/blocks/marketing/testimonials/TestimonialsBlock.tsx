@@ -3,7 +3,7 @@ import TestimonialsVariantSimple from "./TestimonialsVariantSimple";
 import TestimonialsVariantScroll from "./TestimonialsVariantScroll";
 import TestimonialsVariantCarousel from "./TestimonialsVariantCarousel";
 
-export default function TestimonialsBlock({ item }: { item: TestimonialsBlockDto }) {
+export default function TestimonialsBlock({ item }: { readonly item: TestimonialsBlockDto }) {
   return (
     <>
       {item.style === "simple" && <TestimonialsVariantSimple item={item} />}

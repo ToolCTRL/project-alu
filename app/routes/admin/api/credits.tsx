@@ -75,7 +75,7 @@ export const action: ActionFunction = async ({ request }) => {
   }
 };
 
-export default function () {
+export default function AdminApiCredits() {
   const { t } = useTranslation();
   const data = useLoaderData<LoaderData>();
   return (

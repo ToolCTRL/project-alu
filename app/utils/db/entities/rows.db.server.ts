@@ -186,7 +186,7 @@ export async function countRows({
   entityName?: string;
   tenantId?: string | null;
 
-  userId?: string | undefined;
+  userId?: string;
   filters?: RowFiltersDto;
   rowWhere?: Prisma.RowWhereInput;
   includePublic?: boolean;
@@ -309,8 +309,8 @@ export async function createRow({
     childRows?: { relationshipId: string; childId: string }[];
     rowCreateInput?: Partial<Prisma.RowCreateInput>;
   };
-  nextFolio?: number | undefined;
-  nextOrder?: number | undefined;
+  nextFolio?: number;
+  nextOrder?: number;
 }) {
   let folio = nextFolio ?? 1;
   if (!nextFolio) {
@@ -414,7 +414,7 @@ export async function updateRow(
       booleanValue?: boolean | null;
       media?: MediaDto[];
       multiple?: RowValueMultipleDto[];
-      range?: RowValueRangeDto | undefined;
+      range?: RowValueRangeDto;
     }[];
     parentRows?: { relationshipId: string; parentId: string }[];
     childRows?: { relationshipId: string; childId: string }[];
@@ -422,7 +422,6 @@ export async function updateRow(
   }
 ) {
   let row = await getRowById(id);
-  // await deleteRowMediaFromStorageProvider(row);
 
   if (data.parentRows) {
     const { count } = await db.rowRelationship.deleteMany({
@@ -576,7 +575,7 @@ export async function updateRow(
   row = await getRowById(id);
   if (row) {
     const entity = await getEntityById({ tenantId: row.tenantId, id: row.entityId });
-    if (entity && row) {
+    if (entity) {
       await storeRowMediaInStorageProvider(entity, row);
     }
   }

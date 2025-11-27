@@ -9,7 +9,9 @@ export const meta: v2MetaFunction<Rows_Edit.LoaderData> = ({ data }) => data?.me
 export const loader = (args: LoaderFunctionArgs) => Rows_Edit.loader(args);
 export const action: ActionFunction = (args) => Rows_Edit.action(args);
 
-export default () => <RowEditRoute />;
+export default function AdminCrmEntityEditRoute() {
+  return <RowEditRoute />;
+}
 
 export function ErrorBoundary() {
   return <ServerError />;

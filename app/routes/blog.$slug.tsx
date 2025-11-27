@@ -41,7 +41,7 @@ export const action = async ({ request, params }: ActionFunctionArgs) => {
   }
 };
 
-export default function () {
+export default function BlogPostRoute() {
   const { t } = useTranslation();
   const data = useLoaderData<LoaderData>();
 

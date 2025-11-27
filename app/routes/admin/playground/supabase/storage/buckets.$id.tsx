@@ -34,13 +34,15 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
   };
   if (process.env.NODE_ENV !== "development") {
     data.error = "Not available in production";
-  } else if (!process.env.SUPABASE_API_URL) {
-    data.error = "Missing SUPABASE_API_URL .env variable";
-  } else if (!process.env.SUPABASE_KEY) {
-    data.error = "Missing SUPABASE_KEY .env variable (service_role, secret)";
+  } else if (process.env.SUPABASE_API_URL) {
+    if (process.env.SUPABASE_KEY) {
+      const supabaseBucketId = params.id!;
+      data.files = await getSupabaseFiles(supabaseBucketId);
+    } else {
+      data.error = "Missing SUPABASE_KEY .env variable (service_role, secret)";
+    }
   } else {
-    const supabaseBucketId = params.id!;
-    data.files = await getSupabaseFiles(supabaseBucketId);
+    data.error = "Missing SUPABASE_API_URL .env variable";
   }
   return data;
 };
@@ -53,12 +55,12 @@ type ActionData = {
 
 const toSafeString = (value: FormDataEntryValue | null) => (typeof value === "string" ? value : "");
 async function handleFileSave(supabaseBucketId: string, form: FormData) {
-  const name = toSafeString(form.get("name") as FormDataEntryValue | null);
+  const name = toSafeString(form.get("name"));
   if (name === "") {
     return Response.json({ error: "Missing name" }, { status: 400 });
   }
   const files: MediaDto[] = form.getAll("files[]").map((f) => {
-    return JSON.parse((f as FormDataEntryValue).toString());
+    return JSON.parse(f.toString());
   });
   if (files.length !== 1) {
     return Response.json({ error: "Missing file" }, { status: 400 });
@@ -162,9 +164,7 @@ export default function BucketsDetail() {
         },
       ]}
       buttons={
-        <>
-          <ButtonPrimary onClick={() => setIsAdding(true)}>Add file</ButtonPrimary>
-        </>
+        <ButtonPrimary onClick={() => setIsAdding(true)}>Add file</ButtonPrimary>
       }
     >
       {data.error ?? data.files.error ? (

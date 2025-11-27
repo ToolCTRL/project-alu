@@ -1,10 +1,7 @@
-import TrashIcon from "~/components/ui/icons/TrashIcon";
 import { useTranslation } from "react-i18next";
 import InputText from "~/components/ui/input/InputText";
 import { SurveyItemDto } from "../dtos/SurveyDtos";
 import InputSelect from "~/components/ui/input/InputSelect";
-import InputMultipleText from "~/components/ui/input/InputMultipleText";
-import InputCheckboxWithDescription from "~/components/ui/input/InputCheckboxWithDescription";
 import SurveyItemOptionsList from "./SurveyItemOptionsList";
 import CollapsibleRow from "~/components/ui/tables/CollapsibleRow";
 
@@ -12,18 +9,19 @@ interface Props {
   items: SurveyItemDto[];
   onChange: (items: SurveyItemDto[]) => void;
 }
-export default function SurveyItemsList({ items, onChange }: Props) {
+export default function SurveyItemsList({ items, onChange }: Readonly<Props>) {
   const { t } = useTranslation();
   return (
     <div className="space-y-2">
       {items.map((item, idx) => {
-        return <input key={idx} type="hidden" name="items[]" value={JSON.stringify(item)} readOnly hidden />;
+        return <input key={`item-hidden-${item.title}-${idx}`} type="hidden" name="items[]" value={JSON.stringify(item)} readOnly hidden />;
       })}
 
       <div className="space-y-2">
         {items.map((item, idx) => {
           return (
             <CollapsibleRow
+              key={`item-${item.title}-${idx}`}
               value={item.title || `Survey Item ${idx + 1}`}
               title={item.title || `Survey Item ${idx + 1}`}
               onRemove={() => {
@@ -33,26 +31,13 @@ export default function SurveyItemsList({ items, onChange }: Props) {
               }}
               className="px-4"
             >
-              <div key={idx} className="border-border mt-2 border-t pt-4">
-                {/* <div className=" absolute right-0 top-0 -mr-2 -mt-2">
-                  <button
-                    type="button"
-                    className=" border-border bg-background hover:bg-secondary group flex items-center rounded-md border p-2"
-                    onClick={() => {
-                      const newItems = [...items];
-                      newItems.splice(idx, 1);
-                      onChange(newItems);
-                    }}
-                  >
-                    <TrashIcon className="h-4 w-4 text-gray-300 group-hover:text-muted-foreground" />
-                  </button>
-                </div> */}
+              <div className="border-border mt-2 border-t pt-4">
                 <div className=" grid grid-cols-12 gap-2">
                   <InputSelect
                     title={t("shared.type")}
                     value={item.type}
                     className="col-span-4"
-                    setValue={(e) => onChange([...items.slice(0, idx), { ...item, type: e as any }, ...items.slice(idx + 1)])}
+                    setValue={(e) => onChange([...items.slice(0, idx), { ...item, type: e }, ...items.slice(idx + 1)])}
                     options={[
                       {
                         value: "single-select",
@@ -63,7 +48,6 @@ export default function SurveyItemsList({ items, onChange }: Props) {
                         name: "Multiple Select",
                       },
                     ]}
-                    // display="name"
                   />
                   <InputText
                     className="col-span-8"
@@ -89,7 +73,7 @@ export default function SurveyItemsList({ items, onChange }: Props) {
                     className="col-span-4"
                     title={"Color"}
                     value={item.color}
-                    setValue={(e) => onChange([...items.slice(0, idx), { ...item, color: e?.toString() ?? ("" as any) }, ...items.slice(idx + 1)])}
+                    setValue={(e) => onChange([...items.slice(0, idx), { ...item, color: e?.toString() ?? "" }, ...items.slice(idx + 1)])}
                     options={[
                       { name: "slate", value: "slate" },
                       { name: "gray", value: "gray" },
@@ -119,7 +103,7 @@ export default function SurveyItemsList({ items, onChange }: Props) {
                     title="Style"
                     value={item.style}
                     className="col-span-4"
-                    setValue={(e) => onChange([...items.slice(0, idx), { ...item, style: e as any }, ...items.slice(idx + 1)])}
+                    setValue={(e) => onChange([...items.slice(0, idx), { ...item, style: e }, ...items.slice(idx + 1)])}
                     options={[
                       {
                         value: "default",
@@ -130,7 +114,6 @@ export default function SurveyItemsList({ items, onChange }: Props) {
                         name: "Grid",
                       },
                     ]}
-                    // display="name"
                   />
 
                   <div className="col-span-12 space-y-1">
@@ -140,14 +123,6 @@ export default function SurveyItemsList({ items, onChange }: Props) {
                       onChange={(e) => onChange([...items.slice(0, idx), { ...item, options: e }, ...items.slice(idx + 1)])}
                     />
                   </div>
-                  {/* <InputMultipleText
-                  className="col-span-12"
-                  name="categories[]"
-                  title={"Categories"}
-                  value={item.categories || []}
-                  onChange={(e) => onChange([...items.slice(0, idx), { ...item, categories: e }, ...items.slice(idx + 1)])}
-                  separator=","
-                /> */}
                 </div>
               </div>
             </CollapsibleRow>

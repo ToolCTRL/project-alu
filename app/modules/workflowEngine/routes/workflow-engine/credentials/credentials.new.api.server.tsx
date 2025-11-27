@@ -31,7 +31,7 @@ export namespace WorkflowsCredentialsNewApi {
       try {
         const existing = await getWorkflowCredentialByName(name, { tenantId });
         if (existing) {
-          throw Error("Credential already exists with name: " + name);
+          throw new Error("Credential already exists with name: " + name);
         }
         value = CryptoApi.encrypt(value);
         await createWorkflowCredential({

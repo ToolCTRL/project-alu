@@ -5,7 +5,7 @@ import InputRadioGroup from "~/components/ui/input/InputRadioGroup";
 import InputText from "~/components/ui/input/InputText";
 import PageBlockUtils from "~/modules/pageBlocks/components/blocks/PageBlockUtils";
 
-export default function VideoBlockForm({ item, onUpdate }: { item?: VideoBlockDto; onUpdate: (item: VideoBlockDto) => void }) {
+export default function VideoBlockForm({ item, onUpdate }: { readonly item?: VideoBlockDto; readonly onUpdate: (item: VideoBlockDto) => void }) {
   const [state, setState] = useState<VideoBlockDto>(item || PageBlockUtils.defaultBlocks.video!);
   useEffect(() => {
     onUpdate(state);

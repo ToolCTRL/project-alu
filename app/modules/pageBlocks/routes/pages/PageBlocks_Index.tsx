@@ -41,7 +41,6 @@ export namespace PageBlocks_Index {
     if (!item) {
       return redirect("/admin/pages");
     }
-    // const page = await getPageConfiguration({ request, t, page: item, slug: item.slug });
 
     if (action === "save") {
       const blocks = form.get("blocks");
@@ -72,7 +71,6 @@ export namespace PageBlocks_Index {
     } else if (action === "reset") {
       await deletePageBlocks(item);
       return Response.json({
-        // success: "Page blocks reset successfully",
         page: await getPageConfiguration({ request, t, slug: item.slug }),
       });
     } else if (action === "delete") {

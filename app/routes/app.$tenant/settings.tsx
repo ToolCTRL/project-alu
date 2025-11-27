@@ -14,8 +14,6 @@ import MembershipCardIcon from "~/components/ui/icons/settings/MembershipCardIco
 import MembershipCardIconFilled from "~/components/ui/icons/settings/MembershipCardIconFilled";
 import CompanyIcon from "~/components/ui/icons/crm/CompanyIcon";
 import CompanyIconFilled from "~/components/ui/icons/crm/CompanyIconFilled";
-import LinkIcon from "~/components/ui/icons/crud/LinkIcon";
-import LinkIconFilled from "~/components/ui/icons/crud/LinkIconFilled";
 import RestApiIcon from "~/components/ui/icons/entities/RestApiIcon";
 import RestApiIconFilled from "~/components/ui/icons/entities/RestApiIconFilled";
 import ActivityHistoryIcon from "~/components/ui/icons/entities/ActivityHistoryIcon";
@@ -95,28 +93,6 @@ export default function SettingsRoute() {
         iconSelected: <CompanyIconFilled className="text-muted-foreground h-5 w-5 shrink-0" aria-hidden="true" />,
       });
     }
-    // if (rootData.appConfiguration.app.features.tenantTypes && getUserHasPermission(appOrAdminData, "app.settings.accounts.view")) {
-    //   tabs.push({
-    //     name: t("models.tenant.plural"),
-    //     href: UrlUtils.currentTenantUrl(params, "settings/accounts"),
-    //     icon: <LinkIcon className=" text-muted-foreground h-5 w-5 shrink-0" aria-hidden="true" />,
-    //     iconSelected: <LinkIconFilled className=" text-muted-foreground h-5 w-5 shrink-0" aria-hidden="true" />,
-    //   });
-    // }
-    // if (getUserHasPermission(appOrAdminData, "app.settings.roles.view")) {
-    //   tabs.push({
-    //     name: t("models.role.plural"),
-    //     href: UrlUtils.currentTenantUrl(params, "settings/roles-and-permissions"),
-    //     icon: <AccessDeniedIcon className=" h-5 w-5 shrink-0 text-muted-foreground" aria-hidden="true" />,
-    //     iconSelected: <AccessDeniedIconFilled className=" h-5 w-5 shrink-0 text-muted-foreground" aria-hidden="true" />,
-    //   });
-    // }
-    // tabs.push({
-    //   name: t("models.group.plural"),
-    //   href: UrlUtils.currentTenantUrl(params, "settings/groups"),
-    //   icon: <GroupIcon className=" h-5 w-5 shrink-0 text-muted-foreground" aria-hidden="true" />,
-    //   iconSelected: <GroupIconFilled className=" h-5 w-5 shrink-0 text-muted-foreground" aria-hidden="true" />,
-    // });
     if (rootData.appConfiguration.app.features.tenantApiKeys && getUserHasPermission(appOrAdminData, "app.settings.apiKeys.view")) {
       tabs.push({
         name: "API",
@@ -149,9 +125,6 @@ export default function SettingsRoute() {
         iconSelected: <ExperimentIconFilled className="text-muted-foreground h-5 w-5 shrink-0" aria-hidden="true" />,
       });
     }
-    // setTabs(tabs);
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps
 
     return tabs;
   };

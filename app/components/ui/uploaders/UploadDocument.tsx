@@ -103,7 +103,8 @@ export default function UploadDocuments({
   }, [isDragging, loading, disabled]);
 
   return (
-    <div
+    <button
+      type="button"
       className={clsx(
         "drop border-border hover:bg-background/90 flex items-center overflow-hidden rounded-md border-2 border-dashed text-center",
         customClasses,
@@ -112,13 +113,8 @@ export default function UploadDocuments({
       onDragOver={dragOver}
       onDragLeave={dragLeave}
       onDrop={drop}
-      role="button"
-      tabIndex={0}
-      onKeyDown={(e) => {
-        if (e.key === "Enter" || e.key === " ") {
-          document.getElementById(name)?.click();
-        }
-      }}
+      onClick={() => document.getElementById(name)?.click()}
+      disabled={disabled}
     >
       {(() => {
         if (loading) {
@@ -166,6 +162,6 @@ export default function UploadDocuments({
           );
         }
       })()}
-    </div>
+    </button>
   );
 }

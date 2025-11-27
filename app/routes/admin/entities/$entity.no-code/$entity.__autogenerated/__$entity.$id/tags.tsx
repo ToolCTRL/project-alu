@@ -7,7 +7,9 @@ export { serverTimingHeaders as headers } from "~/modules/metrics/utils/defaultH
 export const loader = (args: LoaderFunctionArgs) => Rows_Tags.loader(args);
 export const action: ActionFunction = (args) => Rows_Tags.action(args);
 
-export default () => <RowTagsRoute />;
+export default function EntityRowTagsRoute() {
+  return <RowTagsRoute />;
+}
 
 export function ErrorBoundary() {
   return <ServerError />;

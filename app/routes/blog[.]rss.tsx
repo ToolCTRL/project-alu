@@ -2,11 +2,11 @@ import { LoaderFunctionArgs } from "react-router";
 import { getAllBlogPosts } from "~/modules/blog/db/blog.db.server";
 
 function escapeCdata(s: string) {
-  return s.replace(/\]\]>/g, "]]]]><![CDATA[>");
+  return s.replaceAll("]]>", "]]]]><![CDATA[>");
 }
 
 function escapeHtml(s: string) {
-  return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+  return s.replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll('"', "&quot;").replaceAll("'", "&#039;");
 }
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
@@ -35,7 +35,7 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
             <item>
               <title><![CDATA[${escapeCdata(post.slug)}]]></title>
               <description><![CDATA[Blog post - ${escapeHtml(post.title)}]]></description>
-              ${!post.author ? "" : `<author><![CDATA[${escapeCdata(post.author.firstName + " " + post.author.lastName)}]]></author>`}
+              ${post.author ? `<author><![CDATA[${escapeCdata(post.author.firstName + " " + post.author.lastName)}]]></author>` : ""}
               <pubDate>${post.createdAt.toUTCString()}</pubDate>
               <link>${blogUrl}/${post.slug}</link>
               <guid>${blogUrl}/${post.id}</guid>

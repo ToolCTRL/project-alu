@@ -226,7 +226,6 @@ export async function getAppConfiguration({ request }: { request: Request }): Pr
     return conf;
   }
   conf.app.name = appConfiguration?.name ?? "";
-  // conf.app.url = appConfiguration?.url ?? "";
   conf.app.theme = appConfiguration?.theme ?? defaultTheme;
 
   conf.email.provider = (appConfiguration?.emailProvider ?? defaultEmailConfig.provider) as AppConfiguration["email"]["provider"];

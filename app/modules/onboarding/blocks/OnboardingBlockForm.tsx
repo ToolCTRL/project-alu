@@ -40,7 +40,7 @@ export default function OnboardingBlockForm({ item, onUpdate }: Readonly<{ item?
             className="col-span-2"
             title="Style"
             value={state.style}
-            setValue={(value) => setState({ ...state, style: value as OnboardingBlockStyle })}
+            setValue={(value) => setState({ ...state, style: value })}
             options={OnboardingBlockStyles.map((f) => f)}
           />
 
@@ -49,7 +49,7 @@ export default function OnboardingBlockForm({ item, onUpdate }: Readonly<{ item?
             title="Height"
             value={state.height}
             disabled={state.style !== "modal"}
-            setValue={(value) => setState({ ...state, height: value as any })}
+            setValue={(value) => setState({ ...state, height: value })}
             options={[
               { value: "xs", name: "xs" },
               { value: "sm", name: "sm" },
@@ -376,7 +376,7 @@ function StepForm({ item, onUpdate }: Readonly<{ item: OnboardingStepBlockDto; o
   );
 }
 
-function SelectOptionsForm({ options, setOptions }: { options: OnboardingInputOptionDto[]; setOptions: (options: OnboardingInputOptionDto[]) => void }) {
+function SelectOptionsForm({ options, setOptions }: { readonly options: OnboardingInputOptionDto[]; readonly setOptions: (options: OnboardingInputOptionDto[]) => void }) {
   const [state, setState] = useState<OnboardingInputOptionDto[]>(options ?? []);
 
   useEffect(() => {

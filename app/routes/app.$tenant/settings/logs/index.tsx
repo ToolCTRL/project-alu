@@ -1,5 +1,4 @@
-import { LoaderFunctionArgs, useLoaderData } from "react-router";
-import { useParams } from "react-router";
+import { LoaderFunctionArgs, useLoaderData, useParams } from "react-router";
 import { useTranslation } from "react-i18next";
 import { FilterablePropertyDto } from "~/application/dtos/data/FilterablePropertyDto";
 import { PaginationDto } from "~/application/dtos/data/PaginationDto";

@@ -26,51 +26,6 @@ interface Props {
   };
 }
 
-function MethodCell({ item }: { readonly item: ApiCallSummaryDto }) {
-  return (
-    <FilterableValueLink name="method" value={item.method}>
-      <SimpleBadge title={item.method} color={ApiUtils.getMethodColor(item.method)} underline />
-    </FilterableValueLink>
-  );
-}
-
-function EndpointCell({ item }: { readonly item: ApiCallSummaryDto }) {
-  return <FilterableValueLink name="endpoint" value={item.endpoint} />;
-}
-
-function ParamsCell({ item }: { readonly item: ApiCallSummaryDto }) {
-  return <FilterableValueLink name="params" value={item.params} />;
-}
-
-function StatusCell({ item }: { readonly item: ApiCallSummaryDto }) {
-  return (
-    <FilterableValueLink name="status" value={item.status?.toString() ?? "{null}"}>
-      <SimpleBadge title={item.status?.toString() ?? "?"} color={item.status?.toString().startsWith("4") ? Colors.RED : Colors.GREEN} />
-    </FilterableValueLink>
-  );
-}
-
-function TenantCell({ item, allTenants }: { readonly item: ApiCallSummaryDto; readonly allTenants: { id: string; name: string }[] }) {
-  const tenant = allTenants.find((x) => x.id === item.tenantId);
-  return <FilterableValueLink name="tenantId" value={tenant?.name ?? ""} />;
-}
-
-function DurationCell({ item }: { readonly item: ApiCallSummaryDto }) {
-  return item._avg.duration === null ? (
-    <span className="text-muted-foreground text-xs italic">-</span>
-  ) : (
-    <div>{NumberUtils.custom(Number(item._avg.duration), "0,0.001")} ms</div>
-  );
-}
-
-function SpeedCell({ item }: { readonly item: ApiCallSummaryDto }) {
-  return item._avg.duration === null ? (
-    <span className="text-muted-foreground text-xs italic">-</span>
-  ) : (
-    <ApiCallSpeedBadge duration={Number(item._avg.duration)} />
-  );
-}
-
 export default function ApiKeyLogsSummary({ data }: Props) {
   const { t } = useTranslation();
   const params = useParams();
@@ -117,35 +72,46 @@ export default function ApiKeyLogsSummary({ data }: Props) {
       headers.push({
         name: "method",
         title: "Method",
-        value: (item) => <MethodCell item={item} />,
+        value: (item) => (
+          <FilterableValueLink name="method" value={item.method}>
+            <SimpleBadge title={item.method} color={ApiUtils.getMethodColor(item.method)} underline />
+          </FilterableValueLink>
+        ),
       });
     }
     if (groupBy.includes("endpoint")) {
       headers.push({
         name: "endpoint",
         title: "Endpoint",
-        value: (item) => <EndpointCell item={item} />,
+        value: (item) => <FilterableValueLink name="endpoint" value={item.endpoint} />,
       });
     }
     if (groupBy.includes("params")) {
       headers.push({
         name: "params",
         title: "Params",
-        value: (item) => <ParamsCell item={item} />,
+        value: (item) => <FilterableValueLink name="params" value={item.params} />,
       });
     }
     if (groupBy.includes("status")) {
       headers.push({
         name: "status",
         title: "Status",
-        value: (item) => <StatusCell item={item} />,
+        value: (item) => (
+          <FilterableValueLink name="status" value={item.status?.toString() ?? "{null}"}>
+            <SimpleBadge title={item.status?.toString() ?? "?"} color={item.status?.toString().startsWith("4") ? Colors.RED : Colors.GREEN} />
+          </FilterableValueLink>
+        ),
       });
     }
     if (groupBy.includes("tenantId")) {
       headers.push({
         name: "tenantId",
         title: "Tenant",
-        value: (item) => <TenantCell item={item} allTenants={data.allTenants} />,
+        value: (item) => {
+          const tenant = data.allTenants.find((x) => x.id === item.tenantId);
+          return <FilterableValueLink name="tenantId" value={tenant?.name ?? ""} />;
+        },
       });
     }
     headers.push(
@@ -164,12 +130,20 @@ export default function ApiKeyLogsSummary({ data }: Props) {
       {
         name: "duration",
         title: "Avg. duration",
-        value: (item) => <DurationCell item={item} />,
+        value: (item) => (item._avg.duration === null ? (
+          <span className="text-muted-foreground text-xs italic">-</span>
+        ) : (
+          <div>{NumberUtils.custom(Number(item._avg.duration), "0,0.001")} ms</div>
+        )),
       },
       {
         name: "speed",
         title: "Speed",
-        value: (item) => <SpeedCell item={item} />,
+        value: (item) => (item._avg.duration === null ? (
+          <span className="text-muted-foreground text-xs italic">-</span>
+        ) : (
+          <ApiCallSpeedBadge duration={Number(item._avg.duration)} />
+        )),
       },
       {
         name: "actions",

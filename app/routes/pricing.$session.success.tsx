@@ -1,6 +1,5 @@
 import { useTranslation } from "react-i18next";
-import { ActionFunction, LoaderFunctionArgs } from "react-router";
-import { useActionData, useLoaderData } from "react-router";
+import { ActionFunction, LoaderFunctionArgs, useActionData, useLoaderData } from "react-router";
 import Logo from "~/components/brand/Logo";
 import { getTranslations } from "~/locale/i18next.server";
 import { useEffect } from "react";
@@ -36,7 +35,8 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
 
   if (!checkoutSession) {
     return Response.json({ ...data, error: t("settings.subscription.checkout.invalid") }, { status: 400 });
-  } else if (!checkoutSession.status?.pending) {
+  }
+  if (!checkoutSession.status?.pending) {
     return Response.json({ ...data, error: t("settings.subscription.checkout.alreadyProcessed") }, { status: 400 });
   }
 

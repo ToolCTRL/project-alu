@@ -22,7 +22,6 @@ function getPortalUrl(item: { subdomain: string; domain: string | null }) {
   if (portalUrl.port) {
     subdomain += `:${portalUrl.port}`;
   }
-  // console.log({ subdomain });
   return subdomain;
 }
 

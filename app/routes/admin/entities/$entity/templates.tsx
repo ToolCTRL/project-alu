@@ -1,6 +1,5 @@
 import { useTranslation } from "react-i18next";
-import { LoaderFunctionArgs, useLoaderData } from "react-router";
-import { Outlet } from "react-router";
+import { LoaderFunctionArgs, useLoaderData, Outlet } from "react-router";
 import ButtonTertiary from "~/components/ui/buttons/ButtonTertiary";
 import TableSimple from "~/components/ui/tables/TableSimple";
 import { EntityWithDetails, getEntityBySlug } from "~/utils/db/entities/entities.db.server";
@@ -49,7 +48,7 @@ export default function EntityTemplatesIndex() {
           }
         });
       return values.join(", ");
-    } catch (e) {
+    } catch {
       return "";
     }
   }

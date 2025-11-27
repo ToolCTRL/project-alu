@@ -5,9 +5,9 @@ import WorkflowsVariablesView from "~/modules/workflowEngine/routes/workflow-eng
 
 export const meta: MetaFunction<typeof loader> = ({ data }) => data?.metatags || [];
 export const loader = (args: LoaderFunctionArgs) => WorkflowsVariablesApi.loader(args);
-// export const action = (args: ActionFunctionArgs) => WorkflowsVariablesApi.action(args);
 
-export default () => <WorkflowsVariablesView />;
+const WorkflowsVariables = () => <WorkflowsVariablesView />;
+export default WorkflowsVariables;
 
 export function ErrorBoundary() {
   return <ServerError />;

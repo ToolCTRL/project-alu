@@ -1,7 +1,6 @@
 import { useTranslation } from "react-i18next";
-import { useEffect, useRef } from "react";
-import ErrorModal, { RefErrorModal } from "~/components/ui/modals/ErrorModal";
-import { ActionFunction, LoaderFunctionArgs, MetaFunction, redirect, useActionData, useLoaderData } from "react-router";
+import { useEffect } from "react";
+import { ActionFunction, LoaderFunctionArgs, redirect, useActionData, useLoaderData } from "react-router";
 import { getTranslations } from "~/locale/i18next.server";
 import { SubscriptionProductDto } from "~/application/dtos/subscriptions/SubscriptionProductDto";
 import { deletePlan, updatePlan } from "~/utils/services/.server/pricingService";
@@ -12,7 +11,6 @@ import { SubscriptionFeatureDto } from "~/application/dtos/subscriptions/Subscri
 import { getUserHasPermission } from "~/utils/helpers/PermissionsHelper";
 import { verifyUserHasPermission } from "~/utils/helpers/.server/PermissionsService";
 import { useAdminData } from "~/utils/data/useAdminData";
-import BreadcrumbSimple from "~/components/ui/breadcrumbs/BreadcrumbSimple";
 import { v2MetaFunction } from "~/utils/compat/v2MetaFunction";
 import { MetaTagsDto } from "~/application/dtos/seo/MetaTagsDto";
 import EditPageLayout from "~/components/ui/layouts/EditPageLayout";
@@ -73,7 +71,8 @@ export const action: ActionFunction = async ({ request, params }) => {
 
     const featuresArr = form.getAll("features[]");
     const features: SubscriptionFeatureDto[] = featuresArr.map((f: FormDataEntryValue) => {
-      return JSON.parse(f.toString());
+      const featureString = typeof f === 'string' ? f : f.toString();
+      return JSON.parse(featureString);
     });
 
     if (!title) {

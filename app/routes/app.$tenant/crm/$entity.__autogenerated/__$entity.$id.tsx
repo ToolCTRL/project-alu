@@ -9,7 +9,7 @@ export const meta: v2MetaFunction<Rows_Overview.LoaderData> = ({ data }) => data
 export const loader = (args: LoaderFunctionArgs) => Rows_Overview.loader(args);
 export const action: ActionFunction = (args) => Rows_Overview.action(args);
 
-export default function () {
+export default function RowOverviewPageRoute() {
   const data = useLoaderData<Rows_Overview.LoaderData>();
   const actionData = useActionData<Rows_Overview.ActionData>();
   return (

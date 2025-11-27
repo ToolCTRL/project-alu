@@ -30,8 +30,8 @@ type InputTextSubtypeProps = {
   hint?: React.ReactNode;
   help?: string;
   icon?: string;
-  editor?: string; // monaco
-  editorLanguage?: string; // "javascript" | "typescript" | "html" | "css" | "json";
+  editor?: string;
+  editorLanguage?: string;
   editorHideLineNumbers?: boolean;
   editorTheme?: "vs-dark" | "light";
   editorFontSize?: number;

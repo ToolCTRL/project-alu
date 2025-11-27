@@ -470,7 +470,7 @@
     border: 1px solid transparent;
     font-size: 0.98rem;
     font-weight: 600;
-    color: #f0f4ff;
+    color: #ffffff;
     transition: transform 180ms ease, box-shadow 180ms ease, border-color 180ms ease, background 180ms ease;
   }
 
@@ -544,7 +544,7 @@
     background: linear-gradient(120deg, rgba(79, 209, 255, 0.14), rgba(255, 183, 94, 0.08));
     border-color: rgba(255, 255, 255, 0.12);
     box-shadow: 0 18px 36px rgba(5, 9, 20, 0.45), 0 10px 26px rgba(255, 183, 94, 0.16);
-    color: #f0f4ff;
+    color: #ffffff;
   }
 
   .nav-modern [data-slot="sidebar-menu-button"][data-state="active"]::before,

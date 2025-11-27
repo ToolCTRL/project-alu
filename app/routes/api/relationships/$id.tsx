@@ -10,7 +10,6 @@ import { ApiAccessValidation, validateApiKey } from "~/utils/services/apiService
 export const loader = async ({ request, params }: LoaderFunctionArgs) => {
   const { time, getServerTimingHeader } = await createMetrics({ request, params }, `[Relationships_API_POST] ${params.entity}`);
   invariant(params.id, "Expected params.id");
-  // const { t } = await time(getTranslations(request), "getTranslations");
   let apiAccessValidation: ApiAccessValidation | undefined = undefined;
   const startTime = performance.now();
   try {
@@ -50,7 +49,6 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
 export const action = async ({ request, params }: ActionFunctionArgs) => {
   const { time, getServerTimingHeader } = await createMetrics({ request, params }, `[Relationships_API_POST] ${params.entity}`);
   invariant(params.id, "Expected params.id");
-  // const { t } = await time(getTranslations(request), "getTranslations");
   let apiAccessValidation: ApiAccessValidation | undefined = undefined;
   const startTime = performance.now();
   try {

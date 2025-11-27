@@ -1,6 +1,6 @@
 import { Link } from "react-router";
 import clsx from "clsx";
-import { Fragment, ReactNode } from "react";
+import { ReactNode } from "react";
 import { Button } from "../button";
 
 interface Props {
@@ -39,7 +39,7 @@ export default function LinkOrAhref({
 }: Readonly<Props>) {
   if ((!to && !onClick) || (to && disabled)) {
     return (
-      <div className={className} autoFocus={autoFocus} onMouseEnter={onMouseEnter} onMouseLeave={onMouseLeave}>
+      <div className={className} role="presentation" onMouseEnter={onMouseEnter} onMouseLeave={onMouseLeave}>
         {children}
       </div>
     );

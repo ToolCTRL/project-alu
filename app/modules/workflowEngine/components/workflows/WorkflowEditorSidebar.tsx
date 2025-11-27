@@ -38,7 +38,7 @@ export default function WorkflowEditorSidebar({
   onDeleteBlock,
   onDeleteConnection,
   onUpdateConditionsGroups,
-}: Props) {
+}: Readonly<Props>) {
   let content;
   if (!WorkflowUtils.hasTriggerNode(workflow)) {
     content = (
@@ -68,9 +68,7 @@ export default function WorkflowEditorSidebar({
         onBack={() => onAddingNextBlock(null)}
       />
     );
-  } else if (!selectedBlock) {
-    content = <WorkflowSettingsSidebar workflow={workflow} onSave={onSave} onSelectedBlock={onSelectedBlock} onDeleteBlock={onDeleteBlock} />;
-  } else {
+  } else if (selectedBlock) {
     content = (
       <WorkflowEditBlock
         key={selectedBlock.id}
@@ -85,6 +83,8 @@ export default function WorkflowEditorSidebar({
         onUpdateConditionsGroups={onUpdateConditionsGroups}
       />
     );
+  } else {
+    content = <WorkflowSettingsSidebar workflow={workflow} onSave={onSave} onSelectedBlock={onSelectedBlock} onDeleteBlock={onDeleteBlock} />;
   }
 
   return <div className="">{content}</div>;
@@ -98,12 +98,12 @@ function SelectBlockSidebar({
   onSelected,
   onBack,
 }: {
-  title: string;
-  description: string;
-  placeholder: string;
-  type: "trigger" | "action";
-  onSelected: (node: WorkflowBlockType) => void;
-  onBack: () => void;
+  readonly title: string;
+  readonly description: string;
+  readonly placeholder: string;
+  readonly type: "trigger" | "action";
+  readonly onSelected: (node: WorkflowBlockType) => void;
+  readonly onBack: () => void;
 }) {
   const categories = WorkflowBlockTypes.filter((f) => f.type === type)
     .map((f) => f.category)
@@ -180,10 +180,10 @@ function WorkflowSettingsSidebar({
   onSelectedBlock,
   onDeleteBlock,
 }: {
-  workflow: WorkflowDto;
-  onSave: (workflow: WorkflowDto) => void;
-  onSelectedBlock: (workflowBlock: WorkflowBlockDto) => void;
-  onDeleteBlock: (blockId: string) => void;
+  readonly workflow: WorkflowDto;
+  readonly onSave: (workflow: WorkflowDto) => void;
+  readonly onSelectedBlock: (workflowBlock: WorkflowBlockDto) => void;
+  readonly onDeleteBlock: (blockId: string) => void;
 }) {
   return (
     <div className="px-4 py-4  ">

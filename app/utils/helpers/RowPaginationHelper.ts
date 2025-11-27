@@ -27,7 +27,7 @@ export function getFiltersFromCurrentUrl(request: Request, properties: Filterabl
     const params = url.searchParams.get(property.name);
     property.value = params ?? null;
     if (property.isNumber && property.value) {
-      if (isNaN(Number(property.value))) {
+      if (Number.isNaN(Number(property.value))) {
         property.value = null;
       }
     }
@@ -128,8 +128,6 @@ function getSortByFromCurrentUrl(urlSearchParams: URLSearchParams, entity?: Enti
       if (sort.startsWith("-")) {
         sort = sort.replace("-", "");
         direction = "desc";
-      } else {
-        direction = "asc";
       }
     }
     const sortName = sort.replace("-", "").replace("+", "");

@@ -44,7 +44,7 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
 
 export const meta: MetaFunction<typeof loader> = ({ data }) => data?.metatags || [];
 
-export default function () {
+export default function KnowledgeBaseIndex() {
   const data = useLoaderData<LoaderData>();
   return (
     <div className="mx-auto mb-12 max-w-5xl space-y-5 px-4 py-4 sm:px-6 lg:px-8 xl:max-w-7xl">
@@ -63,7 +63,7 @@ export default function () {
   );
 }
 
-function SummaryCard({ title, value }: { title: string; value: number }) {
+function SummaryCard({ title, value }: Readonly<{ title: string; value: number }>) {
   return (
     <div className="bg-card border-border overflow-hidden rounded-lg border px-4 py-3 shadow-xs">
       <dt className="text-muted-foreground truncate text-xs font-medium uppercase">

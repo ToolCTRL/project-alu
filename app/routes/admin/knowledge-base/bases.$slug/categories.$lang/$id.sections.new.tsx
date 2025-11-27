@@ -1,5 +1,4 @@
-import { ActionFunctionArgs, LoaderFunctionArgs, redirect, useLoaderData } from "react-router";
-import { useParams } from "react-router";
+import { ActionFunctionArgs, LoaderFunctionArgs, redirect, useLoaderData, useParams } from "react-router";
 import KbCategorySectionForm from "~/modules/knowledgeBase/components/bases/KbCategorySectionForm";
 import { getKbCategoryById } from "~/modules/knowledgeBase/db/kbCategories.db.server";
 import { createKnowledgeBaseCategorySection } from "~/modules/knowledgeBase/db/kbCategorySections.db.server";
@@ -18,7 +17,7 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
     slug: params.slug!,
     request,
   });
-  const category = await getKbCategoryById(params.id!);
+  const category = await getKbCategoryById(params.id);
   if (!category) {
     return redirect(`/admin/knowledge-base/bases/${params.slug}/categories/${params.lang}`);
   }
@@ -34,7 +33,7 @@ export const action = async ({ request, params }: ActionFunctionArgs) => {
   const form = await request.formData();
   const action = form.get("action")?.toString();
 
-  const category = await getKbCategoryById(params.id!);
+  const category = await getKbCategoryById(params.id);
   if (!category) {
     return redirect(`/admin/knowledge-base/bases/${params.slug}/categories/${params.lang}`);
   }
@@ -66,13 +65,13 @@ export const action = async ({ request, params }: ActionFunctionArgs) => {
   }
 };
 
-export default function () {
+export default function NewSection() {
   const data = useLoaderData<LoaderData>();
   const params = useParams();
 
   return (
     <div>
-      <KbCategorySectionForm knowledgeBase={data.knowledgeBase} category={data.category} language={params.lang!} />
+      <KbCategorySectionForm knowledgeBase={data.knowledgeBase} category={data.category} language={params.lang} />
     </div>
   );
 }

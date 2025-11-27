@@ -1,5 +1,4 @@
-import { LoaderFunctionArgs, useLoaderData } from "react-router";
-import { Link } from "react-router";
+import { LoaderFunctionArgs, useLoaderData, Link } from "react-router";
 import { Fragment, useState } from "react";
 import { EntityWithDetails, getEntityBySlug } from "~/utils/db/entities/entities.db.server";
 import { getRows, RowWithDetails } from "~/utils/db/entities/rows.db.server";
@@ -35,7 +34,16 @@ export default function EditEntityCrudRoute() {
             <div className="grid gap-2 md:grid-cols-2 lg:grid-cols-3">
               {item.views.map((view) => (
                 <Fragment key={view.name}>
-                  {!view.error ? (
+                  {view.error ? (
+                    <div className="border-border relative flex w-full flex-col justify-center space-y-2 rounded-lg border-2 border-dashed bg-red-50 p-3 text-center dark:bg-red-900/80">
+                      {view.icon}
+                      <div className="text-foreground block text-sm font-medium">
+                        {view.name} {view.error && <span className="text-xs lowercase text-red-500">({view.error})</span>}
+                        {view.underConstruction && <span className="text-xs lowercase text-orange-500">(Under 🚧 Construction)</span>}
+                      </div>
+                      <div className="text-muted-foreground block text-xs">{view.description}</div>
+                    </div>
+                  ) : (
                     <Link
                       to={`${view.href}`}
                       reloadDocument={view.reloadDocument}
@@ -48,15 +56,6 @@ export default function EditEntityCrudRoute() {
                       </div>
                       <div className="text-muted-foreground block text-xs">{view.description}</div>
                     </Link>
-                  ) : (
-                    <div className="border-border relative flex w-full flex-col justify-center space-y-2 rounded-lg border-2 border-dashed bg-red-50 p-3 text-center dark:bg-red-900/80">
-                      {view.icon}
-                      <div className="text-foreground block text-sm font-medium">
-                        {view.name} {view.error && <span className="text-xs lowercase text-red-500">({view.error})</span>}
-                        {view.underConstruction && <span className="text-xs lowercase text-orange-500">(Under 🚧 Construction)</span>}
-                      </div>
-                      <div className="text-muted-foreground block text-xs">{view.description}</div>
-                    </div>
                   )}
                 </Fragment>
               ))}

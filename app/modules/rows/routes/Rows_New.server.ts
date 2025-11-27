@@ -117,13 +117,15 @@ export namespace Rows_New {
 
       const onCreatedRedirect = form.get("onCreatedRedirect");
       if (onCreatedRedirect) {
-        const response = handleOnCreatedRedirect(String(onCreatedRedirect), entity, newRow, request, params, getServerTimingHeader());
+        const onCreatedRedirectStr = typeof onCreatedRedirect === "string" ? onCreatedRedirect : String(onCreatedRedirect);
+        const response = handleOnCreatedRedirect(onCreatedRedirectStr, entity, newRow, request, params, getServerTimingHeader());
         if (response) {
           return response;
         }
       }
 
-      const redirectTo = form.get("redirect")?.toString() || new URL(request.url).searchParams.get("redirect")?.toString();
+      const redirectValue = form.get("redirect");
+      const redirectTo = (typeof redirectValue === "string" ? redirectValue : redirectValue?.toString()) || new URL(request.url).searchParams.get("redirect")?.toString();
       if (redirectTo) {
         return redirect(redirectTo, { headers: getServerTimingHeader() });
       }

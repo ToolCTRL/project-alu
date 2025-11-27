@@ -1,6 +1,5 @@
 import { Prisma } from "@prisma/client";
-import { LoaderFunctionArgs } from "react-router";
-import { useLoaderData, useSearchParams, useNavigation } from "react-router";
+import { LoaderFunctionArgs, useLoaderData, useSearchParams, useNavigation } from "react-router";
 import clsx from "clsx";
 import { useTranslation } from "react-i18next";
 import { DefaultEntityTypes } from "~/application/dtos/shared/DefaultEntityTypes";
@@ -71,7 +70,7 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
   return data;
 };
 
-export default () => {
+export default function CountStatsRoute() {
   const { t } = useTranslation();
   const data = useLoaderData<LoaderData>();
   const navigation = useNavigation();
@@ -141,4 +140,4 @@ export default () => {
       </dl>
     </div>
   );
-};
+}

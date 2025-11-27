@@ -1,6 +1,5 @@
 import { Role } from "@prisma/client";
-import { ActionFunctionArgs, LoaderFunctionArgs, redirect, useActionData, useLoaderData } from "react-router";
-import { Form, useNavigate, useNavigation } from "react-router";
+import { ActionFunctionArgs, LoaderFunctionArgs, redirect, useActionData, useLoaderData, Form, useNavigate, useNavigation } from "react-router";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { DefaultAdminRoles } from "~/application/dtos/shared/DefaultAdminRoles";
@@ -21,7 +20,7 @@ type LoaderData = {
 };
 export const loader = async ({ request, params }: LoaderFunctionArgs) => {
   await verifyUserHasPermission(request, "admin.roles.set");
-  const user = await getUserByEmailWithDetails(params.user!);
+  const user = await getUserByEmailWithDetails(params.user);
   if (!user) {
     return redirect("/admin/accounts/users");
   }
@@ -39,7 +38,6 @@ type ActionData = {
 export const action = async ({ request, params }: ActionFunctionArgs) => {
   await verifyUserHasPermission(request, "admin.roles.set");
   const userInfo = await getUserInfo(request);
-  // const { t } = await getTranslations(request);
 
   const form = await request.formData();
   const action = form.get("action")?.toString();
@@ -51,7 +49,7 @@ export const action = async ({ request, params }: ActionFunctionArgs) => {
 
   if (action === "set-user-roles") {
     const arrRoles: { id: string; tenantId: string | undefined }[] = form.getAll("roles[]").map((f: FormDataEntryValue) => {
-      return JSON.parse(f.toString());
+      return JSON.parse(String(f));
     });
     const allRoles = await getRoles(arrRoles.map((r) => r.id));
     let setRoles: { role: Role; tenantId: string | null }[] = [];
@@ -87,7 +85,6 @@ export const action = async ({ request, params }: ActionFunctionArgs) => {
     await setUserRoles({ user, roles: setRoles, isAdmin, type: "admin" });
 
     return redirect("/admin/accounts/users");
-    // return Response.json({ success: t("shared.updated") });
   } else {
     return Response.json({ error: "Form not submitted correctly." }, { status: 400 });
   }
@@ -121,10 +118,10 @@ export default function SetUserRolesRoute() {
     <div>
       <Form method="post" className="inline-block w-full overflow-hidden p-1 text-left align-bottom sm:align-middle">
         <input type="hidden" name="action" value="set-user-roles" hidden readOnly />
-        {selectedRoles?.map((role, idx) => {
+        {selectedRoles?.map((role) => {
           return (
             <input
-              key={idx}
+              key={role}
               type="hidden"
               name="roles[]"
               value={JSON.stringify({
@@ -148,9 +145,9 @@ export default function SetUserRolesRoute() {
           </div>
         </div>
         <div className="relative mt-1 rounded-md shadow-2xs">
-          {data.adminRoles?.map((role, idx) => (
+          {data.adminRoles?.map((role) => (
             <InputCheckboxWithDescription
-              key={idx}
+              key={role.id}
               name={role.name}
               title={role.name}
               description={role.description}

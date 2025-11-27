@@ -1,5 +1,5 @@
 import { useTranslation } from "react-i18next";
-import { ActionFunctionArgs, LoaderFunctionArgs, MetaFunction, useActionData, useLoaderData } from "react-router";
+import { ActionFunctionArgs, LoaderFunctionArgs, MetaFunction, useActionData, useLoaderData, useSubmit } from "react-router";
 import { getTranslations } from "~/locale/i18next.server";
 import { verifyUserHasPermission } from "~/utils/helpers/.server/PermissionsService";
 import TableSimple from "~/components/ui/tables/TableSimple";
@@ -15,7 +15,6 @@ import { Colors } from "~/application/enums/shared/Colors";
 import { addToBlacklist, findInBlacklist } from "~/utils/db/blacklist.db.server";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
-import { useSubmit } from "react-router";
 import { db } from "~/utils/db.server";
 import DropdownSimple from "~/components/ui/dropdowns/DropdownSimple";
 import DownArrow from "~/components/ui/icons/DownArrow";
@@ -78,9 +77,48 @@ export const action = async ({ request }: ActionFunctionArgs) => {
   }
 };
 
+const StatusCell = ({ item }: { item: IpAddressLog }) => (
+  <div className="flex flex-col">
+    <div>{item.success ? <SimpleBadge title="Success" color={Colors.GREEN} /> : <SimpleBadge title="Error" color={Colors.RED} />}</div>
+  </div>
+);
+
+const IpCell = ({ item, blacklistedIps }: { item: IpAddressLog; blacklistedIps: string[] }) => (
+  <div className="flex flex-col">
+    <div className="font-medium">
+      {item.ip} {blacklistedIps.includes(item.ip) && <SimpleBadge title="Blacklisted" color={Colors.RED} />}
+    </div>
+  </div>
+);
+
+const ActionCell = ({ item }: { item: IpAddressLog }) => (
+  <div className="flex flex-col">
+    <div className="font-medium">{item.action}</div>
+    <div className="text-muted-foreground text-xs">{item.description}</div>
+  </div>
+);
+
+const UrlCell = ({ item }: { item: IpAddressLog }) => (
+  <div className="flex flex-col">
+    <div className="">{item.url}</div>
+  </div>
+);
+
+const MetadataCell = ({ item }: { item: IpAddressLog }) => (
+  <div className="max-w-xs truncate">
+    {item.metadata ? <ShowPayloadModalButton description={item.metadata} payload={item.metadata} /> : <div className="text-muted-foreground italic">-</div>}
+  </div>
+);
+
+const ErrorCell = ({ item }: { item: IpAddressLog }) => (
+  <div className="flex flex-col text-red-500">
+    <div className="font-medium">{item.error}</div>
+  </div>
+);
+
 export const meta: MetaFunction<typeof loader> = ({ data }) => [{ title: data?.title }];
 
-export default function () {
+export default function IpAddressLogsRoute() {
   const data = useLoaderData<LoaderData>();
   const actionData = useActionData<{ success?: string; error?: string }>();
   const submit = useSubmit();
@@ -183,59 +221,32 @@ export default function () {
           {
             name: "status",
             title: t("shared.status"),
-            value: (i) => (
-              <div className="flex flex-col">
-                <div>{i.success ? <SimpleBadge title="Success" color={Colors.GREEN} /> : <SimpleBadge title="Error" color={Colors.RED} />}</div>
-              </div>
-            ),
+            value: (i) => <StatusCell item={i} />,
           },
           {
             name: "ip",
             title: t("models.tenantIpAddress.object"),
-            value: (i) => (
-              <div className="flex flex-col">
-                <div className="font-medium">
-                  {i.ip} {data.blacklistedIps.includes(i.ip) && <SimpleBadge title="Blacklisted" color={Colors.RED} />}
-                </div>
-              </div>
-            ),
+            value: (i) => <IpCell item={i} blacklistedIps={data.blacklistedIps} />,
           },
           {
             name: "action",
             title: "Action",
-            value: (i) => (
-              <div className="flex flex-col">
-                <div className="font-medium">{i.action}</div>
-                <div className="text-muted-foreground text-xs">{i.description}</div>
-              </div>
-            ),
+            value: (i) => <ActionCell item={i} />,
           },
           {
             name: "url",
             title: "URL",
-            value: (i) => (
-              <div className="flex flex-col">
-                <div className="">{i.url}</div>
-              </div>
-            ),
+            value: (i) => <UrlCell item={i} />,
           },
           {
             name: "metadata",
             title: "Metadata",
-            value: (i) => (
-              <div className="max-w-xs truncate">
-                {i.metadata ? <ShowPayloadModalButton description={i.metadata} payload={i.metadata} /> : <div className="text-muted-foreground italic">-</div>}
-              </div>
-            ),
+            value: (i) => <MetadataCell item={i} />,
           },
           {
             name: "error",
             title: "Error",
-            value: (i) => (
-              <div className="flex flex-col text-red-500">
-                <div className="font-medium">{i.error}</div>
-              </div>
-            ),
+            value: (i) => <ErrorCell item={i} />,
           },
         ]}
         pagination={data.pagination}

@@ -1,5 +1,4 @@
-import { ActionFunction, LoaderFunctionArgs, redirect, useLoaderData } from "react-router";
-import { useNavigate, useParams } from "react-router";
+import { ActionFunction, LoaderFunctionArgs, redirect, useLoaderData, useNavigate, useParams } from "react-router";
 import ApiKeyForm from "~/components/core/apiKeys/ApiKeyForm";
 import OpenModal from "~/components/ui/modals/OpenModal";
 import { getTranslations } from "~/locale/i18next.server";
@@ -46,7 +45,7 @@ export const action: ActionFunction = async ({ request, params }) => {
     const entities: { entityId: string; create: boolean; read: boolean; update: boolean; delete: boolean }[] = form
       .getAll("entities[]")
       .map((f: FormDataEntryValue) => {
-        return JSON.parse(f.toString());
+        return JSON.parse(String(f));
       });
     let expirationDate: Date | null = null;
     let expires = form.get("expires")?.toString();
@@ -55,7 +54,7 @@ export const action: ActionFunction = async ({ request, params }) => {
     }
     const alias = form.get("alias")?.toString() ?? "";
     const existingAlias = await getApiKeys(existing.tenantId);
-    if (existingAlias.filter((f) => f.id !== existing.id && f.alias === alias).length > 0) {
+    if (existingAlias.some((f) => f.id !== existing.id && f.alias === alias)) {
       return badRequest({ error: "API key with this alias already exists: " + alias });
     }
     const active = Boolean(form.get("active"));
@@ -91,15 +90,13 @@ export default function ApiEditKeyRoute() {
   const appData = useAppData();
   const params = useParams();
   return (
-    <>
-      <OpenModal className="sm:max-w-xl" onClose={() => navigate(UrlUtils.currentTenantUrl(params, "settings/api/keys"))}>
-        <ApiKeyForm
-          entities={appData.entities}
-          item={data.item}
-          canUpdate={getUserHasPermission(appData, "app.settings.apiKeys.update")}
-          canDelete={getUserHasPermission(appData, "app.settings.apiKeys.delete")}
-        />
-      </OpenModal>
-    </>
+    <OpenModal className="sm:max-w-xl" onClose={() => navigate(UrlUtils.currentTenantUrl(params, "settings/api/keys"))}>
+      <ApiKeyForm
+        entities={appData.entities}
+        item={data.item}
+        canUpdate={getUserHasPermission(appData, "app.settings.apiKeys.update")}
+        canDelete={getUserHasPermission(appData, "app.settings.apiKeys.delete")}
+      />
+    </OpenModal>
   );
 }

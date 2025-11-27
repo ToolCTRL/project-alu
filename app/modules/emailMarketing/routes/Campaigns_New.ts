@@ -33,6 +33,59 @@ export namespace Campaigns_New {
     error?: string;
     success?: string;
   };
+
+  async function handleSendPreview(sender: any, tenantId: string | null, email: string, subject: string, htmlBody: string, textBody: string, t: any) {
+    await EmailMarketingService.sendPreview({
+      from: { sender, tenantId },
+      email: { to: email, subject, htmlBody, textBody, track: true },
+    });
+    return Response.json({ success: t("shared.sent") }, { status: 200 });
+  }
+
+  async function handleSendContactPreview(
+    sender: any,
+    tenantId: string | null,
+    contactRowId: string,
+    email: string,
+    subject: string,
+    htmlBody: string,
+    textBody: string,
+    t: any
+  ) {
+    await EmailMarketingService.sendContactPreview({
+      contactRowId,
+      from: { sender, tenantId },
+      email: { to: email, subject, htmlBody, textBody, track: true },
+    });
+    return Response.json({ success: t("shared.sent") }, { status: 200 });
+  }
+
+  async function handleCreateCampaign(
+    params: any,
+    form: FormData,
+    sender: any,
+    tenantId: string | null,
+    subject: string,
+    htmlBody: string,
+    textBody: string
+  ) {
+    const name = form.get("name")?.toString() ?? "";
+    if (!name) {
+      return Response.json({ error: "Invalid name" }, { status: 400 });
+    }
+    const contactViewId = form.get("contactViewId")?.toString();
+    if (!contactViewId) {
+      return Response.json({ error: "Invalid contact/recipient list" }, { status: 400 });
+    }
+    const campaign = await EmailMarketingService.createCampaignDraft({
+      name,
+      contactViewId,
+      from: { sender, tenantId },
+      email: { subject, htmlBody, textBody, track: true },
+    });
+    return redirect(params.tenant ? `/app/${params.tenant}/email-marketing/campaigns/${campaign.id}` : `/admin/email-marketing/campaigns/${campaign.id}`);
+  }
+
   export const action: ActionFunction = async ({ request, params }) => {
     await requireAuth({ request, params });
     const { t } = await getTranslations(request);
@@ -41,60 +94,33 @@ export namespace Campaigns_New {
     const action = form.get("action")?.toString() ?? "";
     const email = form.get("email")?.toString() ?? "";
     const senderId = form.get("senderId")?.toString() ?? "";
-    let subject = form.get("subject")?.toString() ?? "";
-    let htmlBody = form.get("htmlBody")?.toString() ?? "";
-    let textBody = form.get("textBody")?.toString() ?? "";
+    const subject = form.get("subject")?.toString() ?? "";
+    const htmlBody = form.get("htmlBody")?.toString() ?? "";
+    const textBody = form.get("textBody")?.toString() ?? "";
     const sender = await getEmailSender(senderId, tenantId);
+
     if (!sender) {
       return Response.json({ error: "Invalid sender" }, { status: 400 });
     }
     if (!htmlBody && !textBody) {
       return Response.json({ error: "Email body is required" }, { status: 400 });
     }
-    if (action === "send-preview") {
-      try {
-        await EmailMarketingService.sendPreview({
-          from: { sender, tenantId },
-          email: { to: email, subject, htmlBody, textBody, track: true },
-        });
-        return Response.json({ success: t("shared.sent") }, { status: 200 });
-      } catch (e: any) {
-        return Response.json({ error: e.message }, { status: 400 });
+
+    try {
+      switch (action) {
+        case "send-preview":
+          return await handleSendPreview(sender, tenantId, email, subject, htmlBody, textBody, t);
+        case "send-contact-preview": {
+          const contactRowId = form.get("contactRowId")?.toString() ?? "";
+          return await handleSendContactPreview(sender, tenantId, contactRowId, email, subject, htmlBody, textBody, t);
+        }
+        case "create":
+          return await handleCreateCampaign(params, form, sender, tenantId, subject, htmlBody, textBody);
+        default:
+          return Response.json({ error: t("shared.invalidForm") }, { status: 400 });
       }
-    } else if (action === "send-contact-preview") {
-      try {
-        const contactRowId = form.get("contactRowId")?.toString() ?? "";
-        await EmailMarketingService.sendContactPreview({
-          contactRowId,
-          from: { sender, tenantId },
-          email: { to: email, subject, htmlBody, textBody, track: true },
-        });
-        return Response.json({ success: t("shared.sent") }, { status: 200 });
-      } catch (e: any) {
-        return Response.json({ error: e.message }, { status: 400 });
-      }
-    } else if (action === "create") {
-      const name = form.get("name")?.toString() ?? "";
-      if (!name) {
-        return Response.json({ error: "Invalid name" }, { status: 400 });
-      }
-      const contactViewId = form.get("contactViewId")?.toString();
-      if (!contactViewId) {
-        return Response.json({ error: "Invalid contact/recipient list" }, { status: 400 });
-      }
-      try {
-        const campaign = await EmailMarketingService.createCampaignDraft({
-          name: form.get("name")?.toString() ?? "",
-          contactViewId,
-          from: { sender, tenantId },
-          email: { subject, htmlBody, textBody, track: true },
-        });
-        return redirect(params.tenant ? `/app/${params.tenant}/email-marketing/campaigns/${campaign.id}` : `/admin/email-marketing/campaigns/${campaign.id}`);
-      } catch (e: any) {
-        return Response.json({ error: e.message }, { status: 400 });
-      }
-    } else {
-      return Response.json({ error: t("shared.invalidForm") }, { status: 400 });
+    } catch (e: any) {
+      return Response.json({ error: e.message }, { status: 400 });
     }
   };
 }

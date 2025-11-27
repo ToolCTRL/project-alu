@@ -2,7 +2,7 @@ import { useTranslation } from "react-i18next";
 import InfoBanner from "~/components/ui/banners/InfoBanner";
 import EditPageLayout from "~/components/ui/layouts/EditPageLayout";
 
-export default function () {
+export default function AdminAffiliatesIndex() {
   const { t } = useTranslation();
   return (
     <EditPageLayout title={t("affiliates.title")}>

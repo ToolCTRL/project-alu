@@ -39,9 +39,7 @@ export default function WorkflowsExecutionsView() {
       title={`Workflow Executions`}
       withHome={false}
       buttons={
-        <>
-          <InputFilters filters={data.filterableProperties} />
-        </>
+        <InputFilters filters={data.filterableProperties} />
       }
     >
       <TableSimple

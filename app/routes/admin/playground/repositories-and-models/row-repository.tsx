@@ -1,5 +1,4 @@
-import { ActionFunctionArgs, LoaderFunctionArgs, MetaFunction, useActionData, useLoaderData } from "react-router";
-import { Form } from "react-router";
+import { ActionFunctionArgs, LoaderFunctionArgs, MetaFunction, useActionData, useLoaderData, Form } from "react-router";
 import { useEffect } from "react";
 import { toast } from "sonner";
 import { MetaTagsDto } from "~/application/dtos/seo/MetaTagsDto";
@@ -58,7 +57,7 @@ export const action = async ({ request }: ActionFunctionArgs) => {
   }
 };
 
-export default function () {
+export default function PlaygroundRowRepository() {
   const data = useLoaderData<LoaderData>();
   const actionData = useActionData<ActionData>();
   const company = data.company ? new RowModel(data.company) : null;
@@ -129,9 +128,7 @@ await companyRepository.updateText("name", "New name");`}
                 <div className="border-border bg-background space-y-1 rounded-md border p-3">
                   <h3 className="font-medium">Update First Company</h3>
                   <div className="space-y-1">
-                    {!company ? (
-                      <div>There are no companies in the database.</div>
-                    ) : (
+                    {company ? (
                       <Form method="post" className="space-y-2">
                         <input type="hidden" name="action" value="update" hidden readOnly />
                         <input type="hidden" name="id" value={company.row.id} hidden readOnly />
@@ -140,6 +137,8 @@ await companyRepository.updateText("name", "New name");`}
                           <LoadingButton type="submit">Save</LoadingButton>
                         </div>
                       </Form>
+                    ) : (
+                      <div>There are no companies in the database.</div>
                     )}
                   </div>
                 </div>

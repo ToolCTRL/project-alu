@@ -1,6 +1,5 @@
-import { ActionFunctionArgs, LoaderFunctionArgs, MetaFunction, useLoaderData } from "react-router";
+import { ActionFunctionArgs, LoaderFunctionArgs, MetaFunction, useLoaderData, Link, useNavigate, useOutlet, useParams } from "react-router";
 import { useTranslation } from "react-i18next";
-import { Link, useNavigate, useOutlet, useParams } from "react-router";
 import ButtonPrimary from "~/components/ui/buttons/ButtonPrimary";
 import TableSimple from "~/components/ui/tables/TableSimple";
 import { getTranslations } from "~/locale/i18next.server";
@@ -35,9 +34,7 @@ export const action = async ({ request }: ActionFunctionArgs) => {
 
   if (action === "set-orders") {
     await verifyUserHasPermission(request, "admin.entities.update");
-    const items: { id: string; order: number }[] = form.getAll("orders[]").map((f: FormDataEntryValue) => {
-      return JSON.parse(f.toString());
-    });
+    const items: { id: string; order: number }[] = form.getAll("orders[]").map((f: FormDataEntryValue) => JSON.parse(f.toString()));
 
     await Promise.all(
       items.map(async ({ id, order }) => {
@@ -57,7 +54,7 @@ export const action = async ({ request }: ActionFunctionArgs) => {
 
 export const meta: MetaFunction<typeof loader> = ({ data }) => [{ title: data?.title }];
 
-export default function () {
+export default function EntityGroupsRoute() {
   const { t } = useTranslation();
   const data = useLoaderData<LoaderData>();
   const appOrAdminData = useAppOrAdminData();

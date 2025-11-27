@@ -1,5 +1,4 @@
-import { LoaderFunctionArgs, MetaFunction } from "react-router";
-import { Outlet } from "react-router";
+import { LoaderFunctionArgs, MetaFunction, Outlet } from "react-router";
 import { getTranslations } from "~/locale/i18next.server";
 
 type LoaderData = {

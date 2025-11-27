@@ -6,7 +6,7 @@ import InputSelect from "~/components/ui/input/InputSelect";
 import CollapsibleRow from "~/components/ui/tables/CollapsibleRow";
 import InputCheckbox from "~/components/ui/input/InputCheckbox";
 
-export default function BlockVariableForm({ name, item, onUpdate }: { name: string; item?: BlockVariableDto; onUpdate: (item: BlockVariableDto) => void }) {
+export default function BlockVariableForm({ name, item, onUpdate }: { readonly name: string; readonly item?: BlockVariableDto; readonly onUpdate: (item: BlockVariableDto) => void }) {
   const [state, setState] = useState<BlockVariableDto>(item || { type: "manual" });
   useEffect(() => {
     onUpdate(state);
@@ -68,7 +68,7 @@ export default function BlockVariableForm({ name, item, onUpdate }: { name: stri
   );
 }
 
-function VariableDescription({ title, item }: { title: string; item?: BlockVariableDto }) {
+function VariableDescription({ title, item }: { readonly title: string; readonly item?: BlockVariableDto }) {
   return (
     <div className="flex items-center space-x-2">
       <div className="text-foreground shrink-0 font-medium">{title}</div>

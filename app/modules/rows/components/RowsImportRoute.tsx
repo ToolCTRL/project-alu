@@ -111,49 +111,39 @@ function ImportCsv({
   allTenants,
   selectedTenant,
   onChangeSelectedTenant,
-}: {
+}: Readonly<{
   entity: EntityWithDetails;
   onImport: (rawData: RawDataDto) => void;
   allTenants: { id: string; name: string; slug: string }[];
   selectedTenant: { id: string; name: string; slug: string } | null;
   onChangeSelectedTenant: (e: { id: string; name: string; slug: string } | null) => void;
-}) {
+}>) {
   const { t } = useTranslation();
   const appOrAdminData = useAppOrAdminData();
   const [delimiter, setDelimiter] = useState("|");
   const [firstRowHasHeaders, setFirstRowHasHeaders] = useState("firstRowHasHeaders");
 
-  function onDropped(base64: string, file: File) {
-    const reader = new FileReader();
-    reader.onload = (e: any) => {
-      const rawData: RawDataDto = {
-        columns: [],
-        rows: [],
-      };
-      const results = csvToArray(e.target.result);
-      for (let idx = 0; idx < results.length; idx++) {
-        const result = results[idx];
-        // if (idx === 0 && firstRowHasHeaders === "firstRowHasHeaders") {
-        //   continue;
-        // }
-        const rowToImport: RawRow = [];
-        const item: string[] = Object.values(result);
-        item.forEach((value, index) => {
-          let column = `Column ${index + 1}`;
-          if (!rawData.columns.find((c) => c.column === column)) {
-            rawData.columns.push({ column });
-          }
-          if (true) {
-            // replace all double quotes with single quotes
-            value = value.replace(/"/g, "");
-          }
-          rowToImport.push({ column, value });
-        });
-        rawData.rows.push(rowToImport);
-      }
-      onImport(rawData);
+  async function onDropped(base64: string, file: File) {
+    const text = await file.text();
+    const rawData: RawDataDto = {
+      columns: [],
+      rows: [],
     };
-    reader.readAsText(file);
+    const results = csvToArray(text);
+    for (const result of results) {
+      const rowToImport: RawRow = [];
+      const item: string[] = Object.values(result);
+      item.forEach((value, index) => {
+        let column = `Column ${index + 1}`;
+        if (!rawData.columns.some((c) => c.column === column)) {
+          rawData.columns.push({ column });
+        }
+        value = value.replaceAll('"', "");
+        rowToImport.push({ column, value });
+      });
+      rawData.rows.push(rowToImport);
+    }
+    onImport(rawData);
   }
 
   function csvToArray(str: string) {
@@ -171,7 +161,6 @@ function ImportCsv({
       }, {});
       return el;
     });
-    // console.log({ headers, arr });
     return arr;
   }
 
@@ -287,18 +276,17 @@ function ImportCsv({
             </button>
           </div>
           <UploadDocuments className="bg-background" name="file" accept=".csv" multiple={false} onDropped={onDropped} />
-          {/* <div className="flex justify-end">
-          <ButtonPrimary disabled={disabled} type="submit">
-            Submit
-          </ButtonPrimary>
-        </div> */}
         </div>
       </Form>
     </div>
   );
 }
 
-function MapFields({ entity, data, onConfirm }: { entity: EntityWithDetails; data: RawDataDto; onConfirm: (data: RawDataDto) => void }) {
+function MapFields({
+  entity,
+  data,
+  onConfirm,
+}: Readonly<{ entity: EntityWithDetails; data: RawDataDto; onConfirm: (data: RawDataDto) => void }>) {
   const { t } = useTranslation();
   const [rawData, setRawData] = useState<RawDataDto>(data);
   const [uniqueRows, setUniqueRows] = useState<RawRow[]>([]);
@@ -332,7 +320,7 @@ function MapFields({ entity, data, onConfirm }: { entity: EntityWithDetails; dat
     onConfirm({ ...rawData, rows: uniqueRows });
   }
   function hasBeenMapped(name: string) {
-    return rawData.columns.filter((f) => f.name === name).length > 0;
+    return rawData.columns.some((f) => f.name === name);
   }
   return (
     <div className="space-y-2">
@@ -346,10 +334,10 @@ function MapFields({ entity, data, onConfirm }: { entity: EntityWithDetails; dat
         </div>
       </div>
       <div className="grid gap-3 xl:grid-cols-3">
-        {rawData.columns.map((column, idx) => {
+        {rawData.columns.map((column) => {
           return (
             <div
-              key={idx}
+              key={column.column}
               className={clsx(
                 "border-border bg-background group relative space-y-2 rounded-md border-2 border-dashed p-2",
                 column.name && "border-emerald-500 bg-emerald-50"
@@ -357,9 +345,8 @@ function MapFields({ entity, data, onConfirm }: { entity: EntityWithDetails; dat
             >
               <button
                 onClick={() => {
-                  // remove column
                   const newRawData = { ...rawData };
-                  newRawData.columns.splice(idx, 1);
+                  newRawData.columns = newRawData.columns.filter((c) => c.column !== column.column);
                   setRawData(newRawData);
                 }}
                 type="button"
@@ -371,29 +358,13 @@ function MapFields({ entity, data, onConfirm }: { entity: EntityWithDetails; dat
                   <path strokeLinecap="round" strokeLinejoin="round" d="M15 12H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
               </button>
-              {/* <div className="flex items-center justify-between space-x-2 pr-2">
-                <div className="text-sm font-bold">{column.column}</div>
-                <InputCheckboxInline
-                  name={"primary-" + idx}
-                  title="Primary"
-                  // description="To identify existing records"
-                  value={primaryProperties.filter((f) => f === column.column).length > 0}
-                  setValue={(i) => {
-                    if (i) {
-                      setPrimaryProperties([...primaryProperties, column.column]);
-                    } else {
-                      setPrimaryProperties(primaryProperties.filter((f) => f !== column.column));
-                    }
-                  }}
-                />
-              </div> */}
 
               <div className="">
                 <div className="flex justify-between space-x-1 pb-1.5">
                   <div className="grow text-sm font-medium">{column.column}</div>
                   <InputCheckboxInline
                     className=""
-                    name={"primary-" + idx}
+                    name={"primary-" + column.column}
                     title="Primary"
                     value={column.column === primaryProperty}
                     disabled={!!primaryProperty && column.column !== primaryProperty}
@@ -408,14 +379,14 @@ function MapFields({ entity, data, onConfirm }: { entity: EntityWithDetails; dat
                 </div>
                 <InputSelector
                   className="grow"
-                  name={"map-to-" + idx}
+                  name={"map-to-" + column.column}
                   value={column.name}
                   withSearch={false}
                   setValue={(i) => {
                     setRawData({
                       ...rawData,
-                      columns: rawData.columns.map((c, cIdx) => {
-                        if (cIdx === idx) {
+                      columns: rawData.columns.map((c) => {
+                        if (c.column === column.column) {
                           return { ...c, name: i?.toString() };
                         }
                         return c;
@@ -440,21 +411,15 @@ function MapFields({ entity, data, onConfirm }: { entity: EntityWithDetails; dat
                 />
               </div>
               <div className="space-y-1">
-                <label className="cursor-pointer select-none">
+                <label htmlFor={`values-${column.column}`} className="cursor-pointer select-none">
                   <div className="text-foreground/80 text-sm font-medium">Values</div>
                 </label>
-                <div className="bg-secondary truncate">
-                  {rawData.rows.map((row, idxRow) => {
-                    return (
-                      <Fragment key={idxRow}>
-                        {idxRow < 5 && (
-                          <div className="border-border truncate border" key={idxRow}>
-                            <span className="text-muted-foreground truncate px-1 text-sm">{row.find((r) => r.column === column.column)?.value ?? "?"}</span>
-                          </div>
-                        )}
-                      </Fragment>
-                    );
-                  })}
+                <div id={`values-${column.column}`} className="bg-secondary truncate">
+                  {rawData.rows.slice(0, 5).map((row, idxRow) => (
+                    <div className="border-border truncate border" key={`${column.column}-${idxRow}`}>
+                      <span className="text-muted-foreground truncate px-1 text-sm">{row.find((r) => r.column === column.column)?.value ?? "?"}</span>
+                    </div>
+                  ))}
                 </div>
               </div>
             </div>
@@ -527,12 +492,12 @@ function Confirm({
   data,
   onBack,
   selectedTenant,
-}: {
+}: Readonly<{
   entity: EntityWithDetails;
   data: RawDataDto;
   onBack: () => void;
   selectedTenant: { id: string; name: string; slug: string } | null;
-}) {
+}>) {
   const { t } = useTranslation();
   const appOrAdminData = useAppOrAdminData();
   const [items, setItems] = useState<Rows_Import.ImportRow[]>([]);
@@ -599,17 +564,18 @@ function Confirm({
     newHeaders.push({
       name: "status",
       title: t("shared.status"),
-      value: (i) => (
-        <div>
-          {!i.row && navigation.state === "submitting" ? (
-            <div className="text-muted-foreground text-sm italic">Importing...</div>
-          ) : i.error ? (
-            <div className="text-sm text-red-500">Error: {i.error}</div>
-          ) : i.row ? (
-            <div className="text-sm text-emerald-500">Imported: {i.row?.id}</div>
-          ) : null}
-        </div>
-      ),
+      value: (i) => {
+        if (!i.row && navigation.state === "submitting") {
+          return <div className="text-muted-foreground text-sm italic">Importing...</div>;
+        }
+        if (i.error) {
+          return <div className="text-sm text-red-500">Error: {i.error}</div>;
+        }
+        if (i.row) {
+          return <div className="text-sm text-emerald-500">Imported: {i.row?.id}</div>;
+        }
+        return null;
+      },
     });
     setHeaders(newHeaders);
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -662,8 +628,9 @@ function Confirm({
         <input type="hidden" name="selectedTenantId" value={appOrAdminData.currentTenant?.id ?? selectedTenant?.id ?? "{null}"} hidden readOnly />
         {items
           .filter((f) => !f.row)
-          .map((item, idx) => {
-            return <input key={idx} type="hidden" readOnly hidden name="rows[]" value={getImportRowStringValue(item)} />;
+          .map((item) => {
+            const stringValue = getImportRowStringValue(item);
+            return <input key={stringValue} type="hidden" readOnly hidden name="rows[]" value={stringValue} />;
           })}
         <div className="space-y-2">
           <div className="text-foreground text-xl font-bold">
@@ -692,17 +659,16 @@ function Confirm({
               <div>{t("shared.back")}</div>
             </ButtonSecondary>
             <ButtonPrimary type="submit" className="flex space-x-1" disabled={items.filter((f) => !f.row).length === 0 || navigation.state === "submitting"}>
-              {items.filter((f) => !f.row).length === 0 ? (
-                <div>No rows</div>
-              ) : (
-                <>
-                  {items.filter((f) => !f.row).length === 1 ? (
-                    <div>{t("shared.importRecord")}</div>
-                  ) : (
-                    <div>{t("shared.importRecords", { 0: items.filter((f) => !f.row).length })}</div>
-                  )}
-                </>
-              )}
+              {(() => {
+                const remainingCount = items.filter((f) => !f.row).length;
+                if (remainingCount === 0) {
+                  return <div>No rows</div>;
+                }
+                if (remainingCount === 1) {
+                  return <div>{t("shared.importRecord")}</div>;
+                }
+                return <div>{t("shared.importRecords", { 0: remainingCount })}</div>;
+              })()}
             </ButtonPrimary>
           </div>
         </div>

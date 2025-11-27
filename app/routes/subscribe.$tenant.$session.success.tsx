@@ -1,6 +1,5 @@
 import { useTranslation } from "react-i18next";
-import { LoaderFunctionArgs, redirect } from "react-router";
-import { Link, useLoaderData } from "react-router";
+import { LoaderFunctionArgs, redirect, Link, useLoaderData } from "react-router";
 import Logo from "~/components/brand/Logo";
 import { getTranslations } from "~/locale/i18next.server";
 import { getTenant } from "~/utils/db/tenants.db.server";
@@ -75,7 +74,6 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
         })
       );
       return Response.json(data, { headers: getServerTimingHeader() });
-      // return redirect(`/subscribe/${params.tenant}/${params.product}/success`);
     } catch (e: any) {
       // eslint-disable-next-line no-console
       console.log(e);
@@ -100,22 +98,22 @@ export default function SubscribeTenantSuccessRoute() {
           <div className="sm:align-center sm:flex sm:flex-col">
             <div className="relative mx-auto w-full max-w-xl overflow-hidden px-2 py-12 sm:py-6">
               <div className="text-center">
-                {data.error ? (
-                  <>
-                    <h1 className="text-3xl font-extrabold tracking-tight sm:text-4xl">{t("shared.unexpectedError")}</h1>
-                    <p className="mt-4 text-lg leading-6 text-red-500">{data.error}</p>
-                  </>
-                ) : !data.checkoutSession ? (
-                  <>
-                    <h1 className="text-3xl font-extrabold tracking-tight sm:text-4xl">{t("shared.error")}</h1>
-                    <p className="mt-4 text-lg leading-6 text-red-500">{t("settings.subscription.checkout.invalid")}</p>
-                  </>
-                ) : (
+                {data.checkoutSession ? (
                   <>
                     <h1 className="text-3xl font-extrabold tracking-tight sm:text-4xl">{t("settings.subscription.checkout.success.title")}</h1>
                     <p className="text-muted-foreground mt-4 text-lg leading-6">
                       {t("settings.subscription.checkout.success.description", { 0: t(data.checkoutSession.products.map((f) => t(f.title)).join(", ")) })}
                     </p>
+                  </>
+                ) : data.error ? (
+                  <>
+                    <h1 className="text-3xl font-extrabold tracking-tight sm:text-4xl">{t("shared.unexpectedError")}</h1>
+                    <p className="mt-4 text-lg leading-6 text-red-500">{data.error}</p>
+                  </>
+                ) : (
+                  <>
+                    <h1 className="text-3xl font-extrabold tracking-tight sm:text-4xl">{t("shared.error")}</h1>
+                    <p className="mt-4 text-lg leading-6 text-red-500">{t("settings.subscription.checkout.invalid")}</p>
                   </>
                 )}
 

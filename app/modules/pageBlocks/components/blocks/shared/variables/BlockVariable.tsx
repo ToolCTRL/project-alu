@@ -1,7 +1,7 @@
 import InfoBanner from "~/components/ui/banners/InfoBanner";
 import { BlockVariableDto } from "./BlockVariableDto";
 
-export default function BlockVariable({ variable }: { variable: BlockVariableDto }) {
+export default function BlockVariable({ variable }: { readonly variable: BlockVariableDto }) {
   return (
     <>
       {variable && (

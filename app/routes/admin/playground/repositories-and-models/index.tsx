@@ -1,5 +1,4 @@
-import { LoaderFunctionArgs, MetaFunction } from "react-router";
-import { Link } from "react-router";
+import { LoaderFunctionArgs, MetaFunction, Link } from "react-router";
 import { MetaTagsDto } from "~/application/dtos/seo/MetaTagsDto";
 import EditPageLayout from "~/components/ui/layouts/EditPageLayout";
 
@@ -15,7 +14,7 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
 
 export const meta: MetaFunction<typeof loader> = ({ data }) => data?.metatags || [];
 
-export default function () {
+export default function PlaygroundRepositoriesAndModels() {
   return (
     <EditPageLayout title="Row Repositories and Models">
       <p className="text-muted-foreground text-sm">

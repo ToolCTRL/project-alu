@@ -1,4 +1,4 @@
-import { LoaderFunctionArgs, useOutlet, useLoaderData, Outlet } from "react-router";
+import { LoaderFunctionArgs, useOutlet, useLoaderData } from "react-router";
 import { useTranslation } from "react-i18next";
 import IconAnalytics from "~/components/layouts/icons/IconAnalytics";
 import IconKeys from "~/components/layouts/icons/IconKeys";

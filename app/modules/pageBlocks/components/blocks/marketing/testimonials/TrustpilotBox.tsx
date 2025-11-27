@@ -1,4 +1,4 @@
-import React, { Fragment, useEffect, useRef } from "react";
+import React, { useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
 const TrustpilotBox = ({
   trustpilot,
@@ -12,20 +12,19 @@ const TrustpilotBox = ({
   const { i18n } = useTranslation();
   const ref = useRef(null);
   useEffect(() => {
-    // If window.Trustpilot is available it means that we need to load the TrustBox from our ref.
+    // If globalThis.window.Trustpilot is available it means that we need to load the TrustBox from our ref.
     // If it's not, it means the script you pasted into <head /> isn't loaded  just yet.
     // When it is, it will automatically load the TrustBox.
-    if (typeof window !== "undefined") {
+    if (typeof globalThis.window !== "undefined") {
       // @ts-ignore
-      if (window.Trustpilot) {
+      if (globalThis.Trustpilot) {
         // @ts-ignore
-        window.Trustpilot.loadFromElement(ref.current, true);
+        globalThis.Trustpilot.loadFromElement(ref.current, true);
       }
     }
   }, []);
   return (
-    <Fragment>
-      <div
+    <div
         ref={ref} // We need a reference to this element to load the TrustBox in the effect.
         className="trustpilot-widget" // Renamed this to className.
         data-locale={i18n.language}
@@ -38,8 +37,7 @@ const TrustpilotBox = ({
         <a href={trustpilot.href} target="_blank" rel="noopener noreferrer">
           Trustpilot
         </a>
-      </div>
-    </Fragment>
+    </div>
   );
 };
 export default TrustpilotBox;

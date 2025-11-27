@@ -78,14 +78,29 @@ export const action: ActionFunction = async ({ request, params }) => {
   return badRequest({ error: t("shared.invalidForm") });
 };
 
-function formatCreatedAt(item: RowWithDetails) {
-  return (
-    <div className="flex flex-col">
-      <div>{DateUtils.dateYMD(item.createdAt)}</div>
-      <div className="text-xs">{DateUtils.dateAgo(item.createdAt)}</div>
-    </div>
+const formatCreatedAt = (item: RowWithDetails) => (
+  <div className="flex flex-col">
+    <div>{DateUtils.dateYMD(item.createdAt)}</div>
+    <div className="text-xs">{DateUtils.dateAgo(item.createdAt)}</div>
+  </div>
+);
+
+const TenantCell = ({ item }: { item: RowWithDetails }) =>
+  item.tenant ? (
+    <Link to={`/app/${item.tenant?.slug}`} className="focus:bg-secondary/90 hover:border-border rounded-md border-b border-dashed border-transparent">
+      {item.tenant.name}
+    </Link>
+  ) : (
+    <div>-</div>
   );
-}
+
+const LogsCell = ({ item }: { item: RowWithDetails }) => (
+  <Link to={`/admin/entities/logs?rowId=${item.id}`}>
+    <ActivityHistoryIcon className="hover:text-theme-800 text-muted-foreground h-4 w-4" />
+  </Link>
+);
+
+const DetailsCell = ({ item }: { item: RowWithDetails }) => <ShowPayloadModalButton title="Details" description={"Details"} payload={JSON.stringify(item)} />;
 
 export default function AdminEntityRowsRoute() {
   const { t } = useTranslation();
@@ -109,22 +124,12 @@ export default function AdminEntityRowsRoute() {
           {
             name: "object",
             title: "Object",
-            value: (item) => <ShowPayloadModalButton title="Details" description={"Details"} payload={JSON.stringify(item)} />,
+            value: (item) => <DetailsCell item={item} />,
           },
           {
             name: "tenant",
             title: t("models.tenant.object"),
-            value: (item) =>
-              item.tenant ? (
-                <Link
-                  to={`/app/${item.tenant?.slug}`}
-                  className="focus:bg-secondary/90 hover:border-border rounded-md border-b border-dashed border-transparent"
-                >
-                  {item.tenant.name}
-                </Link>
-              ) : (
-                <div>-</div>
-              ),
+            value: (item) => <TenantCell item={item} />,
             breakpoint: "sm",
           },
           {
@@ -145,11 +150,7 @@ export default function AdminEntityRowsRoute() {
           {
             name: "logs",
             title: t("models.log.plural"),
-            value: (item) => (
-              <Link to={`/admin/entities/logs?rowId=${item.id}`}>
-                <ActivityHistoryIcon className="hover:text-theme-800 text-muted-foreground h-4 w-4" />
-              </Link>
-            ),
+            value: (item) => <LogsCell item={item} />,
           },
           {
             name: "createdByUser",

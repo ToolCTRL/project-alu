@@ -1,5 +1,4 @@
-import { ActionFunction, LoaderFunctionArgs } from "react-router";
-import { useActionData, useLoaderData, useSubmit } from "react-router";
+import { ActionFunction, LoaderFunctionArgs, useActionData, useLoaderData, useSubmit } from "react-router";
 import { useEffect, useState } from "react";
 import InfoBanner from "~/components/ui/banners/InfoBanner";
 import ButtonSecondary from "~/components/ui/buttons/ButtonSecondary";
@@ -72,7 +71,7 @@ export const action: ActionFunction = async ({ request }) => {
   }
 };
 
-export default function () {
+function NotificationChannelsRoute() {
   const data = useLoaderData<LoaderData>();
   const actionData = useActionData<ActionData>();
   const submit = useSubmit();
@@ -116,22 +115,22 @@ export default function () {
     });
   }
   return (
-    <>
-      <div className="mx-auto w-full max-w-5xl space-y-3 px-4 py-2 pb-6 sm:px-6 sm:pt-3 lg:px-8 xl:max-w-full">
-        <div className="md:border-border md:border-b md:py-2">
-          <div className="flex items-center justify-between">
-            <h3 className="text-foreground text-lg font-medium leading-6">Channels / Notification templates</h3>
-            {!showSetup && <ButtonSecondary onClick={() => setShowSetup(true)}>Show set up instructions</ButtonSecondary>}
-          </div>
+    <div className="mx-auto w-full max-w-5xl space-y-3 px-4 py-2 pb-6 sm:px-6 sm:pt-3 lg:px-8 xl:max-w-full">
+      <div className="md:border-border md:border-b md:py-2">
+        <div className="flex items-center justify-between">
+          <h3 className="text-foreground text-lg font-medium leading-6">Channels / Notification templates</h3>
+          {!showSetup && <ButtonSecondary onClick={() => setShowSetup(true)}>Show set up instructions</ButtonSecondary>}
         </div>
-
-        {showSetup && <SetUpInstructions />}
-
-        <NotificationTemplatesTable items={data.items} onDelete={onDelete} onSendPreview={onSendPreview} />
       </div>
-    </>
+
+      {showSetup && <SetUpInstructions />}
+
+      <NotificationTemplatesTable items={data.items} onDelete={onDelete} onSendPreview={onSendPreview} />
+    </div>
   );
 }
+
+export default NotificationChannelsRoute;
 
 export function ErrorBoundary() {
   return <ServerError />;

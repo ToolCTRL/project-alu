@@ -6,7 +6,9 @@ export { serverTimingHeaders as headers } from "~/modules/metrics/utils/defaultH
 
 export const loader = (args: LoaderFunctionArgs) => Rows_Relationships.loader(args);
 
-export default () => <RowsRelationshipsRoute />;
+export default function AdminCrmEntityRelationshipsRoute() {
+  return <RowsRelationshipsRoute />;
+}
 
 export function ErrorBoundary() {
   return <ServerError />;

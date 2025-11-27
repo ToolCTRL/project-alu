@@ -1,5 +1,4 @@
-import { LoaderFunctionArgs, MetaFunction } from "react-router";
-import { useLoaderData } from "react-router";
+import { LoaderFunctionArgs, MetaFunction, useLoaderData } from "react-router";
 import { getTranslations } from "~/locale/i18next.server";
 import { adminGetAllTenants, TenantWithDetails } from "~/utils/db/tenants.db.server";
 import { useTranslation } from "react-i18next";
@@ -42,7 +41,7 @@ export default function AdminRolesAndPermissionsAccountUsersRoute() {
     return data.tenants.filter(
       (f) =>
         f.name?.toString().toUpperCase().includes(searchInput.toUpperCase()) ||
-        f.users.find(
+        f.users.some(
           (x) =>
             x.user.email?.toString().toUpperCase().includes(searchInput.toUpperCase()) ||
             x.user.firstName?.toString().toUpperCase().includes(searchInput.toUpperCase()) ||

@@ -8,6 +8,9 @@ const getText = (form: FormData, name: string): string | undefined => {
   if (value === undefined || value === null) {
     return undefined;
   }
+  if (typeof value === 'object' && value !== null) {
+    return JSON.stringify(value);
+  }
   return String(value);
 };
 
@@ -64,7 +67,8 @@ const getDateString = (form: FormData, name: string): string | undefined => {
 
 const getFormMedia = (form: FormData, name: string): MediaDto[] => {
   const items: MediaDto[] = form.getAll(name + "[]").map((f: FormDataEntryValue) => {
-    return JSON.parse(String(f));
+    const stringValue = typeof f === 'object' && f !== null ? JSON.stringify(f) : String(f);
+    return JSON.parse(stringValue);
   });
   return items;
 };
@@ -78,7 +82,8 @@ const getFormFirstMedia = (form: FormData, name: string): MediaDto | undefined =
 
 const getMultiple = (form: FormData, name: string): RowValueMultipleDto[] => {
   let multiple: RowValueMultipleDto[] = form.getAll(name + "[]").map((f: FormDataEntryValue) => {
-    return JSON.parse(String(f));
+    const stringValue = typeof f === 'object' && f !== null ? JSON.stringify(f) : String(f);
+    return JSON.parse(stringValue);
   });
   return multiple;
 };
@@ -94,8 +99,8 @@ const getNumberRange = (form: FormData, name: string): RowValueRangeDto => {
   const min = form.get(name + "-min");
   const max = form.get(name + "-max");
   let range: RowValueRangeDto = {
-    numberMin: min ? Number(min ?? 0) : 0,
-    numberMax: max ? Number(max ?? 0) : 0,
+    numberMin: min ? Number(min) : 0,
+    numberMax: max ? Number(max) : 0,
     dateMin: null,
     dateMax: null,
   };

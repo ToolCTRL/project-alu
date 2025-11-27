@@ -38,7 +38,7 @@ export namespace WorkflowsTemplatesApi {
           template.workflows.map(async (workflow) => {
             const existing = allWorkflows.find((w) => w.name === workflow.name);
             if (existing) {
-              throw Error("Workflow already exists with name: " + workflow.name);
+              throw new Error("Workflow already exists with name: " + workflow.name);
             }
           })
         );
@@ -47,7 +47,7 @@ export namespace WorkflowsTemplatesApi {
           userId,
         });
         if (workflows.length === 0) {
-          throw Error("Could not create workflow");
+          throw new Error("Could not create workflow");
         }
         if (workflows.length === 1) {
           throw redirect(UrlUtils.getModulePath(params, `workflow-engine/workflows/${workflows[0].id}`));
@@ -66,7 +66,7 @@ export namespace WorkflowsTemplatesApi {
           tenantId,
         });
         if (workflows.length === 0) {
-          throw Error("Could not create workflow");
+          throw new Error("Could not create workflow");
         }
         return Response.json({
           success: workflows.map((workflow) => {

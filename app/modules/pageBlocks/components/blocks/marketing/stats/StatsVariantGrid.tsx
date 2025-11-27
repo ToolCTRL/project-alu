@@ -5,7 +5,7 @@ import AnimatedCounter from "~/components/ui/animations/AnimatedCounter";
 import ScrollReveal from "~/components/ui/animations/ScrollReveal";
 import { StatsBlockDto } from "./StatsBlockUtils";
 
-export default function StatsVariantGrid({ item }: { item: StatsBlockDto }) {
+export default function StatsVariantGrid({ item }: { readonly item: StatsBlockDto }) {
   const getAccentColor = (accentColor?: "primary" | "secondary" | "tertiary") => {
     switch (accentColor) {
       case "primary":
@@ -21,12 +21,6 @@ export default function StatsVariantGrid({ item }: { item: StatsBlockDto }) {
 
   const getGlowColor = (accentColor?: "primary" | "secondary" | "tertiary") => {
     switch (accentColor) {
-      case "primary":
-        return [
-          "0 0 20px rgba(168, 85, 247, 0.3)",
-          "0 0 40px rgba(168, 85, 247, 0.6)",
-          "0 0 20px rgba(168, 85, 247, 0.3)",
-        ];
       case "secondary":
         return [
           "0 0 20px rgba(16, 185, 129, 0.3)",
@@ -39,6 +33,7 @@ export default function StatsVariantGrid({ item }: { item: StatsBlockDto }) {
           "0 0 40px rgba(245, 158, 11, 0.6)",
           "0 0 20px rgba(245, 158, 11, 0.3)",
         ];
+      case "primary":
       default:
         return [
           "0 0 20px rgba(168, 85, 247, 0.3)",
@@ -84,7 +79,7 @@ export default function StatsVariantGrid({ item }: { item: StatsBlockDto }) {
         {/* Stats Grid */}
         <div className="grid md:grid-cols-3 gap-12">
           {item.items.map((stat, idx) => (
-            <ScrollReveal key={idx} delay={idx * 0.1}>
+            <ScrollReveal key={`stat-${idx}-${stat.label}`} delay={idx * 0.1}>
               <div className="text-center glass-card p-8">
                 <motion.div
                   className={`text-5xl font-bold mb-2 ${getAccentColor(stat.accentColor)}`}

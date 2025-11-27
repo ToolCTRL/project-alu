@@ -80,12 +80,3 @@ export async function deletePage(id: string) {
       return item;
     });
 }
-
-// export async function groupPagesByType() {
-//   return await db.page.groupBy({
-//     by: ["type"],
-//     _count: {
-//       _all: true,
-//     },
-//   });
-// }

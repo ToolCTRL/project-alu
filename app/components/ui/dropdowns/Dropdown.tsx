@@ -6,7 +6,6 @@ interface Props {
   right?: boolean;
   button?: ReactNode;
   options?: ReactNode;
-  children?: ReactNode;
   className?: string;
   btnClassName?: string;
   onClick?: MouseEventHandler<HTMLButtonElement>;
@@ -14,7 +13,7 @@ interface Props {
   isLoading?: boolean;
 }
 
-export default function Dropdown({ button, options, right, onClick, className, btnClassName, disabled, isLoading }: Props) {
+export default function Dropdown({ button, options, right, onClick, className, btnClassName, disabled, isLoading }: Readonly<Props>) {
   return (
     <Menu as="div" className={clsx(className, "relative inline-block text-left")}>
       <div>

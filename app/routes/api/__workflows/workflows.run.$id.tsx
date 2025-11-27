@@ -11,10 +11,10 @@ export const action = async ({ request, params }: ActionFunctionArgs) => {
     let body: { [key: string]: any } = {};
     try {
       body = await request.json();
-    } catch (e: any) {
+    } catch {
       return Response.json({ error: "Invalid JSON body" }, { status: 400 });
     }
-    const execution = await WorkflowsExecutionsService.execute(params.id!, {
+    const execution = await WorkflowsExecutionsService.execute(params.id ?? "", {
       type: "api",
       input: body,
       session: {

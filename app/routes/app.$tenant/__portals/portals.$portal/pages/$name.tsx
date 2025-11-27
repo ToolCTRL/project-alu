@@ -1,5 +1,4 @@
-import { ActionFunctionArgs, LoaderFunctionArgs, redirect, useActionData, useLoaderData } from "react-router";
-import { Form, useNavigate, useNavigation, useParams, useSubmit } from "react-router";
+import { ActionFunctionArgs, LoaderFunctionArgs, redirect, useActionData, useLoaderData, Form, useNavigate, useNavigation, useParams, useSubmit } from "react-router";
 import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import ButtonSecondary from "~/components/ui/buttons/ButtonSecondary";
@@ -30,14 +29,13 @@ type LoaderData = {
 export const loader = async ({ request, params }: LoaderFunctionArgs) => {
   await requireAuth({ request, params });
   const tenantId = await getTenantIdOrNull({ request, params });
-  const portal = await getPortalById(tenantId, params.portal!);
+  const portal = await getPortalById(tenantId, params.portal);
   if (!portal) {
     return redirect(UrlUtils.getModulePath(params, "portals"));
   }
-  const page = await getPortalPagesByName(portal.id, params.name!);
+  const page = await getPortalPagesByName(portal.id, params.name);
   const appConfiguration = await getAppConfiguration({ request });
   const pageConfig = appConfiguration.portals.pages.find((p) => p.name === params.name);
-  // const page = existing;
   if (!pageConfig) {
     return redirect(UrlUtils.getModulePath(params, `portals/${portal.id}/pages`));
   }
@@ -62,11 +60,11 @@ export const action = async ({ request, params }: ActionFunctionArgs) => {
   const action = form.get("action")?.toString();
 
   const tenantId = await getTenantIdOrNull({ request, params });
-  const portal = await getPortalById(tenantId, params.portal!);
+  const portal = await getPortalById(tenantId, params.portal);
   if (!portal) {
     return redirect(UrlUtils.getModulePath(params, "portals"));
   }
-  const page = await getPortalPagesByName(portal.id, params.name!);
+  const page = await getPortalPagesByName(portal.id, params.name);
   const appConfiguration = await getAppConfiguration({ request });
   const pageConfig = appConfiguration.portals.pages.find((p) => p.name === params.name);
   if (!pageConfig) {
@@ -82,7 +80,7 @@ export const action = async ({ request, params }: ActionFunctionArgs) => {
     if (!page) {
       await createPortalPage({
         portalId: portal.id,
-        name: params.name!,
+        name: params.name ?? "",
         attributes,
       });
     } else {
@@ -91,7 +89,6 @@ export const action = async ({ request, params }: ActionFunctionArgs) => {
       });
     }
     return Response.json({ success: t("shared.updated") });
-    // return redirect(UrlUtils.getModulePath(params, `portals/${portal.id}/pages`));
   } else if (action === "delete") {
     try {
       if (page) {
@@ -106,7 +103,7 @@ export const action = async ({ request, params }: ActionFunctionArgs) => {
   }
 };
 
-export default function () {
+export default function PageEditRoute() {
   const { t } = useTranslation();
   const data = useLoaderData<LoaderData>();
   const actionData = useActionData<ActionData>();
@@ -158,20 +155,11 @@ export default function () {
   return (
     <div>
       <div>
-        {/* <h1 className="text-2xl font-semibold">
-          {t("models.portal.pages.object")}: {data.pageConfig.title}
-        </h1> */}
         <Form method="post" className="inline-block w-full overflow-hidden p-1 text-left align-bottom sm:align-middle">
           <input type="hidden" name="action" value="edit" hidden readOnly />
 
           <div className="space-y-2">
-            {/* {JSON.stringify(attributes)} */}
             <JsonPropertyValuesInput prefix="attributes" properties={data.pageConfig.properties} attributes={attributes} />
-            {/* <InputText ref={mainInput} autoFocus name="title" title={"Title"} defaultValue={data.page?.title} required />
-
-          <InputText name="description" title={"Description"} defaultValue={data.page?.description} required />
-
-          {data.page.canUpdateContent && <ContentForm name={data.page.name} value={content} />} */}
           </div>
           <div className="mt-5 flex justify-between space-x-2">
             <div>

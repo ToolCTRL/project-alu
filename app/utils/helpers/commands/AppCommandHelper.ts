@@ -28,26 +28,28 @@ function getCommands({ t, navigate, appData, rootData }: Props): Action[] {
   ];
 
   if (rootData.appConfiguration.portals?.enabled && rootData.appConfiguration.portals?.forTenants) {
-    actions.push({
-      id: "portals",
-      name: t("models.portal.plural"),
-      shortcut: [],
-      keywords: "",
-      // subtitle: t("app.sidebar.settings"),
-      perform: () => {
-        navigate(`/app/${appData.currentTenant.slug}/portals`);
+    actions.push(
+      {
+        id: "portals",
+        name: t("models.portal.plural"),
+        shortcut: [],
+        keywords: "",
+        // subtitle: t("app.sidebar.settings"),
+        perform: () => {
+          navigate(`/app/${appData.currentTenant.slug}/portals`);
+        },
       },
-    });
-    actions.push({
-      id: "portals-new",
-      name: t("models.portal.actions.new.title"),
-      shortcut: [],
-      keywords: "",
-      subtitle: t("models.portal.actions.new.description"),
-      perform: () => {
-        navigate(`/app/${appData.currentTenant.slug}/portals/new`);
-      },
-    });
+      {
+        id: "portals-new",
+        name: t("models.portal.actions.new.title"),
+        shortcut: [],
+        keywords: "",
+        subtitle: t("models.portal.actions.new.description"),
+        perform: () => {
+          navigate(`/app/${appData.currentTenant.slug}/portals/new`);
+        },
+      }
+    );
   }
 
   appData.entities
@@ -64,20 +66,22 @@ function getCommands({ t, navigate, appData, rootData }: Props): Action[] {
 
   const crmEntities = appData.entities.filter((f) => ["companies", "contacts", "opportunities"].includes(f.slug));
   if (crmEntities.length >= 3) {
-    actions.push({
-      id: "crm",
-      name: t("crm.title"),
-      perform: () => {
-        navigate(`/app/${appData.currentTenant.slug}/crm`);
+    actions.push(
+      {
+        id: "crm",
+        name: t("crm.title"),
+        perform: () => {
+          navigate(`/app/${appData.currentTenant.slug}/crm`);
+        },
       },
-    });
-    actions.push({
-      id: "emailMarketing",
-      name: t("emailMarketing.title"),
-      perform: () => {
-        navigate(`/app/${appData.currentTenant.slug}/email-marketing`);
-      },
-    });
+      {
+        id: "emailMarketing",
+        name: t("emailMarketing.title"),
+        perform: () => {
+          navigate(`/app/${appData.currentTenant.slug}/email-marketing`);
+        },
+      }
+    );
   }
   actions.push({
     id: "profile",
@@ -138,26 +142,28 @@ function getCommands({ t, navigate, appData, rootData }: Props): Action[] {
     });
   }
   if (getUserHasPermission(appData, "app.settings.auditTrails.view")) {
-    actions.push({
-      id: "auditTrails",
-      name: t("models.log.plural"),
-      shortcut: [],
-      keywords: "",
-      subtitle: t("app.sidebar.settings"),
-      perform: () => {
-        navigate(`/app/${appData.currentTenant.slug}/settings/logs`);
+    actions.push(
+      {
+        id: "auditTrails",
+        name: t("models.log.plural"),
+        shortcut: [],
+        keywords: "",
+        subtitle: t("app.sidebar.settings"),
+        perform: () => {
+          navigate(`/app/${appData.currentTenant.slug}/settings/logs`);
+        },
       },
-    });
-    actions.push({
-      id: "events",
-      name: t("models.event.plural"),
-      shortcut: [],
-      keywords: "",
-      subtitle: t("app.sidebar.settings"),
-      perform: () => {
-        navigate(`/app/${appData.currentTenant.slug}/settings/logs/events`);
-      },
-    });
+      {
+        id: "events",
+        name: t("models.event.plural"),
+        shortcut: [],
+        keywords: "",
+        subtitle: t("app.sidebar.settings"),
+        perform: () => {
+          navigate(`/app/${appData.currentTenant.slug}/settings/logs/events`);
+        },
+      }
+    );
   }
   if (appData.myTenants.length > 0) {
     actions.push({

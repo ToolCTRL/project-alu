@@ -36,13 +36,9 @@ const ConfirmModal = (props: Props, ref: Ref<RefConfirmModal>) => {
   const [inputString, setInputString] = useState<string | undefined>("");
   const [yesTitle, setYesTitle] = useState<string>("");
   const [noTitle, setNoTitle] = useState<string>("");
-  const [isDestructive, setDestructiveState] = useState<boolean>(props.destructive || false);
+  const [isDestructive, setDestructive] = useState<boolean>(props.destructive || false);
 
   const inputValue = useRef<HTMLInputElement>(null);
-
-  const setDestructive = (destructive: boolean) => {
-    setDestructiveState(destructive);
-  };
 
   useEffect(() => {
     setTitle(t("shared.confirm").toString());

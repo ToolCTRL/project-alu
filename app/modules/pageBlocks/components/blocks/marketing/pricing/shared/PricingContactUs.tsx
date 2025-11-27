@@ -2,7 +2,7 @@ import { useTranslation } from "react-i18next";
 import { PricingContactUsDto } from "../PricingBlockUtils";
 import ButtonEvent from "~/components/ui/buttons/ButtonEvent";
 
-export default function PricingContactUs({ item }: { item: PricingContactUsDto }) {
+export default function PricingContactUs({ item }: { readonly item: PricingContactUsDto }) {
   const { t } = useTranslation();
   return (
     <div className="relative lg:mx-4">
@@ -17,9 +17,9 @@ export default function PricingContactUs({ item }: { item: PricingContactUsDto }
                 <div className="border-primary-foreground flex-1 border-t"></div>
               </div>
               <ul className="mt-8 space-y-5 lg:grid lg:grid-cols-2 lg:gap-x-8 lg:gap-y-5 lg:space-y-0">
-                {item.features.map((feature, idxFeature) => {
+                {item.features.map((feature, index) => {
                   return (
-                    <li key={idxFeature} className="flex items-start lg:col-span-1">
+                    <li key={`feature-${index}-${feature.substring(0, 20)}`} className="flex items-start lg:col-span-1">
                       <div className="shrink-0">
                         {/* Heroicon name: solid/check-circle */}
                         <svg

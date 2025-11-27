@@ -4,7 +4,7 @@ import { TestimonialsBlockDto } from "~/modules/pageBlocks/components/blocks/mar
 import TrustpilotBox from "./TrustpilotBox";
 import { InfiniteMovingCards } from "~/components/aceternity/infinite-moving-cards";
 
-export default function TestimonialsVariantScroll({ item }: { item: TestimonialsBlockDto }) {
+export default function TestimonialsVariantScroll({ item }: { readonly item: TestimonialsBlockDto }) {
   const { t } = useTranslation();
   return (
     <section className="">

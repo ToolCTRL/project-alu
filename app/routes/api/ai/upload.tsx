@@ -17,7 +17,7 @@ export const action = async ({ request, params }: ActionFunctionArgs) => {
 
     const finalName = filename.includes(fileType) ? filename : `${filename}${fileType}`;
 
-    const now = new Date().getTime();
+    const now = Date.now();
     const path = `${now}-${finalName}`;
 
     const response = await createSupabaseFile("novel", path, file, contentType);

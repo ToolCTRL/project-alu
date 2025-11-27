@@ -1,8 +1,7 @@
-import { LoaderFunctionArgs } from "react-router";
+import { LoaderFunctionArgs, Link } from "react-router";
 import { useTranslation } from "react-i18next";
 import { getTenantIdFromUrl } from "~/utils/services/.server/urlService";
 import { verifyUserHasPermission } from "~/utils/helpers/.server/PermissionsService";
-import { Link, useParams } from "react-router";
 import { ButtonPrimary } from "~/components/ui/buttons/ButtonPrimary";
 
 export const loader = async ({ request, params }: LoaderFunctionArgs) => {

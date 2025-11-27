@@ -1,8 +1,7 @@
-import { LoaderFunctionArgs, redirect } from "react-router";
+import { LoaderFunctionArgs, Link, useSearchParams } from "react-router";
 import { useRootData } from "~/utils/data/useRootData";
 import { JSONTree } from "react-json-tree";
 import HeaderBlock from "~/modules/pageBlocks/components/blocks/marketing/header/HeaderBlock";
-import { Link, useSearchParams } from "react-router";
 import { getUserInfo } from "~/utils/session.server";
 import { getUser } from "~/utils/db/users.db.server";
 import { createMetrics } from "~/modules/metrics/services/.server/MetricTracker";

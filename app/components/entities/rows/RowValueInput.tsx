@@ -95,7 +95,7 @@ function renderPropertyInput(
     readonly range?: RowValueRange;
     readonly initialMedia?: RowMedia[];
     readonly initialOption?: string;
-    readonly onChange?: (value: string | number | Date | boolean | undefined | null) => void;
+    readonly onChange?: (value: ChangeValue) => void;
     readonly onChangeOption?: (option: string | undefined) => void;
     readonly onChangeMultiple?: (option: RowValueMultipleDto[]) => void;
     readonly onChangeRange?: (option: RowValueRangeDto | undefined) => void;
@@ -412,7 +412,7 @@ const NumberPropertyInput = forwardRef<
     readonly numberValue?: number;
     readonly readOnly: boolean;
     readonly className?: string;
-    readonly onChange?: (value: string | number | Date | boolean | undefined | null) => void;
+    readonly onChange?: (value: ChangeValue) => void;
     readonly autoFocus?: boolean;
     readonly t: any;
   }
@@ -448,7 +448,7 @@ const DatePropertyInput = forwardRef<
     readonly dateValue?: Date;
     readonly readOnly: boolean;
     readonly className?: string;
-    readonly onChange?: (value: string | number | Date | boolean | undefined | null) => void;
+    readonly onChange?: (value: ChangeValue) => void;
     readonly autoFocus?: boolean;
     readonly t: any;
   }
@@ -827,7 +827,7 @@ function FormulaPropertyInput({
   return <InputFormulaValue property={selected} textValue={textValue} numberValue={numberValue} dateValue={dateValue} booleanValue={booleanValue} />;
 }
 
-function InputFormulaValue(props: { property: PropertyWithDetails; textValue?: string; numberValue?: number; dateValue?: Date; booleanValue?: boolean }) {
+function InputFormulaValue(props: { readonly property: PropertyWithDetails; readonly textValue?: string; readonly numberValue?: number; readonly dateValue?: Date; readonly booleanValue?: boolean }) {
   const resultAs = props.property.formula?.resultAs;
 
   if (resultAs === "string") {

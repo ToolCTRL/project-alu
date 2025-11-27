@@ -48,7 +48,7 @@ const signInGoogleUser = async (request: Request, user: UserWithoutPassword) => 
       ...userSession,
       lng: user.locale ?? userInfo.lng,
     },
-    user.admin !== null ? "/admin/dashboard" : `/app/${tenant?.slug}/dashboard`
+    user.admin ? "/admin/dashboard" : `/app/${tenant?.slug}/dashboard`
   );
 };
 

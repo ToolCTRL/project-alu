@@ -1,5 +1,4 @@
-import { LoaderFunctionArgs, MetaFunction } from "react-router";
-import { useLoaderData } from "react-router";
+import { LoaderFunctionArgs, MetaFunction, useLoaderData } from "react-router";
 import { useTranslation } from "react-i18next";
 import AnalyticsOverview from "~/components/analytics/AnalyticsOverview";
 import IndexPageLayout from "~/components/ui/layouts/IndexPageLayout";

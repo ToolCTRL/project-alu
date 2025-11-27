@@ -1,6 +1,6 @@
 import { useMemo, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { ActionFunctionArgs, LoaderFunctionArgs, useLoaderData } from "react-router";
+import { ActionFunctionArgs, LoaderFunctionArgs, useLoaderData, useActionData, useNavigation, useSubmit } from "react-router";
 import { adminGetAllTenantsWithUsage, createTenantUser, TenantSimple, TenantWithUsage, updateTenantDeactivated } from "~/utils/db/tenants.db.server";
 import { getTranslations } from "~/locale/i18next.server";
 import TenantsTable from "~/components/core/tenants/TenantsTable";
@@ -11,7 +11,6 @@ import InputFilters from "~/components/ui/input/InputFilters";
 import { FilterablePropertyDto } from "~/application/dtos/data/FilterablePropertyDto";
 import { adminGetAllUsersNames } from "~/utils/db/users.db.server";
 import { PaginationDto } from "~/application/dtos/data/PaginationDto";
-import { useActionData, useNavigation, useSubmit } from "react-router";
 import ActionResultModal from "~/components/ui/modals/ActionResultModal";
 import Stripe from "stripe";
 import { getStripeInvoices } from "~/utils/stripe.server";
@@ -34,7 +33,7 @@ import { v2MetaFunction } from "~/utils/compat/v2MetaFunction";
 import { Button } from "~/components/ui/button";
 import { ActionTile } from "~/components/ui/cards";
 import { Badge } from "~/components/ui/badge";
-import { Blocks, Building2, ShieldCheck, Sparkles, Users as UsersIcon, Activity, Wallet } from "lucide-react";
+import { Blocks, Building2, ShieldCheck, Sparkles, Users as UsersIcon, Wallet } from "lucide-react";
 import { motion } from "framer-motion";
 export { serverTimingHeaders as headers } from "~/modules/metrics/utils/defaultHeaders.server";
 
@@ -101,7 +100,7 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
 
   const data: LoaderData = {
     title: `${t("models.tenant.plural")} | ${process.env.APP_NAME}`,
-    items: items.sort((a, b) => (a.createdAt > b.createdAt ? -1 : 1)),
+    items: items.toSorted((a, b) => (a.createdAt > b.createdAt ? -1 : 1)),
     filterableProperties,
     pagination,
     tenantInvoices,
@@ -179,13 +178,6 @@ export default function AdminTenantsRoute() {
 
   const [deactivatingTenant, setDeactivatingTenant] = useState<TenantWithUsage>();
   const [creatingNewAccount, setCreatingNewAccount] = useState(false);
-  const stats = useMemo(() => {
-    const total = data.pagination.totalItems ?? data.items.length;
-    const active = data.items.filter((item) => !item.deactivatedReason).length;
-    const totalUsers = data.items.reduce((sum, item) => sum + (item._count.users ?? 0), 0);
-    const rows = data.items.reduce((sum, item) => sum + (item._count.rows ?? 0), 0);
-    return { total, active, totalUsers, rows };
-  }, [data.items, data.pagination.totalItems]);
   const accountsSubtitle = useMemo(() => {
     const translated = t("app.sidebar.accountsDescription");
     return translated === "app.sidebar.accountsDescription" ? "Mandanten, Abos und Zugänge auf einen Blick." : translated;
@@ -198,16 +190,16 @@ export default function AdminTenantsRoute() {
   }, [actionData]);
 
   function onToggleActive(item: TenantWithUsage) {
-    if (!item.deactivatedReason) {
-      setDeactivatingTenant(item);
-    } else {
+    if (item.deactivatedReason) {
       onConfirmedToggleActive(item, "", true);
+    } else {
+      setDeactivatingTenant(item);
     }
   }
 
   function onConfirmedToggleActive(value: TenantSimple, reason: string, activate: boolean) {
     const form = new FormData();
-    form.set("action", !activate ? "deactivate" : "activate");
+    form.set("action", activate ? "activate" : "deactivate");
     form.set("reason", reason ?? "");
     form.set("id", value.id);
     submit(form, {
@@ -344,7 +336,7 @@ export default function AdminTenantsRoute() {
               isStripeTest={data.isStripeTest}
               actions={[
                 {
-                  renderTitle: (i) => (!i.deactivatedReason ? t("shared.deactivate") : t("shared.activate")),
+                  renderTitle: (i) => (i.deactivatedReason ? t("shared.activate") : t("shared.deactivate")),
                   onClick: (_idx, item) => onToggleActive(item),
                   disabled: () => navigation.state === "submitting",
                   renderIsDestructive: (i) => !i.deactivatedReason,
@@ -388,7 +380,7 @@ function rowsLabel(rows: number) {
   return rows.toString();
 }
 
-function CreateTenantForm({ tenantSettingsEntity }: { tenantSettingsEntity: EntityWithDetails | null }) {
+function CreateTenantForm({ tenantSettingsEntity }: Readonly<{ tenantSettingsEntity: EntityWithDetails | null }>) {
   const { t } = useTranslation();
 
   const [name, setName] = useState("");

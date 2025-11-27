@@ -5,4 +5,8 @@ import { PageMetaTags_Index } from "~/modules/pageBlocks/routes/pages/PageMetaTa
 export const loader = (args: LoaderFunctionArgs) => PageMetaTags_Index.loader(args);
 export const action: ActionFunction = (args) => PageMetaTags_Index.action(args);
 
-export default () => <PageMetaTagsRouteIndex />;
+function PageSeoRoute() {
+  return <PageMetaTagsRouteIndex />;
+}
+
+export default PageSeoRoute;

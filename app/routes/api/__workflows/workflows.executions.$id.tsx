@@ -8,7 +8,7 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
   }
   try {
     const { tenant } = await validateApiKey(request, params);
-    const execution = await WorkflowsService.getExecution(params.id!, {
+    const execution = await WorkflowsService.getExecution(params.id ?? "", {
       tenantId: tenant?.id ?? null,
     });
     if (!execution) {

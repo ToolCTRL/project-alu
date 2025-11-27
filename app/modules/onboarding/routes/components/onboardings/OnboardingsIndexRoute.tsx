@@ -36,17 +36,17 @@ export default function OnboardingsIndexRoute() {
           <TabsWithIcons
             tabs={[
               {
-                name: `${t("shared.all")} ${countStatus() > 0 ? `(${countStatus()})` : ""}`,
+                name: t("shared.all") + (countStatus() > 0 ? ` (${countStatus()})` : ""),
                 href: "?",
                 current: !searchParams.get("status") || searchParams.get("status") === "all",
               },
               {
-                name: `${t("shared.active")} ${countStatus("active") > 0 ? `(${countStatus("active")})` : ""}`,
+                name: t("shared.active") + (countStatus("active") > 0 ? ` (${countStatus("active")})` : ""),
                 href: "?status=active",
                 current: searchParams.get("status") === "active",
               },
               {
-                name: `${t("shared.inactive")} ${countStatus("inactive") > 0 ? `(${countStatus("inactive")})` : ""}`,
+                name: t("shared.inactive") + (countStatus("inactive") > 0 ? ` (${countStatus("inactive")})` : ""),
                 href: "?status=inactive",
                 current: searchParams.get("status") === "inactive",
               },

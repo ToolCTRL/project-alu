@@ -1,9 +1,6 @@
-import TrashIcon from "~/components/ui/icons/TrashIcon";
 import { useTranslation } from "react-i18next";
 import InputText from "~/components/ui/input/InputText";
 import { SurveyItemDto } from "../dtos/SurveyDtos";
-import InputSelect from "~/components/ui/input/InputSelect";
-import InputMultipleText from "~/components/ui/input/InputMultipleText";
 import InputCheckboxWithDescription from "~/components/ui/input/InputCheckboxWithDescription";
 import CollapsibleRow from "~/components/ui/tables/CollapsibleRow";
 
@@ -11,14 +8,14 @@ interface Props {
   items: SurveyItemDto["options"];
   onChange: (items: SurveyItemDto["options"]) => void;
 }
-export default function SurveyItemOptionsList({ items, onChange }: Props) {
-  const { t } = useTranslation();
+export default function SurveyItemOptionsList({ items, onChange }: Readonly<Props>) {
   return (
     <div className="space-y-2">
       <div className="space-y-2">
         {items.map((item, idx) => {
           return (
             <CollapsibleRow
+              key={`option-${item.title}-${idx}`}
               className="bg-secondary px-4"
               title={""}
               value={item.title || `Option ${idx + 1}`}
@@ -28,7 +25,7 @@ export default function SurveyItemOptionsList({ items, onChange }: Props) {
                 onChange(newItems);
               }}
             >
-              <div key={idx} className="">
+              <div className="">
                 <div className=" grid grid-cols-12 gap-2">
                   <InputText
                     className="col-span-6"

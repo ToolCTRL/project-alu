@@ -2,8 +2,7 @@ import { useTranslation } from "react-i18next";
 import ErrorModal, { RefErrorModal } from "~/components/ui/modals/ErrorModal";
 import { Fragment, useEffect, useRef, useState } from "react";
 import plans from "~/application/pricing/plans.server";
-import { ActionFunction, Link, LoaderFunctionArgs, MetaFunction, useActionData, useLoaderData } from "react-router";
-import { Form, Outlet, useSubmit, useNavigation } from "react-router";
+import { ActionFunction, Link, LoaderFunctionArgs, MetaFunction, useActionData, useLoaderData, Form, Outlet, useSubmit, useNavigation } from "react-router";
 import { getAllSubscriptionProducts, getAllSubscriptionProductsWithTenants, getSubscriptionProduct } from "~/utils/db/subscriptionProducts.db.server";
 import SuccessModal, { RefSuccessModal } from "~/components/ui/modals/SuccessModal";
 import { getTranslations } from "~/locale/i18next.server";
@@ -162,7 +161,7 @@ export default function AdminPricingRoute() {
 
   const [model, setModel] = useState<PricingModel>(PricingModel.FLAT_RATE);
   const [items, setItems] = useState<SubscriptionProductDto[]>([]);
-  const [, setAllFeatures] = useState<SubscriptionFeatureDto[]>([]);
+  const [allFeatures, setAllFeatures] = useState<SubscriptionFeatureDto[]>([]);
 
   useEffect(() => {
     updateItems(data.items);
@@ -181,7 +180,7 @@ export default function AdminPricingRoute() {
   }, [actionData]);
 
   function updateItems(items: SubscriptionProductDto[]) {
-    if (items.filter((f) => f.id).length > 0) {
+    if (items.some((f) => f.id)) {
       setItems(items);
     } else {
       setItems(items.filter((f) => f.model === model || model === PricingModel.ALL));
@@ -226,41 +225,16 @@ export default function AdminPricingRoute() {
       method: "post",
     });
   }
-  // function syncPlanWithPaymentProvider(item: SubscriptionProductDto) {
-  //   const form = new FormData();
-  //   form.set("action", "sync-plan-with-payment-provider");
-  //   form.set("id", item.id?.toString() ?? "");
-  //   submit(form, {
-  //     method: "post",
-  //   });
-  // }
-  // function createPlan(item: SubscriptionProductDto) {
-  //   const form = new FormData();
-  //   form.set("action", "create");
-  //   form.set("order", item.order);
-  //   form.set("order", item.description);
-  //   employees.forEach((item) => {
-  //     form.append("employees[]", JSON.stringify(item));
-  //   });
-  //   submit(form, {
-  //     method: "post",
-  //   });
-  // }
 
   function createdPlans() {
     return data.items.filter((f) => f.id).length;
   }
 
-  // function getFeatureValue(item: SubscriptionProductDto, name: string) {
-  //   return item.features.find((f) => f.name === name);
-  // }
-
   return (
     <EditPageLayout
       title={<BackButtonWithTitle href="/admin/settings">{t("admin.pricing.title")}</BackButtonWithTitle>}
       buttons={
-        <>
-          <Form method="post" className="flex h-9 items-center space-x-2">
+        <Form method="post" className="flex h-9 items-center space-x-2">
             {selectedItems.length > 0 && (
               <DeleteIconButton
                 items={selectedItems}
@@ -285,7 +259,7 @@ export default function AdminPricingRoute() {
               </ButtonSecondary>
             )}
             {selectedItems.length === 0 && (
-              <Fragment>
+              <>
                 <ButtonSecondary disabled={loading} to="/pricing" target="_blank">
                   <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -302,10 +276,9 @@ export default function AdminPricingRoute() {
                 <ButtonPrimary to="new" disabled={loading || !getUserHasPermission(adminData, "admin.pricing.create")}>
                   {t("shared.new")}
                 </ButtonPrimary>
-              </Fragment>
+              </>
             )}
           </Form>
-        </>
       }
     >
       <div className="space-y-6">
@@ -388,13 +361,6 @@ export default function AdminPricingRoute() {
               title: t("models.subscriptionProduct.model"),
               value: (item) => <>{t("pricing." + PricingModel[item.model])}</>,
             },
-            // ...allFeatures.map((feature) => {
-            //   return {
-            //     name: feature.name,
-            //     title: feature.name,
-            //     value: (item: SubscriptionProductDto) => <PlanFeatureValue item={getFeatureValue(item, feature.name)} />,
-            //   };
-            // }),
             {
               name: "subscriptions",
               title: t("models.subscriptionProduct.plural"),
@@ -448,7 +414,7 @@ export default function AdminPricingRoute() {
   );
 }
 
-function DeleteIconButton({ onClick, items }: { onClick: () => void; items: SubscriptionProductDto[] }) {
+function DeleteIconButton({ onClick, items }: Readonly<{ onClick: () => void; items: SubscriptionProductDto[] }>) {
   const { t } = useTranslation();
   const navigation = useNavigation();
   const confirmModal = useRef<RefConfirmModal>(null);

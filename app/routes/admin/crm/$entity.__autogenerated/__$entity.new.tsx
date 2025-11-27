@@ -9,7 +9,9 @@ export const meta: v2MetaFunction<Rows_New.LoaderData> = ({ data }) => data?.met
 export const loader = (args: LoaderFunctionArgs) => Rows_New.loader(args);
 export const action: ActionFunction = (args) => Rows_New.action(args);
 
-export default () => <RowNewRoute />;
+export default function AdminCrmEntityNewRoute() {
+  return <RowNewRoute />;
+}
 
 export function ErrorBoundary() {
   return <ServerError />;

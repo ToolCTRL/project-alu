@@ -23,7 +23,7 @@ interface Props {
   }[];
   size?: "xs" | "sm" | "lg";
 }
-export default function DropdownDots({ title, items, size = "sm" }: Props) {
+export default function DropdownDots({ title, items, size = "sm" }: Readonly<Props>) {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger
@@ -52,8 +52,8 @@ export default function DropdownDots({ title, items, size = "sm" }: Props) {
           </Fragment>
         )}
         <DropdownMenuGroup>
-          {items.map((item, idx) => (
-            <DropdownMenuItem key={option.title} asChild>
+          {items.map((item) => (
+            <DropdownMenuItem key={item.name} asChild>
               {item.href ? (
                 <Link
                   to={item.href}
@@ -81,10 +81,6 @@ export default function DropdownDots({ title, items, size = "sm" }: Props) {
             </DropdownMenuItem>
           ))}
         </DropdownMenuGroup>
-        {/* <DropdownMenuSeparator />
-        <DropdownMenuItem className="text-red-600" onClick={() => deleteItem(item.id)}>
-          Delete
-        </DropdownMenuItem> */}
       </DropdownMenuContent>
     </DropdownMenu>
   );

@@ -54,7 +54,7 @@ const SurveySubmissions = ({ item }: { item: SurveyWithDetails }) => (
 
 const SurveyCreatedAt = ({ item }: { item: SurveyWithDetails }) => <DateCell date={item.createdAt} />;
 
-export default function SurveysIndexPage() {
+export default function SurveysIndexRoute() {
   const { t } = useTranslation();
   const data = useLoaderData<LoaderData>();
   return (

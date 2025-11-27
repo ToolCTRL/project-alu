@@ -1,18 +1,10 @@
 import { useTranslation } from "react-i18next";
-import { LoaderFunctionArgs, MetaFunction } from "react-router";
-import { useLoaderData } from "react-router";
+import { LoaderFunctionArgs, MetaFunction, useLoaderData } from "react-router";
 import { getTranslations } from "~/locale/i18next.server";
 import ButtonSecondary from "~/components/ui/buttons/ButtonSecondary";
 import { getSetupSteps } from "~/utils/services/setupService";
 import { SetupItem } from "~/application/dtos/setup/SetupItem";
 import { requireAuth } from "~/utils/loaders.middleware";
-
-// type SetupItem = {
-//   title: string;
-//   description: string;
-//   completed: boolean;
-//   path: string;
-// };
 
 type LoaderData = {
   title: string;
@@ -83,20 +75,11 @@ export default function AdminNavigationRoute() {
               <h3 className=" text-lg font-bold">{t("admin.setup.headline")}</h3>
               <p className="text-muted-foreground">{t("admin.setup.description")}</p>
               <ul className=" space-y-4">
-                {data.items.map((item, idx) => {
+                {data.items.map((item) => {
                   return (
-                    <li key={idx} className="border-border bg-background space-y-3 rounded-lg border p-4">
+                    <li key={item.path} className="border-border bg-background space-y-3 rounded-lg border p-4">
                       <div className="flex items-center space-x-2">
-                        {!item.completed ? (
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            className="border-border h-6 w-6 rounded-full border text-gray-300"
-                            viewBox="0 0 20 20"
-                            fill="currentColor"
-                          >
-                            <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 " clipRule="evenodd" />
-                          </svg>
-                        ) : (
+                        {item.completed ? (
                           <svg
                             xmlns="http://www.w3.org/2000/svg"
                             className="h-6 w-6 rounded-full border border-teal-500 text-teal-500"
@@ -108,6 +91,15 @@ export default function AdminNavigationRoute() {
                               d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
                               clipRule="evenodd"
                             />
+                          </svg>
+                        ) : (
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            className="border-border h-6 w-6 rounded-full border text-gray-300"
+                            viewBox="0 0 20 20"
+                            fill="currentColor"
+                          >
+                            <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 " clipRule="evenodd" />
                           </svg>
                         )}
                         <div className=" font-medium">{item.title}</div>

@@ -388,7 +388,7 @@ export async function register(data: {
   return { id: user.id, email, defaultTenantId: "", locale };
 }
 
-export async function updateUserProfile(data: { firstName?: string; lastName?: string; avatar?: string; locale?: string }, userId?: string) {
+async function updateUserHelper(userId: string | undefined, data: Prisma.UserUpdateInput) {
   if (!userId) {
     return null;
   }
@@ -403,19 +403,12 @@ export async function updateUserProfile(data: { firstName?: string; lastName?: s
     });
 }
 
+export async function updateUserProfile(data: { firstName?: string; lastName?: string; avatar?: string; locale?: string }, userId?: string) {
+  return updateUserHelper(userId, data);
+}
+
 export async function updateUserVerifyToken(data: { verifyToken: string }, userId?: string) {
-  if (!userId) {
-    return null;
-  }
-  return await db.user
-    .update({
-      where: { id: userId },
-      data,
-    })
-    .then((item) => {
-      clearCacheKey(`user:${userId}`);
-      return item;
-    });
+  return updateUserHelper(userId, data);
 }
 
 export async function updateUserPassword(data: { passwordHash: string }, userId?: string) {
@@ -437,48 +430,15 @@ export async function updateUserPassword(data: { passwordHash: string }, userId?
 }
 
 export async function updateUserDefaultTenantId(data: { defaultTenantId: string }, userId: string) {
-  if (!userId) {
-    return null;
-  }
-  return await db.user
-    .update({
-      where: { id: userId },
-      data,
-    })
-    .then((item) => {
-      clearCacheKey(`user:${userId}`);
-      return item;
-    });
+  return updateUserHelper(userId, data);
 }
 
 export async function setUserGitHubAccount(data: { githubId: string }, userId: string) {
-  if (!userId) {
-    return null;
-  }
-  return await db.user
-    .update({
-      where: { id: userId },
-      data,
-    })
-    .then((item) => {
-      clearCacheKey(`user:${userId}`);
-      return item;
-    });
+  return updateUserHelper(userId, data);
 }
 
 export async function setUserGoogleAccount(data: { googleId: string }, userId: string) {
-  if (!userId) {
-    return null;
-  }
-  return await db.user
-    .update({
-      where: { id: userId },
-      data,
-    })
-    .then((item) => {
-      clearCacheKey(`user:${userId}`);
-      return item;
-    });
+  return updateUserHelper(userId, data);
 }
 
 export async function deleteUser(userId: string) {

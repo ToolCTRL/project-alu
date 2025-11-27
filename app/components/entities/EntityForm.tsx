@@ -20,7 +20,7 @@ import UrlUtils from "~/utils/app/UrlUtils";
 interface Props {
   item?: Entity | null;
 }
-export default function EntityForm({ item }: Props) {
+export default function EntityForm({ item }: Readonly<Props>) {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const adminData = useAdminData();
@@ -84,7 +84,7 @@ export default function EntityForm({ item }: Props) {
               if (!title.trim()) {
                 const generateTitle = (str: string) => {
                   return str
-                    .replace(/([a-z])([A-Z])/g, "$1 $2") // Insert space before capital letters
+                    .replaceAll(/([a-z])([A-Z])/g, "$1 $2") // Insert space before capital letters
                     .split(" ") // Split by spaces
                     .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()) // Capitalize the first letter of each word
                     .join(" "); // Join the words back together

@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next";
 import InputSelector from "~/components/ui/input/InputSelector";
 import { maxWidths, SizeBlockDto } from "./SizeBlockUtils";
 
-export default function SizeBlockForm({ item, onUpdate }: { item?: SizeBlockDto; onUpdate: (item: SizeBlockDto) => void }) {
+export default function SizeBlockForm({ item, onUpdate }: { readonly item?: SizeBlockDto; readonly onUpdate: (item: SizeBlockDto) => void }) {
   const { t } = useTranslation();
   const [maxWidth, setMaxWidth] = useState(item?.maxWidth);
   useEffect(() => {

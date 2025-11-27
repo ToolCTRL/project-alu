@@ -68,13 +68,17 @@ async function log(
   }
 }
 
-async function getOrCreateIpAddressLookup(ip: string): Promise<IpAddressDto | null> {
-  let provider: string | null = null;
+function getIpProvider(): string | null {
   if (process.env.IPSTACK_API_KEY) {
-    provider = "ipstack";
-  } else if (process.env.IPAPIIS_API_KEY) {
-    provider = "ipapi.is";
+    return "ipstack";
   }
+  if (process.env.IPAPIIS_API_KEY) {
+    return "ipapi.is";
+  }
+  return null;
+}
+
+async function getCachedIpAddress(ip: string): Promise<IpAddressDto | null> {
   const item = await cachified({
     key: `ipAddress:${ip}`,
     disabled: ip === LOCAL_DEV_IP,
@@ -83,102 +87,90 @@ async function getOrCreateIpAddressLookup(ip: string): Promise<IpAddressDto | nu
         where: { ip },
       }),
   });
-  if (item) {
-    // eslint-disable-next-line no-console
-    // console.log("[getOrCreateIpAddressLookup] Found in cache", ip);
-    try {
-      const dto: IpAddressDto = {
-        id: item.id,
-        ip,
-        provider: item.provider,
-        type: item.type,
-        countryCode: item.countryCode,
-        countryName: item.countryName,
-        regionCode: item.regionCode,
-        regionName: item.regionName,
-        city: item.city,
-        zipCode: item.zipCode,
-        latitude: item.latitude ? Number(item.latitude) : null,
-        longitude: item.longitude ? Number(item.longitude) : null,
-        metadata: JSON.parse(item.metadata),
-      };
-      return dto;
-    } catch (error: any) {
-      console.error("[getOrCreateIpAddressLookup] Error parsing metadata", error);
-      return null;
-    }
+
+  if (!item) {
+    return null;
   }
 
-  const dto: IpAddressDto = {
-    id: "",
-    ip,
-    provider: provider || "",
-    type: "",
-    countryCode: "",
-    countryName: "",
-    regionCode: "",
-    regionName: "",
-    city: "",
-    zipCode: "",
-    latitude: null,
-    longitude: null,
-    metadata: null,
-  };
-
-  if (provider === "ipstack") {
-    try {
-      const response = await fetch(`http://api.ipstack.com/${ip}?access_key=${process.env.IPSTACK_API_KEY}`);
-      const data = await response.json();
-      if (!response.ok || data.error) {
-        console.log("[ipstack] Error fetching IP data", {
-          status: response.status,
-          statusText: response.statusText,
-          error: data.error,
-        });
-      } else {
-        dto.provider = "ipstack";
-        dto.type = data.type;
-        dto.countryCode = data.country_code;
-        dto.countryName = data.country_name;
-        dto.regionCode = data.region_code;
-        dto.regionName = data.region_name;
-        dto.city = data.city;
-        dto.zipCode = data.zip;
-        dto.latitude = data.latitude;
-        dto.longitude = data.longitude;
-        dto.metadata = data;
-      }
-    } catch (error: any) {
-      console.error("[ipstack] Error parsing IP data", error);
-    }
-  } else if (provider === "ipapi.is") {
-    try {
-      const response = await fetch(`https://api.ipapi.is/?ip=${ip}&key=${process.env.IPAPIIS_API_KEY}`);
-      const data = await response.json();
-      if (!response.ok || data.error) {
-        console.log("[ipapi.is] Error fetching IP data", {
-          status: response.status,
-          statusText: response.statusText,
-          error: data.error,
-        });
-      } else {
-        const ipapiis: IpApiIsDto = data;
-        dto.provider = "ipapi.is";
-        dto.countryCode = ipapiis.location?.country_code || "";
-        dto.countryName = ipapiis.location?.country || "";
-        dto.regionCode = ipapiis.rir;
-        dto.regionName = "";
-        dto.city = ipapiis.location?.city || "";
-        dto.zipCode = ipapiis.location?.zip || "";
-        dto.latitude = ipapiis.location?.latitude || 0;
-        dto.longitude = ipapiis.location?.longitude || 0;
-        dto.metadata = ipapiis;
-      }
-    } catch (error: any) {
-      console.error("[ipapi.is] Error parsing IP data", error);
-    }
+  try {
+    return {
+      id: item.id,
+      ip,
+      provider: item.provider,
+      type: item.type,
+      countryCode: item.countryCode,
+      countryName: item.countryName,
+      regionCode: item.regionCode,
+      regionName: item.regionName,
+      city: item.city,
+      zipCode: item.zipCode,
+      latitude: item.latitude ? Number(item.latitude) : null,
+      longitude: item.longitude ? Number(item.longitude) : null,
+      metadata: JSON.parse(item.metadata),
+    };
+  } catch (error: any) {
+    console.error("[getOrCreateIpAddressLookup] Error parsing metadata", error);
+    return null;
   }
+}
 
+async function fetchFromIpstack(ip: string, dto: IpAddressDto): Promise<void> {
+  try {
+    const response = await fetch(`http://api.ipstack.com/${ip}?access_key=${process.env.IPSTACK_API_KEY}`);
+    const data = await response.json();
+    if (response.ok && !data.error) {
+      dto.provider = "ipstack";
+      dto.type = data.type;
+      dto.countryCode = data.country_code;
+      dto.countryName = data.country_name;
+      dto.regionCode = data.region_code;
+      dto.regionName = data.region_name;
+      dto.city = data.city;
+      dto.zipCode = data.zip;
+      dto.latitude = data.latitude;
+      dto.longitude = data.longitude;
+      dto.metadata = data;
+    } else {
+      console.log("[ipstack] Error fetching IP data", {
+        status: response.status,
+        statusText: response.statusText,
+        error: data.error,
+      });
+    }
+  } catch (error: any) {
+    console.error("[ipstack] Error parsing IP data", error);
+  }
+}
+
+async function fetchFromIpapiIs(ip: string, dto: IpAddressDto): Promise<void> {
+  try {
+    const response = await fetch(`https://api.ipapi.is/?ip=${ip}&key=${process.env.IPAPIIS_API_KEY}`);
+    const data = await response.json();
+    if (response.ok && !data.error) {
+      const ipapiis: IpApiIsDto = data;
+      dto.provider = "ipapi.is";
+      dto.countryCode = ipapiis.location?.country_code || "";
+      dto.countryName = ipapiis.location?.country || "";
+      dto.regionCode = ipapiis.rir;
+      dto.regionName = "";
+      dto.city = ipapiis.location?.city || "";
+      dto.zipCode = ipapiis.location?.zip || "";
+      dto.latitude = ipapiis.location?.latitude || 0;
+      dto.longitude = ipapiis.location?.longitude || 0;
+      dto.metadata = ipapiis;
+    } else {
+      console.log("[ipapi.is] Error fetching IP data", {
+        status: response.status,
+        statusText: response.statusText,
+        error: data.error,
+      });
+    }
+  } catch (error: any) {
+    console.error("[ipapi.is] Error parsing IP data", error);
+  }
+}
+
+async function createIpAddressRecord(ip: string, dto: IpAddressDto): Promise<string> {
   const createdIp = await db.ipAddress
     .create({
       data: {
@@ -200,8 +192,39 @@ async function getOrCreateIpAddressLookup(ip: string): Promise<IpAddressDto | nu
       clearCacheKey(`ipAddress:${ip}`);
       return item;
     });
+  return createdIp.id;
+}
 
-  dto.id = createdIp.id;
+async function getOrCreateIpAddressLookup(ip: string): Promise<IpAddressDto | null> {
+  const cachedDto = await getCachedIpAddress(ip);
+  if (cachedDto) {
+    return cachedDto;
+  }
+
+  const provider = getIpProvider();
+  const dto: IpAddressDto = {
+    id: "",
+    ip,
+    provider: provider || "",
+    type: "",
+    countryCode: "",
+    countryName: "",
+    regionCode: "",
+    regionName: "",
+    city: "",
+    zipCode: "",
+    latitude: null,
+    longitude: null,
+    metadata: null,
+  };
+
+  if (provider === "ipstack") {
+    await fetchFromIpstack(ip, dto);
+  } else if (provider === "ipapi.is") {
+    await fetchFromIpapiIs(ip, dto);
+  }
+
+  dto.id = await createIpAddressRecord(ip, dto);
   return dto;
 }
 

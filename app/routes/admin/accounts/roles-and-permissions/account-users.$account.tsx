@@ -1,5 +1,4 @@
-import { ActionFunction, LoaderFunctionArgs, MetaFunction, redirect, useActionData, useLoaderData } from "react-router";
-import { useParams, useSubmit } from "react-router";
+import { ActionFunction, LoaderFunctionArgs, MetaFunction, redirect, useActionData, useLoaderData, useParams, useSubmit } from "react-router";
 import { getTranslations } from "~/locale/i18next.server";
 import { RoleWithPermissions, getAllRoles, getRole } from "~/utils/db/permissions/roles.db.server";
 import { adminGetAllTenantUsers, adminGetAllUsers, getUser, UserWithRoles } from "~/utils/db/users.db.server";
@@ -28,7 +27,7 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
   await verifyUserHasPermission(request, "admin.roles.set");
   const { t } = await getTranslations(request);
 
-  const tenant = await getTenant(params.account!);
+  const tenant = await getTenant(params.account);
   if (!tenant) {
     throw redirect("/admin/accounts/roles-and-permissions/account-users");
   }
@@ -39,12 +38,12 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
 
   const items: UserWithRoles[] = [];
   adminUsers.forEach((user) => {
-    if (!items.find((f) => f.id === user.id)) {
+    if (!items.some((f) => f.id === user.id)) {
       items.push(user);
     }
   });
   tenantUsers.forEach((user) => {
-    if (!items.find((f) => f.id === user.id)) {
+    if (!items.some((f) => f.id === user.id)) {
       items.push(user);
     }
   });

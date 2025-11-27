@@ -1,5 +1,4 @@
-import { LoaderFunctionArgs, redirect, useActionData, useLoaderData } from "react-router";
-import { useParams } from "react-router";
+import { LoaderFunctionArgs, redirect, useActionData, useLoaderData, useParams } from "react-router";
 import { useEffect } from "react";
 import toast from "react-hot-toast";
 import { useTranslation } from "react-i18next";
@@ -65,7 +64,7 @@ const SurveyItemVotes = ({ item, submissions, surveyItemTitle }: { item: any; su
   return <div>{optionResults.length} votes</div>;
 };
 
-export default function () {
+export default function SurveyOverviewRoute() {
   const { t } = useTranslation();
   const data = useLoaderData<LoaderData>();
   const actionData = useActionData<{ success?: string; error?: string }>();
@@ -84,20 +83,8 @@ export default function () {
       withHome={false}
       title={data.item.title}
       buttons={
-        <>
-          <ButtonSecondary to={`/admin/help-desk/surveys/${params.id}/edit`}>{t("shared.edit")}</ButtonSecondary>
-        </>
+        <ButtonSecondary to={`/admin/help-desk/surveys/${params.id}/edit`}>{t("shared.edit")}</ButtonSecondary>
       }
-      // menu={[
-      //   {
-      //     title: "Surveys",
-      //     routePath: "/admin/help-desk/surveys",
-      //   },
-      //   {
-      //     title: t("shared.overview"),
-      //     routePath: "",
-      //   },
-      // ]}
       tabs={[
         { name: "Overview", routePath: `/admin/help-desk/surveys/${params.id}` },
         { name: "Submissions", routePath: `/admin/help-desk/surveys/${params.id}/submissions` },

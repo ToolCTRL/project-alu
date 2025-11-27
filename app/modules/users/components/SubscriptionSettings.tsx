@@ -21,7 +21,7 @@ export default function SubscriptionSettings({
   myFeatures,
   myUpcomingInvoices,
   permissions,
-}: {
+}: Readonly<{
   currentTenant: TenantSimple;
   mySubscription: TenantSubscriptionWithDetails | null;
   myInvoices: Stripe.Invoice[];
@@ -31,7 +31,7 @@ export default function SubscriptionSettings({
   permissions: {
     viewInvoices: boolean;
   };
-}) {
+}>) {
   const { t } = useTranslation();
   const submit = useSubmit();
 
@@ -43,14 +43,6 @@ export default function SubscriptionSettings({
       method: "post",
     });
   }
-
-  // function onAddPaymentMethod() {
-  //   const form = new FormData();
-  //   form.set("action", "add-payment-method");
-  //   submit(form, {
-  //     method: "post",
-  //   });
-  // }
 
   function onOpenCustomerPortal() {
     const form = new FormData();

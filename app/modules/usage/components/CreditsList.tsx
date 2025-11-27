@@ -20,7 +20,34 @@ interface Props {
     canDelete: boolean;
   };
 }
-export default function CreditsList({ data }: Props) {
+
+const CreatedAtCell = ({ item }: { item: CreditWithDetails }) => (
+  <div className="text-muted-foreground text-xs">{item.createdAt && <span>{DateUtils.dateYMDHMS(item.createdAt)}</span>}</div>
+);
+
+const TenantCell = ({ item }: { item: CreditWithDetails }) => (
+  <FilterableValueLink name="tenantId" value={item?.tenant?.name} param={item?.tenant?.id} />
+);
+
+const TypeCell = ({ item }: { item: CreditWithDetails }) => <div>{item.type}</div>;
+
+const ResourceCell = ({ item, t }: { item: CreditWithDetails; t: (key: string) => string }) => (
+  <div className="max-w-xs truncate">
+    {item.objectId ? (
+      <Link to={item.objectId} className="truncate underline">
+        {item.objectId}
+      </Link>
+    ) : (
+      <span className="truncate">{t("shared.undefined")}</span>
+    )}
+  </div>
+);
+
+const UserCell = ({ item }: { item: CreditWithDetails }) => (
+  <FilterableValueLink name="userId" value={item.user?.email} param={item.user?.id} />
+);
+
+export default function CreditsList({ data }: Readonly<Props>) {
   const { t } = useTranslation();
   const submit = useSubmit();
   const navigation = useNavigation();
@@ -83,42 +110,30 @@ export default function CreditsList({ data }: Props) {
             name: "createdAt",
             title: t("shared.createdAt"),
             value: (item) => DateUtils.dateYMDHMS(item.createdAt),
-            formattedValue: (item) => (
-              <div className="text-muted-foreground text-xs">{item.createdAt && <span>{DateUtils.dateYMDHMS(item.createdAt)}</span>}</div>
-            ),
+            formattedValue: (item) => <CreatedAtCell item={item} />,
           },
           {
             name: "tenant",
             title: "Tenant",
-            value: (item) => <FilterableValueLink name="tenantId" value={item?.tenant?.name} param={item?.tenant?.id} />,
+            value: (item) => <TenantCell item={item} />,
             hidden: !!params.tenant,
           },
 
           {
             name: "type",
             title: t("shared.type"),
-            value: (item) => <div>{item.type}</div>,
+            value: (item) => <TypeCell item={item} />,
           },
           {
             name: "resource",
             title: t("models.credit.resource"),
             className: "w-full",
-            value: (item) => (
-              <div className="max-w-xs truncate">
-                {item.objectId ? (
-                  <Link to={item.objectId} className="truncate underline">
-                    {item.objectId}
-                  </Link>
-                ) : (
-                  <span className="truncate">{t("shared.undefined")}</span>
-                )}
-              </div>
-            ),
+            value: (item) => <ResourceCell item={item} t={t} />,
           },
           {
             name: "user",
             title: t("models.user.object"),
-            value: (item) => <FilterableValueLink name="userId" value={item.user?.email} param={item.user?.id} />,
+            value: (item) => <UserCell item={item} />,
           },
         ]}
       />

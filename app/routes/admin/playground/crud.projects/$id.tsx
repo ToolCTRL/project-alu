@@ -1,5 +1,4 @@
-import { ActionFunction, LoaderFunctionArgs, MetaFunction, redirect, useLoaderData } from "react-router";
-import { useActionData, useSearchParams, useSubmit } from "react-router";
+import { ActionFunction, LoaderFunctionArgs, MetaFunction, redirect, useLoaderData, useActionData, useSearchParams, useSubmit } from "react-router";
 import ServerError from "~/components/ui/errors/ServerError";
 import EditPageLayout from "~/components/ui/layouts/EditPageLayout";
 import FakeProjectOverview from "~/modules/fake/fakeProjectsCrud/components/FakeProjectOverview";
@@ -16,7 +15,7 @@ type LoaderData = {
   metadata: [{ title: string }];
 };
 export const loader = async ({ params }: LoaderFunctionArgs) => {
-  const item = await FakeProjectService.get(params.id!);
+  const item = await FakeProjectService.get(params.id);
   if (!item) {
     throw redirect("/admin/playground/crud/projects");
   }
@@ -48,7 +47,7 @@ async function handleEdit(params: any, form: FormData) {
     throw new Error("Please add at least one task");
   }
 
-  await FakeProjectService.update(params.id!, {
+  await FakeProjectService.update(params.id, {
     name,
     description,
     active,
@@ -65,7 +64,7 @@ async function handleCompleteTask(form: FormData) {
 }
 
 async function handleDelete(params: any) {
-  await FakeProjectService.del(params.id!);
+  await FakeProjectService.del(params.id);
   return redirect("/admin/playground/crud/projects");
 }
 
@@ -88,7 +87,7 @@ export const action: ActionFunction = async ({ request, params }) => {
   }
 };
 
-export default function () {
+export default function FakeProjectEditRoute() {
   const data = useLoaderData<LoaderData>();
   const actionData = useActionData<ActionData>();
   const submit = useSubmit();
@@ -124,34 +123,32 @@ export default function () {
       </div>
 
       {data.item && (
-        <>
-          <div className="mx-auto space-y-2">
-            {searchParams.get("editing") ? (
-              <FakeProjectForm
-                item={data.item}
-                actionData={actionData}
-                canDelete={true}
-                onCancel={() => {
-                  setSearchParams({});
-                }}
-              />
-            ) : (
-              <FakeProjectOverview
-                item={data.item}
-                actionData={actionData}
-                onCompleteTask={(s) => {
-                  const form = new FormData();
-                  form.append("action", "complete-task");
-                  form.append("project-id", data.item?.id ?? "");
-                  form.append("task-id", s.id);
-                  submit(form, {
-                    method: "post",
-                  });
-                }}
-              />
-            )}
-          </div>
-        </>
+        <div className="mx-auto space-y-2">
+          {searchParams.get("editing") ? (
+            <FakeProjectForm
+              item={data.item}
+              actionData={actionData}
+              canDelete={true}
+              onCancel={() => {
+                setSearchParams({});
+              }}
+            />
+          ) : (
+            <FakeProjectOverview
+              item={data.item}
+              actionData={actionData}
+              onCompleteTask={(s) => {
+                const form = new FormData();
+                form.append("action", "complete-task");
+                form.append("project-id", data.item?.id ?? "");
+                form.append("task-id", s.id);
+                submit(form, {
+                  method: "post",
+                });
+              }}
+            />
+          )}
+        </div>
       )}
     </EditPageLayout>
   );

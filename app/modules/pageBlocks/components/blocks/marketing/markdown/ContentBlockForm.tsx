@@ -6,7 +6,7 @@ import { defaultContentBlock, ContentBlockDto, ContentBlockStyle, ContentBlockSt
 import Editor from "~/modules/novel/ui/editor";
 import InputRadioGroupCards from "~/components/ui/input/InputRadioGroupCards";
 
-export default function ContentBlockForm({ item, onUpdate }: { item?: ContentBlockDto; onUpdate: (item: ContentBlockDto) => void }) {
+export default function ContentBlockForm({ item, onUpdate }: { readonly item?: ContentBlockDto; readonly onUpdate: (item: ContentBlockDto) => void }) {
   const [state, setState] = useState<ContentBlockDto>(item || defaultContentBlock);
   const [contentType, setContentType] = useState<"markdown" | "wysiwyg">("wysiwyg");
   useEffect(() => {
@@ -61,26 +61,28 @@ export default function ContentBlockForm({ item, onUpdate }: { item?: ContentBlo
           {contentType === "wysiwyg" ? (
             <div>
               <input type="hidden" name="content" value={state.content} hidden readOnly />
-              {typeof window !== "undefined" && <Editor content={state.content} onChange={(e) => setState({ ...state, content: e.html ?? "" })} />}
+              {typeof globalThis.window !== "undefined" && <Editor content={state.content} onChange={(e) => setState({ ...state, content: e.html ?? "" })} />}
             </div>
-          ) : contentType === "markdown" ? (
-            <InputGroup title="">
-              <div className="bg-background grid grid-cols-12 gap-3 rounded-md">
-                <InputText
-                  className="col-span-12"
-                  rows={6}
-                  editor="monaco"
-                  editorLanguage="markdown"
-                  editorTheme="light"
-                  editorSize="screen"
-                  name="content"
-                  value={state.content}
-                  setValue={(e) => setState({ ...state, content: e.toString() })}
-                  required
-                />
-              </div>
-            </InputGroup>
-          ) : null}
+          ) : (
+            contentType === "markdown" && (
+              <InputGroup title="">
+                <div className="bg-background grid grid-cols-12 gap-3 rounded-md">
+                  <InputText
+                    className="col-span-12"
+                    rows={6}
+                    editor="monaco"
+                    editorLanguage="markdown"
+                    editorTheme="light"
+                    editorSize="screen"
+                    name="content"
+                    value={state.content}
+                    setValue={(e) => setState({ ...state, content: e.toString() })}
+                    required
+                  />
+                </div>
+              </InputGroup>
+            )
+          )}
         </div>
       </InputGroup>
     </div>

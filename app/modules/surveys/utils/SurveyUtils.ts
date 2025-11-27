@@ -12,7 +12,7 @@ function surveyToDto(survey: SurveyWithDetails) {
       href: item.href || undefined,
       color: item.color as SurveyItemDto["color"],
       style: item.style === "grid" ? "grid" : "default",
-      options: (item.options as any).map((option: any) => {
+      options: (item.options as { title: string; link?: string; isOther?: boolean; icon?: string; shortName?: string }[]).map((option) => {
         return {
           title: option.title,
           link: option.link || undefined,

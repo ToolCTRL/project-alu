@@ -1,5 +1,4 @@
-import { LoaderFunctionArgs, MetaFunction, Link } from "react-router";
-import { Outlet } from "react-router";
+import { LoaderFunctionArgs, MetaFunction, Link, Outlet } from "react-router";
 import { motion } from "framer-motion";
 import { Sparkles, Beaker, Database, MessageSquare, Code, Wand2 } from "lucide-react";
 
@@ -16,7 +15,7 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
 
 export const meta: MetaFunction<typeof loader> = ({ data }) => [{ title: data?.title }];
 
-export default () => {
+export default function AdminPlaygroundRoute() {
   const navLinks = [
     { title: "Einführung", desc: "Hier starten", href: " ", icon: <Wand2 className="h-4 w-4" /> },
     { title: "CRUD-Beispiele", desc: "Daten-Basics", href: "crud", icon: <Database className="h-4 w-4" /> },

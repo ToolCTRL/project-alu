@@ -17,13 +17,13 @@ import { RowDisplayDefaultProperty } from "~/utils/helpers/PropertyHelper";
 import Loading from "~/components/ui/loaders/Loading";
 
 interface Props {
-  currentView: EntityViewWithDetails | null;
-  listUrl: string;
-  newUrl: string;
-  parentEntity?: EntityWithDetails;
-  onSelected: (rows: RowWithDetails[]) => void;
-  multipleSelection?: boolean;
-  allEntities: EntityWithDetails[];
+  readonly currentView: EntityViewWithDetails | null;
+  readonly listUrl: string;
+  readonly newUrl: string;
+  readonly parentEntity?: EntityWithDetails;
+  readonly onSelected: (rows: RowWithDetails[]) => void;
+  readonly multipleSelection?: boolean;
+  readonly allEntities: EntityWithDetails[];
 }
 export default function RowListFetcher({ currentView, listUrl, newUrl, parentEntity, onSelected, multipleSelection, allEntities }: Props) {
   const { t } = useTranslation();
@@ -52,8 +52,8 @@ export default function RowListFetcher({ currentView, listUrl, newUrl, parentEnt
       const data: { rowsData: RowsApi.GetRowsData } = fetcher.data;
       setData(fetcher.data);
       setRows(data.rowsData.items);
-      let selectedRowIds = selectedRows.map((r) => r.id);
-      setSelectedRows(data.rowsData.items.filter((r) => selectedRowIds.includes(r.id)));
+      const selectedRowIds = new Set(selectedRows.map((r) => r.id));
+      setSelectedRows(data.rowsData.items.filter((r) => selectedRowIds.has(r.id)));
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [fetcher.data]);
@@ -72,18 +72,23 @@ export default function RowListFetcher({ currentView, listUrl, newUrl, parentEnt
     onSelected(rows);
   }
 
-  return (
-    <div>
-      {!fetcher.data ? (
-        <Loading small loading />
-      ) : !data?.rowsData?.entity ? (
-        <div className="border-border relative block w-full cursor-not-allowed rounded-lg border-2 border-dashed p-4 text-center">{t("shared.loading")}...</div>
-      ) : !data?.rowsData ? (
-        <div>No data</div>
-      ) : data?.rowsData ? (
+  function renderContent() {
+    if (!fetcher.data) {
+      return <Loading small loading />;
+    }
+
+    if (!data?.rowsData?.entity) {
+      return <div className="border-border relative block w-full cursor-not-allowed rounded-lg border-2 border-dashed p-4 text-center">{t("shared.loading")}...</div>;
+    }
+
+    if (!data?.rowsData) {
+      return <div>No data</div>;
+    }
+
+    if (data?.rowsData) {
+      return (
         <div className="space-y-2">
           <div className="flex items-center justify-between space-x-2">
-            {/* <div className="text-lg font-bold text-foreground">{t(data.rowsData?.entity.titlePlural)}</div> */}
             <ButtonPrimary type="button" onClick={() => onConfirm(selectedRows)} disabled={selectedRows.length > 1 && !multipleSelection}>
               {selectedRows.length === 1 ? (
                 <div className="flex space-x-1">
@@ -103,8 +108,6 @@ export default function RowListFetcher({ currentView, listUrl, newUrl, parentEnt
               <InputFilters filters={EntityHelper.getFilters({ t, entity: data.rowsData.entity })} />
               <ButtonSecondary type="button" onClick={() => setAdding(true)}>
                 +
-                {/* {t("shared.new")}
-              <span className="ml-1 lowercase">{t(data.rowsData?.entity.title)}</span> */}
               </ButtonSecondary>
             </div>
           </div>
@@ -117,13 +120,18 @@ export default function RowListFetcher({ currentView, listUrl, newUrl, parentEnt
             selectedRows={selectedRows}
             onSelected={onRowsSelected}
             readOnly={true}
-            // routes={data.routes}
             ignoreColumns={[RowDisplayDefaultProperty.FOLIO]}
           />
         </div>
-      ) : (
-        <div>{t("shared.unknownError")}</div>
-      )}
+      );
+    }
+
+    return <div>{t("shared.unknownError")}</div>;
+  }
+
+  return (
+    <div>
+      {renderContent()}
       <SlideOverWideEmpty
         title={t("shared.create") + " " + t(data?.rowsData?.entity.title ?? "")}
         className="max-w-md"

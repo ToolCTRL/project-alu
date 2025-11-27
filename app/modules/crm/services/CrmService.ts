@@ -95,6 +95,7 @@ async function getContactFormSettings() {
     await validate();
     settings.crm = true;
   } catch (e: unknown) {
+    console.error("CRM validation failed:", e);
     if (process.env.INTEGRATIONS_CONTACT_FORMSPREE) {
       settings.actionUrl = process.env.INTEGRATIONS_CONTACT_FORMSPREE;
     } else {
@@ -474,10 +475,10 @@ export type UserInCrmDto = {
 async function getUsersInCrm({ invalidateCache }: { invalidateCache?: boolean }): Promise<UserInCrmDto[]> {
   const contacts = await getContacts(null);
 
-  let usersInCrm: UserInCrmDto[] = [];
+  const usersFromSystem = await loadFromUsers({ contacts });
+  const usersFromConvertKit = await loadFromConvertKit({ contacts, usersInCrm: usersFromSystem, invalidateCache });
 
-  usersInCrm.push(...(await loadFromUsers({ contacts })));
-  usersInCrm.push(...(await loadFromConvertKit({ contacts, usersInCrm, invalidateCache })));
+  let usersInCrm: UserInCrmDto[] = [...usersFromSystem, ...usersFromConvertKit];
 
   // load from convertkit
 

@@ -50,12 +50,11 @@ export namespace PageMetaTags_Index {
       return Response.json({ success: "Meta tags reset successfully", metaTags: [] });
     } else if (action === "update") {
       const metaTags: { name: string; content: string; order: number }[] = form.getAll("metaTags[]").map((f: FormDataEntryValue) => {
-        return JSON.parse(f.toString());
+        return JSON.parse(String(f));
       });
       try {
         await setPageMetaTags(page?.id ?? null, metaTags);
         return Response.json({ success: "Meta tags updated successfully", metaTags });
-        // return redirect(params.tenant ? `/app/${params.tenant}/settings/pages` : `/admin/pages`);
       } catch (e: any) {
         return Response.json({ error: e.message }, { status: 400 });
       }

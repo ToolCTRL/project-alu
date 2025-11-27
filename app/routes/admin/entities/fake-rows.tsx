@@ -1,4 +1,4 @@
-import { ActionFunctionArgs, LoaderFunctionArgs, useActionData, useLoaderData } from "react-router";
+import { ActionFunctionArgs, LoaderFunctionArgs, useActionData, useLoaderData, useSearchParams, useSubmit } from "react-router";
 import { getTranslations } from "~/locale/i18next.server";
 import EditPageLayout from "~/components/ui/layouts/EditPageLayout";
 import { EntityWithDetails, getAllEntities } from "~/utils/db/entities/entities.db.server";
@@ -7,7 +7,6 @@ import TableSimple from "~/components/ui/tables/TableSimple";
 import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import NumberUtils from "~/utils/shared/NumberUtils";
-import { useSearchParams, useSubmit } from "react-router";
 import { PropertyType } from "~/application/enums/entities/PropertyType";
 import EntitiesSingleton from "~/modules/rows/repositories/EntitiesSingleton";
 import { toast } from "sonner";
@@ -348,7 +347,7 @@ async function updateFakeRow(
   return row;
 }
 
-export default function () {
+export default function FakeRowsRoute() {
   const { t } = useTranslation();
   const data = useLoaderData<LoaderData>();
   const actionData = useActionData<ActionData>();
@@ -366,12 +365,12 @@ export default function () {
 
   function getTenantIds() {
     const ids = searchParams.get("tenantIds")?.split(",") ?? [];
-    return ids.filter((f) => f);
+    return ids.filter(Boolean);
   }
 
   function getEntityIds() {
     const ids = searchParams.get("entityIds")?.split(",") ?? [];
-    return ids.filter((f) => f);
+    return ids.filter(Boolean);
   }
 
   function filteredItems() {
@@ -512,14 +511,13 @@ export default function () {
                         e.stopPropagation();
                       }}
                       className="hover:bg-secondary border-border bg-background rounded-md border px-2 py-1.5 font-medium"
-                      options={[
-                        ...[1, 10, 100, 1_000, 10_000, 100_000].map((numberOfRows) => {
-                          return {
-                            title: `${numberOfRows === 1 ? "1 row" : `${NumberUtils.intFormat(numberOfRows)} rows`}`,
-                            onClick: () => onCreateRows(i, numberOfRows),
-                          };
-                        }),
-                      ]}
+                      options={[1, 10, 100, 1_000, 10_000, 100_000].map((numberOfRows) => {
+                        const formattedCount = NumberUtils.intFormat(numberOfRows);
+                        return {
+                          title: numberOfRows === 1 ? "1 row" : `${formattedCount} rows`,
+                          onClick: () => onCreateRows(i, numberOfRows),
+                        };
+                      })}
                       button={<>Create</>}
                     />
                     <MenuWithPopper
@@ -527,14 +525,13 @@ export default function () {
                         e.stopPropagation();
                       }}
                       className="hover:bg-secondary border-border bg-background rounded-md border px-2 py-1.5 font-medium"
-                      options={[
-                        ...[1, 10, 100, 1_000, 10_000, 100_000].map((numberOfRows) => {
-                          return {
-                            title: `${numberOfRows === 1 ? "1 row" : `${NumberUtils.intFormat(numberOfRows)} rows`}`,
-                            onClick: () => onUpdateRows(i, numberOfRows),
-                          };
-                        }),
-                      ]}
+                      options={[1, 10, 100, 1_000, 10_000, 100_000].map((numberOfRows) => {
+                        const formattedCount = NumberUtils.intFormat(numberOfRows);
+                        return {
+                          title: numberOfRows === 1 ? "1 row" : `${formattedCount} rows`,
+                          onClick: () => onUpdateRows(i, numberOfRows),
+                        };
+                      })}
                       button={<>Update</>}
                     />
                     <MenuWithPopper
@@ -542,15 +539,14 @@ export default function () {
                         e.stopPropagation();
                       }}
                       className="hover:bg-secondary border-border bg-background rounded-md border px-2 py-1.5 font-medium"
-                      options={[
-                        ...[1, 10, 100, 1_000, 10_000, 100_000].map((numberOfRows) => {
-                          return {
-                            title: `${numberOfRows === 1 ? "1 row" : `${NumberUtils.intFormat(numberOfRows)} rows`}`,
-                            onClick: () => onDeleteRows(i, { shadow: true, numberOfRows }),
-                            className: "text-orange-600",
-                          };
-                        }),
-                      ]}
+                      options={[1, 10, 100, 1_000, 10_000, 100_000].map((numberOfRows) => {
+                        const formattedCount = NumberUtils.intFormat(numberOfRows);
+                        return {
+                          title: numberOfRows === 1 ? "1 row" : `${formattedCount} rows`,
+                          onClick: () => onDeleteRows(i, { shadow: true, numberOfRows }),
+                          className: "text-orange-600",
+                        };
+                      })}
                       button={<>Shadow Delete</>}
                     />
                     <MenuWithPopper
@@ -558,15 +554,14 @@ export default function () {
                         e.stopPropagation();
                       }}
                       className="hover:bg-secondary border-border bg-background rounded-md border px-2 py-1.5 font-medium"
-                      options={[
-                        ...[1, 10, 100, 1_000, 10_000, 100_000].map((numberOfRows) => {
-                          return {
-                            title: `${numberOfRows === 1 ? "1 row" : `${NumberUtils.intFormat(numberOfRows)} rows`}`,
-                            onClick: () => onDeleteRows(i, { shadow: false, numberOfRows }),
-                            className: "text-red-600",
-                          };
-                        }),
-                      ]}
+                      options={[1, 10, 100, 1_000, 10_000, 100_000].map((numberOfRows) => {
+                        const formattedCount = NumberUtils.intFormat(numberOfRows);
+                        return {
+                          title: numberOfRows === 1 ? "1 row" : `${formattedCount} rows`,
+                          onClick: () => onDeleteRows(i, { shadow: false, numberOfRows }),
+                          className: "text-red-600",
+                        };
+                      })}
                       button={<>Delete</>}
                     />
                     <MenuWithPopper
@@ -574,14 +569,13 @@ export default function () {
                         e.stopPropagation();
                       }}
                       className="hover:bg-secondary border-border bg-background rounded-md border px-2 py-1.5 font-medium"
-                      options={[
-                        ...[1, 10, 100, 1_000, 10_000, 100_000, 1_000_000, 10_000_000].map((numberOfRows) => {
-                          return {
-                            title: `${numberOfRows === 1 ? "1 API log" : `${NumberUtils.intFormat(numberOfRows)} API logs`}`,
-                            onClick: () => onCreateRows(i, numberOfRows, "apiKeyLog"),
-                          };
-                        }),
-                      ]}
+                      options={[1, 10, 100, 1_000, 10_000, 100_000, 1_000_000, 10_000_000].map((numberOfRows) => {
+                        const formattedCount = NumberUtils.intFormat(numberOfRows);
+                        return {
+                          title: numberOfRows === 1 ? "1 API log" : `${formattedCount} API logs`,
+                          onClick: () => onCreateRows(i, numberOfRows, "apiKeyLog"),
+                        };
+                      })}
                       button={<>Create API Logs</>}
                     />
                   </div>

@@ -1,4 +1,3 @@
-import { useTranslation } from "react-i18next";
 import RowsViewRoute from "~/modules/rows/components/RowsViewRoute";
 import { RowsListBlockDto } from "./RowsListBlockUtils";
 

@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next";
 import InputSelector from "~/components/ui/input/InputSelector";
 import { MarginBlockDto, marginX, marginY } from "./MarginBlockUtils";
 
-export default function MarginBlockForm({ item, onUpdate }: { item?: MarginBlockDto; onUpdate: (item: MarginBlockDto) => void }) {
+export default function MarginBlockForm({ item, onUpdate }: { readonly item?: MarginBlockDto; readonly onUpdate: (item: MarginBlockDto) => void }) {
   const { t } = useTranslation();
   const [x, setX] = useState(item?.x);
   const [y, setY] = useState(item?.y);

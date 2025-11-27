@@ -2,8 +2,7 @@ import ConfirmModal, { RefConfirmModal } from "~/components/ui/modals/ConfirmMod
 import ErrorModal, { RefErrorModal } from "~/components/ui/modals/ErrorModal";
 import { Fragment, useEffect, useRef, useState } from "react";
 import { getTenant, getTenantUsers, TenantUserWithUser } from "~/utils/db/tenants.db.server";
-import { ActionFunction, LoaderFunctionArgs, MetaFunction, useActionData, useLoaderData } from "react-router";
-import { useNavigate, useOutlet, useParams, useSubmit } from "react-router";
+import { ActionFunction, LoaderFunctionArgs, MetaFunction, useActionData, useLoaderData, useNavigate, useOutlet, useParams, useSubmit } from "react-router";
 import { deleteUserInvitation, getUserInvitation, getUserInvitations } from "~/utils/db/tenantUserInvitations.db.server";
 import MemberInvitationsListAndTable from "~/components/core/settings/members/MemberInvitationsListAndTable";
 import { getTranslations } from "~/locale/i18next.server";
@@ -131,7 +130,7 @@ async function removeRole(userId: string, roleId: string, tenantId: string, requ
 }
 
 async function handleEditRole(form: FormData, request: Request, tenantId: string, userInfo: UserSimple, fromUser: User) {
-  const toSafeString = (value: FormDataEntryValue | null) => (typeof value === "string" ? value : "");
+  const toSafeString = (value: FormDataEntryValue | null) => String(value ?? "");
   const userId = toSafeString(form.get("user-id"));
   const roleId = toSafeString(form.get("role-id"));
   const add = toSafeString(form.get("add")) === "true";
@@ -228,7 +227,7 @@ export const action: ActionFunction = async ({ request, params }) => {
 
 export const meta: MetaFunction<typeof loader> = ({ data }) => [{ title: data?.title }];
 
-export default function () {
+export default function MembersRoute() {
   const { t } = useTranslation();
   const params = useParams();
   const data = useLoaderData<LoaderData>();
@@ -331,7 +330,7 @@ export default function () {
           <InputSearch
             value={searchInput}
             setValue={setSearchInput}
-            onNewRoute={!getUserHasPermission(appData, "app.settings.members.create") ? "" : UrlUtils.currentTenantUrl(params, "settings/members/new")}
+            onNewRoute={getUserHasPermission(appData, "app.settings.members.create") ? UrlUtils.currentTenantUrl(params, "settings/members/new") : ""}
           />
           <div className="space-y-2">
             <UserRolesTable

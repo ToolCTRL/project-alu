@@ -1,14 +1,20 @@
 import OrderListButtons from "~/components/ui/sort/OrderListButtons";
 import TableSimple from "~/components/ui/tables/TableSimple";
 
+type ArticleItem = {
+  id: string;
+  order: number;
+  title: string;
+};
+
+function OrderCell({ idx, items }: { readonly idx: number; readonly items: ArticleItem[] }) {
+  return <OrderListButtons index={idx} items={items} editable={true} />;
+}
+
 export default function KbSortArticles({
   items,
 }: Readonly<{
-  items: {
-    id: string;
-    order: number;
-    title: string;
-  }[];
+  items: ArticleItem[];
 }>) {
   return (
     <div className="space-y-1">
@@ -19,7 +25,7 @@ export default function KbSortArticles({
           {
             name: "order",
             title: "",
-            value: (_i, idx) => <OrderListButtons index={idx} items={items} editable={true} />,
+            value: (_i, idx) => <OrderCell idx={idx} items={items} />,
           },
           {
             name: "title",

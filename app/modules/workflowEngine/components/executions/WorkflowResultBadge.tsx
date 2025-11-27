@@ -8,7 +8,7 @@ interface Props {
   createdAt: Date;
   startedAt: Date | null;
   completedAt: Date | null;
-  status: WorkflowStatus | string;
+  status: WorkflowStatus;
   error: string | null;
 }
 enum State {

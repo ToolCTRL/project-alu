@@ -7,7 +7,7 @@ import { WorkflowDto } from "~/modules/workflowEngine/dtos/WorkflowDto";
 import WorkflowUtils from "~/modules/workflowEngine/helpers/WorkflowUtils";
 import UrlUtils from "~/utils/app/UrlUtils";
 
-export default function WorkflowRunDropdown({ workflow }: { workflow: WorkflowDto }) {
+export default function WorkflowRunDropdown({ workflow }: Readonly<{ workflow: WorkflowDto }>) {
   const params = useParams();
   return (
     <DropdownOptions

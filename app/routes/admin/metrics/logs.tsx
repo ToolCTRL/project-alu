@@ -1,6 +1,5 @@
 import { MetricLog, Tenant } from "@prisma/client";
-import { ActionFunction, LoaderFunctionArgs, useLoaderData } from "react-router";
-import { useSearchParams, useSubmit } from "react-router";
+import { ActionFunction, LoaderFunctionArgs, useLoaderData, useSearchParams, useSubmit } from "react-router";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { FilterablePropertyDto } from "~/application/dtos/data/FilterablePropertyDto";
@@ -49,11 +48,11 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
       tenant: true,
       user: { select: UserModelHelper.selectSimpleUserProperties },
     },
-    orderBy: !pagination.sortedBy.length
-      ? { createdAt: "desc" }
-      : pagination.sortedBy.map((x) => ({
+    orderBy: pagination.sortedBy.length > 0
+      ? pagination.sortedBy.map((x) => ({
           [x.name]: x.direction,
-        })),
+        }))
+      : { createdAt: "desc" },
   });
   const totalItems = await db.metricLog.count({
     where: whereFilters,
@@ -87,7 +86,7 @@ export const action: ActionFunction = async ({ request }) => {
   }
 };
 
-export default function () {
+export default function MetricsLogs() {
   const { t } = useTranslation();
   const data = useLoaderData<LoaderData>();
   const appOrAdminData = useAppOrAdminData();
@@ -105,8 +104,7 @@ export default function () {
     });
   }
   return (
-    <>
-      <EditPageLayout
+    <EditPageLayout
         // title="Metrics"
         // replaceTitleWithTabs={true}
         tabs={[
@@ -222,6 +220,5 @@ export default function () {
           ]}
         />
       </EditPageLayout>
-    </>
   );
 }

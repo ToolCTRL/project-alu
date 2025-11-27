@@ -4,7 +4,7 @@ import LogoCloudsVariantSimple from "./LogoCloudsVariantSimple";
 import LogoCloudsVariantWithHeading from "./LogoCloudsVariantWithHeading";
 import LogoCloudsVariantScroll from "./LogoCloudsVariantScroll";
 
-export default function LogoCloudsBlock({ item }: { item: LogoCloudsBlockDto }) {
+export default function LogoCloudsBlock({ item }: { readonly item: LogoCloudsBlockDto }) {
   return (
     <>
       {item.style === "simple" && <LogoCloudsVariantSimple items={item.logos ?? []} />}

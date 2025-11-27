@@ -45,11 +45,15 @@ export default function CustomEdge({ id, data, sourceX, sourceY, targetX, target
               className={clsx(
                 "rounded-md border px-1 py-0.5",
                 !isReadOnly && "group",
-                condition === "true"
-                  ? "border-green-300 bg-green-50 text-green-800"
-                  : condition === "false"
-                  ? "border-red-300 bg-red-50 text-red-800"
-                  : "border-border text-foreground bg-secondary"
+                (() => {
+                  if (condition === "true") {
+                    return "border-green-300 bg-green-50 text-green-800";
+                  }
+                  if (condition === "false") {
+                    return "border-red-300 bg-red-50 text-red-800";
+                  }
+                  return "border-border text-foreground bg-secondary";
+                })()
               )}
               onClick={(e) => {
                 e.stopPropagation();

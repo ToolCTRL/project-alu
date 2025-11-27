@@ -235,17 +235,6 @@ export default function AdminCacheRoute() {
     });
   }
 
-  function getValue(item: CachedValue) {
-    try {
-      // if is array, count
-      if (Array.isArray(item.value)) {
-        return item.value.length + " items";
-      } else if (typeof item.value === "object") {
-        return Object.keys(item.value).length + " keys";
-      }
-    } catch {}
-    return item.value;
-  }
   return (
     <EditPageLayout
       title={
@@ -257,16 +246,14 @@ export default function AdminCacheRoute() {
         </BackButtonWithTitle>
       }
       buttons={
-        <>
-          <div className="flex justify-between space-x-2">
-            <InputSearch size="sm" className="w-full grow" value={searchInput} setValue={setSearchInput} />
-            <Button size="sm" asChild type="button" variant="secondary" isLoading={navigation.state !== "idle"}>
-              <Link to={location.pathname + location.search}>
-                <LucideRefreshCcw className="size-3" />
-              </Link>
-            </Button>
-          </div>
-        </>
+        <div className="flex justify-between space-x-2">
+          <InputSearch size="sm" className="w-full grow" value={searchInput} setValue={setSearchInput} />
+          <Button size="sm" asChild type="button" variant="secondary" isLoading={navigation.state !== "idle"}>
+            <Link to={location.pathname + location.search}>
+              <LucideRefreshCcw className="size-3" />
+            </Link>
+          </Button>
+        </div>
       }
     >
       <div className="space-y-3">
@@ -323,7 +310,7 @@ export default function AdminCacheRoute() {
           </div>
           <div className="grow space-y-2 overflow-auto p-1">
             <div>
-              <label className="text-muted-foreground mb-1 block text-xs font-medium">Cached values</label>
+              <label htmlFor="cached-values-table" className="text-muted-foreground mb-1 block text-xs font-medium">Cached values</label>
               <TableSimple
                 items={sortedItems()}
                 noRecords={
@@ -354,23 +341,19 @@ export default function AdminCacheRoute() {
                   {
                     name: "value",
                     title: "Value",
-                    value: (item) => (
-                      <div className="flex justify-end">
-                        <ShowPayloadModalButton description={getValue(item)} payload={item.value} />
-                      </div>
-                    ),
+                    value: ValueCell,
                   },
                   {
                     name: "size",
                     title: "Size",
-                    value: (item) => <div>{NumberUtils.decimalFormat(item.sizeMb, 4)} MB</div>,
+                    value: SizeCell,
                     sortBy: "sizeMb",
                   },
                   {
                     name: "createdAt",
                     title: "Created at",
                     value: (item) => item.createdAt,
-                    formattedValue: (item) => <DateCell date={item.createdAt} displays={["ymdhmsms"]} />,
+                    formattedValue: CreatedAtCell,
                     sortBy: "createdTime",
                   },
                 ]}
@@ -390,17 +373,39 @@ export default function AdminCacheRoute() {
   );
 }
 
-function DeleteButton({
-  items,
-  searchInput,
-  onDeleteAll,
-  onDeleteSelected,
-}: {
-  items: CachedValue[];
-  searchInput: string;
-  onDeleteAll: () => void;
-  onDeleteSelected: (keys: string[]) => void;
-}) {
+function getValue(item: CachedValue) {
+  try {
+    if (Array.isArray(item.value)) {
+      return item.value.length + " items";
+    } else if (typeof item.value === "object") {
+      return Object.keys(item.value).length + " keys";
+    }
+  } catch {}
+  return item.value;
+}
+
+const ValueCell = ({ item }: { item: CachedValue }) => (
+  <div className="flex justify-end">
+    <ShowPayloadModalButton description={getValue(item)} payload={item.value} />
+  </div>
+);
+
+const SizeCell = ({ item }: { item: CachedValue }) => (
+  <div>{NumberUtils.decimalFormat(item.sizeMb, 4)} MB</div>
+);
+
+const CreatedAtCell = ({ item }: { item: CachedValue }) => (
+  <DateCell date={item.createdAt} displays={["ymdhmsms"]} />
+);
+
+interface DeleteButtonProps {
+  readonly items: CachedValue[];
+  readonly searchInput: string;
+  readonly onDeleteAll: () => void;
+  readonly onDeleteSelected: (keys: string[]) => void;
+}
+
+function DeleteButton({ items, searchInput, onDeleteAll, onDeleteSelected }: DeleteButtonProps) {
   const navigation = useNavigation();
   return (
     <Fragment>

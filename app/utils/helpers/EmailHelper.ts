@@ -5,5 +5,5 @@
 export const companyFromEmail = (email: string) => {
   const domain = email.split("@")[1];
   const domainParts = domain.split(".");
-  return domainParts[domainParts.length - 2];
+  return domainParts.at(-2);
 };

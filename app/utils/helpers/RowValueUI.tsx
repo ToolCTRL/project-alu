@@ -22,9 +22,9 @@ import RowSelectedOptionCell from "~/components/entities/rows/cells/RowSelectedO
 import { RowValueMultipleDto } from "~/application/dtos/entities/RowValueMultipleDto";
 
 interface Props {
-  property: PropertyWithDetails;
-  value: RowValueWithDetails | null | undefined;
-  withTitle?: boolean;
+  readonly property: PropertyWithDetails;
+  readonly value: RowValueWithDetails | null | undefined;
+  readonly withTitle?: boolean;
 }
 export default function RowValueUI({ property, value, withTitle }: Props) {
   const rowValue = value ? RowHelper.getDynamicPropertyValue(value, property.type) : undefined;

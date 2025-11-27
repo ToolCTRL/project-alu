@@ -4,8 +4,8 @@ export default function ValuesBlockForm({
   item = defaultValuesBlock,
   onUpdate,
 }: {
-  item?: ValuesBlockDto;
-  onUpdate: (item: ValuesBlockDto) => void;
+  readonly item?: ValuesBlockDto;
+  readonly onUpdate: (item: ValuesBlockDto) => void;
 }) {
   return (
     <div className="space-y-4">

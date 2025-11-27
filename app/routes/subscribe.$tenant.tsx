@@ -1,6 +1,5 @@
 import { useTranslation } from "react-i18next";
-import { ActionFunction, LoaderFunctionArgs, MetaFunction, redirect, useLoaderData } from "react-router";
-import { Link, useActionData, useSearchParams } from "react-router";
+import { ActionFunction, LoaderFunctionArgs, MetaFunction, redirect, useLoaderData, Link, useActionData, useSearchParams } from "react-router";
 import { getTranslations } from "~/locale/i18next.server";
 import { getTenant } from "~/utils/db/tenants.db.server";
 import { getUser } from "~/utils/db/users.db.server";
@@ -16,7 +15,6 @@ import { createStripeCheckoutSession, createStripeCustomer, getStripeCoupon } fr
 import ErrorModal, { RefErrorModal } from "~/components/ui/modals/ErrorModal";
 import { useEffect, useRef } from "react";
 import SubscriptionHelper from "~/utils/helpers/SubscriptionHelper";
-import { createMetrics } from "~/modules/metrics/services/.server/MetricTracker";
 import { getUserHasPermission } from "~/utils/helpers/PermissionsHelper";
 import Stripe from "stripe";
 import { getBaseURL } from "~/utils/url.server";
@@ -122,7 +120,7 @@ export const action: ActionFunction = async ({ request, params }) => {
 
   const action = form.get("action")?.toString();
 
-  if (!tenantSubscription || !tenantSubscription?.stripeCustomerId) {
+  if (!tenantSubscription?.stripeCustomerId) {
     return badRequest({
       error: "Invalid stripe customer",
     });
@@ -142,7 +140,7 @@ export const action: ActionFunction = async ({ request, params }) => {
         coupon: selectedPlan.coupon,
         referral: selectedPlan.referral,
       });
-      if (!session || !session.url) {
+      if (!session?.url) {
         return badRequest({
           error: "Could not update subscription",
         });

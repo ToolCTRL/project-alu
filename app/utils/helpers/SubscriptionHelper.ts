@@ -4,13 +4,13 @@ import { SubscriptionBillingPeriod } from "~/application/enums/subscriptions/Sub
 import { getSubscriptionProduct } from "../db/subscriptionProducts.db.server";
 
 async function getPlanFromForm(form: FormData) {
-  const productId = form.get("product-id")?.toString() ?? "";
+  const productId = String(form.get("product-id") ?? "");
   const billingPeriod = Number(form.get("billing-period")) as SubscriptionBillingPeriod;
-  const currency = form.get("currency")?.toString() ?? "";
+  const currency = String(form.get("currency") ?? "");
   const quantity = Number(form.get("quantity"));
   const coupon = form.get("coupon")?.toString();
-  const isUpgrade = form.get("is-upgrade")?.toString() === "true";
-  const isDowngrade = form.get("is-downgrade")?.toString() === "true";
+  const isUpgrade = String(form.get("is-upgrade") ?? "") === "true";
+  const isDowngrade = String(form.get("is-downgrade") ?? "") === "true";
   const referral = form.get("referral")?.toString() || null;
 
   // eslint-disable-next-line no-console
@@ -27,7 +27,7 @@ async function getPlanFromForm(form: FormData) {
 
   const product = await getSubscriptionProduct(productId);
   if (!product) {
-    throw Error("Invalid product");
+    throw new Error("Invalid product");
   }
 
   let flatPrice: SubscriptionPriceDto | undefined = undefined;
@@ -40,7 +40,7 @@ async function getPlanFromForm(form: FormData) {
   const usageBasedPrices = product?.usageBasedPrices?.filter((f) => f.currency === currency);
 
   if (!flatPrice && usageBasedPrices?.length === 0) {
-    throw Error("Invalid price");
+    throw new Error("Invalid price");
   }
   let mode: "payment" | "setup" | "subscription" = "subscription";
   const line_items: { price: string; quantity?: number }[] = [];

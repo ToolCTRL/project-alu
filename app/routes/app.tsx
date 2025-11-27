@@ -92,7 +92,6 @@ export default function AppRoute() {
                     as="div"
                     className="border-border divide-border mx-auto max-w-xl transform divide-y overflow-hidden rounded-xl border shadow-2xs ring-1 ring-black ring-opacity-5 transition-all dark:border-gray-800"
                     onChange={() => {}}
-                    autoFocus
                   >
                     <ComboboxOptions static className="max-h-64 scroll-py-3 overflow-y-auto p-3">
                       {data.user.admin && (
@@ -142,37 +141,33 @@ export default function AppRoute() {
   );
 }
 
-function AccountItem({ to, name, icon, prefix, color }: { to: string; name: string; icon?: React.ReactNode | null; prefix?: string | null; color?: Colors }) {
+function AccountItem({ to, name, icon, prefix, color }: Readonly<{ to: string; name: string; icon?: React.ReactNode | null; prefix?: string | null; color?: Colors }>) {
   return (
     <ComboboxOption value={to}>
       {({ focus }) => (
-        <>
-          <Link
-            to={to}
-            className={clsx(
-              "hover:bg-secondary hover:text-secondary-foreground hover:border-border flex cursor-pointer select-none rounded-xl border border-transparent p-3",
-              focus && ""
-            )}
-          >
-            {icon ? (
-              icon
-            ) : (
-              <div
-                className={clsx(color ? ColorBackgroundUtils.getBg700(color) : "bg-primary", "flex h-10 w-10 flex-none items-center justify-center rounded-lg")}
-              >
-                <span className="inline-flex h-9 w-9 items-center justify-center">
-                  <span className={clsx(color ? ColorTextUtils.getText300(color) : "text-primary-foreground", "text-sm font-medium leading-none")}>
-                    {prefix}
-                  </span>
+        <Link
+          to={to}
+          className={clsx(
+            "hover:bg-secondary hover:text-secondary-foreground hover:border-border flex cursor-pointer select-none rounded-xl border border-transparent p-3",
+            focus && ""
+          )}
+        >
+          {icon || (
+            <div
+              className={clsx(color ? ColorBackgroundUtils.getBg700(color) : "bg-primary", "flex h-10 w-10 flex-none items-center justify-center rounded-lg")}
+            >
+              <span className="inline-flex h-9 w-9 items-center justify-center">
+                <span className={clsx(color ? ColorTextUtils.getText300(color) : "text-primary-foreground", "text-sm font-medium leading-none")}>
+                  {prefix}
                 </span>
-              </div>
-            )}
-            <div className="ml-4 flex-auto">
-              <p className={clsx("text-sm font-medium", focus ? "" : "text-muted-foreground")}>{name}</p>
-              <p className={clsx("text-sm", focus ? "" : "text-muted-foreground")}>{to}</p>
+              </span>
             </div>
-          </Link>
-        </>
+          )}
+          <div className="ml-4 flex-auto">
+            <p className={clsx("text-sm font-medium", focus ? "" : "text-muted-foreground")}>{name}</p>
+            <p className={clsx("text-sm", focus ? "" : "text-muted-foreground")}>{to}</p>
+          </div>
+        </Link>
       )}
     </ComboboxOption>
   );

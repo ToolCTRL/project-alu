@@ -2,7 +2,7 @@ import * as React from "react"
 
 import { cn } from "~/lib/utils"
 
-function Table({ className, ...props }: React.ComponentProps<"table">) {
+function Table({ className, ...props }: Readonly<React.ComponentProps<"table">>) {
   return (
     <div
       data-slot="table-container"
@@ -17,7 +17,7 @@ function Table({ className, ...props }: React.ComponentProps<"table">) {
   )
 }
 
-function TableHeader({ className, ...props }: React.ComponentProps<"thead">) {
+function TableHeader({ className, ...props }: Readonly<React.ComponentProps<"thead">>) {
   return (
     <thead
       data-slot="table-header"
@@ -27,7 +27,7 @@ function TableHeader({ className, ...props }: React.ComponentProps<"thead">) {
   )
 }
 
-function TableBody({ className, ...props }: React.ComponentProps<"tbody">) {
+function TableBody({ className, ...props }: Readonly<React.ComponentProps<"tbody">>) {
   return (
     <tbody
       data-slot="table-body"

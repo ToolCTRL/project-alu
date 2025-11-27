@@ -32,7 +32,7 @@ export namespace Rows_Overview {
       throw redirect(tenantId ? UrlUtils.currentTenantUrl(params, "404") : "/404");
     }
     const rowData = await time(
-      RowsApi.get(params.id!, {
+      RowsApi.get(params.id, {
         entity,
         tenantId,
         userId,
@@ -61,9 +61,12 @@ export namespace Rows_Overview {
     const { time, getServerTimingHeader } = await createMetrics({ request, params }, `[Rows_Overview] ${params.entity}`);
     const { t, userId, tenantId, entity, form } = await RowsRequestUtils.getAction({ request, params });
     const action = form.get("action")?.toString() ?? "";
+    if (typeof form.get("action") === "object" && form.get("action") !== null) {
+      return Response.json({ error: t("shared.invalidForm") }, { status: 400, headers: getServerTimingHeader() });
+    }
     const user = await time(getUser(userId), "getUser");
     const rowData = await time(
-      RowsApi.get(params.id!, {
+      RowsApi.get(params.id, {
         entity,
         tenantId,
         userId,
@@ -76,7 +79,7 @@ export namespace Rows_Overview {
       try {
         const rowValues = RowHelper.getRowPropertiesFromForm({ t, entity, form, existing: item });
         await time(
-          RowsApi.update(params.id!, {
+          RowsApi.update(params.id, {
             entity,
             tenantId,
             userId,
@@ -87,17 +90,13 @@ export namespace Rows_Overview {
       } catch (error: any) {
         return Response.json({ error: error.message }, { status: 400, headers: getServerTimingHeader() });
       }
-      // const redirectTo = form.get("redirect")?.toString() || new URL(request.url).searchParams.get("redirect")?.toString();
-      // if (redirectTo) {
-      //   return redirect(redirectTo, { headers: getServerTimingHeader() });
-      // }
-      const updatedRow = await time(RowsApi.get(params.id!, { entity }), "RowsApi.get");
+      const updatedRow = await time(RowsApi.get(params.id, { entity }), "RowsApi.get");
       return Response.json({ updatedRow, success: t("shared.saved") }, { headers: getServerTimingHeader() });
     } else if (action === "delete") {
       try {
         await time(verifyUserHasPermission(request, getEntityPermission(entity, "create"), tenantId), "verifyUserHasPermission");
         await time(
-          RowsApi.del(params.id!, {
+          RowsApi.del(params.id, {
             entity,
             tenantId,
             userId,
@@ -124,7 +123,11 @@ export namespace Rows_Overview {
       } catch (error: any) {
         return Response.json({ error: error.message }, { status: 400, headers: getServerTimingHeader() });
       }
-      const redirectTo = form.get("redirect")?.toString() || new URL(request.url).searchParams.get("redirect")?.toString();
+      const redirectValue = form.get("redirect");
+      if (typeof redirectValue === "object" && redirectValue !== null) {
+        return Response.json({ error: t("shared.invalidForm") }, { status: 400, headers: getServerTimingHeader() });
+      }
+      const redirectTo = redirectValue?.toString() || new URL(request.url).searchParams.get("redirect")?.toString();
       if (redirectTo) {
         return redirect(redirectTo, { headers: getServerTimingHeader() });
       }
@@ -135,7 +138,11 @@ export namespace Rows_Overview {
       }
       return Response.json({ deleted: true }, { headers: getServerTimingHeader() });
     } else if (action === "comment") {
-      let comment = form.get("comment")?.toString();
+      const commentValue = form.get("comment");
+      if (typeof commentValue === "object" && commentValue !== null) {
+        return Response.json({ error: t("shared.invalidForm") }, { status: 400, headers: getServerTimingHeader() });
+      }
+      let comment = commentValue?.toString();
       if (!comment) {
         return Response.json({ error: t("shared.invalidForm") }, { status: 400, headers: getServerTimingHeader() });
       }
@@ -165,8 +172,16 @@ export namespace Rows_Overview {
       }
       return Response.json({ newComment: comment }, { headers: getServerTimingHeader() });
     } else if (action === "comment-reaction") {
-      const rowCommentId = form.get("comment-id")?.toString();
-      const reaction = form.get("reaction")?.toString();
+      const rowCommentIdValue = form.get("comment-id");
+      if (typeof rowCommentIdValue === "object" && rowCommentIdValue !== null) {
+        return Response.json({ error: t("shared.invalidForm") }, { status: 400, headers: getServerTimingHeader() });
+      }
+      const rowCommentId = rowCommentIdValue?.toString();
+      const reactionValue = form.get("reaction");
+      if (typeof reactionValue === "object" && reactionValue !== null) {
+        return Response.json({ error: t("shared.invalidForm") }, { status: 400, headers: getServerTimingHeader() });
+      }
+      const reaction = reactionValue?.toString();
       if (!rowCommentId || !reaction) {
         return Response.json({ error: t("shared.invalidForm") }, { status: 400, headers: getServerTimingHeader() });
       }
@@ -181,14 +196,22 @@ export namespace Rows_Overview {
       );
       return Response.json({ newCommentReaction: reaction }, { headers: getServerTimingHeader() });
     } else if (action === "comment-delete") {
-      const rowCommentId = form.get("comment-id")?.toString();
+      const rowCommentIdValue = form.get("comment-id");
+      if (typeof rowCommentIdValue === "object" && rowCommentIdValue !== null) {
+        return Response.json({ error: t("shared.invalidForm") }, { status: 400, headers: getServerTimingHeader() });
+      }
+      const rowCommentId = rowCommentIdValue?.toString();
       if (!rowCommentId) {
         return Response.json({ error: t("shared.invalidForm") }, { status: 400, headers: getServerTimingHeader() });
       }
       await time(updateRowComment(rowCommentId, { isDeleted: true }), "updateRowComment");
       return Response.json({ deletedComment: rowCommentId }, { headers: getServerTimingHeader() });
     } else if (action === "task-new") {
-      const taskTitle = form.get("task-title")?.toString();
+      const taskTitleValue = form.get("task-title");
+      if (typeof taskTitleValue === "object" && taskTitleValue !== null) {
+        return Response.json({ error: t("shared.invalidForm") }, { status: 400, headers: getServerTimingHeader() });
+      }
+      const taskTitle = taskTitleValue?.toString();
       if (!taskTitle) {
         return Response.json({ error: t("shared.invalidForm") }, { status: 400, headers: getServerTimingHeader() });
       }
@@ -202,7 +225,11 @@ export namespace Rows_Overview {
       );
       return Response.json({ newTask: task }, { headers: getServerTimingHeader() });
     } else if (action === "task-complete-toggle") {
-      const taskId = form.get("task-id")?.toString() ?? "";
+      const taskIdValue = form.get("task-id");
+      if (typeof taskIdValue === "object" && taskIdValue !== null) {
+        return Response.json({ error: t("shared.invalidForm") }, { status: 400, headers: getServerTimingHeader() });
+      }
+      const taskId = taskIdValue?.toString() ?? "";
       const task = await time(getRowTask(taskId), "getRowTask");
       if (task) {
         if (task.completed) {
@@ -227,7 +254,11 @@ export namespace Rows_Overview {
       }
       return Response.json({ completedTask: taskId }, { headers: getServerTimingHeader() });
     } else if (action === "task-delete") {
-      const taskId = form.get("task-id")?.toString() ?? "";
+      const taskIdValue = form.get("task-id");
+      if (typeof taskIdValue === "object" && taskIdValue !== null) {
+        return Response.json({ error: t("shared.invalidForm") }, { status: 400, headers: getServerTimingHeader() });
+      }
+      const taskId = taskIdValue?.toString() ?? "";
       const task = await time(getRowTask(taskId), "getRowTask");
       if (task) {
         await time(deleteRowTask(taskId), "deleteRowTask");

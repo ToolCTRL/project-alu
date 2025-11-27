@@ -114,7 +114,7 @@ function renderPropertyInput(
   return <div>Property type not supported for template values: {PropertyType[property.type]}</div>;
 }
 
-export default function EntityTemplateForm({ entity, item }: Props) {
+export default function EntityTemplateForm({ entity, item }: Readonly<Props>) {
   const { t } = useTranslation();
   const submit = useSubmit();
   const [title, setTitle] = useState<string>(item?.title ?? "");

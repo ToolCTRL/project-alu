@@ -14,7 +14,7 @@ export default function KbRoutesArticleView() {
       <KbDocsLayout
         kb={data.kb}
         categories={data.categories}
-        article={!data.item ? null : { ...data.item, userState: data.userState }}
+        article={data.item ? { ...data.item, userState: data.userState } : null}
         isAdmin={data.isAdmin}
       />
     );

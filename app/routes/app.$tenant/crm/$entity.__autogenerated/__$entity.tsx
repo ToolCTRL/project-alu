@@ -1,4 +1,4 @@
-import { ActionFunction, LoaderFunctionArgs, MetaFunction, useLoaderData } from "react-router";
+import { ActionFunction, LoaderFunctionArgs, useLoaderData } from "react-router";
 import ServerError from "~/components/ui/errors/ServerError";
 import RowsViewRoute from "~/modules/rows/components/RowsViewRoute";
 import { Rows_List } from "~/modules/rows/routes/Rows_List.server";
@@ -11,7 +11,7 @@ export const meta: v2MetaFunction<Rows_List.LoaderData> = ({ data }) => data?.me
 export const loader = (args: LoaderFunctionArgs) => Rows_List.loader(args);
 export const action: ActionFunction = (args) => Rows_List.action(args);
 
-export default function () {
+export default function RowsListPageRoute() {
   const data = useLoaderData<Rows_List.LoaderData>();
   const appOrAdminData = useAppOrAdminData();
   return (

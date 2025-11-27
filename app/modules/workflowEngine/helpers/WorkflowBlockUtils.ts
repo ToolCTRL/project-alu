@@ -1,5 +1,5 @@
 import { WorkflowDto } from "../dtos/WorkflowDto";
-import { WorkflowBlockInput, WorkflowBlockType, WorkflowBlockTypes } from "../dtos/WorkflowBlockTypes";
+import { WorkflowBlockType, WorkflowBlockTypes } from "../dtos/WorkflowBlockTypes";
 import { WorkflowBlockDto } from "../dtos/WorkflowBlockDto";
 import WorkflowConditionUtils from "./WorkflowConditionUtils";
 import { WorkflowBlockWithDetails } from "../db/workflowBlocks.db.server";

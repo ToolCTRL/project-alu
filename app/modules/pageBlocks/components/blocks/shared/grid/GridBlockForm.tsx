@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next";
 import InputSelector from "~/components/ui/input/InputSelector";
 import { gaps, GridBlockDto, gridCols } from "./GridBlockUtils";
 
-export default function GridBlockForm({ item, onUpdate }: { item?: GridBlockDto; onUpdate: (item: GridBlockDto) => void }) {
+export default function GridBlockForm({ item, onUpdate }: { readonly item?: GridBlockDto; readonly onUpdate: (item: GridBlockDto) => void }) {
   const { t } = useTranslation();
   const [columns, setColumns] = useState(item?.columns);
   const [gap, setGap] = useState(item?.gap);
@@ -35,14 +35,14 @@ export default function GridBlockForm({ item, onUpdate }: { item?: GridBlockDto;
           withSearch={false}
           value={columns}
           options={gridCols.map((e) => ({ name: e + " column(s)", value: e }))}
-          setValue={(e) => setColumns((e as any) ?? "4")}
+          setValue={(e) => setColumns(e ?? "4")}
           selectPlaceholder="Columns..."
         />
         <InputSelector
           withSearch={false}
           value={gap}
           options={gaps.map((e) => ({ name: e + " gap", value: e }))}
-          setValue={(e) => setGap((e as any) ?? "sm")}
+          setValue={(e) => setGap(e ?? "sm")}
           selectPlaceholder="Gap..."
         />
       </div>

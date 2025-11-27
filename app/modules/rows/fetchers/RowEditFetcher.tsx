@@ -17,7 +17,7 @@ interface Props {
   onDeleted?: () => void;
   allEntities: EntityWithDetails[];
 }
-export default function RowEditFetcher({ url, onUpdated, allEntities, onDeleted }: Props) {
+export default function RowEditFetcher({ url, onUpdated, allEntities, onDeleted }: Readonly<Props>) {
   const { t } = useTranslation();
   const fetcher = useFetcher<{
     rowData?: RowsApi.GetRowData;
@@ -75,9 +75,7 @@ export default function RowEditFetcher({ url, onUpdated, allEntities, onDeleted 
     <div>
       {!fetcher.data ? (
         <Loading small loading />
-      ) : !data?.rowData ? (
-        <div>No data</div>
-      ) : data ? (
+      ) : data?.rowData ? (
         <div>
           {data.routes && (
             <div className="space-y-2">
@@ -103,7 +101,7 @@ export default function RowEditFetcher({ url, onUpdated, allEntities, onDeleted 
           )}
         </div>
       ) : (
-        <div>{t("shared.unknownError")}</div>
+        <div>No data</div>
       )}
     </div>
   );

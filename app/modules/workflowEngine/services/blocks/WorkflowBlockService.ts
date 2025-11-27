@@ -25,6 +25,11 @@ function getNestedPropertyHelper(currentObject: any, remainingKeys: string[]): a
   }
 }
 
+function getNestedProperty(obj: any, path: string) {
+  const keys = path.replace(/^/, "").split(".");
+  return getNestedPropertyHelper(obj, keys);
+}
+
 async function execute({
   workflowContext,
   workflowExecutionId,
@@ -320,19 +325,14 @@ async function executeIteratorBlock({
 
   let variableName = block.input.variableName;
   // remove {{ and }} with regex
-  variableName = variableName.replaceAll(/{{/g, "").replaceAll(/}}/g, "");
-
-  function getNestedProperty(obj: any, path: string) {
-    const keys = path.replace(/^/, "").split(".");
-    return getNestedPropertyHelper(obj, keys);
-  }
+  variableName = variableName.replaceAll("{{", "").replaceAll("}}", "");
 
   const array = getNestedProperty(workflowContext, variableName);
   if (!array) {
     throw new Error(`Variable "${variableName}" not found`);
   }
   if (!Array.isArray(array)) {
-    throw new Error(`Variable "${variableName}" is not an array`);
+    throw new TypeError(`Variable "${variableName}" is not an array`);
   }
   for (let index = 0; index < array.length; index++) {
     const item = array[index];

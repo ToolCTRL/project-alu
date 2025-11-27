@@ -1,6 +1,5 @@
 import { Tenant } from "@prisma/client";
-import { ActionFunction, LoaderFunctionArgs, MetaFunction, redirect, useLoaderData } from "react-router";
-import { useSubmit, Form, useActionData } from "react-router";
+import { ActionFunction, LoaderFunctionArgs, MetaFunction, redirect, useLoaderData, useSubmit, Form, useActionData } from "react-router";
 import { useState, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { MetaTagsDto } from "~/application/dtos/seo/MetaTagsDto";
@@ -38,7 +37,7 @@ type LoaderData = {
 export const loader = async ({ request, params }: LoaderFunctionArgs) => {
   await verifyUserHasPermission(request, "admin.onboarding.update");
   const { t } = await getTranslations(request);
-  const item = await getOnboarding(params.id!);
+  const item = await getOnboarding(params.id);
   if (!item) {
     throw redirect("/admin/onboarding/onboardings");
   }
@@ -65,7 +64,7 @@ export const action: ActionFunction = async ({ request, params }) => {
   const { t } = await getTranslations(request);
   const form = await request.formData();
   const action = form.get("action");
-  const item = await getOnboarding(params.id!);
+  const item = await getOnboarding(params.id);
   if (!item) {
     throw redirect("/admin/onboarding/onboardings");
   }
@@ -88,7 +87,7 @@ export const action: ActionFunction = async ({ request, params }) => {
   }
 };
 
-export default function () {
+function OnboardingSettings() {
   const { t } = useTranslation();
   const data = useLoaderData<LoaderData>();
   const actionData = useActionData<ActionData>();
@@ -173,7 +172,7 @@ export default function () {
         <Form method="post" className="space-y-2">
           <input name="action" value="set-filters" hidden readOnly />
           {filters.map((filter, index) => {
-            return <input type="hidden" name="filters[]" value={JSON.stringify(filter)} key={index} hidden readOnly />;
+            return <input type="hidden" name="filters[]" value={JSON.stringify(filter)} key={`filter-${filter.type}-${index}`} hidden readOnly />;
           })}
 
           <p className="text-muted-foreground text-sm">Filters are used to determine if the onboarding should be shown to the user.</p>
@@ -182,7 +181,7 @@ export default function () {
             {filters.map((filter, idx) => {
               return (
                 <button
-                  key={idx}
+                  key={`filter-btn-${filter.type}-${idx}`}
                   type="button"
                   onClick={() => setShowFilterModal({ item: filter, idx })}
                   className="border-border hover:border-border relative block w-full rounded-lg border-2 border-dashed p-3 text-center focus:outline-hidden focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
@@ -239,6 +238,8 @@ export default function () {
     </div>
   );
 }
+
+export default OnboardingSettings;
 
 export function ErrorBoundary() {
   return <ServerError />;

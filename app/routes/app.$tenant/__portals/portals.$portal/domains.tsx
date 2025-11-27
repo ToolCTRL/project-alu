@@ -37,7 +37,7 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
   });
 
   const tenantId = await getTenantIdOrNull({ request, params });
-  const item = await getPortalById(tenantId, params.portal!);
+  const item = await getPortalById(tenantId, params.portal);
   if (!item) {
     return redirect(UrlUtils.getModulePath(params, "portals"));
   }
@@ -59,7 +59,7 @@ export const action = async ({ request, params }: ActionFunctionArgs) => {
   const { t } = await getTranslations(request);
 
   const tenantId = await getTenantIdOrNull({ request, params });
-  const item = await getPortalById(tenantId, params.portal!);
+  const item = await getPortalById(tenantId, params.portal);
   if (!item) {
     return redirect(UrlUtils.getModulePath(params, "portals"));
   }
@@ -97,7 +97,7 @@ export const action = async ({ request, params }: ActionFunctionArgs) => {
   }
 };
 
-export default function () {
+export default function DomainsRoute() {
   const { t } = useTranslation();
   const data = useLoaderData<LoaderData>();
   const actionData = useActionData<ActionData>();
@@ -241,7 +241,14 @@ export default function () {
                 </div>
               )}
 
-              {!data.certificate.configured ? (
+              {data.certificate.configured ? (
+                <SuccessBanner title={t("models.domain.verified.title")}>
+                  <div>{t("models.domain.verified.description")}</div>
+                  <Link to={data.portalUrl} target="_blank" className="underline">
+                    {t("models.domain.verified.cta")}
+                  </Link>
+                </SuccessBanner>
+              ) : (
                 <div className="border-border mt-3 space-y-2 border-t pt-3">
                   <WarningBanner title={t("models.domain.notVerified.title")}>
                     <ButtonSecondary onClick={onCheck}>{t("models.domain.notVerified.description")}</ButtonSecondary>
@@ -250,13 +257,6 @@ export default function () {
                     <ButtonSecondary onClick={onCheck}>{t("models.domain.notVerified.cta")}</ButtonSecondary>
                   </div>
                 </div>
-              ) : (
-                <SuccessBanner title={t("models.domain.verified.title")}>
-                  <div>{t("models.domain.verified.description")}</div>
-                  <Link to={data.portalUrl} target="_blank" className="underline">
-                    {t("models.domain.verified.cta")}
-                  </Link>
-                </SuccessBanner>
               )}
             </div>
           </SettingSection>
@@ -270,7 +270,7 @@ export default function () {
   );
 }
 
-function RecordInput({ title, type, value }: { title: string; type?: string; value: string }) {
+function RecordInput({ title, type, value }: Readonly<{ title: string; type?: string; value: string }>) {
   return (
     <div>
       <label className="text-foreground text-xs font-medium">{title}</label>

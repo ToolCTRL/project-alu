@@ -37,7 +37,7 @@ export default function MonacoEditor({
   autocompletions,
   tabSize = 4,
   onControlEnter,
-}: Props) {
+}: Readonly<Props>) {
   const monaco = useMonaco();
 
   useEffect(() => {
@@ -93,7 +93,7 @@ export default function MonacoEditor({
   return (
     <Fragment>
       {name && <textarea name={name} value={value} hidden readOnly />}
-      {window !== undefined && (
+      {typeof globalThis !== "undefined" && (
         <Editor
           loading={<div className={clsx(className)}></div>}
           theme={theme}

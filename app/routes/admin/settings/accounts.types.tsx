@@ -13,7 +13,6 @@ import { getAllSubscriptionProducts } from "~/utils/db/subscriptionProducts.db.s
 import { getAllTenantsWithoutTypes } from "~/utils/db/tenants.db.server";
 import clsx from "clsx";
 import { Fragment, useEffect, useState } from "react";
-import SettingSection from "~/components/ui/sections/SettingSection";
 import LockClosedIcon from "~/components/ui/icons/LockClosedIcon";
 import { useRootData } from "~/utils/data/useRootData";
 import WarningBanner from "~/components/ui/banners/WarningBanner";
@@ -93,11 +92,9 @@ export default function AccountTypesList() {
     <EditPageLayout
       title={<BackButtonWithTitle href="/admin/settings">{t("models.tenantType.plural")}</BackButtonWithTitle>}
       buttons={
-        <>
-          <Button type="button" variant="default" size="sm" asChild>
-            <Link to="new">{t("shared.new")}</Link>
-          </Button>
-        </>
+        <Button type="button" variant="default" size="sm" asChild>
+          <Link to="new">{t("shared.new")}</Link>
+        </Button>
       }
     >
       <div className="space-y-2">

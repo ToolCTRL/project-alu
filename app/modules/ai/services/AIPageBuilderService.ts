@@ -96,7 +96,7 @@ async function fillBlock({ block, info }: { block: PageBlockDto; info: string })
 
 function parseChatGptContentToBlock(content: string | undefined) {
   // remove new lines & trailing commas
-  content = content?.replaceAll(/\n/g, "");
+  content = content?.replaceAll('\n', "");
   content = content?.replaceAll(/,(?!\s*?[{["'\w])/g, ""); // remove all trailing commas (`input` variable holds the erroneous JSON)
   // eslint-disable-next-line no-console
   console.log({ content });

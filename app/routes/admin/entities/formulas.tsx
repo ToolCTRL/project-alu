@@ -1,6 +1,5 @@
-import { ActionFunctionArgs, LoaderFunctionArgs, MetaFunction, useLoaderData, useActionData, useNavigate, useNavigation, useOutlet, useParams, useSubmit } from "react-router";
+import { ActionFunctionArgs, LoaderFunctionArgs, MetaFunction, useLoaderData, useActionData, useNavigate, useNavigation, useOutlet, useParams, useSubmit, Link } from "react-router";
 import { useTranslation } from "react-i18next";
-import { Link } from "react-router";
 import ButtonPrimary from "~/components/ui/buttons/ButtonPrimary";
 import TableSimple from "~/components/ui/tables/TableSimple";
 import { getTranslations } from "~/locale/i18next.server";
@@ -376,9 +375,7 @@ function ExecuteModal({
             <div className="text-muted-foreground text-sm font-bold italic">{formula?.resultAs}</div>
           </div>
         </div>
-        {!formula ? (
-          <></>
-        ) : (
+        {formula ? (
           <>
             <div className="mt-4 space-y-2">
               <div className="border-border bg-secondary grid max-h-72 grid-cols-12 gap-1 overflow-x-auto rounded-md border border-dashed p-2 pb-4">
@@ -399,12 +396,9 @@ function ExecuteModal({
                           className="col-span-12"
                           name={v.value}
                           disabled={true}
-                          defaultValue={
-                            `${FormulaHelpers.getOperatorSymbol(v.value)}`
-                            // `${v.operator} (${FormulaHelpers.getOperatorSymbol(v.operator)})`
-                          }
+                          defaultValue={`${FormulaHelpers.getOperatorSymbol(v.value)}`}
                         />
-                      ) : v.type == "parenthesis" ? (
+                      ) : v.type === "parenthesis" ? (
                         <InputText className="col-span-12" readOnly={true} defaultValue={v.value} />
                       ) : v.type === "value" ? (
                         <InputText className="col-span-12" readOnly={true} defaultValue={v.value} />

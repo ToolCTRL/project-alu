@@ -34,7 +34,7 @@ export default function PageBlocks({
   const { userSession } = useRootData();
   const [editingBlockIndex, setEditingBlockIndex] = useState<number>(-1);
   const [editingBlock, setEditingBlock] = useState<PageBlockDto | undefined>();
-  const [editinBlockType, setEditingBlockType] = useState<string>("");
+  const [editingBlockType, setEditingBlockType] = useState<string>("");
 
   const [blocksLoading, setBlocksLoading] = useState<number[]>([]);
 
@@ -101,14 +101,13 @@ export default function PageBlocks({
     }
     // @ts-ignore
     const newBlock = { [type]: PageBlockUtils.defaultBlocks[type] };
+    if (!onChange) {
+      return;
+    }
     if (index === undefined) {
-      if (onChange) {
-        onChange([...items, newBlock]);
-      }
+      onChange([...items, newBlock]);
     } else {
-      if (onChange) {
-        onChange([...items.slice(0, index), newBlock, ...items.slice(index)]);
-      }
+      onChange([...items.slice(0, index), newBlock, ...items.slice(index)]);
     }
   }
 
@@ -228,7 +227,7 @@ export default function PageBlocks({
           open={editingBlock !== undefined}
           onClose={() => setEditingBlock(undefined)}
         >
-          {editingBlock && <PageBlockForm type={editinBlockType} item={editingBlock} onUpdate={onUpdateEditingBlock} onUpdateLayout={onUpdateLayout} />}
+          {editingBlock && <PageBlockForm type={editingBlockType} item={editingBlock} onUpdate={onUpdateEditingBlock} onUpdateLayout={onUpdateLayout} />}
         </SlideOverWideEmpty>
       </div>
     </Fragment>

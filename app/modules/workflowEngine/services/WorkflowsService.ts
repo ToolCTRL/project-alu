@@ -2,7 +2,7 @@ import { db } from "~/utils/db.server";
 import { createWorkflowBlock, updateWorkflowBlock } from "../db/workflowBlocks.db.server";
 import { WorkflowWithDetails, createWorkflow, deleteWorkflow, getAllWorkflows, getWorkflowById, updateWorkflow } from "../db/workflows.db.server";
 import { WorkflowDto } from "../dtos/WorkflowDto";
-import { WorkflowBlockInput, WorkflowBlockTypes } from "../dtos/WorkflowBlockTypes";
+import { WorkflowBlockTypes } from "../dtos/WorkflowBlockTypes";
 import { WorkflowBlockDto } from "../dtos/WorkflowBlockDto";
 import WorkflowUtils from "../helpers/WorkflowUtils";
 import { WorkflowConditionsGroupDto } from "../dtos/WorkflowConditionDtos";

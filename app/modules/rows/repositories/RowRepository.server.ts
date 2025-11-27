@@ -9,11 +9,11 @@ import RowModel from "./RowModel";
 import { RowDto } from "./RowDto";
 
 export default class RowRepository extends RowModel {
-  session: { tenantId: string | null; userId?: string } | undefined;
+  session?: { tenantId: string | null; userId?: string };
   constructor(
     row: RowDto,
     options?: {
-      session?: { tenantId: string | null; userId?: string } | undefined;
+      session?: { tenantId: string | null; userId?: string };
     }
   ) {
     super(row);

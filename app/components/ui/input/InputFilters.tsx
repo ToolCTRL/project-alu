@@ -109,8 +109,7 @@ export default function InputFilters({ filters, withSearch = true, size = "defau
   }
 
   return (
-    <Fragment>
-      <Popover open={opened} onOpenChange={setOpened}>
+    <Popover open={opened} onOpenChange={setOpened}>
         <PopoverTrigger asChild>
           <Button type="button" size={size} onClick={() => setOpened(!opened)} variant="outline" className="relative z-0 inline-flex gap-2">
             <div className={clsx("relative inline-flex items-center gap-2", filteredItems === 0 ? "rounded-md" : "rounded-l-md")}>
@@ -182,7 +181,7 @@ export default function InputFilters({ filters, withSearch = true, size = "defau
                               options={filter.options.map((item) => {
                                 return {
                                   value: item.value,
-                                  name: item.name && item.name.includes(".") ? t(item.name) : item.name,
+                                  name: item.name?.includes(".") ? t(item.name) : item.name,
                                   color: item.color,
                                 };
                               })}
@@ -246,6 +245,5 @@ export default function InputFilters({ filters, withSearch = true, size = "defau
           </Form>
         </PopoverContent>
       </Popover>
-    </Fragment>
   );
 }

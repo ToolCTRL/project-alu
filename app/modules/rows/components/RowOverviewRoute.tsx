@@ -54,7 +54,7 @@ export default function RowOverviewRoute({
   options,
   relationshipRows,
   onSubmit,
-}: Props) {
+}: Readonly<Props>) {
   const { t } = useTranslation();
   const appOrAdminData = useAppOrAdminData();
   const params = useParams();
@@ -152,21 +152,18 @@ function EditRow({
   relationshipRows,
   onSubmit,
   actionData,
-}: EditRowProps) {
+}: Readonly<EditRowProps>) {
   const appOrAdminData = useAppOrAdminData();
   const [searchParams] = useSearchParams();
 
   function canUpdate() {
     if (options?.disableUpdate) {
-      // console.log("canUpdate: disableUpdate");
       return false;
     }
     if (!getUserHasPermission(appOrAdminData, getEntityPermission(rowData.entity, "update"))) {
-      // console.log("canUpdate: no permission");
       return false;
     }
     if (!rowData.rowPermissions.canUpdate) {
-      // console.log("canUpdate: rowPermissions.canUpdate");
       return false;
     }
     return true;
@@ -180,9 +177,7 @@ function EditRow({
 
   return (
     <Fragment>
-      {!rowData.rowPermissions.canRead ? (
-        <div className="font-medium">You don't have permissions to view this record.</div>
-      ) : (
+      {rowData.rowPermissions.canRead ? (
         <div className={className}>
           <RowOverviewHeader rowData={rowData} item={item} canUpdate={canUpdate()} isEditing={isEditing()} routes={routes} title={title} options={options} />
           <div className="mt-4 space-y-4 lg:flex lg:space-x-4 lg:space-y-0">
@@ -215,6 +210,8 @@ function EditRow({
             </div>
           </div>
         </div>
+      ) : (
+        <div className="font-medium">You don't have permissions to view this record.</div>
       )}
     </Fragment>
   );

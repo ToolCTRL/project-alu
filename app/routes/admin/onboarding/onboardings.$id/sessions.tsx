@@ -1,5 +1,4 @@
-import { ActionFunction, LoaderFunctionArgs, MetaFunction, redirect, useLoaderData } from "react-router";
-import { useActionData, useSubmit } from "react-router";
+import { ActionFunction, LoaderFunctionArgs, MetaFunction, redirect, useLoaderData, useActionData, useSubmit } from "react-router";
 import { useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { MetaTagsDto } from "~/application/dtos/seo/MetaTagsDto";
@@ -31,7 +30,7 @@ type LoaderData = {
 export const loader = async ({ request, params }: LoaderFunctionArgs) => {
   await verifyUserHasPermission(request, "admin.onboarding.update");
   const { t } = await getTranslations(request);
-  const item = await getOnboarding(params.id!);
+  const item = await getOnboarding(params.id);
   if (!item) {
     throw redirect("/admin/onboarding/onboardings");
   }
@@ -56,7 +55,7 @@ export const action: ActionFunction = async ({ request, params }) => {
   const { t } = await getTranslations(request);
   const form = await request.formData();
   const action = form.get("action");
-  const item = await getOnboarding(params.id!);
+  const item = await getOnboarding(params.id);
   if (!item) {
     throw redirect("/admin/onboarding/onboardings");
   }
@@ -75,7 +74,7 @@ export const action: ActionFunction = async ({ request, params }) => {
   }
 };
 
-export default function () {
+function OnboardingSessionsRoute() {
   const { t } = useTranslation();
   const data = useLoaderData<LoaderData>();
   const actionData = useActionData<ActionData>();
@@ -115,6 +114,8 @@ export default function () {
     </div>
   );
 }
+
+export default OnboardingSessionsRoute;
 
 export function ErrorBoundary() {
   return <ServerError />;

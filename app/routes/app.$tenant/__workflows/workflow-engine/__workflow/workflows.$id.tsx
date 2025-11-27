@@ -8,7 +8,8 @@ export const meta: MetaFunction<typeof loader> = ({ data }) => data?.metatags ||
 export const loader = (args: LoaderFunctionArgs) => WorkflowsIdIndexApi.loader(args);
 export const action = (args: ActionFunctionArgs) => WorkflowsIdIndexApi.action(args);
 
-export default () => <WorkflowsIdIndexView />;
+const WorkflowsIdIndex = () => <WorkflowsIdIndexView />;
+export default WorkflowsIdIndex;
 
 export function ErrorBoundary() {
   return <ServerError />;

@@ -22,7 +22,7 @@ type LoaderData = {
 export const loader = async ({ request, params }: LoaderFunctionArgs) => {
   await requireAuth({ request, params });
   const tenantId = await getTenantIdOrNull({ request, params });
-  const item: (PortalWithDetails & { portalUrl?: string }) | null = await getPortalById(tenantId, params.portal!);
+  const item: (PortalWithDetails & { portalUrl?: string }) | null = await getPortalById(tenantId, params.portal);
   if (!item) {
     return redirect(UrlUtils.getModulePath(params, "portals"));
   }
@@ -42,7 +42,7 @@ export const action = async ({ request, params }: ActionFunctionArgs) => {
   const { t } = await getTranslations(request);
 
   const tenantId = await getTenantIdOrNull({ request, params });
-  const item = await getPortalById(tenantId, params.portal!);
+  const item = await getPortalById(tenantId, params.portal);
   if (!item) {
     return Response.json({ error: t("shared.notFound") }, { status: 404 });
   }
@@ -63,7 +63,7 @@ export const action = async ({ request, params }: ActionFunctionArgs) => {
   }
 };
 
-export default function () {
+export default function DangerRoute() {
   const { t } = useTranslation();
   const data = useLoaderData<LoaderData>();
   const actionData = useActionData<ActionData>();

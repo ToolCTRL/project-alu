@@ -84,6 +84,36 @@ export function PageBlock({ item, userSession }: { readonly item: PageBlockDto; 
   );
 }
 
+function getBlockForm(type: string, item: PageBlockDto | undefined, onUpdate: (item: PageBlockDto) => void): ReactNode {
+  const blockFormMap: Record<string, ReactNode> = {
+    heading: <HeadingBlockForm item={item?.heading} onUpdate={(heading) => onUpdate({ heading })} />,
+    banner: <BannerBlockForm item={item?.banner} onUpdate={(banner) => onUpdate({ banner })} />,
+    header: <HeaderBlockForm item={item?.header} onUpdate={(header) => onUpdate({ header })} />,
+    footer: <FooterBlockForm item={item?.footer} onUpdate={(footer) => onUpdate({ footer })} />,
+    hero: <HeroBlockForm item={item?.hero} onUpdate={(hero) => onUpdate({ hero })} />,
+    logoClouds: <LogoCloudsBlockForm item={item?.logoClouds} onUpdate={(logoClouds) => onUpdate({ logoClouds })} />,
+    gallery: <GalleryBlockForm item={item?.gallery} onUpdate={(gallery) => onUpdate({ gallery })} />,
+    video: <VideoBlockForm item={item?.video} onUpdate={(video) => onUpdate({ video })} />,
+    community: <CommunityBlockForm item={item?.community} onUpdate={(community) => onUpdate({ community })} />,
+    testimonials: <TestimonialsBlockForm item={item?.testimonials} onUpdate={(testimonials) => onUpdate({ testimonials })} />,
+    faq: <FaqBlockForm item={item?.faq} onUpdate={(faq) => onUpdate({ faq })} />,
+    features: <FeaturesBlockForm item={item?.features} onUpdate={(features) => onUpdate({ features })} />,
+    newsletter: <NewsletterBlockForm item={item?.newsletter} onUpdate={(newsletter) => onUpdate({ newsletter })} />,
+    pricing: <PricingBlockForm item={item?.pricing} onUpdate={(pricing) => onUpdate({ pricing })} />,
+    blogPosts: <BlogPostsBlockForm item={item?.blogPosts} onUpdate={(blogPosts) => onUpdate({ blogPosts })} />,
+    blogPost: <BlogPostBlockForm item={item?.blogPost} onUpdate={(blogPost) => onUpdate({ blogPost })} />,
+    rowsList: <RowsListBlockForm item={item?.rowsList} onUpdate={(rowsList) => onUpdate({ rowsList })} />,
+    rowsNew: <RowsNewBlockForm item={item?.rowsNew} onUpdate={(rowsNew) => onUpdate({ rowsNew })} />,
+    rowsOverview: <RowsOverviewBlockForm item={item?.rowsOverview} onUpdate={(rowsOverview) => onUpdate({ rowsOverview })} />,
+    content: <ContentBlockForm item={item?.content} onUpdate={(content) => onUpdate({ content })} />,
+    story: <StoryBlockForm item={item?.story} onUpdate={(story) => onUpdate({ story })} />,
+    values: <ValuesBlockForm item={item?.values} onUpdate={(values) => onUpdate({ values })} />,
+    stats: <StatsBlockForm item={item?.stats} onUpdate={(stats) => onUpdate({ stats })} />,
+  };
+
+  return blockFormMap[type] || <ErrorBanner title="TODO" text={"TODO BLOCK FORM FOR TYPE: " + type} />;
+}
+
 export function PageBlockForm({
   type,
   item,
@@ -95,61 +125,12 @@ export function PageBlockForm({
   readonly onUpdate: (item: PageBlockDto) => void;
   readonly onUpdateLayout: (layout?: PageBlockDto["layout"]) => void;
 }) {
-  let block: ReactNode | null = null;
-  if (type === "heading") {
-    block = <HeadingBlockForm item={item?.heading} onUpdate={(heading) => onUpdate({ heading })} />;
-  } else if (type === "banner") {
-    block = <BannerBlockForm item={item?.banner} onUpdate={(banner) => onUpdate({ banner })} />;
-  } else if (type === "header") {
-    block = <HeaderBlockForm item={item?.header} onUpdate={(header) => onUpdate({ header })} />;
-  } else if (type === "footer") {
-    block = <FooterBlockForm item={item?.footer} onUpdate={(footer) => onUpdate({ footer })} />;
-  } else if (type === "hero") {
-    block = <HeroBlockForm item={item?.hero} onUpdate={(hero) => onUpdate({ hero })} />;
-  } else if (type === "logoClouds") {
-    block = <LogoCloudsBlockForm item={item?.logoClouds} onUpdate={(logoClouds) => onUpdate({ logoClouds })} />;
-  } else if (type === "gallery") {
-    block = <GalleryBlockForm item={item?.gallery} onUpdate={(gallery) => onUpdate({ gallery })} />;
-  } else if (type === "video") {
-    block = <VideoBlockForm item={item?.video} onUpdate={(video) => onUpdate({ video })} />;
-  } else if (type === "community") {
-    block = <CommunityBlockForm item={item?.community} onUpdate={(community) => onUpdate({ community })} />;
-  } else if (type === "testimonials") {
-    block = <TestimonialsBlockForm item={item?.testimonials} onUpdate={(testimonials) => onUpdate({ testimonials })} />;
-  } else if (type === "faq") {
-    block = <FaqBlockForm item={item?.faq} onUpdate={(faq) => onUpdate({ faq })} />;
-  } else if (type === "features") {
-    block = <FeaturesBlockForm item={item?.features} onUpdate={(features) => onUpdate({ features })} />;
-  } else if (type === "newsletter") {
-    block = <NewsletterBlockForm item={item?.newsletter} onUpdate={(newsletter) => onUpdate({ newsletter })} />;
-  } else if (type === "pricing") {
-    block = <PricingBlockForm item={item?.pricing} onUpdate={(pricing) => onUpdate({ pricing })} />;
-  } else if (type === "blogPosts") {
-    block = <BlogPostsBlockForm item={item?.blogPosts} onUpdate={(blogPosts) => onUpdate({ blogPosts })} />;
-  } else if (type === "blogPost") {
-    block = <BlogPostBlockForm item={item?.blogPost} onUpdate={(blogPost) => onUpdate({ blogPost })} />;
-  } else if (type === "rowsList") {
-    block = <RowsListBlockForm item={item?.rowsList} onUpdate={(rowsList) => onUpdate({ rowsList })} />;
-  } else if (type === "rowsNew") {
-    block = <RowsNewBlockForm item={item?.rowsNew} onUpdate={(rowsNew) => onUpdate({ rowsNew })} />;
-  } else if (type === "rowsOverview") {
-    block = <RowsOverviewBlockForm item={item?.rowsOverview} onUpdate={(rowsOverview) => onUpdate({ rowsOverview })} />;
-  } else if (type === "content") {
-    block = <ContentBlockForm item={item?.content} onUpdate={(content) => onUpdate({ content })} />;
-  } else if (type === "story") {
-    block = <StoryBlockForm item={item?.story} onUpdate={(story) => onUpdate({ story })} />;
-  } else if (type === "values") {
-    block = <ValuesBlockForm item={item?.values} onUpdate={(values) => onUpdate({ values })} />;
-  } else if (type === "stats") {
-    block = <StatsBlockForm item={item?.stats} onUpdate={(stats) => onUpdate({ stats })} />;
-  } else {
-    block = <ErrorBanner title="TODO" text={"TODO BLOCK FORM FOR TYPE: " + type} />;
-  }
+  const [selectedTab, setSelectedTab] = useState<number>(0);
+  const block = getBlockForm(type, item, onUpdate);
 
-  const [selectedTab, selectTab] = useState<number>(0);
   return (
     <div className="space-y-4">
-      <Tabs asLinks={false} onSelected={(index) => selectTab(index)} tabs={[{ name: `Block` }, { name: `JSON` }]} />
+      <Tabs asLinks={false} onSelected={(index) => setSelectedTab(index)} tabs={[{ name: `Block` }, { name: `JSON` }]} />
       {selectedTab === 0 && (
         <>
           {block}

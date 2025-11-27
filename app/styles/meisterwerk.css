@@ -336,7 +336,7 @@
 
 .hero-cta--ghost {
   border: 1px solid rgba(255, 255, 255, 0.22);
-  color: #e2e8f0;
+  color: #cbd5e1;
   background: rgba(255, 255, 255, 0.03);
 }
 
@@ -568,10 +568,6 @@
   display: flex;
   justify-content: space-between;
   font-size: 0.875rem;
-}
-
-.hero-stage {
-  margin-inline: auto;
 }
 
 @media (min-width: 640px) {

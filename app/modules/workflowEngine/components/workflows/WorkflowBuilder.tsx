@@ -30,7 +30,7 @@ interface Props {
   onDeleteBlock?: (nodeId: string) => void;
   readOnly?: boolean;
 }
-export default function WorkflowBuilder(props: Props) {
+export default function WorkflowBuilder(props: Readonly<Props>) {
   return (
     <ReactFlowProvider>
       <WorkflowBuilderFlow {...props} />
@@ -47,7 +47,7 @@ function WorkflowBuilderFlow({
   onDeleteConnection,
   onDeleteBlock,
   readOnly,
-}: Props) {
+}: Readonly<Props>) {
   const reactFlowInstance = useReactFlow();
 
   const [nodes, setNodes] = useNodesState([]);
@@ -103,11 +103,11 @@ function WorkflowBuilderFlow({
       if (fromBlock.id === toBlock.id) {
         return;
       }
-      if (fromBlock.toBlocks.find((x) => x.toBlockId === toBlock.id)) {
+      if (fromBlock.toBlocks.some((x) => x.toBlockId === toBlock.id)) {
         // already connected
         return;
       }
-      if (toBlock.toBlocks.find((x) => x.toBlockId === fromBlock.id)) {
+      if (toBlock.toBlocks.some((x) => x.toBlockId === fromBlock.id)) {
         // already connected
         return;
       }
@@ -115,12 +115,13 @@ function WorkflowBuilderFlow({
       if (fromBlock.type === "if") {
         const hasTrue = fromBlock.toBlocks.find((x) => x.condition === "true");
         const hasFalse = fromBlock.toBlocks.find((x) => x.condition === "false");
-        if (!hasTrue) {
-          condition = "true";
-        } else if (!hasFalse) {
+        if (hasTrue) {
+          if (hasFalse) {
+            return;
+          }
           condition = "false";
         } else {
-          return;
+          condition = "true";
         }
       } else if (fromBlock.type === "switch") {
         let availableNextCase = -1;
@@ -143,12 +144,13 @@ function WorkflowBuilderFlow({
       } else if (fromBlock.type === "iterator") {
         const hasLoopNext = fromBlock.toBlocks.find((x) => x.condition === "loopNext");
         const hasLoopEnd = fromBlock.toBlocks.find((x) => x.condition === "loopEnd");
-        if (!hasLoopNext) {
-          condition = "loopNext";
-        } else if (!hasLoopEnd) {
+        if (hasLoopNext) {
+          if (hasLoopEnd) {
+            return;
+          }
           condition = "loopEnd";
         } else {
-          return;
+          condition = "loopNext";
         }
       }
       onConnectBlocks({
@@ -195,8 +197,13 @@ function WorkflowBuilderFlow({
     return readOnly || !!workflowExecution;
   }, [readOnly, workflowExecution]);
 
+  const contextValue = useMemo(
+    () => ({ isReadOnly, onEdgeDelete, onNodeDelete, isNodeSelected }),
+    [isReadOnly, onEdgeDelete, onNodeDelete, isNodeSelected]
+  );
+
   return (
-    <WorkflowContext.Provider value={{ isReadOnly, onEdgeDelete, onNodeDelete, isNodeSelected }}>
+    <WorkflowContext.Provider value={contextValue}>
       <ReactFlow
         nodes={nodes}
         edges={edges}

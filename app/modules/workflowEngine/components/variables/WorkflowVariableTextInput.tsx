@@ -13,13 +13,13 @@ export default function WorkflowVariableTextInput({
   onChange,
   className,
 }: {
-  name: string;
-  placeholder: string | undefined;
-  workflow: WorkflowDto;
-  block: WorkflowBlockDto;
-  value: string;
-  onChange: (value: string) => void;
-  className?: string;
+  readonly name: string;
+  readonly placeholder: string | undefined;
+  readonly workflow: WorkflowDto;
+  readonly block: WorkflowBlockDto;
+  readonly value: string;
+  readonly onChange: (value: string) => void;
+  readonly className?: string;
 }) {
   const refString = useRef<HTMLInputElement>(null);
 

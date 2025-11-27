@@ -55,10 +55,10 @@ export async function createProperty(data: {
   tenantId: string | null;
 }) {
   if (data.name.includes(" ")) {
-    throw Error("Property names cannot contain spaces: " + data.name);
+    throw new Error("Property names cannot contain spaces: " + data.name);
   }
   if (data.name.includes("-")) {
-    throw Error("Property names cannot contain '-': " + data.name);
+    throw new Error("Property names cannot contain '-': " + data.name);
   }
   return await db.property.create({
     data,

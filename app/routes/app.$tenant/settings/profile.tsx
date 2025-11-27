@@ -1,7 +1,6 @@
 import { useEffect } from "react";
 import { useAppData } from "~/utils/data/useAppData";
-import { ActionFunction, LoaderFunctionArgs, MetaFunction, redirect } from "react-router";
-import { useActionData } from "react-router";
+import { ActionFunction, LoaderFunctionArgs, MetaFunction, redirect, useActionData } from "react-router";
 import { updateUserPassword, updateUserProfile } from "~/utils/db/users.db.server";
 import { getUserInfo } from "~/utils/session.server";
 import { db } from "~/utils/db.server";

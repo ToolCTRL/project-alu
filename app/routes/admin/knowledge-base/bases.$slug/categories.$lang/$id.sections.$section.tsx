@@ -1,5 +1,4 @@
-import { ActionFunctionArgs, LoaderFunctionArgs, redirect, useLoaderData } from "react-router";
-import { useParams, useSubmit } from "react-router";
+import { ActionFunctionArgs, LoaderFunctionArgs, redirect, useLoaderData, useParams, useSubmit } from "react-router";
 import KbCategorySectionForm from "~/modules/knowledgeBase/components/bases/KbCategorySectionForm";
 import { updateKnowledgeBaseArticle } from "~/modules/knowledgeBase/db/kbArticles.db.server";
 import { getKbCategoryById } from "~/modules/knowledgeBase/db/kbCategories.db.server";
@@ -25,11 +24,11 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
     slug: params.slug!,
     request,
   });
-  const category = await getKbCategoryById(params.id!);
+  const category = await getKbCategoryById(params.id);
   if (!category) {
     return redirect(`/admin/knowledge-base/bases/${params.slug}/categories/${params.lang}`);
   }
-  const item = await getKbCategorySectionById(params.section!);
+  const item = await getKbCategorySectionById(params.section);
   if (!item) {
     return redirect(`/admin/knowledge-base/bases/${params.slug}/categories/${params.lang}/${params.id}`);
   }
@@ -46,7 +45,7 @@ export const action = async ({ request, params }: ActionFunctionArgs) => {
   const form = await request.formData();
   const action = form.get("action")?.toString();
 
-  const item = await getKbCategorySectionById(params.section!);
+  const item = await getKbCategorySectionById(params.section);
   if (!item) {
     return redirect(`/admin/knowledge-base/bases/${params.slug}/${params.lang}/${params.id}`);
   }
@@ -74,8 +73,8 @@ export const action = async ({ request, params }: ActionFunctionArgs) => {
     return redirect(`/admin/knowledge-base/bases/${params.slug}/categories/${params.lang}`);
   } else if (action === "set-orders") {
     await verifyUserHasPermission(request, "admin.kb.update");
-    const items: { id: string; order: number }[] = form.getAll("orders[]").map((f: FormDataEntryValue) => {
-      return JSON.parse(f.toString());
+    const items: { id: string; order: number }[] = form.getAll("orders[]").map((f) => {
+      return JSON.parse(String(f));
     });
 
     await Promise.all(
@@ -91,7 +90,7 @@ export const action = async ({ request, params }: ActionFunctionArgs) => {
   }
 };
 
-export default function () {
+export default function SectionEdit() {
   const data = useLoaderData<LoaderData>();
   const submit = useSubmit();
   const params = useParams();
@@ -105,7 +104,7 @@ export default function () {
   }
   return (
     <div>
-      <KbCategorySectionForm knowledgeBase={data.knowledgeBase} category={data.category} language={params.lang!} item={data.item} onDelete={onDelete} />
+      <KbCategorySectionForm knowledgeBase={data.knowledgeBase} category={data.category} language={params.lang} item={data.item} onDelete={onDelete} />
     </div>
   );
 }

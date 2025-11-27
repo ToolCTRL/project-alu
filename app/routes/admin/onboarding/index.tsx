@@ -6,7 +6,11 @@ import OnboardingOverviewRoute from "~/modules/onboarding/routes/components/Onbo
 export const meta: MetaFunction<typeof loader> = ({ data }) => data?.meta || [];
 export const loader = (args: LoaderFunctionArgs) => OnboardingSummaryApi.loader(args);
 
-export default () => <OnboardingOverviewRoute />;
+function OnboardingIndex() {
+  return <OnboardingOverviewRoute />;
+}
+
+export default OnboardingIndex;
 
 export function ErrorBoundary() {
   return <ServerError />;

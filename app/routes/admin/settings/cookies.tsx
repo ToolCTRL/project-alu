@@ -81,12 +81,10 @@ export default function AdminSettingsCookies() {
     <EditPageLayout
       title={<BackButtonWithTitle href="/admin/settings">{t("settings.admin.cookies.title")}</BackButtonWithTitle>}
       buttons={
-        <>
-          <ButtonSecondary onClick={() => setShowCookieSettingsModal(true)}>
-            <PreviewIcon className="h-4 w-4" />
-            <div>{t("shared.preview")}</div>
-          </ButtonSecondary>
-        </>
+        <ButtonSecondary onClick={() => setShowCookieSettingsModal(true)}>
+          <PreviewIcon className="h-4 w-4" />
+          <div>{t("shared.preview")}</div>
+        </ButtonSecondary>
       }
     >
       <Modal open={showCookieSettingsModal} setOpen={setShowCookieSettingsModal}>
@@ -102,8 +100,6 @@ export default function AdminSettingsCookies() {
           description="Users need to accept or decline cookies to close the consent banner."
           disabled={!canUpdate}
         />
-
-        {/* <UnderConstruction title="TODO: Cookies (Add used cookies)" /> */}
 
         <CookiesList editing={true} />
       </div>

@@ -1,6 +1,5 @@
 import { Tenant } from "@prisma/client";
-import { ActionFunction, LoaderFunctionArgs, redirect, useLoaderData } from "react-router";
-import { useNavigate } from "react-router";
+import { ActionFunction, LoaderFunctionArgs, redirect, useLoaderData, useNavigate } from "react-router";
 import ApiKeyForm from "~/components/core/apiKeys/ApiKeyForm";
 import OpenModal from "~/components/ui/modals/OpenModal";
 import { getTranslations } from "~/locale/i18next.server";
@@ -47,7 +46,7 @@ export const action: ActionFunction = async ({ request, params }) => {
     const entities: { entityId: string; create: boolean; read: boolean; update: boolean; delete: boolean }[] = form
       .getAll("entities[]")
       .map((f: FormDataEntryValue) => {
-        return JSON.parse(f.toString());
+        return JSON.parse(String(f));
       });
     let expirationDate: Date | null = null;
     let expires = form.get("expires")?.toString();
@@ -57,7 +56,7 @@ export const action: ActionFunction = async ({ request, params }) => {
     const tenantId = form.get("tenant-id")?.toString() ?? "";
     const alias = form.get("alias")?.toString() ?? "";
     const existingAlias = await getApiKeys(tenantId);
-    if (existingAlias.filter((f) => f.id !== existing.id && f.alias === alias).length > 0) {
+    if (existingAlias.some((f) => f.id !== existing.id && f.alias === alias)) {
       return badRequest({ error: "API key with this alias already exists: " + alias });
     }
     const active = Boolean(form.get("active"));
@@ -88,16 +87,14 @@ export default function AdminApiEditKeyRoute() {
   const navigate = useNavigate();
   const adminData = useAdminData();
   return (
-    <>
-      <OpenModal className="sm:max-w-xl" onClose={() => navigate(`/admin/api`)}>
-        <ApiKeyForm
-          entities={adminData.entities}
-          tenants={data.tenants}
-          item={data.item}
-          canUpdate={getUserHasPermission(adminData, "admin.apiKeys.update")}
-          canDelete={getUserHasPermission(adminData, "admin.apiKeys.delete")}
-        />
-      </OpenModal>
-    </>
+    <OpenModal className="sm:max-w-xl" onClose={() => navigate(`/admin/api`)}>
+      <ApiKeyForm
+        entities={adminData.entities}
+        tenants={data.tenants}
+        item={data.item}
+        canUpdate={getUserHasPermission(adminData, "admin.apiKeys.update")}
+        canDelete={getUserHasPermission(adminData, "admin.apiKeys.delete")}
+      />
+    </OpenModal>
   );
 }

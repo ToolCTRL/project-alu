@@ -174,17 +174,10 @@ export default function NovelEditor({
     return promptFlows?.prompts?.filter((f) => f.inputVariables.find((f) => f.name === "selectedText"));
   }
   return (
-    <div
-      role="button"
-      tabIndex={0}
+    <button
+      type="button"
       onClick={() => {
         editor?.chain().focus().run();
-      }}
-      onKeyDown={(e) => {
-        if (e.key === "Enter" || e.key === " ") {
-          e.preventDefault();
-          editor?.chain().focus().run();
-        }
       }}
       className={clsx(
         "border-border bg-background relative w-full max-w-(--breakpoint-lg) border p-12 px-8 sm:rounded-lg sm:border sm:px-12 sm:shadow-lg",
@@ -210,6 +203,6 @@ export default function NovelEditor({
       ) : (
         <></>
       )}
-    </div>
+    </button>
   );
 }

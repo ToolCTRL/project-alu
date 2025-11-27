@@ -78,7 +78,7 @@ export default function KnowledgeBaseForm({ item, onDelete }: Readonly<{ item?: 
             name="defaultLanguage"
             title={"Default language"}
             value={defaultLanguage}
-            setValue={(e) => setDefaultLanguage(e?.toString() || "en")}
+            setValue={(e) => setDefaultLanguage(e?.toString())}
             options={languages.map((item) => {
               return {
                 value: item,
@@ -90,7 +90,7 @@ export default function KnowledgeBaseForm({ item, onDelete }: Readonly<{ item?: 
             name="layout"
             title={"Layout"}
             value={layout}
-            setValue={(e) => setLayout((e?.toString() as any) || "list")}
+            setValue={(e) => setLayout(e?.toString() || "list")}
             options={[
               {
                 value: "list",
@@ -225,11 +225,11 @@ function InputSlug({
         ]}
       />
       {type === "docs" ? (
-        <>
+        <div className="grid grid-cols-2 gap-2">
           <input type="hidden" name="basePath" value={"/"} hidden readOnly />
           <input type="hidden" name="slug" value={"docs"} hidden readOnly />
           <InputText title={"URL"} defaultValue={"/docs"} disabled />
-        </>
+        </div>
       ) : (
         <>
           <div className="grid grid-cols-2 gap-2">

@@ -123,7 +123,7 @@ const AnimationComponent: React.FC<{
     content = (
       <motion.span className="inline-block whitespace-pre">
         {segment.split("").map((char, charIndex) => (
-          <motion.span key={`char-${charIndex}`} aria-hidden="true" variants={variants} className="inline-block whitespace-pre">
+          <motion.span key={`char-${segmentIndex}-${charIndex}`} aria-hidden="true" variants={variants} className="inline-block whitespace-pre">
             {char}
           </motion.span>
         ))}
@@ -142,7 +142,9 @@ const AnimationComponent: React.FC<{
 
 AnimationComponent.displayName = "AnimationComponent";
 
-const splitText = (text: string, per: "line" | "word" | "char") => {
+type SplitTextMode = "line" | "word" | "char";
+
+const splitText = (text: string, per: SplitTextMode) => {
   if (per === "line") return text.split("\n");
   return text.split(/(\s+)/);
 };

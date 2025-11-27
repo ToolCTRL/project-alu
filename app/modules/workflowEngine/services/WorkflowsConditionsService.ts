@@ -8,16 +8,7 @@ function validateGroups({ conditionGroup, workflowContext }: { conditionGroup: W
       throw new Error("Invalid operator: " + condition.operator);
     }
     const variable = parseVariable(condition.variable, workflowContext);
-    if (!operator.requiresValue) {
-      switch (operator.value) {
-        case "isNotEmpty":
-          return variable && variable !== "";
-        case "isEmpty":
-          return !variable || variable.trim() === "";
-        default:
-          return false;
-      }
-    } else {
+    if (operator.requiresValue) {
       const value = parseVariable(condition.value, workflowContext);
       switch (operator.value) {
         case "=":
@@ -41,9 +32,18 @@ function validateGroups({ conditionGroup, workflowContext }: { conditionGroup: W
         default:
           throw new Error("Invalid operator: " + operator.value);
       }
+    } else {
+      switch (operator.value) {
+        case "isNotEmpty":
+          return variable && variable !== "";
+        case "isEmpty":
+          return !variable || variable.trim() === "";
+        default:
+          return false;
+      }
     }
   });
-  const groupResult = conditionGroup.type === "AND" ? results.every((f) => f) : results.some((f) => f);
+  const groupResult = conditionGroup.type === "AND" ? results.every(Boolean) : results.some(Boolean);
   return groupResult;
 }
 

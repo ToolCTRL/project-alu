@@ -1,7 +1,7 @@
 import { useTranslation } from "react-i18next";
 import { VideoBlockDto } from "~/modules/pageBlocks/components/blocks/marketing/video/VideoBlockUtils";
 
-export default function VideoVariantSimple({ item }: { item: VideoBlockDto }) {
+export default function VideoVariantSimple({ item }: { readonly item: VideoBlockDto }) {
   const { t } = useTranslation();
   return (
     <div>

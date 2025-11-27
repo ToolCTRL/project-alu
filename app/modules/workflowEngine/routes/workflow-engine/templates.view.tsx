@@ -60,6 +60,130 @@ export default function WorkflowsTemplatesView() {
     });
     return blockTypes;
   }
+
+  function renderContent() {
+    if (error) {
+      return (
+        <div className="space-y-1">
+          <p id="form-error-message" className="py-2 text-sm text-rose-500" role="alert">
+            {error}
+          </p>
+          <button type="button" className="hover:text-muted-foreground text-muted-foreground text-sm font-medium underline" onClick={() => setError(null)}>
+            Try again
+          </button>
+        </div>
+      );
+    }
+
+    if (actionData?.success) {
+      return (
+        <>
+          <div id="form-success-message" className="text-foreground space-y-1 py-2 text-sm">
+            {actionData.success}
+          </div>
+          <Link
+            to={UrlUtils.getModulePath(params, `workflow-engine/workflows`)}
+            className="text-theme-600 hover:text-theme-500 text-sm font-medium underline"
+          >
+            View all workflows
+          </Link>
+        </>
+      );
+    }
+
+    return (
+      <div>
+        {mode === "templates" && (
+          <div className="space-y-3">
+            {filteredItems.length === 0 && (
+              <div>
+                <EmptyState
+                  className="bg-background"
+                  captions={{
+                    thereAreNo: "There are no workflows",
+                  }}
+                />
+              </div>
+            )}
+            <div className="grid grid-cols-2 gap-3 xl:grid-cols-3 2xl:grid-cols-4">
+              {filteredItems.map((item) => {
+                return (
+                  <button
+                    type="button"
+                    key={item.title}
+                    className="hover:border-theme-300 hover:bg-theme-50 focus:ring-ring border-border bg-background flex w-full flex-col items-start overflow-hidden rounded-md border text-left shadow-2xs hover:cursor-pointer focus:outline-hidden focus:ring-2 focus:ring-offset-2"
+                    onClick={() => {
+                      const form = new FormData();
+                      form.set("action", "preview");
+                      form.set("configuration", JSON.stringify(item, null, "\t"));
+                      submit(form, {
+                        method: "post",
+                      });
+                    }}
+                  >
+                    <div className="flex flex-col items-start space-y-2 px-3 py-3">
+                      <div className="text-foreground font-medium">{item.title}</div>
+                      <div className="space-y-0.5">
+                        <div className="text-muted-foreground block text-xs font-medium uppercase">Workflows ({item.workflows.length})</div>
+                        <ul className="text-muted-foreground text-sm">
+                          {item.workflows.map((f) => {
+                            return <li key={f.name}>{f.name}</li>;
+                          })}
+                        </ul>
+                      </div>
+                      <div className="space-y-0.5">
+                        <div className="text-muted-foreground block text-xs font-medium uppercase">Block Types</div>
+                        <div className="text-muted-foreground text-sm">
+                          {getBlockTypesUsed(item.workflows)
+                            .map((f) => f.name)
+                            .join(", ")}
+                        </div>
+                      </div>
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        )}
+        {mode === "json" && (
+          <Form method="post">
+            <input type="hidden" name="action" value="preview" hidden readOnly />
+            <div className="space-y-3">
+              <div className="flex space-x-2">
+                <div className="flex space-x-2">
+                  {DefaultWorkflowTemplates.map((t) => (
+                    <button
+                      key={t.title}
+                      type="button"
+                      onClick={() => setConfiguration(JSON.stringify(t, null, "\t"))}
+                      className="bg-theme-100 text-theme-700 hover:bg-theme-200 focus:ring-ring inline-flex items-center rounded border border-transparent px-2.5 py-1.5 text-xs font-medium focus:outline-hidden focus:ring-2 focus:ring-offset-2"
+                    >
+                      {t.title}
+                    </button>
+                  ))}
+                </div>
+              </div>
+              <div>
+                <InputText
+                  name="configuration"
+                  title="Configuration"
+                  editor="monaco"
+                  editorLanguage="json"
+                  value={configuration}
+                  setValue={setConfiguration}
+                  editorSize="lg"
+                />
+              </div>
+              <div className="flex justify-end">
+                <LoadingButton type="submit">Import</LoadingButton>
+              </div>
+            </div>
+          </Form>
+        )}
+      </div>
+    );
+  }
   return (
     <EditPageLayout
       title="Workflow Templates"
@@ -73,119 +197,7 @@ export default function WorkflowsTemplatesView() {
       }
     >
       <div className="md:border-border md:border-t md:py-2">
-        {error ? (
-          <div className="space-y-1">
-            <p id="form-error-message" className="py-2 text-sm text-rose-500" role="alert">
-              {error}
-            </p>
-            <button type="button" className="hover:text-muted-foreground text-muted-foreground text-sm font-medium underline" onClick={() => setError(null)}>
-              Try again
-            </button>
-          </div>
-        ) : actionData?.success ? (
-          <>
-            <div id="form-success-message" className="text-foreground space-y-1 py-2 text-sm">
-              {actionData.success}
-            </div>
-            <Link
-              to={UrlUtils.getModulePath(params, `workflow-engine/workflows`)}
-              className="text-theme-600 hover:text-theme-500 text-sm font-medium underline"
-            >
-              View all workflows
-            </Link>
-          </>
-        ) : (
-          <div>
-            {mode === "templates" && (
-              <div className="space-y-3">
-                {filteredItems.length === 0 && (
-                  <div>
-                    <EmptyState
-                      className="bg-background"
-                      captions={{
-                        thereAreNo: "There are no workflows",
-                      }}
-                    />
-                  </div>
-                )}
-                <div className="grid grid-cols-2 gap-3 xl:grid-cols-3 2xl:grid-cols-4">
-                  {filteredItems.map((item) => {
-                    return (
-                      <button
-                        type="button"
-                        key={item.title}
-                        className="hover:border-theme-300 hover:bg-theme-50 focus:ring-ring border-border bg-background flex w-full flex-col items-start overflow-hidden rounded-md border text-left shadow-2xs hover:cursor-pointer focus:outline-hidden focus:ring-2 focus:ring-offset-2"
-                        onClick={() => {
-                          const form = new FormData();
-                          form.set("action", "preview");
-                          form.set("configuration", JSON.stringify(item, null, "\t"));
-                          submit(form, {
-                            method: "post",
-                          });
-                        }}
-                      >
-                        <div className="flex flex-col items-start space-y-2 px-3 py-3">
-                          <div className="text-foreground font-medium">{item.title}</div>
-                          <div className="space-y-0.5">
-                            <div className="text-muted-foreground block text-xs font-medium uppercase">Workflows ({item.workflows.length})</div>
-                            <ul className="text-muted-foreground text-sm">
-                              {item.workflows.map((f) => {
-                                return <li key={f.name}>{f.name}</li>;
-                              })}
-                            </ul>
-                          </div>
-                          <div className="space-y-0.5">
-                            <div className="text-muted-foreground block text-xs font-medium uppercase">Block Types</div>
-                            <div className="text-muted-foreground text-sm">
-                              {getBlockTypesUsed(item.workflows)
-                                .map((f) => f.name)
-                                .join(", ")}
-                            </div>
-                          </div>
-                        </div>
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
-            )}
-            {mode === "json" && (
-              <Form method="post">
-                <input type="hidden" name="action" value="preview" hidden readOnly />
-                <div className="space-y-3">
-                  <div className="flex space-x-2">
-                    <div className="flex space-x-2">
-                      {DefaultWorkflowTemplates.map((t) => (
-                        <button
-                          key={t.title}
-                          type="button"
-                          onClick={() => setConfiguration(JSON.stringify(t, null, "\t"))}
-                          className="bg-theme-100 text-theme-700 hover:bg-theme-200 focus:ring-ring inline-flex items-center rounded border border-transparent px-2.5 py-1.5 text-xs font-medium focus:outline-hidden focus:ring-2 focus:ring-offset-2"
-                        >
-                          {t.title}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-                  <div>
-                    <InputText
-                      name="configuration"
-                      title="Configuration"
-                      editor="monaco"
-                      editorLanguage="json"
-                      value={configuration}
-                      setValue={setConfiguration}
-                      editorSize="lg"
-                    />
-                  </div>
-                  <div className="flex justify-end">
-                    <LoadingButton type="submit">Import</LoadingButton>
-                  </div>
-                </div>
-              </Form>
-            )}
-          </div>
-        )}
+        {renderContent()}
       </div>
     </EditPageLayout>
   );

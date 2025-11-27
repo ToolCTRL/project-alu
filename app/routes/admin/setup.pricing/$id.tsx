@@ -1,5 +1,4 @@
-import { ActionFunction, LoaderFunctionArgs, MetaFunction, redirect, useLoaderData } from "react-router";
-import { useActionData, useNavigate } from "react-router";
+import { ActionFunction, LoaderFunctionArgs, MetaFunction, redirect, useLoaderData, useActionData, useNavigate } from "react-router";
 import { getTranslations } from "~/locale/i18next.server";
 import { useRef, useState, useEffect, Fragment } from "react";
 import { useTranslation } from "react-i18next";
@@ -51,7 +50,6 @@ export const action: ActionFunction = async ({ request, params }) => {
       return badRequest({ error: "Pricing plan not found" });
     }
     try {
-      // await deletePlan(item);
       return redirect("/admin/settings/pricing");
     } catch (error: any) {
       return badRequest({ error: error.message });

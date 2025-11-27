@@ -1,5 +1,4 @@
-import { LoaderFunctionArgs, MetaFunction } from "react-router";
-import { Outlet, useParams } from "react-router";
+import { LoaderFunctionArgs, MetaFunction, Outlet, useParams } from "react-router";
 import ServerError from "~/components/ui/errors/ServerError";
 import IncreaseIcon from "~/components/ui/icons/crm/IncreaseIcon";
 import IncreaseIconFilled from "~/components/ui/icons/crm/IncreaseIconFilled";
@@ -33,7 +32,7 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
 
 export const meta: MetaFunction<typeof loader> = ({ data }) => [{ title: data?.title }];
 
-export default () => {
+function NotificationsLayout() {
   const params = useParams();
   return (
     <SidebarIconsLayout
@@ -69,7 +68,9 @@ export default () => {
       <Outlet />
     </SidebarIconsLayout>
   );
-};
+}
+
+export default NotificationsLayout;
 
 export function ErrorBoundary() {
   return <ServerError />;

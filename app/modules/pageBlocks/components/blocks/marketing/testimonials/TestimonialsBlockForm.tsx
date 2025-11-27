@@ -12,7 +12,7 @@ import InputText from "~/components/ui/input/InputText";
 import CollapsibleRow from "~/components/ui/tables/CollapsibleRow";
 import PageBlockUtils from "~/modules/pageBlocks/components/blocks/PageBlockUtils";
 
-export default function TestimonialsBlockForm({ item, onUpdate }: { item?: TestimonialsBlockDto; onUpdate: (item: TestimonialsBlockDto) => void }) {
+export default function TestimonialsBlockForm({ item, onUpdate }: { readonly item?: TestimonialsBlockDto; readonly onUpdate: (item: TestimonialsBlockDto) => void }) {
   const { t } = useTranslation();
   const [state, setState] = useState<TestimonialsBlockDto>(item || PageBlockUtils.defaultBlocks.testimonials!);
   useEffect(() => {
@@ -40,7 +40,7 @@ export default function TestimonialsBlockForm({ item, onUpdate }: { item?: Testi
         <div className="flex flex-col space-y-2">
           {state.items.map((item, index) => (
             <CollapsibleRow
-              key={index}
+              key={`testimonial-${index}-${item.name}`}
               title={item.name}
               value={item.name}
               initial={!item.avatar}

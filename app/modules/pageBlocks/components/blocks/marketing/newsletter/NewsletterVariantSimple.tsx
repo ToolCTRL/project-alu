@@ -13,7 +13,7 @@ import clsx from "clsx";
 import ButtonEvent from "~/components/ui/buttons/ButtonEvent";
 import { useFetcher } from "react-router";
 
-export default function NewsletterVariantSimple({ item }: { item: NewsletterBlockDto }) {
+export default function NewsletterVariantSimple({ item }: { readonly item: NewsletterBlockDto }) {
   const { t } = useTranslation();
   return (
     <div>
@@ -87,13 +87,18 @@ export default function NewsletterVariantSimple({ item }: { item: NewsletterBloc
   );
 }
 
-export function NewsletterForm({ onClose }: { onClose?: () => void }) {
+export function NewsletterForm({ onClose }: { readonly onClose?: () => void }) {
   const { t } = useTranslation();
   const { csrf } = useRootData();
   const [email, setEmail] = useState("");
   const fetcher = useFetcher<{ subscription?: string; error?: string; success?: string }>();
-  const state: "idle" | "success" | "error" | "submitting" =
-    fetcher.state === "submitting" ? "submitting" : fetcher.data?.subscription ? "success" : fetcher.data?.error ? "error" : "idle";
+  const getFormState = (): "idle" | "success" | "error" | "submitting" => {
+    if (fetcher.state === "submitting") return "submitting";
+    if (fetcher.data?.subscription) return "success";
+    if (fetcher.data?.error) return "error";
+    return "idle";
+  };
+  const state = getFormState();
   return (
     <fetcher.Form id="newsletter-form" method="post" action="/newsletter" className="mx-auto flex w-full max-w-xl flex-col items-end space-y-4 px-8 sm:px-0">
       <input type="hidden" name="csrf" value={csrf} hidden readOnly />
@@ -151,9 +156,9 @@ export function NewsletterForm({ onClose }: { onClose?: () => void }) {
             <div>
               <SuccessBanner title={t("shared.subscribed")} text={fetcher.data.success} />
             </div>
-          ) : fetcher.data.error ? (
-            <ErrorBanner title={t("shared.error")} text={fetcher.data.error} />
-          ) : null}
+          ) : (
+            fetcher.data.error && <ErrorBanner title={t("shared.error")} text={fetcher.data.error} />
+          )}
         </div>
       )}
       <div className="mt-3 flex w-full items-center justify-end space-x-2">

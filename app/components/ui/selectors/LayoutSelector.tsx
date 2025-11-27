@@ -23,9 +23,8 @@ export default function LayoutSelector({ className, btnClassName }: Readonly<Pro
     },
   ];
 
-  function select(value: ApplicationLayout) {
+  function select(_value: ApplicationLayout) {
     // Future implementation: store.dispatch(setLayout(value));
-    void value;
   }
 
   return (

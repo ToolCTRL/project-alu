@@ -1,5 +1,4 @@
-import { ActionFunctionArgs, LoaderFunctionArgs, useLoaderData, useNavigate, useOutlet, useParams } from "react-router";
-import { Outlet } from "react-router";
+import { ActionFunctionArgs, LoaderFunctionArgs, useLoaderData, useNavigate, useOutlet, useParams, Outlet } from "react-router";
 import { getTranslations } from "~/locale/i18next.server";
 import { getAllPermissions, PermissionWithRoles, updatePermission } from "~/utils/db/permissions/permissions.db.server";
 import PermissionsTable from "~/components/core/roles/PermissionsTable";
@@ -68,7 +67,7 @@ export const action = async ({ request, params }: ActionFunctionArgs) => {
 
   if (action === "set-orders") {
     const items: { id: string; order: number }[] = form.getAll("orders[]").map((f: FormDataEntryValue) => {
-      return JSON.parse(f.toString());
+      return JSON.parse(String(f));
     });
 
     await Promise.all(
@@ -82,7 +81,7 @@ export const action = async ({ request, params }: ActionFunctionArgs) => {
   }
 };
 
-export default function () {
+export default function PermissionsRoute() {
   const data = useLoaderData<LoaderData>();
   const actionData = useLoaderData<ActionData>();
   const adminData = useAdminData();

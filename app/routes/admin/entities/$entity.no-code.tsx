@@ -1,7 +1,6 @@
 import { Entity } from "@prisma/client";
 import { useTranslation } from "react-i18next";
-import { LoaderFunctionArgs, redirect } from "react-router";
-import { Outlet, useLoaderData, useParams } from "react-router";
+import { LoaderFunctionArgs, redirect, Outlet, useLoaderData, useParams } from "react-router";
 import EditPageLayout from "~/components/ui/layouts/EditPageLayout";
 import { getEntityBySlug } from "~/utils/db/entities/entities.db.server";
 import { verifyUserHasPermission } from "~/utils/helpers/.server/PermissionsService";

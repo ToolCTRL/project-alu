@@ -37,29 +37,28 @@ export namespace OnboardingSessionsIndexApi {
       {
         name: "onboardingId",
         title: t("onboarding.title"),
-        options: [
-          ...allOnboardings.map((i) => {
-            return { value: i.id, name: i.title };
-          }),
-        ],
+        options: allOnboardings.map((i) => ({
+          value: i.id,
+          name: i.title,
+        })),
       },
       {
         name: "userId",
         title: t("models.user.object"),
-        options: [
-          ...users.map((i) => {
-            return { value: i.id, name: i.email + " - " + i.firstName + " " + i.lastName };
-          }),
-        ],
+        options: users.map((i) => ({
+          value: i.id,
+          name: i.email + " - " + i.firstName + " " + i.lastName,
+        })),
       },
       {
         name: "tenantId",
         title: t("models.tenant.object"),
         options: [
           { name: "{Admin}", value: "null" },
-          ...(await adminGetAllTenantsIdsAndNames()).map((i) => {
-            return { value: i.id, name: i.name };
-          }),
+          ...(await adminGetAllTenantsIdsAndNames()).map((i) => ({
+            value: i.id,
+            name: i.name,
+          })),
         ],
       },
     ];

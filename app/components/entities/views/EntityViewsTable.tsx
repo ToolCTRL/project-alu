@@ -12,34 +12,46 @@ import { defaultDisplayProperties } from "~/utils/helpers/PropertyHelper";
 import NumberUtils from "~/utils/shared/NumberUtils";
 import EntityViewLayoutBadge from "./EntityViewLayoutBadge";
 
-const scopeRenders: Record<string, (view: EntityViewWithTenantAndUser) => JSX.Element> = {
-  system: () => <div className="font-medium italic">System view</div>,
-  default: () => (
-    <div className="flex flex-col">
-      <div className="font-medium italic">
-        Default <span className="text-muted-foreground text-xs font-normal">(all accounts)</span>
-      </div>
+type ViewScopeRenderer = (view: EntityViewWithTenantAndUser) => JSX.Element;
+
+const SystemScope: ViewScopeRenderer = () => <div className="font-medium italic">System view</div>;
+
+const DefaultScope: ViewScopeRenderer = () => (
+  <div className="flex flex-col">
+    <div className="font-medium italic">
+      Default <span className="text-muted-foreground text-xs font-normal">(all accounts)</span>
     </div>
-  ),
-  tenantAndUser: (view) => (
-    <div className="flex items-center space-x-1">
-      <div>
-        <TenantBadge item={view.tenant} />
-      </div>
-      <div>&rarr;</div>
-      <UserBadge item={view.user} />
-    </div>
-  ),
-  tenantOnly: (view) => (
+  </div>
+);
+
+const TenantAndUserScope: ViewScopeRenderer = (view) => (
+  <div className="flex items-center space-x-1">
     <div>
       <TenantBadge item={view.tenant} />
     </div>
-  ),
-  userOnly: (view) => (
-    <div>
-      <UserBadge item={view.user} />
-    </div>
-  ),
+    <div>&rarr;</div>
+    <UserBadge item={view.user} />
+  </div>
+);
+
+const TenantOnlyScope: ViewScopeRenderer = (view) => (
+  <div>
+    <TenantBadge item={view.tenant} />
+  </div>
+);
+
+const UserOnlyScope: ViewScopeRenderer = (view) => (
+  <div>
+    <UserBadge item={view.user} />
+  </div>
+);
+
+const scopeRenders: Record<string, ViewScopeRenderer> = {
+  system: SystemScope,
+  default: DefaultScope,
+  tenantAndUser: TenantAndUserScope,
+  tenantOnly: TenantOnlyScope,
+  userOnly: UserOnlyScope,
 };
 
 function getViewScopeKey(view: EntityViewWithTenantAndUser) {
@@ -56,13 +68,103 @@ function renderViewScope(view: EntityViewWithTenantAndUser) {
   return renderer ? renderer(view) : <div className="italic text-red-500">Invalid view</div>;
 }
 
+const EntityCell = ({ item, t }: Readonly<{ item: EntityViewWithTenantAndUser; t: (key: string) => string }>) => (
+  <div className="flex flex-col">
+    <div>{t(item.entity.titlePlural)}</div>
+  </div>
+);
+
+const LayoutCell = ({ item }: Readonly<{ item: EntityViewWithTenantAndUser }>) => (
+  <div>
+    <EntityViewLayoutBadge layout={item.layout} className="text-muted-foreground mx-auto h-5 w-5" />
+  </div>
+);
+
+const TitleCell = ({ item, t }: Readonly<{ item: EntityViewWithTenantAndUser; t: (key: string) => string }>) => (
+  <div className="flex flex-col">
+    <Link to={`/admin/entities/views/${item.id}`} className="hover:underline">
+      {t(item.title)}
+    </Link>
+  </div>
+);
+
+const AppliesToCell = ({ item }: Readonly<{ item: EntityViewWithTenantAndUser }>) => (
+  <div className="flex items-center space-x-1">
+    <div>{renderViewScope(item)}</div>
+  </div>
+);
+
+const PropertiesCell = ({ item, t }: Readonly<{ item: EntityViewWithTenantAndUser; t: (key: string) => string }>) => (
+  <div>
+    <ShowPayloadModalButton
+      description={item.properties.length > 1 ? `${item.properties.length} properties` : `${item.properties.length} property`}
+      title="Properties"
+      payload={JSON.stringify(
+        item.properties.map((p) => {
+          const defaultProperty = defaultDisplayProperties.find((f) => f.name === p.name);
+          if (defaultProperty) {
+            return t(defaultProperty.title);
+          }
+          return p.name;
+        }),
+        null,
+        2
+      )}
+    />
+  </div>
+);
+
+const FiltersCell = ({ item }: Readonly<{ item: EntityViewWithTenantAndUser }>) => (
+  <div>
+    <ShowPayloadModalButton
+      description={item.filters.length > 1 ? `${item.filters.length} filters` : `${item.filters.length} filter`}
+      title="filters"
+      payload={JSON.stringify(
+        item.filters.map((p) => {
+          return `${p.name} ${p.condition} ${p.value}`;
+        }),
+        null,
+        2
+      )}
+    />
+  </div>
+);
+
+const SortCell = ({ item }: Readonly<{ item: EntityViewWithTenantAndUser }>) => (
+  <div>
+    <ShowPayloadModalButton
+      description={item.sort.length === 1 ? `${item.sort.length} sort option` : `${item.sort.length} sort options`}
+      title="sort"
+      payload={JSON.stringify(
+        item.sort.map((p) => {
+          return `${p.name} ${p.asc ? "asc" : "desc"}`;
+        }),
+        null,
+        2
+      )}
+    />
+  </div>
+);
+
+const PageSizeCell = ({ item }: Readonly<{ item: EntityViewWithTenantAndUser }>) => <div>{NumberUtils.intFormat(item.pageSize)}</div>;
+
+const IsDefaultCell = ({ item }: Readonly<{ item: EntityViewWithTenantAndUser }>) => (
+  <div>{item.isDefault ? <CheckIcon className="h-5 w-5 text-green-500" /> : <XIcon className="text-muted-foreground h-5 w-5" />}</div>
+);
+
+const UpdatedAtCell = ({ item }: Readonly<{ item: EntityViewWithTenantAndUser }>) => <DateCell date={item.updatedAt ?? null} />;
+
+const CreatedAtCell = ({ item }: Readonly<{ item: EntityViewWithTenantAndUser }>) => <DateCell date={item.createdAt ?? null} />;
+
+const CreatedByCell = ({ item }: Readonly<{ item: EntityViewWithTenantAndUser }>) => (item.createdByUser ? <UserBadge item={item.createdByUser} /> : <div>-</div>);
+
 export default function EntityViewsTable({
   items,
   onClickRoute,
-}: {
+}: Readonly<{
   items: EntityViewWithTenantAndUser[];
   onClickRoute: (item: EntityViewWithTenantAndUser) => string;
-}) {
+}>) {
   const { t } = useTranslation();
   return (
     <TableSimple
@@ -86,129 +188,63 @@ export default function EntityViewsTable({
         {
           name: "entity",
           title: t("models.entity.object"),
-          value: (i) => (
-            <div className="flex flex-col">
-              <div>{t(i.entity.titlePlural)}</div>
-              {/* <div className="text-xs text-muted-foreground">{i.entity.name}</div> */}
-            </div>
-          ),
+          value: (i) => <EntityCell item={i} t={t} />,
         },
         {
           name: "Layout",
           title: t("models.view.layout"),
-          value: (i) => (
-            <div>
-              <EntityViewLayoutBadge layout={i.layout} className="text-muted-foreground mx-auto h-5 w-5" />
-            </div>
-          ),
+          value: (i) => <LayoutCell item={i} />,
         },
         {
           name: "title",
           title: t("models.view.title"),
           className: "w-full",
-          value: (i) => (
-            <div className="flex flex-col">
-              <Link to={`/admin/entities/views/${i.id}`} className="hover:underline">
-                {t(i.title)}
-              </Link>
-              {/* <div className="text-xs text-muted-foreground">{i.name}</div> */}
-            </div>
-          ),
+          value: (i) => <TitleCell item={i} t={t} />,
         },
         {
           name: "appliesTo",
           title: t("models.view.appliesTo"),
-          value: (i) => (
-            <div className="flex items-center space-x-1">
-              <div>{renderViewScope(i)}</div>
-            </div>
-          ),
+          value: (i) => <AppliesToCell item={i} />,
         },
         {
           name: "properties",
           title: t("models.view.properties"),
-          value: (i) => (
-            <div>
-              <ShowPayloadModalButton
-                description={i.properties.length > 1 ? `${i.properties.length} properties` : `${i.properties.length} property`}
-                title="Properties"
-                payload={JSON.stringify(
-                  i.properties.map((p) => {
-                    const defaultProperty = defaultDisplayProperties.find((f) => f.name === p.name);
-                    if (defaultProperty) {
-                      return t(defaultProperty.title);
-                    }
-                    return p.name;
-                  }),
-                  null,
-                  2
-                )}
-              />
-            </div>
-          ),
+          value: (i) => <PropertiesCell item={i} t={t} />,
         },
         {
           name: "filters",
           title: t("models.view.filters"),
-          value: (i) => (
-            <div>
-              <ShowPayloadModalButton
-                description={i.filters.length > 1 ? `${i.filters.length} filters` : `${i.filters.length} filter`}
-                title="filters"
-                payload={JSON.stringify(
-                  i.filters.map((p) => {
-                    return `${p.name} ${p.condition} ${p.value}`;
-                  }),
-                  null,
-                  2
-                )}
-              />
-            </div>
-          ),
+          value: (i) => <FiltersCell item={i} />,
         },
         {
           name: "sort",
           title: t("models.view.sort"),
-          value: (i) => (
-            <div>
-              <ShowPayloadModalButton
-                description={i.sort.length === 1 ? `${i.sort.length} sort option` : `${i.sort.length} sort options`}
-                title="sort"
-                payload={JSON.stringify(
-                  i.sort.map((p) => {
-                    return `${p.name} ${p.asc ? "asc" : "desc"}`;
-                  }),
-                  null,
-                  2
-                )}
-              />
-            </div>
-          ),
+          value: (i) => <SortCell item={i} />,
         },
         {
           name: "pageSize",
           title: t("models.view.pageSize"),
-          value: (i) => <div>{NumberUtils.intFormat(i.pageSize)}</div>,
+          value: (i) => <PageSizeCell item={i} />,
         },
         {
           name: "isDefault",
           title: t("models.view.isDefault"),
-          value: (i) => <div>{i.isDefault ? <CheckIcon className="h-5 w-5 text-green-500" /> : <XIcon className="text-muted-foreground h-5 w-5" />}</div>,
+          value: (i) => <IsDefaultCell item={i} />,
         },
         {
           name: "updatedAt",
           title: t("shared.updatedAt"),
-          value: (i) => <DateCell date={i.updatedAt ?? null} />,
+          value: (i) => <UpdatedAtCell item={i} />,
         },
         {
           name: "createdAt",
           title: t("shared.createdAt"),
-          value: (i) => <DateCell date={i.createdAt ?? null} />,
+          value: (i) => <CreatedAtCell item={i} />,
         },
         {
           name: "createdBy",
           title: t("shared.createdBy"),
-          value: (i) => (i.createdByUser ? <UserBadge item={i.createdByUser} /> : <div>-</div>),
+          value: (i) => <CreatedByCell item={i} />,
         },
       ]}
       noRecords={

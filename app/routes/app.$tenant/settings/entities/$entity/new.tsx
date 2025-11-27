@@ -65,27 +65,21 @@ export const action: ActionFunction = async ({ request, params }) => {
   }
 
   const options: { order: number; value: string; name?: string; color?: Colors }[] = form.getAll("options[]").map((f: FormDataEntryValue) => {
-    const value = typeof f === "string" ? f : String(f);
-    return JSON.parse(value);
+    return JSON.parse(String(f));
   });
 
   const attributes: { name: string; value: string }[] = form.getAll("attributes[]").map((f: FormDataEntryValue) => {
-    const value = typeof f === "string" ? f : String(f);
-    return JSON.parse(value);
+    return JSON.parse(String(f));
   });
 
-  if ([PropertyType.SELECT, PropertyType.MULTI_SELECT].includes(type) && options.length === 0) {
-    // return badRequest({ error: "Add at least one option" });
-  }
-
-  if (type !== PropertyType.FORMULA) {
-    formulaId = null;
-  } else {
+  if (type === PropertyType.FORMULA) {
+    if (!formulaId) {
+      return badRequest({ error: "Select a formula" });
+    }
     isRequired = false;
     showInCreate = false;
-  }
-  if ([PropertyType.FORMULA].includes(type) && !formulaId) {
-    return badRequest({ error: "Select a formula" });
+  } else {
+    formulaId = null;
   }
 
   const errors = await validateProperty(name, title, entity.properties);

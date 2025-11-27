@@ -20,7 +20,12 @@ export default function KbDocsHeader({ kb }: Props) {
   const params = useParams();
   const [searchParams] = useSearchParams();
 
-  const logoSrc = kb.logo === "light" ? LogoLight : kb.logo === "dark" ? LogoDark : kb.logo;
+  const getLogoSrc = () => {
+    if (kb.logo === "light") return LogoLight;
+    if (kb.logo === "dark") return LogoDark;
+    return kb.logo;
+  };
+  const logoSrc = getLogoSrc();
 
   return (
     <div>

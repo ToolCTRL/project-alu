@@ -17,7 +17,7 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
     if (!process.env.API_ACCESS_TOKEN || apiKeyFromHeaders !== process.env.API_ACCESS_TOKEN) {
       return Response.json({ error: "Unauthorized" }, { status: 401 });
     }
-    const tenantSimple = await time(getTenantByIdOrSlug(params.id!), "getTenant");
+    const tenantSimple = await time(getTenantByIdOrSlug(params.id ?? ""), "getTenant");
     if (!tenantSimple) {
       return Response.json({ error: "Not found" }, { status: 404 });
     }

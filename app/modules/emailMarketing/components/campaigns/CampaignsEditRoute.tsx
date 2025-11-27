@@ -59,7 +59,7 @@ export default function CampaignsEditRoute() {
   }
 
   function sendTest(i?: RowWithDetails) {
-    const email = window.prompt("Email", appOrAdminData.user?.email);
+    const email = globalThis.prompt("Email", appOrAdminData.user?.email);
     if (!email || email.trim() === "") {
       return;
     }
@@ -98,14 +98,7 @@ export default function CampaignsEditRoute() {
       method: "post",
     });
   }
-  // function saveEmail() {
-  //   const form = new FormData();
-  //   form.set("action", "update");
-  //   form.set("htmlBody", htmlBody);
-  //   submit(form, {
-  //     method: "post",
-  //   });
-  // }
+
   function canUpdate() {
     if (data.item.status !== "draft") {
       return false;
@@ -118,16 +111,12 @@ export default function CampaignsEditRoute() {
       senderId !== data.item.emailSenderId ||
       htmlBody.trim() !== data.item.htmlBody.trim()
     ) {
-      // console.log("htmlBody", { htmlBody, existing: data.item.htmlBody });
       return true;
     }
     return false;
   }
   function filteredRecipients() {
     let emails = data.item.recipients;
-    // if (maxDisplayedEmails === 10) {
-    //   emails = emails.slice(0, 10);
-    // }
     if (!searchInput.trim()) {
       return emails;
     }
@@ -234,17 +223,8 @@ export default function CampaignsEditRoute() {
 
                 <div className="sm:col-span-3">
                   <div className="w-full space-y-2">
-                    {/* <Tabs
-                        asLinks={false}
-                        onSelected={(selected) => {
-                          setEmailBodyTab(selected === 0 ? "html" : "text");
-                        }}
-                        className="w-full sm:w-auto"
-                        tabs={[{ name: "HTML" }, { name: "Preview" }]}
-                      /> */}
                     <div>
                       {data.item.status === "draft" && <input type="hidden" name="htmlBody" value={htmlBody} hidden readOnly />}
-                      {/* {emailBodyTab === "html" && ( */}
                       <div className={clsx(data.item.status === "draft" ? "bg-background" : "bg-secondary/90")}>
                         <InputContent
                           name="htmlBody"
@@ -262,20 +242,6 @@ export default function CampaignsEditRoute() {
                           </ButtonSecondary>
                         </div>
                       )}
-                      {/* )} */}
-                      {/* {emailBodyTab === "text" && (
-                          <InputText
-                            name="htmlBody"
-                            title="HTML"
-                            editor="monaco"
-                            editorTheme="light"
-                            editorLanguage="html"
-                            value={htmlBody}
-                            setValue={setHtmlBody}
-                            editorSize="lg"
-                            required
-                          />
-                        )} */}
                     </div>
                   </div>
                 </div>

@@ -1,5 +1,4 @@
-import { ActionFunction, LoaderFunctionArgs, redirect, useLoaderData } from "react-router";
-import { useNavigate, useParams } from "react-router";
+import { ActionFunction, LoaderFunctionArgs, redirect, useLoaderData, useNavigate, useParams } from "react-router";
 import GroupForm from "~/components/core/roles/GroupForm";
 import OpenModal from "~/components/ui/modals/OpenModal";
 import { getTranslations } from "~/locale/i18next.server";
@@ -73,10 +72,8 @@ export default function NewGroupRoute() {
   const data = useLoaderData<LoaderData>();
 
   return (
-    <>
-      <OpenModal className="sm:max-w-sm" onClose={() => navigate(UrlUtils.currentTenantUrl(params, "settings/groups"))}>
-        <GroupForm allUsers={data.tenantUsers} />
-      </OpenModal>
-    </>
+    <OpenModal className="sm:max-w-sm" onClose={() => navigate(UrlUtils.currentTenantUrl(params, "settings/groups"))}>
+      <GroupForm allUsers={data.tenantUsers} />
+    </OpenModal>
   );
 }

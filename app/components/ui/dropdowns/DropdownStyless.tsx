@@ -1,4 +1,4 @@
-import { Fragment, MouseEventHandler, ReactNode } from "react";
+import { Fragment, MouseEventHandler } from "react";
 import { Menu, Transition } from "@headlessui/react";
 import clsx from "clsx";
 import { Link } from "react-router";

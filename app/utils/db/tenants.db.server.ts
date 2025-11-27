@@ -377,7 +377,7 @@ export async function createTenant({
 }: {
   name: string;
   icon?: string;
-  subscriptionCustomerId?: string | undefined;
+  subscriptionCustomerId?: string;
   active?: boolean;
   slug?: string;
 }) {

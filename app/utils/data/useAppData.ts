@@ -12,8 +12,8 @@ export type AppLoaderData = AppOrAdminData & {
 };
 
 export function useAppData(): AppLoaderData {
-  const paths: string[] = ["routes/app.$tenant", "routes/app.$tenant.admin", "routes/app"];
-  const appData = (useMatches().find((f) => paths.includes(f.id.toLowerCase()))?.data ?? {}) as AppLoaderData;
+  const paths = new Set(["routes/app.$tenant", "routes/app.$tenant.admin", "routes/app"]);
+  const appData = (useMatches().find((f) => paths.has(f.id.toLowerCase()))?.data ?? {}) as AppLoaderData;
   EntitiesSingleton.getInstance().setEntities(appData.entities);
   return appData;
 }

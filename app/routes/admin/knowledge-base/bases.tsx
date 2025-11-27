@@ -1,6 +1,5 @@
-import { ActionFunctionArgs, LoaderFunctionArgs, MetaFunction, useLoaderData } from "react-router";
+import { ActionFunctionArgs, LoaderFunctionArgs, MetaFunction, useLoaderData, useNavigate, useOutlet, useParams, useSearchParams, useSubmit, Link } from "react-router";
 import SimpleBadge from "~/components/ui/badges/SimpleBadge";
-import { Link, useNavigate, useOutlet, useParams, useSearchParams, useSubmit } from "react-router";
 import TabsWithIcons from "~/components/ui/tabs/TabsWithIcons";
 import ButtonPrimary from "~/components/ui/buttons/ButtonPrimary";
 import PlusIcon from "~/components/ui/icons/PlusIcon";
@@ -61,11 +60,11 @@ export const action = async ({ request, params }: ActionFunctionArgs) => {
   }
 };
 
-function KnowledgeBaseStatus({ item, onToggle }: { item: KnowledgeBaseDto; onToggle: (item: KnowledgeBaseDto, enabled: boolean) => void }) {
+function KnowledgeBaseStatus({ item, onToggle }: Readonly<{ item: KnowledgeBaseDto; onToggle: (item: KnowledgeBaseDto, enabled: boolean) => void }>) {
   return <InputCheckbox asToggle value={item.enabled} setValue={(checked) => onToggle(item, Boolean(checked))} />;
 }
 
-function KnowledgeBaseTitle({ item, params }: { item: KnowledgeBaseDto; params: any }) {
+function KnowledgeBaseTitle({ item, params }: Readonly<{ item: KnowledgeBaseDto; params: any }>) {
   return (
     <div className="flex flex-col">
       <div className="flex items-center space-x-2">
@@ -90,11 +89,11 @@ function KnowledgeBaseTitle({ item, params }: { item: KnowledgeBaseDto; params: 
   );
 }
 
-function KnowledgeBaseUpdatedAt({ date }: { date: Date | null }) {
+function KnowledgeBaseUpdatedAt({ date }: Readonly<{ date: Date | null }>) {
   return <DateCell date={date} />;
 }
 
-export default function () {
+export default function KnowledgeBasesRoute() {
   const { t } = useTranslation();
   const data = useLoaderData<LoaderData>();
   const submit = useSubmit();
@@ -152,17 +151,17 @@ export default function () {
           <TabsWithIcons
             tabs={[
               {
-                name: `All ${countStatus() ? `(${countStatus()})` : ""}`,
+                name: countStatus() ? `All (${countStatus()})` : "All",
                 href: "?",
                 current: !searchParams.get("status") || searchParams.get("status") === "all",
               },
               {
-                name: `Active ${countStatus(true) ? `(${countStatus(true)})` : ""}`,
+                name: countStatus(true) ? `Active (${countStatus(true)})` : "Active",
                 href: "?status=active",
                 current: searchParams.get("status") === "active",
               },
               {
-                name: `Inactive ${countStatus(false) ? `(${countStatus(false)})` : ""}`,
+                name: countStatus(false) ? `Inactive (${countStatus(false)})` : "Inactive",
                 href: "?status=inactive",
                 current: searchParams.get("status") === "inactive",
               },

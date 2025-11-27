@@ -40,7 +40,7 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
     throw redirect("/404?entity=" + params.entity);
   }
   try {
-    const rowData = await RowsApi.get(params.id!, {
+    const rowData = await RowsApi.get(params.id ?? "", {
       entity,
       userId,
     });
@@ -69,55 +69,51 @@ export default function PublicRowItemRoute() {
   const { publicRowData, error } = useLoaderData<LoaderData>();
   const { t } = useTranslation();
   return (
-    <>
+    <div>
       <div>
-        <div>
-          <HeaderBlock />
-          <div className="bg-background">
-            <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-              <div className="sm:align-center sm:flex sm:flex-col">
-                <div className="relative mx-auto w-full max-w-7xl overflow-hidden px-2 py-12 sm:py-6">
-                  {!publicRowData ? (
-                    <>
-                      <div className="text-center">
-                        <h1 className="text-3xl font-extrabold tracking-tight sm:text-4xl">{t("shared.unauthorized")}</h1>
-                        <p className="text-muted-foreground mt-4 text-lg leading-6">{error}</p>
+        <HeaderBlock />
+        <div className="bg-background">
+          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+            <div className="sm:align-center sm:flex sm:flex-col">
+              <div className="relative mx-auto w-full max-w-7xl overflow-hidden px-2 py-12 sm:py-6">
+                {publicRowData ? (
+                  <>
+                    <div className="text-center">
+                      <h1 className="text-3xl font-extrabold tracking-tight sm:text-4xl">{t(publicRowData.rowData.entity.title)}</h1>
+                      <p className="text-muted-foreground mt-4 text-lg leading-6">
+                        {publicRowData.rowData.item?.tenant ? (
+                          <div>
+                            {publicRowData.rowData.item?.tenant?.name}, {RowHelper.getRowFolio(publicRowData.rowData.entity, publicRowData.rowData.item)}
+                          </div>
+                        ) : (
+                          <div>{RowHelper.getRowFolio(publicRowData.rowData.entity, publicRowData.rowData.item)}</div>
+                        )}
+                      </p>
+                    </div>
+                    <div className="mt-12">
+                      <div className="border-border bg-secondary space-y-3 border-2 border-dashed p-6">
+                        <RowOverviewRoute
+                          rowData={publicRowData.rowData}
+                          item={publicRowData.rowData.item}
+                          routes={publicRowData.routes}
+                          relationshipRows={publicRowData.relationshipRows}
+                        />
                       </div>
-                    </>
-                  ) : (
-                    <>
-                      <div className="text-center">
-                        <h1 className="text-3xl font-extrabold tracking-tight sm:text-4xl">{t(publicRowData.rowData.entity.title)}</h1>
-                        <p className="text-muted-foreground mt-4 text-lg leading-6">
-                          {publicRowData.rowData.item?.tenant ? (
-                            <div>
-                              {publicRowData.rowData.item?.tenant?.name}, {RowHelper.getRowFolio(publicRowData.rowData.entity, publicRowData.rowData.item)}
-                            </div>
-                          ) : (
-                            <div>{RowHelper.getRowFolio(publicRowData.rowData.entity, publicRowData.rowData.item)}</div>
-                          )}
-                        </p>
-                      </div>
-                      <div className="mt-12">
-                        <div className="border-border bg-secondary space-y-3 border-2 border-dashed p-6">
-                          <RowOverviewRoute
-                            rowData={publicRowData.rowData}
-                            item={publicRowData.rowData.item}
-                            routes={publicRowData.routes}
-                            relationshipRows={publicRowData.relationshipRows}
-                          />
-                        </div>
-                      </div>
-                    </>
-                  )}
-                </div>
+                    </div>
+                  </>
+                ) : (
+                  <div className="text-center">
+                    <h1 className="text-3xl font-extrabold tracking-tight sm:text-4xl">{t("shared.unauthorized")}</h1>
+                    <p className="text-muted-foreground mt-4 text-lg leading-6">{error}</p>
+                  </div>
+                )}
               </div>
             </div>
           </div>
         </div>
-        <Outlet />
       </div>
-    </>
+      <Outlet />
+    </div>
   );
 }
 

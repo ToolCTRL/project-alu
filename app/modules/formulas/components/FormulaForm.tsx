@@ -42,13 +42,13 @@ export default function FormulaForm({ item, onDelete }: FormulaFormProps) {
 
   function onSave(item: FormulaComponentDto) {
     const idx = showModal?.idx;
-    if (idx !== undefined) {
-      components[idx] = item;
-    } else {
+    if (idx === undefined) {
       components.push({
         ...item,
         order: components.length + 1,
       });
+    } else {
+      components[idx] = item;
     }
     setComponents([...components]);
     setShowModal(undefined);

@@ -117,10 +117,10 @@ function LinkForm({
   onUpdate,
   isSublink,
 }: {
-  item: NavbarItemDto;
-  onRemove: () => void;
-  onUpdate: (item: NavbarItemDto) => void;
-  isSublink?: boolean;
+  readonly item: NavbarItemDto;
+  readonly onRemove: () => void;
+  readonly onUpdate: (item: NavbarItemDto) => void;
+  readonly isSublink?: boolean;
 }) {
   const { t } = useTranslation();
   const [state, setState] = useState<NavbarItemDto>(item);

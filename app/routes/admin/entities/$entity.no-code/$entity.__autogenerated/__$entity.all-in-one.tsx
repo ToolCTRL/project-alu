@@ -9,7 +9,9 @@ export const meta: v2MetaFunction<Rows_List.LoaderData> = ({ data }) => data?.me
 export const loader = (args: LoaderFunctionArgs) => Rows_List.loader(args);
 export const action: ActionFunction = (args) => Rows_List.action(args);
 
-export default () => <RowsAllInOneRoute />;
+export default function EntityRowsAllInOneRoute() {
+  return <RowsAllInOneRoute />;
+}
 
 export function ErrorBoundary() {
   return <ServerError />;

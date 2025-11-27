@@ -27,7 +27,7 @@ export const action = async ({ request }: ActionFunctionArgs) => {
   }
 };
 
-export default function () {
+export default function KnowledgeBaseDanger() {
   const actionData = useActionData<ActionData>();
 
   const submit = useSubmit();

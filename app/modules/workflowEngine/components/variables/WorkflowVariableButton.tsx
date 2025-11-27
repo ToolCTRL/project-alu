@@ -9,9 +9,9 @@ export default function WorkflowVariableButton({
   block,
   onSelected,
 }: {
-  workflow: WorkflowDto;
-  block: WorkflowBlockDto;
-  onSelected: (variable: { name: string }) => void;
+  readonly workflow: WorkflowDto;
+  readonly block: WorkflowBlockDto;
+  readonly onSelected: (variable: { name: string }) => void;
 }) {
   const [isOpen, setIsOpen] = useState(false);
 
@@ -44,7 +44,7 @@ export default function WorkflowVariableButton({
   );
 }
 
-function VariableList({ workflow, block, onSelected }: { workflow: WorkflowDto; block: WorkflowBlockDto; onSelected: (variable: { name: string }) => void }) {
+function VariableList({ workflow, block, onSelected }: { readonly workflow: WorkflowDto; readonly block: WorkflowBlockDto; readonly onSelected: (variable: { name: string }) => void }) {
   const [groups, setGroups] = useState<{ name: string; variables: { name: string; label: string }[] }[]>([]);
   useEffect(() => {
     const variables = WorkflowUtils.getVariables({ workflow, currentBlock: block });
@@ -84,9 +84,9 @@ function VariableList({ workflow, block, onSelected }: { workflow: WorkflowDto; 
   }, [workflow, block]);
   return (
     <div className="space-y-2">
-      {groups.map((group, idx) => {
+      {groups.map((group) => {
         return (
-          <div key={idx} className="space-y-1">
+          <div key={group.name} className="space-y-1">
             <div className="font-medium">{group.name}</div>
             <div className="space-y-1">
               {group.variables.map((variable) => (

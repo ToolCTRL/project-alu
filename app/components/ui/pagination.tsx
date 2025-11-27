@@ -52,7 +52,7 @@ function PaginationLink({
   return (
     <a
       aria-current={isActive ? "page" : undefined}
-      aria-label={!children ? `Page ${props.href || ''}` : undefined}
+      aria-label={children ? undefined : `Page ${props.href || ''}`}
       data-slot="pagination-link"
       data-active={isActive}
       className={cn(

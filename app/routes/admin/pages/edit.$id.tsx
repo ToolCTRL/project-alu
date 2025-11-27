@@ -13,7 +13,7 @@ type LoaderData = {
 };
 export const loader = async ({ request, params }: LoaderFunctionArgs) => {
   await verifyUserHasPermission(request, "admin.pages.update");
-  const item = await getPage(params.id!);
+  const item = await getPage(params.id);
   if (!item) {
     return redirect("/admin/pages");
   }

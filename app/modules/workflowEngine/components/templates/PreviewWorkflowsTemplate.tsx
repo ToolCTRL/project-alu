@@ -1,7 +1,16 @@
 import TableSimple from "~/components/ui/tables/TableSimple";
 import { WorkflowsTemplateDto } from "../../dtos/WorkflowsTemplateDto";
 
-export default function PreviewWorkflowsTemplate({ template }: { template: WorkflowsTemplateDto }) {
+function BlockTypeCell({ type, description }: { readonly type: string; readonly description: string | undefined }) {
+  return (
+    <div className="flex-col">
+      <div>{type}</div>
+      <div className="text-muted-foreground text-xs">{description || "No description"}</div>
+    </div>
+  );
+}
+
+export default function PreviewWorkflowsTemplate({ template }: { readonly template: WorkflowsTemplateDto }) {
   return (
     <div>
       {template.workflows.map((workflow) => {
@@ -14,12 +23,7 @@ export default function PreviewWorkflowsTemplate({ template }: { template: Workf
                 {
                   name: "block",
                   title: "Block Type",
-                  value: (i) => (
-                    <div className="flex-col">
-                      <div>{i.type}</div>
-                      <div className="text-muted-foreground text-xs">{i.description || "No description"}</div>
-                    </div>
-                  ),
+                  value: (i) => <BlockTypeCell type={i.type} description={i.description} />,
                 },
                 {
                   name: "input",

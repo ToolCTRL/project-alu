@@ -30,7 +30,7 @@ const getAccentColor = (accentColor: "primary" | "secondary" | "tertiary") => {
 };
 
 // Value Card Component with 3D Tilt Effect
-function ValueCard({ value }: { value: any }) {
+function ValueCard({ value }: { readonly value: any }) {
   const colors = getAccentColor(value.accentColor);
   const { rotateX, rotateY, handleMouseMove, handleMouseLeave } = use3DTilt();
 
@@ -99,7 +99,7 @@ function ValueCard({ value }: { value: any }) {
   );
 }
 
-export default function ValuesVariantGrid({ item }: { item: ValuesBlockDto }) {
+export default function ValuesVariantGrid({ item }: { readonly item: ValuesBlockDto }) {
 
   return (
     <section className="py-24 bg-gradient-to-b from-blueprint-bg-base to-blueprint-bg-elevated">
@@ -137,7 +137,7 @@ export default function ValuesVariantGrid({ item }: { item: ValuesBlockDto }) {
         {/* Values Grid */}
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
           {item.items.map((value, i) => (
-            <ScrollReveal key={i} delay={i * 0.1}>
+            <ScrollReveal key={`value-${value.headline}-${i}`} delay={i * 0.1}>
               <ValueCard value={value} />
             </ScrollReveal>
           ))}

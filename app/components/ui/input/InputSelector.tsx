@@ -101,8 +101,7 @@ const InputSelector = (
   }
 
   return (
-    <Fragment>
-      <div>
+    <div>
         {withLabel && title && (
           <label htmlFor={name} className="mb-1 flex justify-between space-x-2 text-xs font-medium">
             <div className=" flex items-center space-x-1">
@@ -167,7 +166,6 @@ const InputSelector = (
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
-    </Fragment>
   );
 };
 

@@ -24,7 +24,7 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
   return data;
 };
 
-export default function () {
+function NotificationsOverview() {
   const { t } = useTranslation();
   const data = useLoaderData<LoaderData>();
   return (
@@ -59,6 +59,8 @@ export default function () {
     </div>
   );
 }
+
+export default NotificationsOverview;
 
 export function ErrorBoundary() {
   return <ServerError />;

@@ -35,6 +35,33 @@ export namespace Campaigns_Edit {
     error?: string;
     success?: string;
   };
+
+  async function handleDelete(params: any, tenantId: string | null) {
+    await deleteCampaign(params.id, tenantId);
+    return redirect(params.tenant ? `/app/${params.tenant}/email-marketing/campaigns` : "/admin/email-marketing/campaigns");
+  }
+
+  async function handleUpdate(params: any, form: FormData, t: any) {
+    await updateCampaign(params.id, {
+      name: form.get("name")?.toString(),
+      subject: form.get("subject")?.toString(),
+      htmlBody: form.get("htmlBody")?.toString(),
+      textBody: form.get("textBody")?.toString(),
+    });
+    return Response.json({ success: t("shared.saved") });
+  }
+
+  async function handleSend(item: any, t: any) {
+    await EmailMarketingService.sendCampaign(item);
+    return Response.json({ success: t("shared.sent") }, { status: 200 });
+  }
+
+  async function handleSendPreview(item: any, form: FormData, t: any) {
+    const email = form.get("email")?.toString() ?? "";
+    await EmailMarketingService.sendCampaignTest(item, email);
+    return Response.json({ success: t("shared.sent") }, { status: 200 });
+  }
+
   export const action: ActionFunction = async ({ request, params }) => {
     await requireAuth({ request, params });
     const { t } = await getTranslations(request);
@@ -42,46 +69,26 @@ export namespace Campaigns_Edit {
     const form = await request.formData();
     const action = form.get("action")?.toString() ?? "";
     const item = await getCampaign(params.id, tenantId);
+
     if (!item) {
       return Response.json({ error: t("shared.notFound") }, { status: 404 });
     }
-    if (action === "delete") {
-      try {
-        await deleteCampaign(params.id, tenantId);
-        return redirect(params.tenant ? `/app/${params.tenant}/email-marketing/campaigns` : "/admin/email-marketing/campaigns");
-      } catch (e: any) {
-        return Response.json({ error: e.message }, { status: 400 });
+
+    try {
+      switch (action) {
+        case "delete":
+          return await handleDelete(params, tenantId);
+        case "update":
+          return await handleUpdate(params, form, t);
+        case "send":
+          return await handleSend(item, t);
+        case "send-preview":
+          return await handleSendPreview(item, form, t);
+        default:
+          return Response.json({ error: t("shared.invalidForm") }, { status: 400 });
       }
-    } else if (action === "update") {
-      try {
-        await updateCampaign(params.id, {
-          name: form.get("name")?.toString(),
-          subject: form.get("subject")?.toString(),
-          htmlBody: form.get("htmlBody")?.toString(),
-          textBody: form.get("textBody")?.toString(),
-          // status: form.get("status")?.toString(),
-        });
-        return Response.json({ success: t("shared.saved") });
-      } catch (e: any) {
-        return Response.json({ error: e.message }, { status: 400 });
-      }
-    } else if (action === "send") {
-      try {
-        await EmailMarketingService.sendCampaign(item);
-        return Response.json({ success: t("shared.sent") }, { status: 200 });
-      } catch (e: any) {
-        return Response.json({ error: e.message }, { status: 400 });
-      }
-    } else if (action === "send-preview") {
-      try {
-        const email = form.get("email")?.toString() ?? "";
-        await EmailMarketingService.sendCampaignTest(item, email);
-        return Response.json({ success: t("shared.sent") }, { status: 200 });
-      } catch (e: any) {
-        return Response.json({ error: e.message }, { status: 400 });
-      }
-    } else {
-      return Response.json({ error: t("shared.invalidForm") }, { status: 400 });
+    } catch (e: any) {
+      return Response.json({ error: e.message }, { status: 400 });
     }
   };
 }

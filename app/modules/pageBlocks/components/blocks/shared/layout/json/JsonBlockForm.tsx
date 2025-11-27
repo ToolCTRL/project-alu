@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import InputText from "~/components/ui/input/InputText";
 import { PageBlockDto } from "~/modules/pageBlocks/dtos/PageBlockDto";
 
-export default function JsonBlockForm({ item, onUpdate }: { item?: PageBlockDto; onUpdate: (item: PageBlockDto) => void }) {
+export default function JsonBlockForm({ item, onUpdate }: { readonly item?: PageBlockDto; readonly onUpdate: (item: PageBlockDto) => void }) {
   const [error, setError] = useState<string>();
   const [json, setJson] = useState("");
 
@@ -26,7 +26,7 @@ export default function JsonBlockForm({ item, onUpdate }: { item?: PageBlockDto;
   }, [json]);
   return (
     <div className="space-y-1">
-      <label className="text-foreground text-sm font-medium leading-3">JSON</label>
+      <div className="text-foreground text-sm font-medium leading-3">JSON</div>
       <div className="h-96">
         {error && <p className="text-red-500">{error}</p>}
         <InputText value={json} setValue={(e) => setJson(e.toString())} editor="monaco" editorLanguage="json" editorFontSize={14} editorSize="lg" />
