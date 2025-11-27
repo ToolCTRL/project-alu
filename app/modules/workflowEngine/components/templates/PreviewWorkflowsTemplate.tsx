@@ -14,6 +14,21 @@ function InputCell({ input }: { readonly input: any }) {
   return JSON.stringify({ input });
 }
 
+const workflowHeaders = [
+  {
+    name: "block",
+    title: "Block Type",
+    value: (i: WorkflowsTemplateDto["workflows"][number]["blocks"][number]) => (
+      <BlockTypeCell type={i.type} description={i.description} />
+    ),
+  },
+  {
+    name: "input",
+    title: "Input",
+    value: (i: WorkflowsTemplateDto["workflows"][number]["blocks"][number]) => <InputCell input={i.input} />,
+  },
+];
+
 export default function PreviewWorkflowsTemplate({ template }: { readonly template: WorkflowsTemplateDto }) {
   return (
     <div>
@@ -23,18 +38,7 @@ export default function PreviewWorkflowsTemplate({ template }: { readonly templa
             <h3 className="font-medium">{workflow.name}</h3>
             <TableSimple
               items={workflow.blocks}
-              headers={[
-                {
-                  name: "block",
-                  title: "Block Type",
-                  value: (i) => <BlockTypeCell type={i.type} description={i.description} />,
-                },
-                {
-                  name: "input",
-                  title: "Input",
-                  value: (i) => <InputCell input={i.input} />,
-                },
-              ]}
+              headers={workflowHeaders}
             />
           </div>
         );

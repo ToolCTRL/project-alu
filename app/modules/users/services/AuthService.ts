@@ -32,10 +32,13 @@ async function getHome({ isAdmin, tenantId, request }: { isAdmin: boolean; tenan
 async function loginFromRequest(request: Request, form: FormData) {
   const userInfo = await getUserInfo(request);
   const { t } = await getTranslations(request);
-  const email = form.get("email")?.toString().toLowerCase().trim() ?? "";
-  const password = form.get("password")?.toString() ?? "";
-  const redirectTo = form.get("redirectTo")?.toString() ?? "";
-  if (typeof email !== "string" || typeof password !== "string" || typeof redirectTo !== "string") {
+  const emailEntry = form.get("email");
+  const passwordEntry = form.get("password");
+  const redirectEntry = form.get("redirectTo");
+  const email = typeof emailEntry === "string" ? emailEntry.toLowerCase().trim() : "";
+  const password = typeof passwordEntry === "string" ? passwordEntry : "";
+  const redirectTo = typeof redirectEntry === "string" ? redirectEntry : "";
+  if (!email || !password) {
     throw new TypeError("Invalid form data");
   }
 

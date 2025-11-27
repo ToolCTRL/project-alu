@@ -108,11 +108,7 @@ export default function ConditionsGroupsInfo({
 
       <SlideOverWideEmpty
         className="sm:max-w-2xl"
-        title={
-          selectedConditionsGroup
-            ? (type === "if" ? "If Condition" : `Case ${selectedConditionsGroup.index + 1}`)
-            : ""
-        }
+        title={getSlideOverTitle(type, selectedConditionsGroup)}
         open={!!selectedConditionsGroup}
         onClose={() => setSelectedConditionsGroup(null)}
       >
@@ -151,4 +147,14 @@ export default function ConditionsGroupsInfo({
       </SlideOverWideEmpty>
     </div>
   );
+}
+
+function getSlideOverTitle(type: "if" | "switch", selectedConditionsGroup: { index: number } | null) {
+  if (!selectedConditionsGroup) {
+    return "";
+  }
+  if (type === "if") {
+    return "If Condition";
+  }
+  return `Case ${selectedConditionsGroup.index + 1}`;
 }

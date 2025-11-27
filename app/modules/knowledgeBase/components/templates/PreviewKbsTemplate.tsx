@@ -42,54 +42,44 @@ function ArticleTitleCell({ title, description }: ArticleTableProps) {
   return <TitleCell title={title} description={description} />;
 }
 
+const knowledgeBaseHeaders = [
+  { name: "slug", title: "Slug", value: (i: KnowledgeBasesTemplateDto["knowledgeBases"][number]) => i.slug },
+  { name: "title", title: "Title", value: (i: KnowledgeBasesTemplateDto["knowledgeBases"][number]) => <KbTitleCell title={i.title} description={i.description} /> },
+  { name: "enabled", title: "Enabled", value: (i: KnowledgeBasesTemplateDto["knowledgeBases"][number]) => i.enabled },
+];
+
+const categoriesHeaders = [
+  { name: "slug", title: "Slug", value: (i: KnowledgeBasesTemplateDto["categories"][number]) => i.slug },
+  { name: "title", title: "Title", value: (i: KnowledgeBasesTemplateDto["categories"][number]) => <CategoryTitleCell title={i.title} description={i.description} /> },
+  { name: "sections", title: "Sections", value: (i: KnowledgeBasesTemplateDto["categories"][number]) => i.sections.map((s) => s.title).join(", ") },
+  { name: "knowledgeBase", title: "Knowledge Base", value: (i: KnowledgeBasesTemplateDto["categories"][number]) => i.knowledgeBaseSlug },
+];
+
+const articlesHeaders = [
+  { name: "slug", title: "Slug", value: (i: KnowledgeBasesTemplateDto["articles"][number]) => i.slug },
+  { name: "title", title: "Title", value: (i: KnowledgeBasesTemplateDto["articles"][number]) => <ArticleTitleCell title={i.title} description={i.description} /> },
+  { name: "knowledgeBase", title: "Knowledge Base", value: (i: KnowledgeBasesTemplateDto["articles"][number]) => i.knowledgeBaseSlug },
+];
+
 export default function PreviewKbsTemplate({ template }: { readonly template: KnowledgeBasesTemplateDto }) {
   return (
     <div className="space-y-2">
       <h3 className="font-medium">Knowledge Bases</h3>
       <TableSimple
         items={template.knowledgeBases}
-        headers={[
-          { name: "slug", title: "Slug", value: (i) => i.slug },
-          {
-            name: "title",
-            title: "Title",
-            value: (i) => <KbTitleCell title={i.title} description={i.description} />,
-          },
-          { name: "enabled", title: "Enabled", value: (i) => i.enabled },
-        ]}
+        headers={knowledgeBaseHeaders}
       />
 
       <h3 className="font-medium">Categories</h3>
       <TableSimple
         items={template.categories}
-        headers={[
-          { name: "slug", title: "Slug", value: (i) => i.slug },
-          {
-            name: "title",
-            title: "Title",
-            value: (i) => <CategoryTitleCell title={i.title} description={i.description} />,
-          },
-          {
-            name: "sections",
-            title: "Sections",
-            value: (i) => i.sections.map((s) => s.title).join(", "),
-          },
-          { name: "knowledgeBase", title: "Knowledge Base", value: (i) => i.knowledgeBaseSlug },
-        ]}
+        headers={categoriesHeaders}
       />
 
       <h3 className="font-medium">Articles</h3>
       <TableSimple
         items={template.articles}
-        headers={[
-          { name: "slug", title: "Slug", value: (i) => i.slug },
-          {
-            name: "title",
-            title: "Title",
-            value: (i) => <ArticleTitleCell title={i.title} description={i.description} />,
-          },
-          { name: "knowledgeBase", title: "Knowledge Base", value: (i) => i.knowledgeBaseSlug },
-        ]}
+        headers={articlesHeaders}
       />
     </div>
   );

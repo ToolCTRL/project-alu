@@ -20,6 +20,41 @@ import WorkflowLayoutUtils from "../../helpers/WorkflowLayoutUtils";
 import { WorkflowExecutionDto } from "../../dtos/WorkflowExecutionDto";
 import BlockExecutionNode from "../nodes/BlockExecutionNode";
 
+function getConditionForIfBlock(fromBlock: WorkflowBlockDto): string | null {
+  const hasTrue = fromBlock.toBlocks.find((x) => x.condition === "true");
+  const hasFalse = fromBlock.toBlocks.find((x) => x.condition === "false");
+  if (hasTrue && hasFalse) {
+    return null;
+  }
+  return hasTrue ? "false" : "true";
+}
+
+function getConditionForSwitchBlock(fromBlock: WorkflowBlockDto): string | null {
+  let availableNextCase = -1;
+  fromBlock.conditionGroups.forEach((group) => {
+    const existingConnection = fromBlock.toBlocks.find((f) => f.condition === `case${group.index + 1}`);
+    if (!existingConnection) {
+      availableNextCase = group.index;
+    }
+  });
+
+  if (availableNextCase !== -1) {
+    return `case${availableNextCase + 1}`;
+  }
+
+  const existingDefaultConnection = fromBlock.toBlocks.find((f) => f.condition === "default");
+  return existingDefaultConnection ? null : "default";
+}
+
+function getConditionForIteratorBlock(fromBlock: WorkflowBlockDto): string | null {
+  const hasLoopNext = fromBlock.toBlocks.find((x) => x.condition === "loopNext");
+  const hasLoopEnd = fromBlock.toBlocks.find((x) => x.condition === "loopEnd");
+  if (hasLoopNext && hasLoopEnd) {
+    return null;
+  }
+  return hasLoopNext ? "loopEnd" : "loopNext";
+}
+
 interface Props {
   workflow: WorkflowDto;
   selectedBlock: WorkflowBlockDto | null;
@@ -91,42 +126,16 @@ function WorkflowBuilderFlow({
   }, [reactFlowInstance, nodes, edges, workflow]);
 
   const getConditionForBlockType = useCallback((fromBlock: WorkflowBlockDto): string | null => {
-    if (fromBlock.type === "if") {
-      const hasTrue = fromBlock.toBlocks.find((x) => x.condition === "true");
-      const hasFalse = fromBlock.toBlocks.find((x) => x.condition === "false");
-      if (hasTrue && hasFalse) {
+    switch (fromBlock.type) {
+      case "if":
+        return getConditionForIfBlock(fromBlock);
+      case "switch":
+        return getConditionForSwitchBlock(fromBlock);
+      case "iterator":
+        return getConditionForIteratorBlock(fromBlock);
+      default:
         return null;
-      }
-      return hasTrue ? "false" : "true";
     }
-
-    if (fromBlock.type === "switch") {
-      let availableNextCase = -1;
-      fromBlock.conditionGroups.forEach((group) => {
-        const existingConnection = fromBlock.toBlocks.find((f) => f.condition === `case${group.index + 1}`);
-        if (!existingConnection) {
-          availableNextCase = group.index;
-        }
-      });
-
-      if (availableNextCase !== -1) {
-        return `case${availableNextCase + 1}`;
-      }
-
-      const existingDefaultConnection = fromBlock.toBlocks.find((f) => f.condition === "default");
-      return existingDefaultConnection ? null : "default";
-    }
-
-    if (fromBlock.type === "iterator") {
-      const hasLoopNext = fromBlock.toBlocks.find((x) => x.condition === "loopNext");
-      const hasLoopEnd = fromBlock.toBlocks.find((x) => x.condition === "loopEnd");
-      if (hasLoopNext && hasLoopEnd) {
-        return null;
-      }
-      return hasLoopNext ? "loopEnd" : "loopNext";
-    }
-
-    return null;
   }, []);
 
   const onConnect = useCallback(

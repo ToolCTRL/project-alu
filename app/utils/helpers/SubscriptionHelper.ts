@@ -5,19 +5,19 @@ import { getSubscriptionProduct } from "../db/subscriptionProducts.db.server";
 
 async function getPlanFromForm(form: FormData) {
   const productIdValue = form.get("product-id");
-  const productId = productIdValue?.toString() ?? "";
+  const productId = typeof productIdValue === "string" ? productIdValue : "";
   const billingPeriod = Number(form.get("billing-period")) as SubscriptionBillingPeriod;
   const currencyValue = form.get("currency");
-  const currency = currencyValue?.toString() ?? "";
+  const currency = typeof currencyValue === "string" ? currencyValue : "";
   const quantity = Number(form.get("quantity"));
   const couponValue = form.get("coupon");
-  const coupon = couponValue !== null && couponValue !== undefined ? String(couponValue) : undefined;
+  const coupon = typeof couponValue === "string" && couponValue.length > 0 ? couponValue : undefined;
   const isUpgradeValue = form.get("is-upgrade");
-  const isUpgrade = (isUpgradeValue?.toString() ?? "") === "true";
+  const isUpgrade = typeof isUpgradeValue === "string" ? isUpgradeValue === "true" : false;
   const isDowngradeValue = form.get("is-downgrade");
-  const isDowngrade = (isDowngradeValue?.toString() ?? "") === "true";
+  const isDowngrade = typeof isDowngradeValue === "string" ? isDowngradeValue === "true" : false;
   const referralValue = form.get("referral");
-  const referral = referralValue !== null && referralValue !== undefined ? String(referralValue) : null;
+  const referral = typeof referralValue === "string" && referralValue.length > 0 ? referralValue : null;
 
   // eslint-disable-next-line no-console
   console.log("[Subscription]", {

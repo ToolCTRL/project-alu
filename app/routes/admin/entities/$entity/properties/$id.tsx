@@ -92,11 +92,17 @@ async function handleEdit(
   const { isRequired, formulaId } = processFormData(form, type);
 
   const options: { order: number; value: string; name?: string; color?: Colors }[] = form.getAll("options[]").map((f: FormDataEntryValue) => {
-    return JSON.parse(String(f));
+    if (typeof f !== "string") {
+      throw new TypeError("options[] entries must be JSON strings");
+    }
+    return JSON.parse(f);
   });
 
   const attributes: { name: string; value: string }[] = form.getAll("attributes[]").map((f: FormDataEntryValue) => {
-    return JSON.parse(String(f));
+    if (typeof f !== "string") {
+      throw new TypeError("attributes[] entries must be JSON strings");
+    }
+    return JSON.parse(f);
   });
 
   if (type === PropertyType.FORMULA && formulaId === "") {
