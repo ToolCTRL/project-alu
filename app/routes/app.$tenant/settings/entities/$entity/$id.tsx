@@ -74,7 +74,8 @@ async function handleEditProperty(params: any, form: FormData, existing: Propert
   const canUpdate = Boolean(form.get("can-update"));
   const showInCreate = Boolean(form.get("show-in-create"));
   const formulaValue = form.get("formula-id");
-  let formulaId = (formulaValue?.toString() ?? "") || null;
+  const formulaIdRaw = typeof formulaValue === "string" ? formulaValue : "";
+  let formulaId = formulaIdRaw || null;
 
   if (type === PropertyType.FORMULA) {
     isRequired = false;
@@ -95,12 +96,16 @@ async function handleEditProperty(params: any, form: FormData, existing: Propert
   }
 
   const options: { order: number; value: string; name?: string; color?: Colors }[] = form.getAll("options[]").map((f: FormDataEntryValue) => {
-    const value = typeof f === 'string' ? f : f.toString();
-    return JSON.parse(value);
+    if (typeof f !== "string") {
+      throw new TypeError("options[] entries must be JSON strings");
+    }
+    return JSON.parse(f);
   });
   const attributes: { name: string; value: string }[] = form.getAll("attributes[]").map((f: FormDataEntryValue) => {
-    const value = typeof f === 'string' ? f : f.toString();
-    return JSON.parse(value);
+    if (typeof f !== "string") {
+      throw new TypeError("attributes[] entries must be JSON strings");
+    }
+    return JSON.parse(f);
   });
 
   try {
@@ -129,7 +134,7 @@ async function handleEditProperty(params: any, form: FormData, existing: Propert
 
 async function handleDeleteProperty(params: any, form: FormData, t: any) {
   const idValue = form.get("id");
-  const id = idValue?.toString() ?? "";
+  const id = typeof idValue === "string" ? idValue : "";
   const existingProperty = await getProperty(id);
   if (!existingProperty) {
     return badRequest({ error: t("shared.notFound") });

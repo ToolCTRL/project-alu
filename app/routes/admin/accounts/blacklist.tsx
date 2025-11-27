@@ -17,6 +17,33 @@ import EditPageLayout from "~/components/ui/layouts/EditPageLayout";
 import InputSelect from "~/components/ui/input/InputSelect";
 import Modal from "~/components/ui/modals/Modal";
 
+const makeBlacklistHeaders = (t: (key: string) => string) => [
+  {
+    name: "type",
+    title: t("models.blacklist.type"),
+    value: (i: Blacklist) => i.type,
+    formattedValue: (i: Blacklist) => <BlacklistTypeCell type={i.type} />,
+  },
+  {
+    name: "value",
+    title: t("models.blacklist.value"),
+    value: (i: Blacklist) => i.value,
+    className: "w-full",
+  },
+  {
+    name: "registerAttempts",
+    title: t("models.blacklist.registerAttempts"),
+    value: (i: Blacklist) => i.registerAttempts,
+  },
+  {
+    name: "createdAt",
+    title: t("shared.createdAt"),
+    value: (item: Blacklist) => DateUtils.dateAgo(item.createdAt),
+    className: "text-muted-foreground text-xs",
+    breakpoint: "sm",
+  },
+];
+
 type LoaderData = {
   title: string;
   items: Blacklist[];
@@ -125,32 +152,7 @@ export default function BlacklistRoute() {
     >
       <TableSimple
         items={data.items}
-        headers={[
-          {
-            name: "type",
-            title: t("models.blacklist.type"),
-            value: (i) => i.type,
-            formattedValue: (i) => <BlacklistTypeCell type={i.type} />,
-          },
-          {
-            name: "value",
-            title: t("models.blacklist.value"),
-            value: (i) => i.value,
-            className: "w-full",
-          },
-          {
-            name: "registerAttempts",
-            title: t("models.blacklist.registerAttempts"),
-            value: (i) => i.registerAttempts,
-          },
-          {
-            name: "createdAt",
-            title: t("shared.createdAt"),
-            value: (item) => DateUtils.dateAgo(item.createdAt),
-            className: "text-muted-foreground text-xs",
-            breakpoint: "sm",
-          },
-        ]}
+        headers={makeBlacklistHeaders(t)}
         actions={[
           {
             title: t("shared.delete"),

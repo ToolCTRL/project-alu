@@ -186,26 +186,6 @@ export default function AdminPricingRoute() {
     }
   }
 
-  const extractUniqueFeatures = (items: SubscriptionProductDto[]): SubscriptionFeatureDto[] => {
-    const allFeatures: SubscriptionFeatureDto[] = [];
-    items.forEach((item) => {
-      item.features.forEach((feature) => {
-        const existing = allFeatures.find((f) => f.name === feature.name);
-        if (!existing) {
-          allFeatures.push({
-            order: feature.order,
-            name: feature.name,
-            title: feature.title,
-            type: feature.type,
-            value: feature.value,
-            accumulate: feature.accumulate,
-          });
-        }
-      });
-    });
-    return allFeatures.sort((a, b) => a.order - b.order);
-  };
-
   const sortedItems = () => {
     return items.sort((x, y) => {
       return x?.order > y?.order ? 1 : -1;

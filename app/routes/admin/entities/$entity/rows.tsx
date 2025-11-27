@@ -10,6 +10,15 @@ import { PaginationDto } from "~/application/dtos/data/PaginationDto";
 import ShowPayloadModalButton from "~/components/ui/json/ShowPayloadModalButton";
 import { verifyUserHasPermission } from "~/utils/helpers/.server/PermissionsService";
 
+const renderObjectCell = (item: RowWithDetails) => <ObjectCell item={item} />;
+const leftHeaders = [
+  {
+    name: "object",
+    title: "Object",
+    value: renderObjectCell,
+  },
+];
+
 type LoaderData = {
   entity: EntityWithDetails;
   items: RowWithDetails[];
@@ -64,13 +73,7 @@ export default function EditEntityIndexRoute() {
         entity={data.entity}
         items={data.items}
         pagination={data.pagination}
-        leftHeaders={[
-          {
-            name: "object",
-            title: "Object",
-            value: (item) => <ObjectCell item={item} />,
-          },
-        ]}
+        leftHeaders={leftHeaders}
       />
     </div>
   );

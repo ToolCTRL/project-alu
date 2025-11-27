@@ -1,4 +1,3 @@
-import { useTranslation } from "react-i18next";
 import { useEffect } from "react";
 import { ActionFunction, LoaderFunctionArgs, MetaFunction, redirect, useLoaderData, useActionData } from "react-router";
 import { getTranslations } from "~/locale/i18next.server";

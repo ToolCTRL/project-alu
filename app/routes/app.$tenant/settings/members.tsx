@@ -86,9 +86,9 @@ type ActionData = {
 };
 const badRequest = (data: ActionData) => Response.json(data, { status: 400 });
 
-async function handleDeleteInvitation(form: FormData) {
-  const invitationIdValue = form.get("invitation-id");
-  const invitationId = invitationIdValue?.toString() ?? "";
+  async function handleDeleteInvitation(form: FormData) {
+    const invitationIdValue = form.get("invitation-id");
+    const invitationId = typeof invitationIdValue === "string" ? invitationIdValue : "";
   const invitation = await getUserInvitation(invitationId);
   if (!invitation) {
     return badRequest({ error: "Invitation not found" });
@@ -130,11 +130,8 @@ async function removeRole(userId: string, roleId: string, tenantId: string, requ
   createAdminLog(request, "Deleted", `[${tenant?.name}] ${user?.email} - ${role?.name}}`);
 }
 
-async function handleEditRole(form: FormData, request: Request, tenantId: string, userInfo: UserSimple, fromUser: User) {
-  const toSafeString = (value: FormDataEntryValue | null) => {
-    if (value === null) return "";
-    return typeof value === 'string' ? value : value.toString();
-  };
+  async function handleEditRole(form: FormData, request: Request, tenantId: string, userInfo: UserSimple, fromUser: User) {
+    const toSafeString = (value: FormDataEntryValue | null) => (typeof value === "string" ? value : "");
   const userId = toSafeString(form.get("user-id"));
   const roleId = toSafeString(form.get("role-id"));
   const add = toSafeString(form.get("add")) === "true";

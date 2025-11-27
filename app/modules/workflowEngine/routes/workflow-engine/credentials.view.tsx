@@ -7,6 +7,29 @@ import EditPageLayout from "~/components/ui/layouts/EditPageLayout";
 import ConfirmModal, { RefConfirmModal } from "~/components/ui/modals/ConfirmModal";
 import TableSimple from "~/components/ui/tables/TableSimple";
 import { WorkflowDto } from "~/modules/workflowEngine/dtos/WorkflowDto";
+
+const renderCredentialNameCell = (item: WorkflowCredential) => <CredentialNameCell name={item.name} />;
+const renderCredentialValueCell = () => <CredentialValueCell />;
+const renderCredentialDateCell = (item: WorkflowCredential) => <CredentialDateCell date={item.createdAt} />;
+
+const credentialHeaders = [
+  {
+    title: "Name",
+    name: "name",
+    value: renderCredentialNameCell,
+  },
+  {
+    title: "Value",
+    name: "value",
+    className: "w-full",
+    value: renderCredentialValueCell,
+  },
+  {
+    title: "Created At",
+    name: "createdAt",
+    value: renderCredentialDateCell,
+  },
+];
 import { WorkflowsCredentialsApi } from "./credentials.api.server";
 
 export const meta: MetaFunction = () => [{ title: "Workflow Credentials" }];
@@ -50,24 +73,7 @@ export default function WorkflowsCredentialsView() {
     >
       <div className="space-y-3">
         <TableSimple
-          headers={[
-            {
-              title: "Name",
-              name: "name",
-              value: (item) => <CredentialNameCell name={item.name} />,
-            },
-            {
-              title: "Value",
-              name: "value",
-              className: "w-full",
-              value: () => <CredentialValueCell />,
-            },
-            {
-              title: "Created At",
-              name: "createdAt",
-              value: (item) => <CredentialDateCell date={item.createdAt} />,
-            },
-          ]}
+          headers={credentialHeaders}
           items={data.items}
           actions={[
             {

@@ -28,6 +28,20 @@ function TemplateCell({ item, getConfig }: Readonly<{ item: EntityTemplate; getC
   return <ShowPayloadModalButton title={`Template: ${item.title}`} payload={getConfig(item)} />;
 }
 
+const makeTemplateHeaders = (getConfig: (item: EntityTemplate) => string) => [
+  {
+    name: "title",
+    title: "Title",
+    value: (item: EntityTemplate) => item.title,
+  },
+  {
+    title: "Template",
+    name: "template",
+    className: "max-w-xs",
+    value: (item: EntityTemplate) => <TemplateCell item={item} getConfig={getConfig} />,
+  },
+];
+
 export default function EntityTemplatesIndex() {
   const { t } = useTranslation();
   const data = useLoaderData<LoaderData>();
@@ -61,19 +75,7 @@ export default function EntityTemplatesIndex() {
       <div className="space-y-3">
         <h3 className="text-foreground text-sm font-medium leading-3">Templates</h3>
         <TableSimple
-          headers={[
-            {
-              name: "title",
-              title: "Title",
-              value: (item) => item.title,
-            },
-            {
-              title: "Template",
-              name: "template",
-              className: "max-w-xs",
-              value: (item) => <TemplateCell item={item} getConfig={getConfig} />,
-            },
-          ]}
+          headers={makeTemplateHeaders(getConfig)}
           items={data.items}
           actions={[
             {

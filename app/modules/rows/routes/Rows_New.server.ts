@@ -115,17 +115,19 @@ export namespace Rows_New {
         "FormulaService.trigger.AFTER_CREATED"
       );
 
-      const onCreatedRedirect = form.get("onCreatedRedirect");
+      const onCreatedRedirectEntry = form.get("onCreatedRedirect");
+      const onCreatedRedirect = typeof onCreatedRedirectEntry === "string" ? onCreatedRedirectEntry : "";
       if (onCreatedRedirect) {
-        const onCreatedRedirectStr = typeof onCreatedRedirect === "string" ? onCreatedRedirect : String(onCreatedRedirect || "");
-        const response = handleOnCreatedRedirect(onCreatedRedirectStr, entity, newRow, request, params, getServerTimingHeader());
+        const response = handleOnCreatedRedirect(onCreatedRedirect, entity, newRow, request, params, getServerTimingHeader());
         if (response) {
           return response;
         }
       }
 
       const redirectValue = form.get("redirect");
-      const redirectTo = (typeof redirectValue === "string" ? redirectValue : String(redirectValue || "")) || new URL(request.url).searchParams.get("redirect")?.toString();
+      const redirectFromForm = typeof redirectValue === "string" ? redirectValue : "";
+      const redirectFromQuery = new URL(request.url).searchParams.get("redirect") ?? "";
+      const redirectTo = redirectFromForm || redirectFromQuery;
       if (redirectTo) {
         return redirect(redirectTo, { headers: getServerTimingHeader() });
       }

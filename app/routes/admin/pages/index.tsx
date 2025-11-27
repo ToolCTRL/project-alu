@@ -85,6 +85,47 @@ const PageActionsCell = ({ item }: { item: PageConfiguration }) => (
   </div>
 );
 
+const renderPageSlug = (item: PageConfiguration) => <div>{item.slug}</div>;
+const renderPageTitle = (item: PageConfiguration) => <PageTitleCell item={item} />;
+const renderPageBlocks = (item: PageConfiguration) => (item.page?.blocks ?? []).length;
+const renderPageMetaTags = (item: PageConfiguration) => (item.page?.metaTags ?? []).length;
+const renderPageStatus = (item: PageConfiguration) => <PageStatusCell item={item} />;
+const renderPageActions = (item: PageConfiguration) => <PageActionsCell item={item} />;
+
+const adminPagesHeaders = [
+  {
+    name: "slug",
+    title: "Slug",
+    value: renderPageSlug,
+  },
+  {
+    name: "title",
+    title: "Title",
+    className: "w-full",
+    value: renderPageTitle,
+  },
+  {
+    name: "blocks",
+    title: "Blocks",
+    value: renderPageBlocks,
+  },
+  {
+    name: "metaTags",
+    title: "Meta tags",
+    value: renderPageMetaTags,
+  },
+  {
+    name: "status",
+    title: "Status",
+    value: renderPageStatus,
+  },
+  {
+    name: "actions",
+    title: "Actions",
+    value: renderPageActions,
+  },
+];
+
 type ActionData = {
   success?: string;
   error?: string;
@@ -202,39 +243,7 @@ export default function AdminPagesIndexRoute() {
         ) : (
           <TableSimple
             items={data.items}
-            headers={[
-              {
-                name: "slug",
-                title: "Slug",
-                value: (item) => <div>{item.slug}</div>,
-              },
-              {
-                name: "title",
-                title: "Title",
-                className: "w-full",
-                value: (i) => <PageTitleCell item={i} />,
-              },
-              {
-                name: "blocks",
-                title: "Blocks",
-                value: (i) => (i.page?.blocks ?? []).length,
-              },
-              {
-                name: "metaTags",
-                title: "Meta tags",
-                value: (i) => (i.page?.metaTags ?? []).length,
-              },
-              {
-                name: "status",
-                title: "Status",
-                value: (i) => <PageStatusCell item={i} />,
-              },
-              {
-                name: "actions",
-                title: "Actions",
-                value: (item) => <PageActionsCell item={item} />,
-              },
-            ]}
+            headers={adminPagesHeaders}
           />
         )}
       </div>

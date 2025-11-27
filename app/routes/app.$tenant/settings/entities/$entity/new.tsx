@@ -45,11 +45,11 @@ export const action: ActionFunction = async ({ request, params }) => {
   const entity = await getEntityBySlug({ tenantId, slug: params.entity ?? "" });
 
   const form = await request.formData();
-  const action = form.get("action")?.toString() ?? "";
-  const name = form.get("name")?.toString() ?? "";
-  const title = form.get("title")?.toString() ?? "";
+  const action = typeof form.get("action") === "string" ? (form.get("action") as string) : "";
+  const name = typeof form.get("name") === "string" ? (form.get("name") as string) : "";
+  const title = typeof form.get("title") === "string" ? (form.get("title") as string) : "";
   const type = Number(form.get("type")) as PropertyType;
-  const subtype = form.get("subtype")?.toString() ?? null;
+  const subtype = typeof form.get("subtype") === "string" ? (form.get("subtype") as string) : null;
   const order = Number(form.get("order"));
   const isDefault = Boolean(form.get("is-default"));
   let isRequired = Boolean(form.get("is-required"));
@@ -59,20 +59,24 @@ export const action: ActionFunction = async ({ request, params }) => {
   const canUpdate = Boolean(form.get("can-update"));
   let showInCreate = Boolean(form.get("show-in-create"));
   const formulaValue = form.get("formula-id");
-  let formulaId = formulaValue?.toString() ?? null;
+  let formulaId = typeof formulaValue === "string" ? formulaValue : null;
 
   if (["id", "folio", "createdAt", "createdByUser", "sort", "page", "q", "v", "redirect", "tags"].includes(name)) {
     return badRequest({ error: name + " is a reserved property name" });
   }
 
   const options: { order: number; value: string; name?: string; color?: Colors }[] = form.getAll("options[]").map((f: FormDataEntryValue) => {
-    const value = typeof f === 'string' ? f : f.toString();
-    return JSON.parse(value);
+    if (typeof f !== "string") {
+      throw new TypeError("options[] entries must be JSON strings");
+    }
+    return JSON.parse(f);
   });
 
   const attributes: { name: string; value: string }[] = form.getAll("attributes[]").map((f: FormDataEntryValue) => {
-    const value = typeof f === 'string' ? f : f.toString();
-    return JSON.parse(value);
+    if (typeof f !== "string") {
+      throw new TypeError("attributes[] entries must be JSON strings");
+    }
+    return JSON.parse(f);
   });
 
   if (type === PropertyType.FORMULA) {

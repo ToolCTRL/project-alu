@@ -52,6 +52,32 @@ function TenantCreatedAtCell({ createdAt }: { readonly createdAt: Date }) {
   );
 }
 
+const makeAccountUsersHeaders = (t: (key: string) => string) => [
+  {
+    name: "tenant",
+    title: t("models.tenant.object"),
+    value: (i: TenantWithDetails) => <TenantInfoCell name={i.name} slug={i.slug} />,
+  },
+  {
+    name: "types",
+    title: t("shared.types"),
+    value: (i: TenantWithDetails) => <TenantTypesCell types={i.types} t={t} />,
+  },
+  {
+    name: "users",
+    title: t("models.user.plural"),
+    className: "max-w-xs truncate",
+    value: (i: TenantWithDetails) => i.users.map((f) => f.user.email).join(", "),
+    href: (i: TenantWithDetails) => `/admin/accounts/users?tenantId=${i.id}`,
+  },
+  {
+    name: "createdAt",
+    title: t("shared.createdAt"),
+    value: (i: TenantWithDetails) => i.createdAt,
+    formattedValue: (item: TenantWithDetails) => <TenantCreatedAtCell createdAt={item.createdAt} />,
+  },
+];
+
 export default function AdminRolesAndPermissionsAccountUsersRoute() {
   const { t } = useTranslation();
   const data = useLoaderData<LoaderData>();
@@ -79,31 +105,7 @@ export default function AdminRolesAndPermissionsAccountUsersRoute() {
       <InputSearch value={searchInput} setValue={setSearchInput} />
       <TableSimple
         items={filteredItems()}
-        headers={[
-          {
-            name: "tenant",
-            title: t("models.tenant.object"),
-            value: (i) => <TenantInfoCell name={i.name} slug={i.slug} />,
-          },
-          {
-            name: "types",
-            title: t("shared.types"),
-            value: (i) => <TenantTypesCell types={i.types} t={t} />,
-          },
-          {
-            name: "users",
-            title: t("models.user.plural"),
-            className: "max-w-xs truncate",
-            value: (i) => i.users.map((f) => f.user.email).join(", "),
-            href: (i) => `/admin/accounts/users?tenantId=${i.id}`,
-          },
-          {
-            name: "createdAt",
-            title: t("shared.createdAt"),
-            value: (i) => i.createdAt,
-            formattedValue: (item) => <TenantCreatedAtCell createdAt={item.createdAt} />,
-          },
-        ]}
+        headers={makeAccountUsersHeaders(t)}
         actions={[
           {
             title: t("shared.setUserRoles"),

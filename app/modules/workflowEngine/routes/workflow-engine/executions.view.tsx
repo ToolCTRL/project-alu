@@ -59,6 +59,58 @@ function ExecutionWorkflowCell({ execution, params }: { readonly execution: Work
   );
 }
 
+const renderExecutionTypeCell = (i: WorkflowExecutionWithDetails) => <ExecutionTypeCell type={i.type} />;
+const renderExecutionStatusCell = (i: WorkflowExecutionWithDetails) => <ExecutionStatusCell execution={i} />;
+const renderExecutionTenantCell = (i: WorkflowExecutionWithDetails) => <ExecutionTenantCell tenant={i.tenant} />;
+const renderExecutionDurationCell = (i: WorkflowExecutionWithDetails) => <ExecutionDurationCell createdAt={i.createdAt} endedAt={i.endedAt} />;
+const renderExecutionBlockRunsCell = (i: WorkflowExecutionWithDetails) => <ExecutionBlockRunsCell count={i.blockRuns.length} />;
+const renderExecutionCreatedAtCell = (i: WorkflowExecutionWithDetails) => <ExecutionCreatedAtCell date={i.createdAt} />;
+const renderExecutionEndedAtCell = (i: WorkflowExecutionWithDetails) => <ExecutionEndedAtCell date={i.endedAt} />;
+const renderExecutionWorkflowCell = (params: any) => (i: WorkflowExecutionWithDetails) => <ExecutionWorkflowCell execution={i} params={params} />;
+
+const makeExecutionHeaders = (params: any, tenantTitle: string) => [
+  {
+    name: "type",
+    title: "Type",
+    value: renderExecutionTypeCell,
+  },
+  {
+    name: "status",
+    title: "Status",
+    value: renderExecutionStatusCell,
+  },
+  {
+    name: "tenant",
+    title: tenantTitle,
+    value: renderExecutionTenantCell,
+  },
+  {
+    name: "duration",
+    title: "Duration",
+    value: renderExecutionDurationCell,
+  },
+  {
+    name: "blockRuns",
+    title: "Block runs",
+    value: renderExecutionBlockRunsCell,
+  },
+  {
+    name: "createdAt",
+    title: "Created at",
+    value: renderExecutionCreatedAtCell,
+  },
+  {
+    name: "endedAt",
+    title: "Ended at",
+    value: renderExecutionEndedAtCell,
+  },
+  {
+    name: "workflow",
+    title: "Workflow",
+    value: renderExecutionWorkflowCell(params),
+  },
+];
+
 export default function WorkflowsExecutionsView() {
   const { t } = useTranslation();
   const data = useLoaderData<WorkflowsExecutionsApi.LoaderData>();
@@ -88,10 +140,10 @@ export default function WorkflowsExecutionsView() {
         <InputFilters filters={data.filterableProperties} />
       }
     >
-      <TableSimple
-        items={data.items}
-        actions={[
-          {
+        <TableSimple
+          items={data.items}
+          actions={[
+            {
             title: "Delete",
             onClick: (_idx, i) => (onDelete ? onDelete(i) : undefined),
             destructive: true,
@@ -103,51 +155,10 @@ export default function WorkflowsExecutionsView() {
             onClickRoute: (_idx, i) => UrlUtils.getModulePath(params, `workflow-engine/workflows/${i.workflowId}/executions?executionId=${i.id}`),
             firstColumn: true,
           },
-        ]}
-        headers={[
-          {
-            name: "type",
-            title: "Type",
-            value: (i) => <ExecutionTypeCell type={i.type} />,
-          },
-          {
-            name: "status",
-            title: "Status",
-            value: (i) => <ExecutionStatusCell execution={i} />,
-          },
-          {
-            name: "tenant",
-            title: t("models.tenant.object"),
-            value: (i) => <ExecutionTenantCell tenant={i.tenant} />,
-          },
-          {
-            name: "duration",
-            title: "Duration",
-            value: (i) => <ExecutionDurationCell createdAt={i.createdAt} endedAt={i.endedAt} />,
-          },
-          {
-            name: "blockRuns",
-            title: "Block runs",
-            value: (i) => <ExecutionBlockRunsCell count={i.blockRuns.length} />,
-          },
-          {
-            name: "createdAt",
-            title: "Created at",
-            value: (i) => <ExecutionCreatedAtCell date={i.createdAt} />,
-          },
-          {
-            name: "endedAt",
-            title: "Ended at",
-            value: (i) => <ExecutionEndedAtCell date={i.endedAt} />,
-          },
-          {
-            name: "workflow",
-            title: "Workflow",
-            value: (i) => <ExecutionWorkflowCell execution={i} params={params} />,
-          },
-        ]}
-      />
-      <ConfirmModal ref={confirmDelete} onYes={onDeleteConfirm} destructive />
-    </EditPageLayout>
-  );
-}
+          ]}
+          headers={makeExecutionHeaders(params, t("models.tenant.object"))}
+        />
+        <ConfirmModal ref={confirmDelete} onYes={onDeleteConfirm} destructive />
+      </EditPageLayout>
+    );
+  }
