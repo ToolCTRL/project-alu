@@ -12,6 +12,63 @@ import SlideOverWideEmpty from "~/components/ui/slideOvers/SlideOverWideEmpty";
 import CheckIcon from "~/components/ui/icons/CheckIcon";
 import XIcon from "~/components/ui/icons/XIcon";
 
+const buildHeaders = (t: ReturnType<typeof useTranslation>["t"], items: EntityGroupWithDetails[]) =>
+  [
+    {
+      name: "order",
+      title: "Order",
+      value: (_item: EntityGroupWithDetails, idx: number) => (
+        <div>
+          <OrderListButtons index={idx} items={items.map((f) => ({ ...f, order: f.order ?? 0 }))} editable={true} />
+        </div>
+      ),
+    },
+    {
+      name: "group",
+      title: "Group",
+      value: (item: EntityGroupWithDetails) => (
+        <Link to={item.id} className="hover:underline">
+          <span className="font-medium">{t(item.title)}</span> <span className="text-muted-foreground text-xs italic">({item.slug})</span>
+        </Link>
+      ),
+    },
+    {
+      name: "section",
+      title: "Section",
+      value: (item: EntityGroupWithDetails) => <div>{item.section}</div>,
+    },
+    {
+      name: "collapsible",
+      title: "Collapsible",
+      value: (i: EntityGroupWithDetails) => (i.collapsible ? <CheckIcon className="h-4 w-4 text-teal-500" /> : <XIcon className="h-4 w-4 text-gray-300" />),
+    },
+    {
+      name: "entities",
+      title: "Entities",
+      className: "w-full",
+      value: (i: EntityGroupWithDetails) => (
+        <ul className="list-disc">
+          {i.entities.map((f) => (
+            <li key={f.id}>
+              <div>
+                {t(f.entity.title)} {f.allView && <span className="text-muted-foreground text-xs italic">({f.allView.title})</span>}
+              </div>
+            </li>
+          ))}
+        </ul>
+      ),
+    },
+    {
+      name: "actions",
+      title: "",
+      value: (item: EntityGroupWithDetails) => (
+        <Link to={item.id} className="hover:underline">
+          {t("shared.edit")}
+        </Link>
+      ),
+    },
+  ] as const;
+
 type LoaderData = {
   title: string;
   items: EntityGroupWithDetails[];
@@ -77,61 +134,7 @@ export default function EntityGroupsRoute() {
 
       <TableSimple
         items={data.items}
-        headers={[
-          {
-            name: "order",
-            title: "Order",
-            value: (_item, idx) => (
-              <div>
-                <OrderListButtons index={idx} items={data.items.map((f) => ({ ...f, order: f.order ?? 0 }))} editable={true} />
-              </div>
-            ),
-          },
-          {
-            name: "group",
-            title: "Group",
-            value: (item) => (
-              <Link to={item.id} className="hover:underline">
-                <span className="font-medium">{t(item.title)}</span> <span className="text-muted-foreground text-xs italic">({item.slug})</span>
-              </Link>
-            ),
-          },
-          {
-            name: "section",
-            title: "Section",
-            value: (item) => <div>{item.section}</div>,
-          },
-          {
-            name: "collapsible",
-            title: "Collapsible",
-            value: (i) => (i.collapsible ? <CheckIcon className="h-4 w-4 text-teal-500" /> : <XIcon className="h-4 w-4 text-gray-300" />),
-          },
-          {
-            name: "entities",
-            title: "Entities",
-            className: "w-full",
-            value: (i) => (
-              <ul className="list-disc">
-                {i.entities.map((f) => (
-                  <li key={f.id}>
-                    <div>
-                      {t(f.entity.title)} {f.allView && <span className="text-muted-foreground text-xs italic">({f.allView.title})</span>}
-                    </div>
-                  </li>
-                ))}
-              </ul>
-            ),
-          },
-          {
-            name: "actions",
-            title: "",
-            value: (item) => (
-              <Link to={item.id} className="hover:underline">
-                {t("shared.edit")}
-              </Link>
-            ),
-          },
-        ]}
+        headers={buildHeaders(t, data.items)}
       />
 
       <SlideOverWideEmpty
