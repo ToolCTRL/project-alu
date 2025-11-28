@@ -137,34 +137,77 @@ function ProductActionsCell({ item }: Readonly<{ item: SubscriptionProductDto }>
   return <ProductActions item={item} />;
 }
 
+const buildPricingHeaders = (t: (key: string) => string) => [
+  {
+    name: "order",
+    title: t("models.subscriptionProduct.order"),
+    value: (i: SubscriptionProductDto) => i.order,
+  },
+  {
+    name: "title",
+    title: t("models.subscriptionProduct.title"),
+    value: (item: SubscriptionProductDto) => <ProductBadgeCell item={item} />,
+  },
+  {
+    name: "model",
+    title: t("models.subscriptionProduct.model"),
+    value: (item: SubscriptionProductDto) => <ProductModelCell item={item} />,
+  },
+  {
+    name: "subscriptions",
+    title: t("models.subscriptionProduct.plural"),
+    value: (item: SubscriptionProductDto) => <ProductSubscriptionsCell item={item} />,
+  },
+  {
+    name: "active",
+    title: t("models.subscriptionProduct.status"),
+    value: (item: SubscriptionProductDto) => <ProductStatusCell item={item} />,
+  },
+  {
+    name: "actions",
+    title: t("shared.actions"),
+    value: (item: SubscriptionProductDto) => <ProductActionsCell item={item} />,
+  },
+] as const;
+
+function StripeWarning({
+  stripeAccount,
+  params,
+  portalSubdomain,
+  t,
+}: {
+  stripeAccount: Stripe.Account | null;
+  params: ReturnType<typeof useParams>;
+  portalSubdomain: string;
+  t: (key: string) => string;
+}) {
+  if (stripeAccount === null) {
+    return (
+      <WarningBanner title="Stripe not Connected">
+        You don't have a Stripe account connected.{" "}
+        <Link to={UrlUtils.getModulePath(params, `portals/${portalSubdomain}/pricing/stripe`)} className="underline">
+          Click here to connect your Stripe account.
+        </Link>
+      </WarningBanner>
+    );
+  }
+  if (stripeAccount.charges_enabled === false) {
+    return (
+      <WarningBanner title="Stripe Integration Pending">
+        Your Stripe integration is pending.{" "}
+        <Link to={UrlUtils.getModulePath(params, `portals/${portalSubdomain}/pricing/stripe`)} className="underline">
+          Click here to continue.
+        </Link>
+      </WarningBanner>
+    );
+  }
+  return null;
+}
+
 export default function PricingPage() {
   const { t } = useTranslation();
   const data = useLoaderData<LoaderData>();
   const params = useParams();
-
-  const getStripeWarning = () => {
-    if (data.stripeAccount === null) {
-      return (
-        <WarningBanner title="Stripe not Connected">
-          You don't have a Stripe account connected.{" "}
-          <Link to={UrlUtils.getModulePath(params, `portals/${params.portal}/pricing/stripe`)} className="underline">
-            Click here to connect your Stripe account.
-          </Link>
-        </WarningBanner>
-      );
-    }
-    if (data.stripeAccount.charges_enabled === false) {
-      return (
-        <WarningBanner title="Stripe Integration Pending">
-          Your Stripe integration is pending.{" "}
-          <Link to={UrlUtils.getModulePath(params, `portals/${params.portal}/pricing/stripe`)} className="underline">
-            Click here to continue.
-          </Link>
-        </WarningBanner>
-      );
-    }
-    return null;
-  };
 
   return (
     <EditPageLayout
@@ -201,42 +244,11 @@ export default function PricingPage() {
         },
       ]}
     >
-      {getStripeWarning()}
+      <StripeWarning stripeAccount={data.stripeAccount} params={params} portalSubdomain={data.item.subdomain} t={t} />
       <div>
         <TableSimple
           items={data.items}
-          headers={[
-            {
-              name: "order",
-              title: t("models.subscriptionProduct.order"),
-              value: (i) => i.order,
-            },
-            {
-              name: "title",
-              title: t("models.subscriptionProduct.title"),
-              value: (item) => <ProductBadgeCell item={item} />,
-            },
-            {
-              name: "model",
-              title: t("models.subscriptionProduct.model"),
-              value: (item) => <ProductModelCell item={item} />,
-            },
-            {
-              name: "subscriptions",
-              title: t("models.subscriptionProduct.plural"),
-              value: (item) => <ProductSubscriptionsCell item={item} />,
-            },
-            {
-              name: "active",
-              title: t("models.subscriptionProduct.status"),
-              value: (item) => <ProductStatusCell item={item} />,
-            },
-            {
-              name: "actions",
-              title: t("shared.actions"),
-              value: (item) => <ProductActionsCell item={item} />,
-            },
-          ]}
+          headers={buildPricingHeaders(t)}
         />
       </div>
     </EditPageLayout>

@@ -252,6 +252,61 @@ const ArticleCreatedByCell = ({ item }: { item: KnowledgeBaseArticleWithDetails 
   </div>
 );
 
+const articleHeaders = (
+  onToggle: (item: KnowledgeBaseArticleWithDetails, isFeatured: boolean) => void,
+  t: (key: string) => string
+) =>
+  [
+    {
+      name: "status",
+      title: "Status",
+      value: (i: KnowledgeBaseArticleWithDetails) => <ArticleStatusCell item={i} />,
+    },
+    {
+      name: "title",
+      title: "Title",
+      className: "w-full",
+      value: (i: KnowledgeBaseArticleWithDetails) => <ArticleTitleCell item={i} />,
+    },
+    {
+      name: "category",
+      title: "Category",
+      value: (i: KnowledgeBaseArticleWithDetails) => <ArticleCategoryCell item={i} />,
+    },
+    {
+      name: "characters",
+      title: "Characters",
+      value: (i: KnowledgeBaseArticleWithDetails) => NumberUtils.intFormat(i.contentPublishedAsText.length),
+    },
+    {
+      name: "views",
+      title: "Views",
+      value: (i: KnowledgeBaseArticleWithDetails) => i._count.views,
+    },
+    {
+      name: "upvotes",
+      title: "Upvotes",
+      value: (i: KnowledgeBaseArticleWithDetails) => i._count.upvotes,
+    },
+    {
+      name: "downvotes",
+      title: "Downvotes",
+      value: (i: KnowledgeBaseArticleWithDetails) => i._count.downvotes,
+    },
+    {
+      name: "featured",
+      title: "Featured",
+      value: (i: KnowledgeBaseArticleWithDetails) => (
+        <InputCheckbox asToggle value={!!i.featuredOrder} setValue={(checked) => onToggle(i, Boolean(checked))} />
+      ),
+    },
+    {
+      name: "createdAt",
+      title: t("shared.createdAt"),
+      value: (i: KnowledgeBaseArticleWithDetails) => <ArticleCreatedByCell item={i} />,
+    },
+  ] as const;
+
 export default function AdminKnowledgeBaseArticlesLang() {
   const { t } = useTranslation();
   const data = useLoaderData<LoaderData>();
@@ -324,54 +379,7 @@ export default function AdminKnowledgeBaseArticlesLang() {
               onClickRoute: (_, item) => `${item.id}`,
             },
           ]}
-          headers={[
-            {
-              name: "status",
-              title: "Status",
-              value: (i) => <ArticleStatusCell item={i} />,
-            },
-            {
-              name: "title",
-              title: "Title",
-              className: "w-full",
-              value: (i) => <ArticleTitleCell item={i} />,
-            },
-            {
-              name: "category",
-              title: "Category",
-              value: (i) => <ArticleCategoryCell item={i} />,
-            },
-            {
-              name: "characters",
-              title: "Characters",
-              value: (i) => NumberUtils.intFormat(i.contentPublishedAsText.length),
-            },
-            {
-              name: "views",
-              title: "Views",
-              value: (i) => i._count.views,
-            },
-            {
-              name: "upvotes",
-              title: "Upvotes",
-              value: (i) => i._count.upvotes,
-            },
-            {
-              name: "downvotes",
-              title: "Downvotes",
-              value: (i) => i._count.downvotes,
-            },
-            {
-              name: "featured",
-              title: "Featured",
-              value: (i) => <InputCheckbox asToggle value={!!i.featuredOrder} setValue={(checked) => onToggle(i, Boolean(checked))} />,
-            },
-            {
-              name: "createdAt",
-              title: t("shared.createdAt"),
-              value: (i) => <ArticleCreatedByCell item={i} />,
-            },
-          ]}
+          headers={articleHeaders(onToggle, t)}
         />
       </div>
 

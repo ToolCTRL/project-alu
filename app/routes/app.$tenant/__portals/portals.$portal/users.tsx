@@ -111,6 +111,49 @@ function UserCreatedAtCellValue({ item }: Readonly<{ item: PortalUserDto }>) {
   return <UserCreatedAtCell item={item} />;
 }
 
+type UsersTableProps = {
+  readonly items: PortalUserDto[];
+  readonly t: (key: string) => string;
+  readonly onChangePassword: (item: PortalUserDto) => void;
+  readonly onDelete: (item: PortalUserDto) => void;
+};
+
+function UsersTable({ items, t, onChangePassword, onDelete }: UsersTableProps) {
+  return (
+    <TableSimple
+      items={items}
+      actions={[
+        {
+          title: t("settings.profile.changePassword"),
+          onClick: (_, item) => onChangePassword(item),
+        },
+        {
+          title: t("shared.delete"),
+          onClick: (_, item) => onDelete(item),
+          destructive: true,
+          hidden: () => true,
+        },
+        {
+          title: t("shared.edit"),
+          onClickRoute: (_, item) => item.id,
+        },
+      ]}
+      headers={[
+        {
+          name: "user",
+          title: t("models.user.object"),
+          value: (item) => <UserTableCellValue item={item} />,
+        },
+        {
+          name: "createdAt",
+          title: t("shared.createdAt"),
+          value: (item) => <UserCreatedAtCellValue item={item} />,
+        },
+      ]}
+    />
+  );
+}
+
 export default function UsersPage() {
   const { t } = useTranslation();
   const data = useLoaderData<LoaderData>();
@@ -176,37 +219,7 @@ export default function UsersPage() {
       ]}
       buttons={<ButtonPrimary to="new">{t("shared.new")}</ButtonPrimary>}
     >
-      <TableSimple
-        items={data.items}
-        actions={[
-          {
-            title: t("settings.profile.changePassword"),
-            onClick: (_, item) => onChangePassword(item),
-          },
-          {
-            title: t("shared.delete"),
-            onClick: (_, item) => deleteUser(item),
-            destructive: true,
-            hidden: () => true,
-          },
-          {
-            title: t("shared.edit"),
-            onClickRoute: (_, item) => item.id,
-          },
-        ]}
-        headers={[
-          {
-            name: "user",
-            title: t("models.user.object"),
-            value: (item) => <UserTableCellValue item={item} />,
-          },
-          {
-            name: "createdAt",
-            title: t("shared.createdAt"),
-            value: (item) => <UserCreatedAtCellValue item={item} />,
-          },
-        ]}
-      />
+      <UsersTable items={data.items} t={t} onChangePassword={onChangePassword} onDelete={deleteUser} />
 
       <SlideOverWideEmpty
         open={!!outlet}

@@ -56,6 +56,21 @@ function EntityPropertiesCell({ item, t }: Readonly<{ item: EntityWithDetails; t
   );
 }
 
+const buildHeaders = (t: any) =>
+  [
+    {
+      name: "title",
+      title: t("models.entity.title"),
+      value: (item: EntityWithDetails) => <EntityTitleCell item={item} t={t} />,
+    },
+    {
+      name: "properties",
+      title: t("models.property.plural"),
+      className: "w-full text-xs",
+      value: (item: EntityWithDetails) => <EntityPropertiesCell item={item} t={t} />,
+    },
+  ] as const;
+
 export default function EntitiesIndexRoute() {
   const { t } = useTranslation();
   const data = useLoaderData<LoaderData>();
@@ -74,19 +89,7 @@ export default function EntitiesIndexRoute() {
               onClickRoute: (_, item) => item.slug,
             },
           ]}
-          headers={[
-            {
-              name: "title",
-              title: t("models.entity.title"),
-              value: (item) => <EntityTitleCell item={item} t={t} />,
-            },
-            {
-              name: "properties",
-              title: t("models.property.plural"),
-              className: "w-full text-xs",
-              value: (item) => <EntityPropertiesCell item={item} t={t} />,
-            },
-          ]}
+          headers={buildHeaders(t)}
         />
       </div>
     </EditPageLayout>

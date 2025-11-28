@@ -60,6 +60,21 @@ function TemplateCellWrapper({ item, entity, t }: Readonly<{ item: EntityTemplat
   return <TemplateCell item={item} entity={entity} t={t} />;
 }
 
+const buildHeaders = (entity: EntityWithDetails, t: any) =>
+  [
+    {
+      name: "title",
+      title: "Title",
+      value: (item: EntityTemplate) => item.title,
+    },
+    {
+      title: "Template",
+      name: "template",
+      className: "max-w-xs",
+      value: (item: EntityTemplate) => <TemplateCellWrapper item={item} entity={entity} t={t} />,
+    },
+  ] as const;
+
 export default function EntityTemplatesIndex() {
   const { t } = useTranslation();
   const data = useLoaderData<LoaderData>();
@@ -82,19 +97,7 @@ export default function EntityTemplatesIndex() {
     >
       <div className="space-y-3">
         <TableSimple
-          headers={[
-            {
-              name: "title",
-              title: "Title",
-              value: (item) => item.title,
-            },
-            {
-              title: "Template",
-              name: "template",
-              className: "max-w-xs",
-              value: (item) => <TemplateCellWrapper item={item} entity={data.entity} t={t} />,
-            },
-          ]}
+          headers={buildHeaders(data.entity, t)}
           items={data.items}
           actions={[
             {
