@@ -42,6 +42,34 @@ const TaskCompletedCell = ({ task }: { task: RowTaskWithDetails }) => (
   <div>{task.completed ? <CheckIcon className="text-muted-foreground h-4 w-4" /> : <XIcon className="text-muted-foreground h-4 w-4" />}</div>
 );
 
+const buildHeaders = (t: ReturnType<typeof useTranslation>["t"], allEntities: EntityWithDetails[]) =>
+  [
+    {
+      name: "row",
+      title: t("models.row.object"),
+      value: (i: RowTaskWithDetails) => <TaskRowComponent allEntities={allEntities} task={i} />,
+    },
+    {
+      name: "task",
+      title: t("models.rowTask.object"),
+      value: (i: RowTaskWithDetails) => <TaskTitleCell task={i} />,
+      className: "w-full",
+    },
+    {
+      name: "completed",
+      title: t("models.rowTask.completed"),
+      value: (i: RowTaskWithDetails) => <TaskCompletedCell task={i} />,
+    },
+    {
+      name: "createdAt",
+      title: t("shared.createdAt"),
+      value: (item: RowTaskWithDetails) => DateUtils.dateAgo(item.createdAt),
+      className: "text-muted-foreground text-xs",
+      breakpoint: "sm",
+      sortable: true,
+    },
+  ] as const;
+
 export default function TasksRoute() {
   const { t } = useTranslation();
   const data = useLoaderData<LoaderData>();
@@ -52,34 +80,8 @@ export default function TasksRoute() {
       </div>
       <TableSimple
         items={data.tasks}
-        headers={[
-          {
-            name: "row",
-            title: t("models.row.object"),
-            value: (i) => <TaskRowComponent allEntities={data.allEntities} task={i} />,
-          },
-          {
-            name: "task",
-            title: t("models.rowTask.object"),
-            value: (i) => <TaskTitleCell task={i} />,
-            className: "w-full",
-          },
-          {
-            name: "completed",
-            title: t("models.rowTask.completed"),
-            value: (i) => <TaskCompletedCell task={i} />,
-          },
-          {
-            name: "createdAt",
-            title: t("shared.createdAt"),
-            value: (item) => DateUtils.dateAgo(item.createdAt),
-            className: "text-muted-foreground text-xs",
-            breakpoint: "sm",
-            sortable: true,
-          },
-        ]}
+        headers={buildHeaders(t, data.allEntities)}
       />
     </div>
   );
 }
-
