@@ -14,6 +14,115 @@ import RowHelper from "~/utils/helpers/RowHelper";
 import RowsRequestUtils from "../utils/RowsRequestUtils";
 import FormulaService from "~/modules/formulas/services/.server/FormulaService";
 
+function getRedirectTarget(form: FormData, request: Request) {
+  const redirectValue = form.get("redirect");
+  const redirectFromForm = typeof redirectValue === "string" ? redirectValue : "";
+  const redirectFromQuery = new URL(request.url).searchParams.get("redirect") ?? "";
+  return redirectFromForm || redirectFromQuery;
+}
+
+async function sendUpdateNotification({
+  item,
+  user,
+  entity,
+  request,
+  params,
+  t,
+}: {
+  item: any;
+  user: any;
+  entity: any;
+  request: Request;
+  params: any;
+  t: any;
+}) {
+  if (!item.createdByUser) return;
+  // eslint-disable-next-line no-console
+  console.log("Sending notification");
+  await NotificationService.send({
+    channel: "my-rows",
+    to: item.createdByUser,
+    notification: {
+      from: { user },
+      message: `${user?.email} updated ${RowHelper.getTextDescription({ entity, item })}`,
+      action: {
+        title: t("shared.view"),
+        url: EntityHelper.getRoutes({ routes: EntitiesApi.getNoCodeRoutes({ request, params }), entity, item })?.overview ?? "",
+      },
+    },
+  });
+}
+
+async function handleEditAction({
+  request,
+  params,
+  form,
+  entity,
+  tenantId,
+  userId,
+  user,
+  item,
+  t,
+  time,
+  getServerTimingHeader,
+}: any) {
+  let rowValues: any = {};
+  try {
+    rowValues = RowHelper.getRowPropertiesFromForm({ t, entity, form, existing: item });
+    const updatedRow = await time(
+      RowsApi.update(params.id, {
+        entity,
+        tenantId,
+        userId,
+        rowValues,
+      }),
+      "RowsApi.update"
+    );
+    await time(
+      FormulaService.trigger({ trigger: "AFTER_UPDATED", rows: [updatedRow], entity: entity, session: { tenantId, userId }, t }),
+      "FormulaService.trigger.AFTER_UPDATED"
+    );
+  } catch (error: any) {
+    return Response.json({ error: error.message }, { status: 400, headers: getServerTimingHeader() });
+  }
+
+  await sendUpdateNotification({ item, user, entity, request, params, t });
+
+  const redirectTo = getRedirectTarget(form, request);
+  if (redirectTo) {
+    return redirect(redirectTo, { headers: getServerTimingHeader() });
+  }
+  const updatedRow = await RowsApi.get(params.id, { entity });
+  return Response.json({ updatedRow }, { headers: getServerTimingHeader() });
+}
+
+async function handleDeleteAction({
+  request,
+  params,
+  form,
+  entity,
+  tenantId,
+  user,
+  time,
+  getServerTimingHeader,
+}: any) {
+  try {
+    await time(verifyUserHasPermission(request, getEntityPermission(entity, "delete"), tenantId), "verifyUserHasPermission");
+    await RowsApi.del(params.id, {
+      entity,
+      userId: user?.id,
+      checkPermissions: !user?.admin,
+    });
+  } catch (error: any) {
+    return Response.json({ error: error.message }, { status: 400, headers: getServerTimingHeader() });
+  }
+  const redirectTo = getRedirectTarget(form, request);
+  if (redirectTo) {
+    return redirect(redirectTo, { headers: getServerTimingHeader() });
+  }
+  return Response.json({ deleted: true }, { headers: getServerTimingHeader() });
+}
+
 export namespace Rows_Edit {
   export type LoaderData = {
     meta: MetaTagsDto;
@@ -70,70 +179,31 @@ export namespace Rows_Edit {
       "RowsApi.get"
     );
     const action = form.get("action");
-    let rowValues: any = {};
     if (action === "edit") {
-      try {
-        rowValues = RowHelper.getRowPropertiesFromForm({ t, entity, form, existing: item });
-        const updatedRow = await time(
-          RowsApi.update(params.id, {
-            entity,
-            tenantId,
-            userId,
-            rowValues,
-          }),
-          "RowsApi.update"
-        );
-        await time(
-          FormulaService.trigger({ trigger: "AFTER_UPDATED", rows: [updatedRow], entity: entity, session: { tenantId, userId }, t }),
-          "FormulaService.trigger.AFTER_UPDATED"
-        );
-      } catch (error: any) {
-        return Response.json({ error: error.message }, { status: 400, headers: getServerTimingHeader() });
-      }
-      if (item.createdByUser) {
-        // eslint-disable-next-line no-console
-        console.log("Sending notification");
-        await NotificationService.send({
-          channel: "my-rows",
-          to: item.createdByUser,
-          notification: {
-            from: { user },
-            message: `${user?.email} updated ${RowHelper.getTextDescription({ entity, item })}`,
-            action: {
-              title: t("shared.view"),
-              url: EntityHelper.getRoutes({ routes: EntitiesApi.getNoCodeRoutes({ request, params }), entity, item })?.overview ?? "",
-            },
-          },
-        });
-      }
-      const redirectValue = form.get("redirect");
-      const redirectFromForm = typeof redirectValue === "string" ? redirectValue : "";
-      const redirectFromQuery = new URL(request.url).searchParams.get("redirect") ?? "";
-      const redirectTo = redirectFromForm || redirectFromQuery;
-      if (redirectTo) {
-        return redirect(redirectTo, { headers: getServerTimingHeader() });
-      }
-      const updatedRow = await RowsApi.get(params.id, { entity });
-      return Response.json({ updatedRow }, { headers: getServerTimingHeader() });
+      return handleEditAction({
+        request,
+        params,
+        form,
+        entity,
+        tenantId,
+        userId,
+        user,
+        item,
+        t,
+        time,
+        getServerTimingHeader,
+      });
     } else if (action === "delete") {
-      try {
-        await time(verifyUserHasPermission(request, getEntityPermission(entity, "delete"), tenantId), "verifyUserHasPermission");
-        await RowsApi.del(params.id, {
-          entity,
-          userId,
-          checkPermissions: !user?.admin,
-        });
-      } catch (error: any) {
-        return Response.json({ error: error.message }, { status: 400, headers: getServerTimingHeader() });
-      }
-      const deleteRedirectValue = form.get("redirect");
-      const redirectFromForm = typeof deleteRedirectValue === "string" ? deleteRedirectValue : "";
-      const redirectFromQuery = new URL(request.url).searchParams.get("redirect") ?? "";
-      const redirectTo = redirectFromForm || redirectFromQuery;
-      if (redirectTo) {
-        return redirect(redirectTo, { headers: getServerTimingHeader() });
-      }
-      return Response.json({ deleted: true }, { headers: getServerTimingHeader() });
+      return handleDeleteAction({
+        request,
+        params,
+        form,
+        entity,
+        tenantId,
+        user,
+        time,
+        getServerTimingHeader,
+      });
     } else {
       return Response.json({ error: t("shared.invalidForm") }, { status: 400, headers: getServerTimingHeader() });
     }

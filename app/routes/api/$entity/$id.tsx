@@ -116,11 +116,38 @@ async function handlePut({ request, params, entity, tenant, userId, existing, t,
   return jsonBody;
 }
 
+function assertAllowedMethod(method: string) {
+  if (method !== "PUT" && method !== "DELETE") {
+    throw new Error("Method not allowed");
+  }
+}
+
+async function writeApiKeyStatus({
+  tenant,
+  tenantApiKey,
+  status,
+  startTime,
+}: {
+  tenant: any;
+  tenantApiKey: any;
+  status: number;
+  startTime: number;
+}) {
+  if (!tenant || !tenantApiKey) return;
+  await setApiKeyLogStatus(tenantApiKey.apiKeyLog.id, {
+    status,
+    startTime,
+  });
+  await reportUsage(tenant.id, "api");
+}
+
 // PUT OR DELETE
 export const action: ActionFunction = async ({ request, params }) => {
   const { time, getServerTimingHeader } = await createMetrics({ request, params }, `[Rows_API_${request.method}] ${params.entity}`);
   invariant(params.entity, "Expected params.entity");
   const { t } = await time(getTranslations(request), "getTranslations");
+  const method = request.method.toUpperCase();
+  assertAllowedMethod(method);
   let apiAccessValidation: ApiAccessValidation | undefined = undefined;
   const startTime = performance.now();
   try {
@@ -142,48 +169,37 @@ export const action: ActionFunction = async ({ request, params }) => {
       throw new Error(t("shared.notFound"));
     }
     const existing = data.item;
-    let jsonBody: string;
-    if (request.method === "DELETE") {
-      jsonBody = await handleDelete(params, entity, tenantId, userId, time);
-    } else if (request.method === "PUT") {
-      jsonBody = await handlePut({ request, params, entity, tenant, userId, existing, t, time });
-    } else {
-      throw new Error("Method not allowed");
-    }
-    const status = request.method === "DELETE" ? 204 : 200;
-    if (tenant && tenantApiKey) {
-      await setApiKeyLogStatus(tenantApiKey.apiKeyLog.id, {
-        status,
-        startTime,
-      });
-      await time(reportUsage(tenant.id, "api"), "reportUsage");
-    }
+    const isDelete = method === "DELETE";
+    const jsonBody = isDelete
+      ? await handleDelete(params, entity, tenantId, userId, time)
+      : await handlePut({ request, params, entity, tenant, userId, existing, t, time });
+    const status = isDelete ? 204 : 200;
+    await time(writeApiKeyStatus({ tenant, tenantApiKey, status, startTime }), "writeApiKeyStatus");
     await time(
       createRowLog(request, {
         tenantId: tenant?.id ?? null,
         createdByApiKey: tenantApiKey?.apiKeyLog.apiKeyId,
-        action: request.method === "DELETE" ? DefaultLogActions.Deleted : DefaultLogActions.Updated,
+        action: isDelete ? DefaultLogActions.Deleted : DefaultLogActions.Updated,
         entity,
         details: JSON.stringify(jsonBody),
-        item: request.method === "PUT" ? existing : null,
+        item: isDelete ? null : existing,
       }),
       "createRowLog"
     );
-    if (request.method === "DELETE") {
+    if (isDelete) {
       return Response.json({ success: true }, { status, headers: getServerTimingHeader() });
-    } else {
-      const data = await time(
-        RowsApi.get(params.id, {
-          entity,
-          time,
-        }),
-        "RowsApi.get"
-      );
-      return Response.json(ApiHelper.getApiFormat(entity, data.item), {
-        status,
-        headers: getServerTimingHeader(),
-      });
     }
+    const refreshed = await time(
+      RowsApi.get(params.id, {
+        entity,
+        time,
+      }),
+      "RowsApi.get"
+    );
+    return Response.json(ApiHelper.getApiFormat(entity, refreshed.item), {
+      status,
+      headers: getServerTimingHeader(),
+    });
   } catch (e: any) {
     let status = e.message.includes("Rate limit exceeded") ? 429 : 400;
     if (apiAccessValidation?.tenantApiKey) {

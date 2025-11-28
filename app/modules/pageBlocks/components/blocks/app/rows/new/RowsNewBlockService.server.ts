@@ -13,6 +13,72 @@ import { BlockVariableService } from "../../../shared/variables/BlockVariableSer
 import { RowsNewBlockData } from "./RowsNewBlockUtils";
 import EntityHelper from "~/utils/helpers/EntityHelper";
 
+type CreateFormValues = {
+  entityName: string;
+  tenantId: string | null;
+  redirectTo: string;
+  onCreatedRedirect: FormDataEntryValue | null;
+};
+
+function parseCreateForm(form: FormData): CreateFormValues {
+  const entityNameValue = form.get("rows-entity");
+  const tenantIdValue = form.get("rows-tenant");
+  const redirectToValue = form.get("rows-redirectTo");
+
+  return {
+    entityName: typeof entityNameValue === "string" ? entityNameValue : "",
+    tenantId: typeof tenantIdValue === "string" && tenantIdValue !== "" ? tenantIdValue : null,
+    redirectTo: typeof redirectToValue === "string" ? redirectToValue : "",
+    onCreatedRedirect: form.get("onCreatedRedirect"),
+  };
+}
+
+function resolveOnCreatedRoute(entity: any, routes: ReturnType<typeof EntityHelper.getRoutes>) {
+  if (!entity?.onCreated || entity.onCreated === "redirectToOverview") return routes?.overview;
+  if (entity.onCreated === "redirectToEdit") return routes?.edit;
+  if (entity.onCreated === "redirectToList") return routes?.list;
+  if (entity.onCreated === "redirectToNew") return "NEW_REPLACE";
+  return null;
+}
+
+async function handlePostCreateRedirect({
+  formValues,
+  entity,
+  newRow,
+  request,
+  params,
+}: {
+  formValues: CreateFormValues;
+  entity: any;
+  newRow: any;
+  request: Request;
+  params: any;
+}) {
+  if (formValues.redirectTo) {
+    return redirect(formValues.redirectTo.replace(":id", newRow.id.toString()));
+  }
+
+  if (!formValues.onCreatedRedirect) {
+    return Response.json({ newRow });
+  }
+
+  if (formValues.onCreatedRedirect === "addAnother") {
+    return Response.json({ saveAndAdd: true, newRow });
+  }
+
+  const routes = EntityHelper.getRoutes({ routes: EntitiesApi.getNoCodeRoutes({ request, params }), entity, item: newRow });
+  if (!routes) return Response.json({ newRow });
+
+  const destination = resolveOnCreatedRoute(entity, routes);
+  if (destination === "NEW_REPLACE") {
+    return Response.json({ newRow, replace: true });
+  }
+  if (destination) {
+    return redirect(destination);
+  }
+  return Response.json({ newRow });
+}
+
 export namespace RowsNewBlockService {
   export async function load({ request, params, block }: PageBlockLoaderArgs): Promise<RowsNewBlockData> {
     const entityName = BlockVariableService.getValue({ request, params, variable: block?.rowsNew?.variables?.entityName });
@@ -32,46 +98,20 @@ export namespace RowsNewBlockService {
     };
   }
   export async function create({ request, params, form }: PageBlockActionArgs) {
-    const entityNameValue = form.get("rows-entity");
-    const tenantIdValue = form.get("rows-tenant");
-    const redirectToValue = form.get("rows-redirectTo");
-    const entityName = typeof entityNameValue === "string" ? entityNameValue : "";
-    const tenantId = typeof tenantIdValue === "string" && tenantIdValue !== "" ? tenantIdValue : null;
-    const redirectTo = typeof redirectToValue === "string" ? redirectToValue : "";
+    const formValues = parseCreateForm(form);
 
     const userInfo = await getUserInfo(request);
-    const entity = await getEntityByName({ tenantId, name: entityName });
+    const entity = await getEntityByName({ tenantId: formValues.tenantId, name: formValues.entityName });
 
     const { t } = await getTranslations(request);
-    await verifyUserHasPermission(request, getEntityPermission(entity, "create"), tenantId);
+    await verifyUserHasPermission(request, getEntityPermission(entity, "create"), formValues.tenantId);
     const rowValues = RowHelper.getRowPropertiesFromForm({ t, entity, form });
     const newRow = await RowsApi.create({
       entity,
-      tenantId,
+      tenantId: formValues.tenantId,
       userId: userInfo.userId,
       rowValues,
     });
-    if (redirectTo) {
-      return redirect(redirectTo.replace(":id", newRow.id.toString()));
-    }
-    const onCreatedRedirect = form.get("onCreatedRedirect");
-    if (onCreatedRedirect) {
-      if (onCreatedRedirect === "addAnother") {
-        return Response.json({ saveAndAdd: true, newRow });
-      }
-      const routes = EntityHelper.getRoutes({ routes: EntitiesApi.getNoCodeRoutes({ request, params }), entity, item: newRow });
-      if (routes) {
-        if (!entity.onCreated || entity.onCreated === "redirectToOverview") {
-          return redirect(routes?.overview ?? "");
-        } else if (entity.onCreated === "redirectToEdit") {
-          return redirect(routes?.edit ?? "");
-        } else if (entity.onCreated === "redirectToList") {
-          return redirect(routes?.list ?? "");
-        } else if (entity.onCreated === "redirectToNew") {
-          return Response.json({ newRow, replace: true });
-        }
-      }
-    }
-    return Response.json({ newRow });
+    return handlePostCreateRedirect({ formValues, entity, newRow, request, params });
   }
 }
