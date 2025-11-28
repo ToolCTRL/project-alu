@@ -173,7 +173,10 @@ async function validateSuperAdminRole(tenantId: string, currentUserId: string, t
 async function handleImpersonate(form: FormData, request: Request, params: Params<string>, t: TFunction, userInfo: UserSimple, tenantId: string) {
   await verifyUserHasPermission(request, "app.settings.members.impersonate", tenantId);
   const userIdValue = form.get("user-id");
-  const userId = userIdValue?.toString() ?? "";
+  if (typeof userIdValue !== "string") {
+    return badRequest({ error: t("shared.invalidForm") });
+  }
+  const userId = userIdValue.trim();
   const user = await getUser(userId);
 
   if (!user) {

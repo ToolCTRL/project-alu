@@ -458,13 +458,15 @@ function parseRangeFromForm(
     };
   }
   if (PropertyType.RANGE_DATE === property.type) {
-    const minValue = min !== null && min !== undefined ? min : null;
-    const maxValue = max !== null && max !== undefined ? max : null;
+    const toNullableString = (value: FormDataEntryValue | null | undefined) =>
+      typeof value === "string" && value.length > 0 ? value : null;
+    const minValue = toNullableString(min as FormDataEntryValue | null);
+    const maxValue = toNullableString(max as FormDataEntryValue | null);
     return {
       numberMin: null,
       numberMax: null,
-      dateMin: minValue !== null ? new Date(String(minValue)) : null,
-      dateMax: maxValue !== null ? new Date(String(maxValue)) : null,
+      dateMin: minValue === null ? null : new Date(minValue),
+      dateMax: maxValue === null ? null : new Date(maxValue),
     };
   }
   return null;

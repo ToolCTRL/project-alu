@@ -12,7 +12,6 @@ import ButtonSecondary from "~/components/ui/buttons/ButtonSecondary";
 import ButtonPrimary from "~/components/ui/buttons/ButtonPrimary";
 import { createAdminLog } from "~/utils/db/logs.db.server";
 import { PricingModel } from "~/application/enums/subscriptions/PricingModel";
-import { SubscriptionFeatureDto } from "~/application/dtos/subscriptions/SubscriptionFeatureDto";
 import { getUserHasPermission } from "~/utils/helpers/PermissionsHelper";
 import { verifyUserHasPermission } from "~/utils/helpers/.server/PermissionsService";
 import { useAdminData } from "~/utils/data/useAdminData";

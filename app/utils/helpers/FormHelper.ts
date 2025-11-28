@@ -98,9 +98,11 @@ const getJsonArray = (form: FormData, name: string): JsonValue[] => {
 const getNumberRange = (form: FormData, name: string): RowValueRangeDto => {
   const min = form.get(name + "-min");
   const max = form.get(name + "-max");
+  const parseNumberOrZero = (value: FormDataEntryValue | null) =>
+    typeof value === "string" && value.length > 0 ? Number(value) : 0;
   let range: RowValueRangeDto = {
-    numberMin: min ? Number(min) : 0,
-    numberMax: max ? Number(max) : 0,
+    numberMin: parseNumberOrZero(min),
+    numberMax: parseNumberOrZero(max),
     dateMin: null,
     dateMax: null,
   };
@@ -110,13 +112,15 @@ const getNumberRange = (form: FormData, name: string): RowValueRangeDto => {
 const getDateRange = (form: FormData, name: string): RowValueRangeDto => {
   const min = form.get(name + "-min");
   const max = form.get(name + "-max");
-  const minValue = min !== null && min !== undefined ? min : null;
-  const maxValue = max !== null && max !== undefined ? max : null;
+  const toNullableString = (value: FormDataEntryValue | null) =>
+    typeof value === "string" && value.length > 0 ? value : null;
+  const minValue = toNullableString(min);
+  const maxValue = toNullableString(max);
   let range: RowValueRangeDto = {
     numberMin: null,
     numberMax: null,
-    dateMin: minValue !== null ? new Date(String(minValue)) : null,
-    dateMax: maxValue !== null ? new Date(String(maxValue)) : null,
+    dateMin: minValue === null ? null : new Date(minValue),
+    dateMax: maxValue === null ? null : new Date(maxValue),
   };
   return range;
 };

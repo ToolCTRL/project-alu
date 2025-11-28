@@ -59,22 +59,29 @@ const signInGithubUser = async (request: Request, user: UserWithoutPassword) => 
   );
 };
 
+function resolveCompany(userProfile: GitHubProfile, firstName: string, lastName: string) {
+  if (userProfile.company) return userProfile.company;
+  if (isCompanyEmail(userProfile.email)) return companyFromEmail(userProfile.email);
+
+  const fullName = `${firstName} ${lastName}`.trim();
+  if (fullName.length > 0) return UrlUtils.slugify(fullName);
+
+  const emailSlug = userProfile.email.split("@")[0];
+  return UrlUtils.slugify(emailSlug);
+}
+
 const signUpGithubUser = async (request: Request, userProfile: GitHubProfile) => {
   const { t } = await getTranslations(request);
   const userInfo = await getUserInfo(request);
   const [firstName, lastName] = userProfile.name?.split(" ") ?? ["", ""];
-  const company = userProfile.company
-    ? userProfile.company
-    : isCompanyEmail(userProfile.email)
-    ? companyFromEmail(userProfile.email)
-    : UrlUtils.slugify(firstName + " " + lastName);
+  const company = resolveCompany(userProfile, firstName, lastName);
   const result = await validateRegistration({
     request,
     registrationData: {
       email: userProfile.email,
       firstName: firstName,
       lastName: lastName,
-      company: userProfile.company ?? UrlUtils.slugify(userProfile.email.split("@")[0]),
+      company,
       avatarURL: userProfile.avatarURL,
     },
     checkEmailVerification: false,

@@ -11,6 +11,40 @@ import { getRegistrationByToken } from "~/utils/db/registration.db.server";
 import { Params } from "react-router";
 import IpAddressServiceServer from "~/modules/ipAddress/services/IpAddressService.server";
 
+function requireLoginFields(email: string, password: string) {
+  if (!email || !password) {
+    throw new TypeError("Invalid form data");
+  }
+}
+
+function buildFieldErrorResponse(email: string, password: string) {
+  const fields = { email, password };
+  const fieldErrors = {
+    email: UserUtils.validateEmail(email) ? undefined : "Invalid email",
+    password: UserUtils.validatePassword(password) ? undefined : "Invlaid password",
+  };
+  if (Object.values(fieldErrors).some(Boolean)) {
+    return Response.json({ fieldErrors, fields }, { status: 400 });
+  }
+  return null;
+}
+
+async function blockDisallowedLogin(request: Request, email: string, password: string) {
+  if (process.env.NODE_ENV === "development") return null;
+
+  const ipError = await IpAddressServiceServer.log(request, { action: "login", description: email }).catch((e) => e.message);
+  if (ipError) {
+    return Response.json({ error: ipError }, { status: 400 });
+  }
+
+  const testAccounts = ["admin@email.com", "john.doe@company.com", "luna.davis@company.com", "alex.martinez@company.com"];
+  if (testAccounts.includes(email)) {
+    return Response.json({ fields: { email, password }, error: "You cannot use this account in production." }, { status: 400 });
+  }
+
+  return null;
+}
+
 async function getHome({ isAdmin, tenantId, request }: { isAdmin: boolean; tenantId: string; request: Request }) {
   let appHome = "";
   const appConfiguration = await getAppConfiguration({ request });
@@ -38,22 +72,16 @@ async function loginFromRequest(request: Request, form: FormData) {
   const email = typeof emailEntry === "string" ? emailEntry.toLowerCase().trim() : "";
   const password = typeof passwordEntry === "string" ? passwordEntry : "";
   const redirectTo = typeof redirectEntry === "string" ? redirectEntry : "";
-  if (!email || !password) {
-    throw new TypeError("Invalid form data");
-  }
+  requireLoginFields(email, password);
 
-  const fields = { email, password };
   console.log("=".repeat(80));
   console.log("[AUTH_SERVICE] FORENSISCHE ANALYSE GESTARTET");
   console.log("[AUTH_SERVICE] DATABASE_URL:", process.env.DATABASE_URL);
   console.log("[AUTH_SERVICE] Login-Versuch für E-Mail:", email);
   console.log("[AUTH_SERVICE] Passwort-Länge:", password.length);
 
-  const fieldErrors = {
-    email: UserUtils.validateEmail(email) ? undefined : "Invalid email",
-    password: UserUtils.validatePassword(password) ? undefined : "Invlaid password",
-  };
-  if (Object.values(fieldErrors).some(Boolean)) throw Response.json({ fieldErrors, fields }, { status: 400 });
+  const fieldErrorResponse = buildFieldErrorResponse(email, password);
+  if (fieldErrorResponse) throw fieldErrorResponse;
 
   const user = await getUserByEmail(email);
   console.log("[AUTH_SERVICE] Benutzer in DB gefunden:", user ? "JA" : "NEIN");
@@ -64,19 +92,12 @@ async function loginFromRequest(request: Request, form: FormData) {
     console.log("[AUTH_SERVICE] passwordHash Länge:", user.passwordHash?.length ?? 0);
     console.log("[AUTH_SERVICE] passwordHash Präfix:", user.passwordHash?.substring(0, 15) ?? "KEIN HASH");
   }
-  if (process.env.NODE_ENV !== "development") {
-    const ipError = await IpAddressServiceServer.log(request, { action: "login", description: email }).catch((e) => e.message);
-    if (ipError) {
-      return Response.json({ error: ipError }, { status: 400 });
-    }
 
-    const testAccounts = ["admin@email.com", "john.doe@company.com", "luna.davis@company.com", "alex.martinez@company.com"];
-    if (testAccounts.includes(email)) {
-      return Response.json({ fields: { email, password }, error: "You cannot use this account in production." }, { status: 400 });
-    }
-  }
+  const blockedLogin = await blockDisallowedLogin(request, email, password);
+  if (blockedLogin) return blockedLogin;
+
   if (user === null) {
-    return Response.json({ fields, error: t("api.errors.invalidPassword") }, { status: 400 });
+    return Response.json({ fields: { email, password }, error: t("api.errors.invalidPassword") }, { status: 400 });
   }
 
   console.log("[AUTH_SERVICE] Starte bcrypt.compare...");
@@ -89,7 +110,7 @@ async function loginFromRequest(request: Request, form: FormData) {
   console.log("=".repeat(80));
 
   if (isCorrectPassword === false) {
-    return Response.json({ fields, error: t("api.errors.invalidPassword") }, { status: 400 });
+    return Response.json({ fields: { email, password }, error: t("api.errors.invalidPassword") }, { status: 400 });
   }
 
   await createLogLogin(request, user);

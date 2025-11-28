@@ -36,33 +36,27 @@ async function getPlanFromForm(form: FormData) {
     throw new Error("Invalid product");
   }
 
-  let flatPrice: SubscriptionPriceDto | undefined = undefined;
-  let freeTrialDays: number | undefined = undefined;
-  if (product.model === PricingModel.ONCE) {
-    flatPrice = product.prices.find((f) => f.currency === currency && f.billingPeriod === SubscriptionBillingPeriod.ONCE);
-  } else {
-    flatPrice = product.prices.find((f) => f.currency === currency && f.billingPeriod === billingPeriod);
-  }
-  const usageBasedPrices = product?.usageBasedPrices?.filter((f) => f.currency === currency);
+  const flatPrice: SubscriptionPriceDto | undefined =
+    product.model === PricingModel.ONCE
+      ? product.prices.find((f) => f.currency === currency && f.billingPeriod === SubscriptionBillingPeriod.ONCE)
+      : product.prices.find((f) => f.currency === currency && f.billingPeriod === billingPeriod);
 
-  if (!flatPrice && usageBasedPrices?.length === 0) {
+  const usageBasedPrices = product?.usageBasedPrices?.filter((f) => f.currency === currency) ?? [];
+
+  if (!flatPrice && usageBasedPrices.length === 0) {
     throw new Error("Invalid price");
   }
-  let mode: "payment" | "setup" | "subscription" = "subscription";
+  const mode: "payment" | "setup" | "subscription" = product.model === PricingModel.ONCE ? "payment" : "subscription";
   const line_items: { price: string; quantity?: number }[] = [];
-  if (product.model === PricingModel.ONCE) {
-    mode = "payment";
-  }
 
   if (flatPrice) {
     line_items.push({ price: flatPrice.stripeId, quantity });
-    if (flatPrice.trialDays > 0) {
-      freeTrialDays = flatPrice.trialDays;
-    }
   }
-  usageBasedPrices?.forEach((usageBasedPrice) => {
+  usageBasedPrices.forEach((usageBasedPrice) => {
     line_items.push({ price: usageBasedPrice.stripeId });
   });
+
+  const freeTrialDays = flatPrice && flatPrice.trialDays > 0 ? flatPrice.trialDays : undefined;
 
   return {
     mode,

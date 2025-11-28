@@ -23,9 +23,11 @@ export const action: ActionFunction = async ({ request, params }) => {
   if (!session) {
     return Response.json({ error: "Session not found" }, { status: 404 });
   }
-  const actions: OnboardingSessionActionDto[] = form.getAll("actions[]").map((f: FormDataEntryValue) => {
-    const value = typeof f === 'string' ? f : f.toString();
-    return JSON.parse(value);
+  const actions: OnboardingSessionActionDto[] = form.getAll("actions[]").map((entry: FormDataEntryValue) => {
+    if (typeof entry !== "string") {
+      throw new Error("Invalid action payload");
+    }
+    return JSON.parse(entry);
   });
   if (action === "started") {
     await OnboardingSessionService.started(session);

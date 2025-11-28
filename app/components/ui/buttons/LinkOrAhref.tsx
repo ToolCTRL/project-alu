@@ -39,9 +39,16 @@ export default function LinkOrAhref({
 }: Readonly<Props>) {
   if ((!to && !onClick) || (to && disabled)) {
     return (
-      <div className={className} onMouseEnter={onMouseEnter} onMouseLeave={onMouseLeave}>
+      <Button
+        type={type}
+        className={className}
+        disabled
+        aria-disabled
+        onMouseEnter={onMouseEnter}
+        onMouseLeave={onMouseLeave}
+      >
         {children}
-      </div>
+      </Button>
     );
   }
 
