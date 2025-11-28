@@ -716,7 +716,7 @@ function AdvancedBoard({
                           <div className="text-muted-foreground shrink-0 text-xs">• {agg.count}</div>
                           {agg.sum !== null && <div className="text-muted-foreground shrink-0 text-xs">• {NumberUtils.numberFormat(agg.sum)}</div>}
                         </div>
-                        {readOnly || !routes ? null : (
+                        {routes && !readOnly && (
                           <Link
                             className="text-muted-foreground hover:text-foreground rounded-md px-2 py-1 text-sm font-semibold"
                             to={(EntityHelper.getRoutes({ routes, entity })?.new ?? "") + (colId !== "__undefined" ? `?${groupBy?.name}=${colId}` : "")}
@@ -840,7 +840,7 @@ function BoardColumn({
             />
           ))}
           {provided.placeholder}
-          {readOnly || !routes ? null : (
+          {routes && !readOnly && (
             <Link
               className="text-muted-foreground hover:text-foreground border-border flex items-center justify-center rounded-md border border-dashed px-2 py-2 text-xs font-medium"
               to={(EntityHelper.getRoutes({ routes, entity })?.new ?? "") + (colId !== "__undefined" ? `?${groupBy?.name}=${colId}` : "")}
