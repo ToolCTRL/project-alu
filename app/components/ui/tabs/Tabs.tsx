@@ -1,7 +1,6 @@
 import { Link, useLocation, useNavigate } from "react-router";
-
 import clsx from "clsx";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import UrlUtils from "~/utils/app/UrlUtils";
 
@@ -37,6 +36,18 @@ export default function Tabs({ className = "", breakpoint = "md", tabs = [], asL
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tabs, location.pathname]);
 
+  const currentTab = useMemo(() => {
+    if (asLinks) {
+      if (exact) {
+        return tabs.find((element) => element.routePath && UrlUtils.stripTrailingSlash(location.pathname) === UrlUtils.stripTrailingSlash(element.routePath));
+      } else {
+        return tabs.find((element) => element.routePath && (location.pathname + location.search).includes(element.routePath));
+      }
+    } else {
+      return tabs[selected];
+    }
+  }, [asLinks, exact, location.pathname, location.search, selected, tabs]);
+
   function selectTab(idx: number) {
     const tab = tabs[idx];
     setSelected(idx);
@@ -48,20 +59,7 @@ export default function Tabs({ className = "", breakpoint = "md", tabs = [], asL
       onSelected(idx);
     }
   }
-  function isCurrent(idx: number) {
-    return currentTab() === tabs[idx];
-  }
-  const currentTab = () => {
-    if (asLinks) {
-      if (exact) {
-        return tabs.find((element) => element.routePath && UrlUtils.stripTrailingSlash(location.pathname) === UrlUtils.stripTrailingSlash(element.routePath));
-      } else {
-        return tabs.find((element) => element.routePath && (location.pathname + location.search).includes(element.routePath));
-      }
-    } else {
-      return tabs[selected];
-    }
-  };
+  const isCurrent = (idx: number) => currentTab === tabs[idx];
   return (
     <div className={className}>
       <div

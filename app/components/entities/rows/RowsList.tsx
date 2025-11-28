@@ -453,6 +453,10 @@ function MinimalCardContent({ entity, row }: Readonly<{ entity: EntityWithDetail
   );
 }
 
+function MinimalCard({ entity, row }: Readonly<{ entity: EntityWithDetails; row: RowWithDetails }>) {
+  return <MinimalCardContent entity={entity} row={row} />;
+}
+
 function AdvancedBoard({
   entity,
   columnsDef,
@@ -481,10 +485,6 @@ function AdvancedBoard({
   function applyOverrides(list: RowWithDetails[], map: Record<string, RowWithDetails>) {
     return list.map((row) => map[row.id] ?? row);
   }
-
-  const MinimalCard = ({ row }: { readonly row: RowWithDetails }) => (
-    <MinimalCardContent entity={entity} row={row} />
-  );
 
   function patchRowStage(row: RowWithDetails, property?: PropertyWithDetails, value?: string) {
     if (!property) return row;
