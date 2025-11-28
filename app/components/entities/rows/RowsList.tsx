@@ -350,6 +350,61 @@ function RowsListWrapped({
 
 type BoardColumnState = { [key: string]: RowWithDetails[] };
 
+type DraggableRowCardProps = {
+  readonly row: RowWithDetails;
+  readonly index: number;
+  readonly portal: HTMLElement | null;
+  readonly pendingMove: string | null;
+  readonly errorRow: string | null;
+  readonly compactCards: boolean;
+  readonly MinimalCard: ({ row }: { row: RowWithDetails }) => JSX.Element;
+  readonly entity: EntityWithDetails;
+  readonly columnsDef: ColumnDto[];
+  readonly allEntities: EntityWithDetails[];
+  readonly routes?: EntitiesApi.Routes;
+  readonly actions?: (row: RowWithDetails) => any[];
+};
+
+const DraggableRowCard = ({
+  row,
+  index,
+  portal,
+  pendingMove,
+  errorRow,
+  compactCards,
+  MinimalCard,
+  entity,
+  columnsDef,
+  allEntities,
+  routes,
+  actions,
+}: DraggableRowCardProps) => (
+  <Draggable draggableId={row.id} index={index}>
+    {(dragProvided, snapshot) => {
+      const card = (
+        <div
+          ref={dragProvided.innerRef}
+          {...dragProvided.draggableProps}
+          {...dragProvided.dragHandleProps}
+          className={clsx(
+            "bg-white/10 border-white/20 group relative rounded-md border p-2 shadow-2xs transition text-white",
+            snapshot.isDragging && "border-theme-400 shadow-md",
+            pendingMove === row.id && "opacity-70",
+            errorRow === row.id && "border-red-500"
+          )}
+        >
+          {compactCards ? (
+            <MinimalCard row={row} />
+          ) : (
+            <RenderCard layout="board" item={row} entity={entity} columns={columnsDef} allEntities={allEntities} routes={routes} actions={actions} />
+          )}
+        </div>
+      );
+      return snapshot.isDragging && portal ? createPortal(card, portal) : card;
+    }}
+  </Draggable>
+);
+
 function MinimalCardContent({ entity, row }: Readonly<{ entity: EntityWithDetails; row: RowWithDetails }>) {
   const displayProp = entity.properties.find((p) => p.isDisplay);
   const title = displayProp
@@ -753,43 +808,6 @@ function BoardColumn({
   t: any;
   MinimalCard: ({ row }: { row: RowWithDetails }) => JSX.Element;
 }>) {
-  const renderDraggableCard = (row: RowWithDetails, idx: number) => {
-    return (
-      <Draggable draggableId={row.id} index={idx} key={row.id}>
-        {(dragProvided, snapshot) => {
-          const card = (
-            <div
-              ref={dragProvided.innerRef}
-              {...dragProvided.draggableProps}
-              {...dragProvided.dragHandleProps}
-              className={clsx(
-                "bg-white/10 border-white/20 group relative rounded-md border p-2 shadow-2xs transition text-white",
-                snapshot.isDragging && "border-theme-400 shadow-md",
-                pendingMove === row.id && "opacity-70",
-                errorRow === row.id && "border-red-500"
-              )}
-            >
-              {compactCards ? (
-                <MinimalCard row={row} />
-              ) : (
-                <RenderCard
-                  layout="board"
-                  item={row}
-                  entity={entity}
-                  columns={columnsDef}
-                  allEntities={allEntities}
-                  routes={routes}
-                  actions={actions}
-                />
-              )}
-            </div>
-          );
-          return snapshot.isDragging && portal ? createPortal(card, portal) : card;
-        }}
-      </Draggable>
-    );
-  };
-
   return (
     <Droppable droppableId={colId}>
       {(provided) => (
@@ -804,7 +822,23 @@ function BoardColumn({
               {t("shared.noRecords")}
             </div>
           )}
-          {rows.map((row, idx) => renderDraggableCard(row, idx))}
+          {rows.map((row, idx) => (
+            <DraggableRowCard
+              key={row.id}
+              row={row}
+              index={idx}
+              portal={portal}
+              pendingMove={pendingMove}
+              errorRow={errorRow}
+              compactCards={compactCards}
+              MinimalCard={MinimalCard}
+              entity={entity}
+              columnsDef={columnsDef}
+              allEntities={allEntities}
+              routes={routes}
+              actions={actions}
+            />
+          ))}
           {provided.placeholder}
           {readOnly || !routes ? null : (
             <Link

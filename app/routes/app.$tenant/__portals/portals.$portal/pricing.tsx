@@ -170,17 +170,14 @@ const buildPricingHeaders = (t: (key: string) => string) => [
   },
 ] as const;
 
-function StripeWarning({
-  stripeAccount,
-  params,
-  portalSubdomain,
-  t,
-}: {
+type StripeWarningProps = Readonly<{
   stripeAccount: Stripe.Account | null;
   params: ReturnType<typeof useParams>;
   portalSubdomain: string;
   t: (key: string) => string;
-}) {
+}>;
+
+function StripeWarning({ stripeAccount, params, portalSubdomain, t }: StripeWarningProps) {
   if (stripeAccount === null) {
     return (
       <WarningBanner title="Stripe not Connected">
