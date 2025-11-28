@@ -1,6 +1,6 @@
 import ConfirmModal, { RefConfirmModal } from "~/components/ui/modals/ConfirmModal";
 import ErrorModal, { RefErrorModal } from "~/components/ui/modals/ErrorModal";
-import { Fragment, useEffect, useMemo, useRef, useState } from "react";
+import { Fragment, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { getTenant, getTenantUsers, TenantUserWithUser } from "~/utils/db/tenants.db.server";
 import { ActionFunction, LoaderFunctionArgs, MetaFunction, useActionData, useLoaderData, useNavigate, useOutlet, useParams, useSubmit } from "react-router";
 import { deleteUserInvitation, getUserInvitation, getUserInvitations } from "~/utils/db/tenantUserInvitations.db.server";
@@ -314,21 +314,24 @@ export default function MembersRoute() {
     });
   }
 
+  const renderPermissionName = useCallback((i: { permission: { name: string } }) => i.permission.name, []);
+  const renderPermissionDescription = useCallback((i: { permission: { description: string } }) => i.permission.description, []);
+  const renderPermissionBadge = useCallback((i: { permission: Permission }) => <RoleBadge item={i.permission} />, []);
   const permissionHeaders = useMemo(
     () => [
       {
         name: "name",
         title: t("models.permission.name"),
-        value: (i: { permission: { name: string } }) => i.permission.name,
-        formattedValue: (i: { permission: Permission }) => <RoleBadge item={i.permission} />,
+        value: renderPermissionName,
+        formattedValue: renderPermissionBadge,
       },
       {
         name: "description",
         title: t("models.permission.description"),
-        value: (i: { permission: { description: string } }) => i.permission.description,
+        value: renderPermissionDescription,
       },
     ],
-    [t]
+    [renderPermissionBadge, renderPermissionDescription, renderPermissionName, t]
   );
 
   return (

@@ -1,6 +1,6 @@
 import { useTranslation } from "react-i18next";
 import ErrorModal, { RefErrorModal } from "~/components/ui/modals/ErrorModal";
-import { Fragment, useEffect, useMemo, useRef, useState } from "react";
+import { Fragment, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import plans from "~/application/pricing/plans.server";
 import { ActionFunction, Link, LoaderFunctionArgs, MetaFunction, useActionData, useLoaderData, Form, Outlet, useSubmit, useNavigation } from "react-router";
 import { getAllSubscriptionProducts, getAllSubscriptionProductsWithTenants, getSubscriptionProduct } from "~/utils/db/subscriptionProducts.db.server";
@@ -204,74 +204,92 @@ export default function AdminPricingRoute() {
     return data.items.filter((f) => f.id).length;
   }
 
+  const renderOrder = useCallback((i: SubscriptionProductDto) => i.order, []);
+  const renderTitle = useCallback(
+    (item: SubscriptionProductDto) => (
+      <div className="group flex items-center gap-1">
+        <Link to={"edit/" + item.id} className="group-hover:underline">
+          {t(item.title)}
+        </Link>
+        {item.badge && <div className="border-border bg-theme-50 text-theme-800 ml-1 rounded-md border px-1 py-0.5 text-xs">{t(item.badge)}</div>}
+      </div>
+    ),
+    [t]
+  );
+  const renderModel = useCallback((item: SubscriptionProductDto) => <>{t("pricing." + PricingModel[item.model])}</>, [t]);
+  const renderSubscriptions = useCallback(
+    (item: SubscriptionProductDto) => (
+      <div className="text-muted-foreground lowercase">
+        {item.tenantProducts?.length ?? 0} {t("shared.active")}
+      </div>
+    ),
+    [t]
+  );
+  const renderActive = useCallback(
+    (item: SubscriptionProductDto) => (
+      <>
+        {item.active ? (
+          <>
+            {item.public ? (
+              <SimpleBadge title={t("models.subscriptionProduct.public")} color={Colors.TEAL} />
+            ) : (
+              <SimpleBadge title={t("models.subscriptionProduct.custom")} color={Colors.ORANGE} />
+            )}
+          </>
+        ) : (
+          <SimpleBadge title={t("shared.inactive")} color={Colors.RED} />
+        )}
+      </>
+    ),
+    [t]
+  );
+  const renderActions = useCallback(
+    (item: SubscriptionProductDto) => (
+      <div className="flex items-center space-x-2">
+        <ButtonTertiary disabled={!item.id} to={"/pricing?plan=" + item.id} target="_blank">
+          {t("shared.preview")}
+        </ButtonTertiary>
+        <ButtonTertiary disabled={!item.id} to={"edit/" + item.id}>
+          {t("shared.edit")}
+        </ButtonTertiary>
+      </div>
+    ),
+    [t]
+  );
   const tableHeaders = useMemo(
     () => [
       {
         name: "order",
         title: t("models.subscriptionProduct.order"),
-        value: (i: SubscriptionProductDto) => i.order,
+        value: renderOrder,
       },
       {
         name: "title",
         title: t("models.subscriptionProduct.title"),
-        value: (item: SubscriptionProductDto) => (
-          <div className="group flex items-center gap-1">
-            <Link to={"edit/" + item.id} className="group-hover:underline">
-              {t(item.title)}
-            </Link>
-            {item.badge && <div className="border-border bg-theme-50 text-theme-800 ml-1 rounded-md border px-1 py-0.5 text-xs">{t(item.badge)}</div>}
-          </div>
-        ),
+        value: renderTitle,
       },
       {
         name: "model",
         title: t("models.subscriptionProduct.model"),
-        value: (item: SubscriptionProductDto) => <>{t("pricing." + PricingModel[item.model])}</>,
+        value: renderModel,
       },
       {
         name: "subscriptions",
         title: t("models.subscriptionProduct.plural"),
-        value: (item: SubscriptionProductDto) => (
-          <div className="text-muted-foreground lowercase">
-            {item.tenantProducts?.length ?? 0} {t("shared.active")}
-          </div>
-        ),
+        value: renderSubscriptions,
       },
       {
         name: "active",
         title: t("models.subscriptionProduct.status"),
-        value: (item: SubscriptionProductDto) => (
-          <>
-            {item.active ? (
-              <>
-                {item.public ? (
-                  <SimpleBadge title={t("models.subscriptionProduct.public")} color={Colors.TEAL} />
-                ) : (
-                  <SimpleBadge title={t("models.subscriptionProduct.custom")} color={Colors.ORANGE} />
-                )}
-              </>
-            ) : (
-              <SimpleBadge title={t("shared.inactive")} color={Colors.RED} />
-            )}
-          </>
-        ),
+        value: renderActive,
       },
       {
         name: "actions",
         title: t("shared.actions"),
-        value: (item: SubscriptionProductDto) => (
-          <div className="flex items-center space-x-2">
-            <ButtonTertiary disabled={!item.id} to={"/pricing?plan=" + item.id} target="_blank">
-              {t("shared.preview")}
-            </ButtonTertiary>
-            <ButtonTertiary disabled={!item.id} to={"edit/" + item.id}>
-              {t("shared.edit")}
-            </ButtonTertiary>
-          </div>
-        ),
+        value: renderActions,
       },
     ],
-    [t]
+    [renderActions, renderActive, renderModel, renderOrder, renderSubscriptions, renderTitle, t]
   );
 
   return (

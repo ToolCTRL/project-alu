@@ -1,5 +1,5 @@
 import { useSubmit, useNavigation, useParams, useSearchParams, Link } from "react-router";
-import { useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { FilterablePropertyDto } from "~/application/dtos/data/FilterablePropertyDto";
 import { PaginationDto } from "~/application/dtos/data/PaginationDto";
@@ -70,12 +70,14 @@ export default function CreditsList({ data }: Readonly<Props>) {
     });
   }
 
+  const renderCreatedAt = useCallback((item: CreditWithDetails) => DateUtils.dateYMDHMS(item.createdAt), []);
+  const renderResource = useCallback((item: CreditWithDetails) => <ResourceCell item={item} t={t} />, [t]);
   const headers = useMemo(
     () => [
       {
         name: "createdAt",
         title: t("shared.createdAt"),
-        value: (item: CreditWithDetails) => DateUtils.dateYMDHMS(item.createdAt),
+        value: renderCreatedAt,
         formattedValue: CreatedAtCell,
       },
       {
@@ -93,7 +95,7 @@ export default function CreditsList({ data }: Readonly<Props>) {
         name: "resource",
         title: t("models.credit.resource"),
         className: "w-full",
-        value: (item: CreditWithDetails) => <ResourceCell item={item} t={t} />,
+        value: renderResource,
       },
       {
         name: "user",
@@ -101,7 +103,7 @@ export default function CreditsList({ data }: Readonly<Props>) {
         value: UserCell,
       },
     ],
-    [params.tenant, t]
+    [params.tenant, renderCreatedAt, renderResource, t]
   );
   return (
     <div className="space-y-2">

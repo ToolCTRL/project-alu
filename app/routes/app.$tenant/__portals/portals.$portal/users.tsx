@@ -1,5 +1,5 @@
 import { ActionFunctionArgs, LoaderFunctionArgs, MetaFunction, redirect, useActionData, useLoaderData, useNavigate, useOutlet, useParams, useSubmit } from "react-router";
-import { useEffect, useMemo, useRef } from "react";
+import { useCallback, useEffect, useMemo, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import { MetaTagsDto } from "~/application/dtos/seo/MetaTagsDto";
@@ -139,20 +139,22 @@ function UsersTable({ items, t, onChangePassword, onDelete }: UsersTableProps) {
     [onChangePassword, onDelete, t]
   );
 
+  const renderUser = useCallback((item: PortalUserDto) => <UserTableCellValue item={item} />, []);
+  const renderCreatedAt = useCallback((item: PortalUserDto) => <UserCreatedAtCellValue item={item} />, []);
   const headers = useMemo(
     () => [
       {
         name: "user",
         title: t("models.user.object"),
-        value: (item: PortalUserDto) => <UserTableCellValue item={item} />,
+        value: renderUser,
       },
       {
         name: "createdAt",
         title: t("shared.createdAt"),
-        value: (item: PortalUserDto) => <UserCreatedAtCellValue item={item} />,
+        value: renderCreatedAt,
       },
     ],
-    [t]
+    [renderCreatedAt, renderUser, t]
   );
 
   return (

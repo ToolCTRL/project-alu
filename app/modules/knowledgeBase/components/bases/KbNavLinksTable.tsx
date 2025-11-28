@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useCallback, useMemo } from "react";
 import OrderIndexButtons from "~/components/ui/sort/OrderIndexButtons";
 import TableSimple from "~/components/ui/tables/TableSimple";
 import { KbNavLinkDto } from "~/modules/knowledgeBase/dtos/KbNavLinkDto";
@@ -16,10 +16,10 @@ type SetItemsFn = React.Dispatch<
 interface OrderCellProps {
   readonly idx: number;
   readonly items: KbNavLinkDto[];
-  readonly setItems: SetItemsFn;
+  readonly onChange: (newItems: { idx: number; order: number }[]) => void;
 }
 
-function OrderCell({ idx, items, setItems }: OrderCellProps) {
+function OrderCell({ idx, items, onChange }: OrderCellProps) {
   return (
     <OrderIndexButtons
       idx={idx}
@@ -29,13 +29,7 @@ function OrderCell({ idx, items, setItems }: OrderCellProps) {
           order: f.order,
         };
       })}
-      onChange={(newItems) => {
-        setItems(
-          newItems.map((f, i) => {
-            return { ...items[i], order: f.order };
-          })
-        );
-      }}
+      onChange={onChange}
     />
   );
 }
@@ -47,29 +41,51 @@ export default function KbNavLinksTable({
   items: KbNavLinkDto[];
   setItems: SetItemsFn;
 }>) {
+  const onOrderChange = useCallback(
+    (newItems: { idx: number; order: number }[]) => {
+      setItems((prev) => prev.map((item, i) => ({ ...item, order: newItems[i]?.order ?? item.order })));
+    },
+    [setItems]
+  );
+  const updateName = useCallback(
+    (value: string, idx: number) => {
+      setItems((prev) => prev.map((item, i) => (i === idx ? { ...item, name: value } : item)));
+    },
+    [setItems]
+  );
+  const updateHref = useCallback(
+    (value: string, idx: number) => {
+      setItems((prev) => prev.map((item, i) => (i === idx ? { ...item, href: value } : item)));
+    },
+    [setItems]
+  );
+  const renderOrder = useCallback(
+    (_item: KbNavLinkDto, idx: number) => <OrderCell idx={idx} items={items} onChange={onOrderChange} />,
+    [items, onOrderChange]
+  );
   const headers = useMemo(
     () => [
       {
         name: "order",
         title: "",
-        value: (_item: KbNavLinkDto, idx: number) => <OrderCell idx={idx} items={items} setItems={setItems} />,
+        value: renderOrder,
       },
       {
         name: "title",
         title: "Title",
         value: (item: KbNavLinkDto) => item.name,
         editable: () => true,
-        setValue: (value: string, idx: number) => setItems((e) => e.map((item, i) => (i === idx ? { ...item, name: value } : item))),
+        setValue: (value: string, idx: number) => updateName(value, idx),
       },
       {
         name: "href",
         title: "Link",
         value: (item: KbNavLinkDto) => item.href,
         editable: () => true,
-        setValue: (value: string, idx: number) => setItems((e) => e.map((item, i) => (i === idx ? { ...item, href: value } : item))),
+        setValue: (value: string, idx: number) => updateHref(value, idx),
       },
     ],
-    [items, setItems]
+    [renderOrder, updateName, updateHref]
   );
   return (
     <div>

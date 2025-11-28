@@ -6,7 +6,7 @@ import TableSimple from "~/components/ui/tables/TableSimple";
 import InputCheckbox from "~/components/ui/input/InputCheckbox";
 import DateCell from "~/components/ui/dates/DateCell";
 import ButtonSecondary from "~/components/ui/buttons/ButtonSecondary";
-import { useEffect, useMemo, useRef } from "react";
+import { useCallback, useEffect, useMemo, useRef } from "react";
 import ConfirmModal, { RefConfirmModal } from "~/components/ui/modals/ConfirmModal";
 import { WorkflowDto } from "~/modules/workflowEngine/dtos/WorkflowDto";
 import NumberUtils from "~/utils/shared/NumberUtils";
@@ -126,42 +126,48 @@ export default function WorkflowsIndexView() {
     [onDelete]
   );
 
+  const renderStatus = useCallback((i: WorkflowDto) => <StatusToggleCell item={i} onToggle={onToggle} />, [onToggle]);
+  const renderTenant = useCallback((i: WorkflowDto) => <TenantCell item={i} params={params} t={t} />, [params, t]);
+  const renderTitle = useCallback((i: WorkflowDto) => <TitleCell item={i} />, []);
+  const renderBlocks = useCallback((i: WorkflowDto) => <BlocksCell item={i} />, []);
+  const renderExecutions = useCallback((i: WorkflowDto) => <ExecutionsCell item={i} />, []);
+  const renderCreatedAt = useCallback((i: WorkflowDto) => <CreatedAtCell item={i} />, []);
   const headers = useMemo(
     () => [
       {
         name: "status",
         title: "Status",
-        value: (i: WorkflowDto) => <StatusToggleCell item={i} onToggle={onToggle} />,
+        value: renderStatus,
       },
       {
         name: "tenant",
         title: t("models.tenant.object"),
-        value: (i: WorkflowDto) => <TenantCell item={i} params={params} t={t} />,
+        value: renderTenant,
         hidden: !!params.tenant,
       },
       {
         name: "title",
         title: "Title",
         className: "w-full",
-        value: (i: WorkflowDto) => <TitleCell item={i} />,
+        value: renderTitle,
       },
       {
         name: "blocks",
         title: "Blocks",
-        value: (i: WorkflowDto) => <BlocksCell item={i} />,
+        value: renderBlocks,
       },
       {
         name: "executions",
         title: "Executions",
-        value: (i: WorkflowDto) => <ExecutionsCell item={i} />,
+        value: renderExecutions,
       },
       {
         name: "createdAt",
         title: "Created at",
-        value: (i: WorkflowDto) => <CreatedAtCell item={i} />,
+        value: renderCreatedAt,
       },
     ],
-    [onToggle, params, t]
+    [params, renderBlocks, renderCreatedAt, renderExecutions, renderStatus, renderTenant, renderTitle, t]
   );
 
   function onExport() {
