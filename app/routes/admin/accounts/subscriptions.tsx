@@ -156,6 +156,13 @@ const ActionsCell = ({ item }: { item: TenantSubscriptionProductWithTenant }) =>
   );
 };
 
+const renderTenantCell = (i: TenantSubscriptionProductWithTenant) => <TenantCell item={i} />;
+const renderSubscriptionProductCell = (product: TenantSubscriptionProductWithTenant) => <SubscriptionProductCell product={product} />;
+const renderPeriodCell = (i: TenantSubscriptionProductWithTenant) => <PeriodCell item={i} />;
+const renderCancelledAtCell = (i: TenantSubscriptionProductWithTenant) => <CancelledAtCell item={i} />;
+const renderEndsAtCell = (i: TenantSubscriptionProductWithTenant) => <EndsAtCell item={i} />;
+const renderActionsCell = (i: TenantSubscriptionProductWithTenant) => <ActionsCell item={i} />;
+
 export default function SubscriptionsPage() {
   const { t } = useTranslation();
   const data = useLoaderData<LoaderData>();
@@ -174,34 +181,34 @@ export default function SubscriptionsPage() {
           {
             name: "tenant",
             title: t("models.tenant.object"),
-            value: (i) => <TenantCell item={i} />,
+            value: renderTenantCell,
           },
           {
             name: "subscriptionProduct",
             title: t("models.subscriptionProduct.object"),
             value: (i) => "",
             className: "w-full",
-            formattedValue: (product) => <SubscriptionProductCell product={product} />,
+            formattedValue: renderSubscriptionProductCell,
           },
           {
             name: "period",
             title: t("models.subscription.period"),
-            value: (i) => <PeriodCell item={i} />,
+            value: renderPeriodCell,
           },
           {
             name: "cancelledAt",
             title: t("models.subscription.cancelledAt"),
-            value: (i) => <CancelledAtCell item={i} />,
+            value: renderCancelledAtCell,
           },
           {
             name: "endsAt",
             title: t("models.subscription.endsAt"),
-            value: (i) => <EndsAtCell item={i} />,
+            value: renderEndsAtCell,
           },
           {
             name: "actions",
             title: "",
-            value: (i) => <ActionsCell item={i} />,
+            value: renderActionsCell,
           },
         ]}
       />

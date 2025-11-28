@@ -64,6 +64,14 @@ const SurveyItemVotes = ({ item, submissions, surveyItemTitle }: { item: any; su
   return <div>{optionResults.length} votes</div>;
 };
 
+const createRenderSurveyItemTitle = (submissions: any[], surveyItemTitle: string) => (item: any) => (
+  <SurveyItemTitle item={item} submissions={submissions} surveyItemTitle={surveyItemTitle} />
+);
+
+const createRenderSurveyItemVotes = (submissions: any[], surveyItemTitle: string) => (item: any) => (
+  <SurveyItemVotes item={item} submissions={submissions} surveyItemTitle={surveyItemTitle} />
+);
+
 export default function SurveyOverviewRoute() {
   const { t } = useTranslation();
   const data = useLoaderData<LoaderData>();
@@ -102,12 +110,12 @@ export default function SurveyOverviewRoute() {
                     name: "title",
                     title: "Title",
                     className: "w-full",
-                    value: (item) => <SurveyItemTitle item={item} submissions={data.submissions} surveyItemTitle={surveyItem.title} />,
+                    value: createRenderSurveyItemTitle(data.submissions, surveyItem.title),
                   },
                   {
                     name: "votes",
                     title: "Votes",
-                    value: (item) => <SurveyItemVotes item={item} submissions={data.submissions} surveyItemTitle={surveyItem.title} />,
+                    value: createRenderSurveyItemVotes(data.submissions, surveyItem.title),
                   },
                 ]}
               />

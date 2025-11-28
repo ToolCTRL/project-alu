@@ -43,6 +43,10 @@ const RevenueUsdCell = ({ item }: { item: StripeRevenueByProductPriceCurrency })
   </div>
 );
 
+const renderRevenueInCurrencyCell = (item: StripeRevenueByProductPriceCurrency) => <RevenueInCurrencyCell item={item} />;
+const renderCountCell = (item: StripeRevenueByProductPriceCurrency) => <CountCell item={item} />;
+const renderRevenueUsdCell = (item: StripeRevenueByProductPriceCurrency) => <RevenueUsdCell item={item} />;
+
 export default function SubscriptionsRevenuePage() {
   const { t } = useTranslation();
   const data = useLoaderData<LoaderData>();
@@ -71,19 +75,19 @@ export default function SubscriptionsRevenuePage() {
             name: "revenueInCurrency",
             title: "Revenue in Currency",
             value: (item) => item.revenueInCurrency,
-            formattedValue: (item) => <RevenueInCurrencyCell item={item} />,
+            formattedValue: renderRevenueInCurrencyCell,
           },
           {
             name: "count",
             title: "Count",
             value: (item) => item.count,
-            formattedValue: (item) => <CountCell item={item} />,
+            formattedValue: renderCountCell,
           },
           {
             name: "revenueUsd",
             title: "Revenue USD",
             value: (item) => item.revenueUsd,
-            formattedValue: (item) => <RevenueUsdCell item={item} />,
+            formattedValue: renderRevenueUsdCell,
           },
         ]}
       />

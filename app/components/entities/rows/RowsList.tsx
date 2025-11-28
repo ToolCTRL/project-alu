@@ -173,6 +173,8 @@ function RowsListWrapped({
   const params = useParams();
   const appOrAdminData = useAppOrAdminData();
 
+  const gridLayout = currentView ? EntityViewHelper.getGridLayout(currentView) : { columns: 3, gap: "xs" };
+
   return (
     <Fragment>
       {view == "table" && (
@@ -220,7 +222,7 @@ function RowsListWrapped({
             />
           ) : (
             <div className="space-y-2">
-              <GridContainer {...(currentView ? EntityViewHelper.getGridLayout(currentView) : { columns: 3, gap: "xs" })}>
+              <GridContainer {...gridLayout}>
                 {items.map((item) => {
                   const href = onClickRoute ? onClickRoute(item) : EntityHelper.getRoutes({ routes, entity, item })?.overview;
                   if (onSelected && selectedRows !== undefined) {
@@ -719,7 +721,7 @@ function AdvancedBoard({
                         {routes && !readOnly && (
                           <Link
                             className="text-muted-foreground hover:text-foreground rounded-md px-2 py-1 text-sm font-semibold"
-                            to={(EntityHelper.getRoutes({ routes, entity })?.new ?? "") + (colId !== "__undefined" ? `?${groupBy?.name}=${colId}` : "")}
+                            to={(EntityHelper.getRoutes({ routes, entity })?.new ?? "") + (colId === "__undefined" ? "" : `?${groupBy?.name}=${colId}`)}
                             title={t("shared.add")}
                           >
                             +
@@ -843,7 +845,7 @@ function BoardColumn({
           {routes && !readOnly && (
             <Link
               className="text-muted-foreground hover:text-foreground border-border flex items-center justify-center rounded-md border border-dashed px-2 py-2 text-xs font-medium"
-              to={(EntityHelper.getRoutes({ routes, entity })?.new ?? "") + (colId !== "__undefined" ? `?${groupBy?.name}=${colId}` : "")}
+              to={(EntityHelper.getRoutes({ routes, entity })?.new ?? "") + (colId === "__undefined" ? "" : `?${groupBy?.name}=${colId}`)}
             >
               {t("shared.add")}
             </Link>

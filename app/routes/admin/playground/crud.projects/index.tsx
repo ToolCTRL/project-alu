@@ -119,6 +119,11 @@ function ProjectDateCell({ item }: ProjectDateCellProps) {
   return <DateCell displays={["ymd"]} date={item.createdAt} />;
 }
 
+const renderProjectNameCell = (item: FakeProjectDto) => <ProjectNameCell item={item} />;
+const renderProjectActiveCell = (item: FakeProjectDto) => <ProjectActiveCell item={item} />;
+const renderProjectTasksCell = (item: FakeProjectDto) => <ProjectTasksCell item={item} />;
+const renderProjectDateCell = (item: FakeProjectDto) => <ProjectDateCell item={item} />;
+
 export default function ProjectsPage() {
   const { t } = useTranslation();
   const data = useLoaderData<LoaderData>();
@@ -169,22 +174,22 @@ export default function ProjectsPage() {
             name: "name",
             title: "Name",
             className: "w-full",
-            value: (item) => <ProjectNameCell item={item} />,
+            value: renderProjectNameCell,
           },
           {
             name: "active",
             title: "Active",
-            value: (item) => <ProjectActiveCell item={item} />,
+            value: renderProjectActiveCell,
           },
           {
             name: "tasks",
             title: "Tasks",
-            value: (item) => <ProjectTasksCell item={item} />,
+            value: renderProjectTasksCell,
           },
           {
             name: "date",
             title: "Created at",
-            value: (item) => <ProjectDateCell item={item} />,
+            value: renderProjectDateCell,
           },
         ]}
       />

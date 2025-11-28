@@ -212,7 +212,7 @@ function InputSlug({
       <InputSelect
         title={t("shared.type")}
         value={type}
-        setValue={(e) => setType(e as any)}
+        setValue={setType}
         options={[
           {
             value: "docs",

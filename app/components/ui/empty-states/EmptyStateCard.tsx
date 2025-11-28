@@ -27,9 +27,7 @@ const variantClasses: Record<NonNullable<EmptyStateAction["variant"]>, string> =
 export function EmptyStateCard({ title, description, icon, background = "grid", className, actions, eyebrow }: Readonly<EmptyStateCardProps>) {
   const { handleMouseMove, handleMouseLeave } = use3DTilt({ maxAngle: 8 });
   return (
-    <div
-      role="group"
-      tabIndex={0}
+    <section
       aria-label={title}
       className={clsx(
         "relative overflow-hidden rounded-[var(--radius-lg,1.25rem)] border border-white/10 bg-card/80 p-8 text-center text-card-foreground shadow-[var(--shadow-soft,0px_20px_40px_rgba(7,12,20,0.35))] transition-transform duration-200 will-change-transform",
@@ -79,7 +77,7 @@ export function EmptyStateCard({ title, description, icon, background = "grid", 
           </div>
         )}
       </div>
-    </div>
+    </section>
   );
 }
 

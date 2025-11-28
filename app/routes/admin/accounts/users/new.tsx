@@ -116,13 +116,6 @@ export default function SetUserRolesRoute() {
   function removeRole(roleId: string) {
     setSelectedRoles((roles) => roles.filter((id) => id !== roleId));
   }
-  function handleRoleToggle(checked: boolean, roleId: string) {
-    if (checked) {
-      addRole(roleId);
-    } else {
-      removeRole(roleId);
-    }
-  }
 
   return (
     <div>
@@ -161,7 +154,7 @@ export default function SetUserRolesRoute() {
                   title={role.name}
                   description={role.description}
                   value={selectedRoles.includes(role.id)}
-                  setValue={(e) => handleRoleToggle(e, role.id)}
+                  setValue={(checked) => (checked ? addRole(role.id) : removeRole(role.id))}
                 />
               ))}
             </div>

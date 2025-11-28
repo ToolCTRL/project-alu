@@ -251,6 +251,8 @@ export default function OnboardingSessionsTable({
   );
 }
 
+const renderActivityDate = (i: OnboardingSessionActivityDto) => <div className="text-muted-foreground">{DateUtils.dateYMDHMS(i.createdAt)}</div>;
+
 function SessionModal({
   item,
   open,
@@ -285,7 +287,7 @@ function SessionModal({
               {
                 name: "createdAt",
                 title: "Date",
-                value: (i) => <div className="text-muted-foreground">{DateUtils.dateYMDHMS(i.createdAt)}</div>,
+                value: renderActivityDate,
               },
               {
                 name: "type",

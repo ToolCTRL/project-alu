@@ -129,7 +129,7 @@ async function handleNewArticle(kb: KnowledgeBaseDto, params: any, userId: strin
 
 async function handleSetOrders(form: FormData) {
   const items: { id: string; order: number }[] = form.getAll("orders[]").map((f: FormDataEntryValue) => {
-    return JSON.parse(String(f));
+    return JSON.parse(f.toString());
   });
   await Promise.all(
     items.map(async ({ id, order }) => {
@@ -143,7 +143,7 @@ async function handleSetOrders(form: FormData) {
 
 async function handleSetSectionOrders(form: FormData) {
   const items: { id: string; order: number }[] = form.getAll("orders[]").map((f: FormDataEntryValue) => {
-    return JSON.parse(String(f));
+    return JSON.parse(f.toString());
   });
   await Promise.all(
     items.map(async ({ id, order }) => {

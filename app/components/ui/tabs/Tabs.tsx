@@ -99,53 +99,47 @@ export default function Tabs({ className = "", breakpoint = "md", tabs = [], asL
           breakpoint === "2xl" && "hidden 2xl:block"
         )}
       >
-        {(() => {
-          if (asLinks) {
-            return (
-              <nav className="flex space-x-4" aria-label="Tabs">
-                {tabs
-                  .filter((f) => f.routePath)
-                  .map((tab, idx) => {
-                    return (
-                      <Link
-                        key={tab.name}
-                        to={tab.routePath ?? ""}
-                        className={clsx(
-                          "truncate",
-                          isCurrent(idx) ? " text-secondary-foreground bg-secondary" : "text-muted-foreground hover:text-foreground hover:bg-secondary",
-                          "rounded-sm px-3 py-2 text-sm font-medium"
-                        )}
-                      >
-                        {tab.name}
-                      </Link>
-                    );
-                  })}
-              </nav>
-            );
-          } else {
-            return (
-              <nav className="flex space-x-4" aria-label="Tabs">
-                {tabs.map((tab, idx) => {
-                  const tabKey = tab.routePath || tab.name || `tab-${idx}`;
-                  return (
-                    <button
-                      type="button"
-                      key={tabKey}
-                      onClick={() => selectTab(idx)}
-                      className={clsx(
-                        "truncate",
-                        isCurrent(idx) ? " text-secondary-foreground bg-secondary" : "text-muted-foreground hover:text-foreground hover:bg-secondary",
-                        "rounded-sm px-3 py-2 text-sm font-medium"
-                      )}
-                    >
-                      {tab.name}
-                    </button>
-                  );
-                })}
-              </nav>
-            );
-          }
-        })()}
+        {asLinks ? (
+          <nav className="flex space-x-4" aria-label="Tabs">
+            {tabs
+              .filter((f) => f.routePath)
+              .map((tab, idx) => {
+                return (
+                  <Link
+                    key={tab.name}
+                    to={tab.routePath ?? ""}
+                    className={clsx(
+                      "truncate",
+                      isCurrent(idx) ? " text-secondary-foreground bg-secondary" : "text-muted-foreground hover:text-foreground hover:bg-secondary",
+                      "rounded-sm px-3 py-2 text-sm font-medium"
+                    )}
+                  >
+                    {tab.name}
+                  </Link>
+                );
+              })}
+          </nav>
+        ) : (
+          <nav className="flex space-x-4" aria-label="Tabs">
+            {tabs.map((tab, idx) => {
+              const tabKey = tab.routePath || tab.name || `tab-${idx}`;
+              return (
+                <button
+                  type="button"
+                  key={tabKey}
+                  onClick={() => selectTab(idx)}
+                  className={clsx(
+                    "truncate",
+                    isCurrent(idx) ? " text-secondary-foreground bg-secondary" : "text-muted-foreground hover:text-foreground hover:bg-secondary",
+                    "rounded-sm px-3 py-2 text-sm font-medium"
+                  )}
+                >
+                  {tab.name}
+                </button>
+              );
+            })}
+          </nav>
+        )}
       </div>
     </div>
   );

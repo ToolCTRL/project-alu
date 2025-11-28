@@ -56,6 +56,17 @@ const OnboardingTitleCell = ({ item, sessionPluralLabel, activeLabel, startedLab
   );
 };
 
+const createRenderOnboardingTitle = (t: ReturnType<typeof useTranslation>['t']) => (i: OnboardingWithDetails) => (
+  <OnboardingTitleCell
+    item={i}
+    sessionPluralLabel={t("onboarding.session.plural").toLowerCase()}
+    activeLabel={t("onboarding.object.sessions.active").toLowerCase()}
+    startedLabel={t("onboarding.object.sessions.started").toLowerCase()}
+    dismissedLabel={t("onboarding.object.sessions.dismissed").toLowerCase()}
+    completedLabel={t("onboarding.object.sessions.completed").toLowerCase()}
+  />
+);
+
 export default function OnboardingsList({ items, groupByStatus }: { readonly items: OnboardingWithDetails[]; readonly groupByStatus: { status: string; count: number }[] }) {
   const { t } = useTranslation();
   return (
@@ -67,16 +78,7 @@ export default function OnboardingsList({ items, groupByStatus }: { readonly ite
           name: "title",
           title: t("onboarding.object.title"),
           className: "w-full",
-          value: (i: OnboardingWithDetails) => (
-            <OnboardingTitleCell
-              item={i}
-              sessionPluralLabel={t("onboarding.session.plural").toLowerCase()}
-              activeLabel={t("onboarding.object.sessions.active").toLowerCase()}
-              startedLabel={t("onboarding.object.sessions.started").toLowerCase()}
-              dismissedLabel={t("onboarding.object.sessions.dismissed").toLowerCase()}
-              completedLabel={t("onboarding.object.sessions.completed").toLowerCase()}
-            />
-          ),
+          value: createRenderOnboardingTitle(t),
         },
       ]}
       noRecords={

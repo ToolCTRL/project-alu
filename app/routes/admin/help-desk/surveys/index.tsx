@@ -54,6 +54,12 @@ const SurveySubmissions = ({ item }: { item: SurveyWithDetails }) => (
 
 const SurveyCreatedAt = ({ item }: { item: SurveyWithDetails }) => <DateCell date={item.createdAt} />;
 
+const renderSurveyTitle = (item: SurveyWithDetails) => <SurveyTitle item={item} />;
+const renderSurveyPublicStatus = (item: SurveyWithDetails) => <SurveyPublicStatus item={item} />;
+const renderSurveyEnabledStatus = (item: SurveyWithDetails) => <SurveyEnabledStatus item={item} />;
+const renderSurveySubmissions = (item: SurveyWithDetails) => <SurveySubmissions item={item} />;
+const renderSurveyCreatedAt = (item: SurveyWithDetails) => <SurveyCreatedAt item={item} />;
+
 export default function SurveysIndexRoute() {
   const { t } = useTranslation();
   const data = useLoaderData<LoaderData>();
@@ -101,27 +107,27 @@ export default function SurveysIndexRoute() {
             name: "survey",
             title: "Survey",
             className: "w-full",
-            value: (item) => <SurveyTitle item={item} />,
+            value: renderSurveyTitle,
           },
           {
             name: "isPublic",
             title: "Public",
-            value: (item) => <SurveyPublicStatus item={item} />,
+            value: renderSurveyPublicStatus,
           },
           {
             name: "isEnabled",
             title: "Enabled",
-            value: (item) => <SurveyEnabledStatus item={item} />,
+            value: renderSurveyEnabledStatus,
           },
           {
             name: "submissions",
             title: "Submissions",
-            value: (item) => <SurveySubmissions item={item} />,
+            value: renderSurveySubmissions,
           },
           {
             name: "createdAt",
             title: "Created At",
-            value: (item) => <SurveyCreatedAt item={item} />,
+            value: renderSurveyCreatedAt,
           },
         ]}
       />

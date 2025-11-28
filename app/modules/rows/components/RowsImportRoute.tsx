@@ -400,6 +400,40 @@ function MapFields({
   function hasBeenMapped(name: string) {
     return rawData.columns.some((f) => f.name === name);
   }
+
+  function renderPreviewTable() {
+    if (rawData.columns.filter((f) => f.name).length === 0) {
+      return (
+        <div className="text-muted-foreground mx-auto flex flex-col space-y-2 p-12 text-center">
+          <ExclamationTriangleIcon className="mx-auto h-6 w-6 text-red-600" />
+          <div className="text-medium">Map at least one column to a property</div>
+        </div>
+      );
+    }
+    if (uniqueRows.length === 0) {
+      return (
+        <div className="text-muted-foreground mx-auto flex flex-col space-y-2 p-12 text-center">
+          <ExclamationTriangleIcon className="mx-auto h-6 w-6 text-red-600" />
+          <div className="text-medium">Now rows</div>
+        </div>
+      );
+    }
+    return (
+      <TableSimple
+        items={uniqueRows}
+        headers={rawData.columns
+          .filter((f) => f.name)
+          .map((c) => {
+            return {
+              name: c.column,
+              title: c.column,
+              value: (item: RawRow) => item?.find((f) => f.column === c.column)?.value ?? "?",
+            };
+          })}
+      />
+    );
+  }
+
   return (
     <div className="space-y-2">
       <div className="flex justify-between space-x-2 pb-2">
@@ -534,32 +568,7 @@ function MapFields({
             </ButtonPrimary>
           </div>
         </div>
-        <div className="border-border bg-secondary h-64 overflow-y-auto rounded-lg border-2 border-dashed">
-          {rawData.columns.filter((f) => f.name).length === 0 ? (
-            <div className="text-muted-foreground mx-auto flex flex-col space-y-2 p-12 text-center">
-              <ExclamationTriangleIcon className="mx-auto h-6 w-6 text-red-600" />
-              <div className="text-medium">Map at least one column to a property</div>
-            </div>
-          ) : uniqueRows.length === 0 ? (
-            <div className="text-muted-foreground mx-auto flex flex-col space-y-2 p-12 text-center">
-              <ExclamationTriangleIcon className="mx-auto h-6 w-6 text-red-600" />
-              <div className="text-medium">Now rows</div>
-            </div>
-          ) : (
-            <TableSimple
-              items={uniqueRows}
-              headers={rawData.columns
-                .filter((f) => f.name)
-                .map((c) => {
-                  return {
-                    name: c.column,
-                    title: c.column,
-                    value: (item: RawRow) => item?.find((f) => f.column === c.column)?.value ?? "?",
-                  };
-                })}
-            />
-          )}
-        </div>
+        <div className="border-border bg-secondary h-64 overflow-y-auto rounded-lg border-2 border-dashed">{renderPreviewTable()}</div>
       </Modal>
     </div>
   );

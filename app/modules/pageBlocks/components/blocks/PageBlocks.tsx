@@ -178,13 +178,9 @@ export default function PageBlocks({
                             page={page}
                             block={item}
                             onGenerated={(newBlock) => onGenerated(idx, newBlock)}
-                            onLoading={(isLoading) => {
-                              if (isLoading) {
-                                setBlocksLoading([...blocksLoading, idx]);
-                              } else {
-                                setBlocksLoading(blocksLoading.filter((i) => i !== idx));
-                              }
-                            }}
+                            onLoading={(isLoading) =>
+                              isLoading ? setBlocksLoading([...blocksLoading, idx]) : setBlocksLoading(blocksLoading.filter((i) => i !== idx))
+                            }
                           />
                         )}
                       </div>
