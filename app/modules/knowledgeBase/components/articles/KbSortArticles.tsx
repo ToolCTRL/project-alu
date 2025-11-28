@@ -1,3 +1,4 @@
+import { useMemo } from "react";
 import OrderListButtons from "~/components/ui/sort/OrderListButtons";
 import TableSimple from "~/components/ui/tables/TableSimple";
 
@@ -21,23 +22,27 @@ export default function KbSortArticles({
 }: Readonly<{
   items: ArticleItem[];
 }>) {
+  const headers = useMemo(
+    () => [
+      {
+        name: "order",
+        title: "",
+        value: (_i: ArticleItem, idx: number) => <OrderCell idx={idx} items={items} />,
+      },
+      {
+        name: "title",
+        title: "Title",
+        value: (item: ArticleItem) => item.title,
+      },
+    ],
+    [items]
+  );
   return (
     <div className="space-y-1">
       <label className="text-muted-foreground block text-xs font-medium">{"Articles"}</label>
       <TableSimple
         items={items}
-        headers={[
-          {
-            name: "order",
-            title: "",
-            value: (_i, idx) => <OrderCell idx={idx} items={items} />,
-          },
-          {
-            name: "title",
-            title: "Title",
-            value: (item) => item.title,
-          },
-        ]}
+        headers={headers}
       />
     </div>
   );

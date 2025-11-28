@@ -12,7 +12,7 @@ import { TenantTypeDto } from "~/application/dtos/tenants/TenantTypeDto";
 import { getAllSubscriptionProducts } from "~/utils/db/subscriptionProducts.db.server";
 import { getAllTenantsWithoutTypes } from "~/utils/db/tenants.db.server";
 import clsx from "clsx";
-import { Fragment, useEffect, useState } from "react";
+import { Fragment, useEffect, useMemo, useState } from "react";
 import LockClosedIcon from "~/components/ui/icons/LockClosedIcon";
 import { useRootData } from "~/utils/data/useRootData";
 import WarningBanner from "~/components/ui/banners/WarningBanner";
@@ -88,6 +88,60 @@ export default function AccountTypesList() {
     });
   }
 
+  const headers = useMemo(
+    () => [
+      {
+        name: "name",
+        title: t("shared.title"),
+        value: (item: TenantTypeDto) => (
+          <div className={clsx("flex max-w-xs flex-col truncate", item.id && "cursor-pointer hover:underline")}>
+            <div className="flex items-center space-x-2">
+              {!item.id && <LockClosedIcon className="text-muted-foreground h-4 w-4" />}
+              <div>
+                {item.title} <span className="text-muted-foreground text-xs font-normal">({item.titlePlural})</span>
+              </div>
+            </div>
+            <div className="text-muted-foreground truncate text-sm">{item.description}</div>
+          </div>
+        ),
+        href: (item: TenantTypeDto) => item.id ?? undefined,
+      },
+      {
+        name: "inProducts",
+        title: "Plans",
+        className: "w-full",
+        value: (item: TenantTypeDto) => <div className="max-w-md truncate">{item.subscriptionProducts?.map((f) => t(f.title)).join(", ") || "-"}</div>,
+      },
+      {
+        name: "inTenants",
+        title: "Accounts",
+        value: (item: TenantTypeDto) => item._count?.tenants,
+        href(item: TenantTypeDto) {
+          return "/admin/accounts?typeId=" + item.id || "null";
+        },
+      },
+      {
+        name: "isDefault",
+        title: t("shared.default"),
+        value: (item: TenantTypeDto) => (item.isDefault ? <CheckIcon className="h-4 w-4 text-green-500" /> : <XIcon className="text-muted-foreground h-4 w-4" />),
+      },
+      {
+        name: "actions",
+        title: "",
+        value: (item: TenantTypeDto) => (
+          <Fragment>
+            {item.id && (
+              <Link to={item.id} className="hover:underline">
+                {t("shared.edit")}
+              </Link>
+            )}
+          </Fragment>
+        ),
+      },
+    ],
+    [t]
+  );
+
   return (
     <EditPageLayout
       title={<BackButtonWithTitle href="/admin/settings">{t("models.tenantType.plural")}</BackButtonWithTitle>}
@@ -102,56 +156,7 @@ export default function AccountTypesList() {
         <TableSimple
           items={data.types}
           onClickRoute={(idx, item) => item.id ?? undefined}
-          headers={[
-            {
-              name: "name",
-              title: t("shared.title"),
-              value: (item) => (
-                <div className={clsx("flex max-w-xs flex-col truncate", item.id && "cursor-pointer hover:underline")}>
-                  <div className="flex items-center space-x-2">
-                    {!item.id && <LockClosedIcon className="text-muted-foreground h-4 w-4" />}
-                    <div>
-                      {item.title} <span className="text-muted-foreground text-xs font-normal">({item.titlePlural})</span>
-                    </div>
-                  </div>
-                  <div className="text-muted-foreground truncate text-sm">{item.description}</div>
-                </div>
-              ),
-              href: (item) => item.id ?? undefined,
-            },
-            {
-              name: "inProducts",
-              title: "Plans",
-              className: "w-full",
-              value: (item) => <div className="max-w-md truncate">{item.subscriptionProducts?.map((f) => t(f.title)).join(", ") || "-"}</div>,
-            },
-            {
-              name: "inTenants",
-              title: "Accounts",
-              value: (item) => item._count?.tenants,
-              href(item) {
-                return "/admin/accounts?typeId=" + item.id || "null";
-              },
-            },
-            {
-              name: "isDefault",
-              title: t("shared.default"),
-              value: (item) => (item.isDefault ? <CheckIcon className="h-4 w-4 text-green-500" /> : <XIcon className="text-muted-foreground h-4 w-4" />),
-            },
-            {
-              name: "actions",
-              title: "",
-              value: (item) => (
-                <Fragment>
-                  {item.id && (
-                    <Link to={item.id} className="hover:underline">
-                      {t("shared.edit")}
-                    </Link>
-                  )}
-                </Fragment>
-              ),
-            },
-          ]}
+          headers={headers}
         />
       </div>
 

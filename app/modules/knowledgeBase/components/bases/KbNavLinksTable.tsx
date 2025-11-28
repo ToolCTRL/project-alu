@@ -1,3 +1,4 @@
+import { useMemo } from "react";
 import OrderIndexButtons from "~/components/ui/sort/OrderIndexButtons";
 import TableSimple from "~/components/ui/tables/TableSimple";
 import { KbNavLinkDto } from "~/modules/knowledgeBase/dtos/KbNavLinkDto";
@@ -46,6 +47,30 @@ export default function KbNavLinksTable({
   items: KbNavLinkDto[];
   setItems: SetItemsFn;
 }>) {
+  const headers = useMemo(
+    () => [
+      {
+        name: "order",
+        title: "",
+        value: (_item: KbNavLinkDto, idx: number) => <OrderCell idx={idx} items={items} setItems={setItems} />,
+      },
+      {
+        name: "title",
+        title: "Title",
+        value: (item: KbNavLinkDto) => item.name,
+        editable: () => true,
+        setValue: (value: string, idx: number) => setItems((e) => e.map((item, i) => (i === idx ? { ...item, name: value } : item))),
+      },
+      {
+        name: "href",
+        title: "Link",
+        value: (item: KbNavLinkDto) => item.href,
+        editable: () => true,
+        setValue: (value: string, idx: number) => setItems((e) => e.map((item, i) => (i === idx ? { ...item, href: value } : item))),
+      },
+    ],
+    [items, setItems]
+  );
   return (
     <div>
       <div className="mb-1 flex items-center justify-between space-x-2 text-xs">
@@ -58,27 +83,7 @@ export default function KbNavLinksTable({
       <div className="">
         <TableSimple
           items={items.toSorted((a, b) => a.order - b.order)}
-          headers={[
-            {
-              name: "order",
-              title: "",
-              value: (_item, idx) => <OrderCell idx={idx} items={items} setItems={setItems} />,
-            },
-            {
-              name: "title",
-              title: "Title",
-              value: (item) => item.name,
-              editable: () => true,
-              setValue: (value, idx) => setItems((e) => e.map((item, i) => (i === idx ? { ...item, name: value } : item))),
-            },
-            {
-              name: "href",
-              title: "Link",
-              value: (item) => item.href,
-              editable: () => true,
-              setValue: (value, idx) => setItems((e) => e.map((item, i) => (i === idx ? { ...item, href: value } : item))),
-            },
-          ]}
+          headers={headers}
         />
         <button
           type="button"

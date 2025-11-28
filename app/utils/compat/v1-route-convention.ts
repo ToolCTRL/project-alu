@@ -5,7 +5,6 @@ import fs from "node:fs";
 import path from "node:path";
 import { minimatch } from "minimatch";
 import { DefineRoutesFunction } from "@react-router/remix-config-routes-adapter";
-import { RouteManifest } from "node_modules/@react-router/remix-config-routes-adapter/dist/manifest";
 
 let paramPrefixChar = "$" as const;
 let escapeStart = "[" as const;
@@ -49,7 +48,10 @@ export type CreateRoutesFromFoldersOptions = {
  * For example, a file named `app/routes/gists/$username.tsx` creates a route
  * with a path of `gists/:username`.
  */
-export function createRoutesFromFolders(defineRoutes: DefineRoutesFunction, options: CreateRoutesFromFoldersOptions = {}): RouteManifest {
+export function createRoutesFromFolders(
+  defineRoutes: DefineRoutesFunction,
+  options: CreateRoutesFromFoldersOptions = {}
+): ReturnType<DefineRoutesFunction> {
   let { appDirectory = "app", ignoredFilePatterns = [], routesDirectory = "routes" } = options;
 
   let appRoutesDirectory = path.join(appDirectory, routesDirectory);
@@ -201,7 +203,6 @@ function isCloseOptionalSegment(
   );
 }
 
-// TODO: Cleanup and write some tests for this function
 export function createRoutePath(partialRouteId: string): string | undefined {
   type PathState = {
     result: string;

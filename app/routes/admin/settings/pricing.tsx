@@ -1,6 +1,6 @@
 import { useTranslation } from "react-i18next";
 import ErrorModal, { RefErrorModal } from "~/components/ui/modals/ErrorModal";
-import { Fragment, useEffect, useRef, useState } from "react";
+import { Fragment, useEffect, useMemo, useRef, useState } from "react";
 import plans from "~/application/pricing/plans.server";
 import { ActionFunction, Link, LoaderFunctionArgs, MetaFunction, useActionData, useLoaderData, Form, Outlet, useSubmit, useNavigation } from "react-router";
 import { getAllSubscriptionProducts, getAllSubscriptionProductsWithTenants, getSubscriptionProduct } from "~/utils/db/subscriptionProducts.db.server";
@@ -204,6 +204,76 @@ export default function AdminPricingRoute() {
     return data.items.filter((f) => f.id).length;
   }
 
+  const tableHeaders = useMemo(
+    () => [
+      {
+        name: "order",
+        title: t("models.subscriptionProduct.order"),
+        value: (i: SubscriptionProductDto) => i.order,
+      },
+      {
+        name: "title",
+        title: t("models.subscriptionProduct.title"),
+        value: (item: SubscriptionProductDto) => (
+          <div className="group flex items-center gap-1">
+            <Link to={"edit/" + item.id} className="group-hover:underline">
+              {t(item.title)}
+            </Link>
+            {item.badge && <div className="border-border bg-theme-50 text-theme-800 ml-1 rounded-md border px-1 py-0.5 text-xs">{t(item.badge)}</div>}
+          </div>
+        ),
+      },
+      {
+        name: "model",
+        title: t("models.subscriptionProduct.model"),
+        value: (item: SubscriptionProductDto) => <>{t("pricing." + PricingModel[item.model])}</>,
+      },
+      {
+        name: "subscriptions",
+        title: t("models.subscriptionProduct.plural"),
+        value: (item: SubscriptionProductDto) => (
+          <div className="text-muted-foreground lowercase">
+            {item.tenantProducts?.length ?? 0} {t("shared.active")}
+          </div>
+        ),
+      },
+      {
+        name: "active",
+        title: t("models.subscriptionProduct.status"),
+        value: (item: SubscriptionProductDto) => (
+          <>
+            {item.active ? (
+              <>
+                {item.public ? (
+                  <SimpleBadge title={t("models.subscriptionProduct.public")} color={Colors.TEAL} />
+                ) : (
+                  <SimpleBadge title={t("models.subscriptionProduct.custom")} color={Colors.ORANGE} />
+                )}
+              </>
+            ) : (
+              <SimpleBadge title={t("shared.inactive")} color={Colors.RED} />
+            )}
+          </>
+        ),
+      },
+      {
+        name: "actions",
+        title: t("shared.actions"),
+        value: (item: SubscriptionProductDto) => (
+          <div className="flex items-center space-x-2">
+            <ButtonTertiary disabled={!item.id} to={"/pricing?plan=" + item.id} target="_blank">
+              {t("shared.preview")}
+            </ButtonTertiary>
+            <ButtonTertiary disabled={!item.id} to={"edit/" + item.id}>
+              {t("shared.edit")}
+            </ButtonTertiary>
+          </div>
+        ),
+      },
+    ],
+    [t]
+  );
+
   return (
     <EditPageLayout
       title={<BackButtonWithTitle href="/admin/settings">{t("admin.pricing.title")}</BackButtonWithTitle>}
@@ -312,72 +382,7 @@ export default function AdminPricingRoute() {
           selectedRows={selectedItems}
           onSelected={(items) => setSelectedItems(items)}
           items={sortedItems()}
-          headers={[
-            {
-              name: "order",
-              title: t("models.subscriptionProduct.order"),
-              value: (i) => i.order,
-            },
-            {
-              name: "title",
-              title: t("models.subscriptionProduct.title"),
-              value: (item) => (
-                <div className="group flex items-center gap-1">
-                  <Link to={"edit/" + item.id} className="group-hover:underline">
-                    {t(item.title)}
-                  </Link>
-                  {item.badge && <div className="border-border bg-theme-50 text-theme-800 ml-1 rounded-md border px-1 py-0.5 text-xs">{t(item.badge)}</div>}
-                </div>
-              ),
-            },
-            {
-              name: "model",
-              title: t("models.subscriptionProduct.model"),
-              value: (item) => <>{t("pricing." + PricingModel[item.model])}</>,
-            },
-            {
-              name: "subscriptions",
-              title: t("models.subscriptionProduct.plural"),
-              value: (item) => (
-                <div className="text-muted-foreground lowercase">
-                  {item.tenantProducts?.length ?? 0} {t("shared.active")}
-                </div>
-              ),
-            },
-            {
-              name: "active",
-              title: t("models.subscriptionProduct.status"),
-              value: (item) => (
-                <>
-                  {item.active ? (
-                    <>
-                      {item.public ? (
-                        <SimpleBadge title={t("models.subscriptionProduct.public")} color={Colors.TEAL} />
-                      ) : (
-                        <SimpleBadge title={t("models.subscriptionProduct.custom")} color={Colors.ORANGE} />
-                      )}
-                    </>
-                  ) : (
-                    <SimpleBadge title={t("shared.inactive")} color={Colors.RED} />
-                  )}
-                </>
-              ),
-            },
-            {
-              name: "actions",
-              title: t("shared.actions"),
-              value: (item) => (
-                <div className="flex items-center space-x-2">
-                  <ButtonTertiary disabled={!item.id} to={"/pricing?plan=" + item.id} target="_blank">
-                    {t("shared.preview")}
-                  </ButtonTertiary>
-                  <ButtonTertiary disabled={!item.id} to={"edit/" + item.id}>
-                    {t("shared.edit")}
-                  </ButtonTertiary>
-                </div>
-              ),
-            },
-          ]}
+          headers={tableHeaders}
         />
       </div>
 

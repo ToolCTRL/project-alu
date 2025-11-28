@@ -6,7 +6,7 @@ import TableSimple from "~/components/ui/tables/TableSimple";
 import InputCheckbox from "~/components/ui/input/InputCheckbox";
 import DateCell from "~/components/ui/dates/DateCell";
 import ButtonSecondary from "~/components/ui/buttons/ButtonSecondary";
-import { useEffect, useRef } from "react";
+import { useEffect, useMemo, useRef } from "react";
 import ConfirmModal, { RefConfirmModal } from "~/components/ui/modals/ConfirmModal";
 import { WorkflowDto } from "~/modules/workflowEngine/dtos/WorkflowDto";
 import NumberUtils from "~/utils/shared/NumberUtils";
@@ -111,6 +111,59 @@ export default function WorkflowsIndexView() {
     return data.items;
   }
 
+  const actions = useMemo(
+    () => [
+      {
+        title: "Edit",
+        onClickRoute: (_: number, i: WorkflowDto) => `${i.id}`,
+      },
+      {
+        title: "Delete",
+        onClick: (_: number, i: WorkflowDto) => onDelete(i),
+        destructive: true,
+      },
+    ],
+    [onDelete]
+  );
+
+  const headers = useMemo(
+    () => [
+      {
+        name: "status",
+        title: "Status",
+        value: (i: WorkflowDto) => <StatusToggleCell item={i} onToggle={onToggle} />,
+      },
+      {
+        name: "tenant",
+        title: t("models.tenant.object"),
+        value: (i: WorkflowDto) => <TenantCell item={i} params={params} t={t} />,
+        hidden: !!params.tenant,
+      },
+      {
+        name: "title",
+        title: "Title",
+        className: "w-full",
+        value: (i: WorkflowDto) => <TitleCell item={i} />,
+      },
+      {
+        name: "blocks",
+        title: "Blocks",
+        value: (i: WorkflowDto) => <BlocksCell item={i} />,
+      },
+      {
+        name: "executions",
+        title: "Executions",
+        value: (i: WorkflowDto) => <ExecutionsCell item={i} />,
+      },
+      {
+        name: "createdAt",
+        title: "Created at",
+        value: (i: WorkflowDto) => <CreatedAtCell item={i} />,
+      },
+    ],
+    [onToggle, params, t]
+  );
+
   function onExport() {
     const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(data.template, null, "\t"));
     const downloadAnchorNode = document.createElement("a");
@@ -163,51 +216,8 @@ export default function WorkflowsIndexView() {
 
       <TableSimple
         items={filteredItems()}
-        actions={[
-          {
-            title: "Edit",
-            onClickRoute: (_, i) => `${i.id}`,
-          },
-          {
-            title: "Delete",
-            onClick: (_, i) => onDelete(i),
-            destructive: true,
-          },
-        ]}
-        headers={[
-          {
-            name: "status",
-            title: "Status",
-            value: (i) => <StatusToggleCell item={i} onToggle={onToggle} />,
-          },
-          {
-            name: "tenant",
-            title: t("models.tenant.object"),
-            value: (i) => <TenantCell item={i} params={params} t={t} />,
-            hidden: !!params.tenant,
-          },
-          {
-            name: "title",
-            title: "Title",
-            className: "w-full",
-            value: (i) => <TitleCell item={i} />,
-          },
-          {
-            name: "blocks",
-            title: "Blocks",
-            value: (i) => <BlocksCell item={i} />,
-          },
-          {
-            name: "executions",
-            title: "Executions",
-            value: (i) => <ExecutionsCell item={i} />,
-          },
-          {
-            name: "createdAt",
-            title: "Created at",
-            value: (i) => <CreatedAtCell item={i} />,
-          },
-        ]}
+        actions={actions}
+        headers={headers}
         noRecords={
           <div className="p-12 text-center">
             <h3 className="text-foreground mt-1 text-sm font-medium">{"No workflows"}</h3>

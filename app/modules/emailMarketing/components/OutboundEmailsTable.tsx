@@ -1,6 +1,6 @@
 import { Link, useParams } from "react-router";
 import clsx from "clsx";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { PaginationDto } from "~/application/dtos/data/PaginationDto";
 import { RowHeaderDisplayDto } from "~/application/dtos/data/RowHeaderDisplayDto";
@@ -142,7 +142,6 @@ export default function OutboundEmailsTable({
 }>) {
   const { t } = useTranslation();
   const params = useParams();
-  const [headers, setHeaders] = useState<RowHeaderDisplayDto<OutboundEmailWithDetails>[]>([]);
   const [contactEntity, setContactEntity] = useState<EntityWithDetails>();
   const [selectedEmail, setSelectedEmail] = useState<OutboundEmailWithDetails>();
 
@@ -150,8 +149,8 @@ export default function OutboundEmailsTable({
     setContactEntity(allEntities.find((e) => e.name === "contact"));
   }, [allEntities]);
 
-  useEffect(() => {
-    let headers: RowHeaderDisplayDto<OutboundEmailWithDetails>[] = [
+  const headers = useMemo<RowHeaderDisplayDto<OutboundEmailWithDetails>[]>(() => {
+    const baseHeaders: RowHeaderDisplayDto<OutboundEmailWithDetails>[] = [
       {
         name: "email",
         title: t("emails.to"),
@@ -193,18 +192,17 @@ export default function OutboundEmailsTable({
         value: (i) => <OutboundEmailDateFormat date={i.spamComplainedAt} />,
       },
     ];
+
     if (withCampaign) {
-      headers = [
-        {
-          name: "campaignId",
-          title: t("emailMarketing.campaign"),
-          value: (item) => <CampaignCell item={item} tenant={params.tenant} t={t} />,
-        },
-        ...headers,
-      ];
+      baseHeaders.unshift({
+        name: "campaignId",
+        title: t("emailMarketing.campaign"),
+        value: (item) => <CampaignCell item={item} tenant={params.tenant} t={t} />,
+      });
     }
-    setHeaders(headers);
-  }, [contactEntity, params.tenant, t, withCampaign, setSelectedEmail]);
+
+    return baseHeaders;
+  }, [contactEntity, params.tenant, t, withCampaign]);
   return (
     <div>
       <TableSimple headers={headers} items={items} pagination={pagination} />
@@ -222,6 +220,27 @@ export default function OutboundEmailsTable({
   );
 }
 
+type OutboundEmailActivityItem = { type: "click" | "open"; createdAt: Date; description: string };
+
+const outboundEmailActivityHeaders: RowHeaderDisplayDto<OutboundEmailActivityItem>[] = [
+  {
+    name: "createdAt",
+    title: "Date",
+    value: (i) => <DateCell item={i} />,
+  },
+  {
+    name: "type",
+    title: "Type",
+    value: (i) => <TypeCell item={i} />,
+  },
+  {
+    name: "description",
+    title: "Description",
+    value: (i) => <DescriptionCell item={i} />,
+    className: "w-full",
+  },
+];
+
 function OutboundEmailDateFormat({ date }: Readonly<{ date: Date | null }>) {
   return (
     <>
@@ -236,7 +255,8 @@ function OutboundEmailDateFormat({ date }: Readonly<{ date: Date | null }>) {
 }
 
 function OutboundEmailActivity({ email }: Readonly<{ email: OutboundEmailWithDetails }>) {
-  const [items, setItems] = useState<{ type: "click" | "open"; createdAt: Date; description: string }[]>([]);
+  const [items, setItems] = useState<OutboundEmailActivityItem[]>([]);
+  const headers = useMemo(() => outboundEmailActivityHeaders, []);
   useEffect(() => {
     const items: { type: "click" | "open"; createdAt: Date; description: string }[] = [];
     email.opens.forEach((o) => {
@@ -258,24 +278,7 @@ function OutboundEmailActivity({ email }: Readonly<{ email: OutboundEmailWithDet
   return (
     <TableSimple
       items={items}
-      headers={[
-        {
-          name: "createdAt",
-          title: "Date",
-          value: (i) => <DateCell item={i as any} />,
-        },
-        {
-          name: "type",
-          title: "Type",
-          value: (i) => <TypeCell item={i} />,
-        },
-        {
-          name: "description",
-          title: "Description",
-          value: (i) => <DescriptionCell item={i} />,
-          className: "w-full",
-        },
-      ]}
+      headers={headers}
     />
   );
 }

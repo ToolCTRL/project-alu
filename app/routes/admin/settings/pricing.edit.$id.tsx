@@ -1,5 +1,5 @@
 import { useTranslation } from "react-i18next";
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 import { ActionFunction, LoaderFunctionArgs, redirect, useActionData, useLoaderData } from "react-router";
 import { getTranslations } from "~/locale/i18next.server";
 import { SubscriptionProductDto } from "~/application/dtos/subscriptions/SubscriptionProductDto";
@@ -129,6 +129,8 @@ export default function EditPricinPlanRoute() {
   const adminData = useAdminData();
   const { t } = useTranslation();
 
+  const pageTitle = useMemo(() => <BackButtonWithTitle href="/admin/settings/pricing">Edit: {t(data.item.title)}</BackButtonWithTitle>, [data.item.title, t]);
+
   useEffect(() => {
     if (actionData?.error) {
       toast.error(actionData.error);
@@ -136,7 +138,7 @@ export default function EditPricinPlanRoute() {
   }, [actionData]);
 
   return (
-    <EditPageLayout title={<BackButtonWithTitle href="/admin/settings/pricing">Edit: {t(data.item.title)}</BackButtonWithTitle>}>
+    <EditPageLayout title={pageTitle}>
       <PricingPlanForm
         item={data.item}
         plans={data.plans}

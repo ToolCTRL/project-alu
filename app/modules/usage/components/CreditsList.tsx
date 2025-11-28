@@ -1,5 +1,5 @@
 import { useSubmit, useNavigation, useParams, useSearchParams, Link } from "react-router";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { FilterablePropertyDto } from "~/application/dtos/data/FilterablePropertyDto";
 import { PaginationDto } from "~/application/dtos/data/PaginationDto";
@@ -69,6 +69,40 @@ export default function CreditsList({ data }: Readonly<Props>) {
       method: "post",
     });
   }
+
+  const headers = useMemo(
+    () => [
+      {
+        name: "createdAt",
+        title: t("shared.createdAt"),
+        value: (item: CreditWithDetails) => DateUtils.dateYMDHMS(item.createdAt),
+        formattedValue: CreatedAtCell,
+      },
+      {
+        name: "tenant",
+        title: "Tenant",
+        value: TenantCell,
+        hidden: !!params.tenant,
+      },
+      {
+        name: "type",
+        title: t("shared.type"),
+        value: TypeCell,
+      },
+      {
+        name: "resource",
+        title: t("models.credit.resource"),
+        className: "w-full",
+        value: (item: CreditWithDetails) => <ResourceCell item={item} t={t} />,
+      },
+      {
+        name: "user",
+        title: t("models.user.object"),
+        value: UserCell,
+      },
+    ],
+    [params.tenant, t]
+  );
   return (
     <div className="space-y-2">
       <div className="flex w-full items-center space-x-2">
@@ -105,37 +139,7 @@ export default function CreditsList({ data }: Readonly<Props>) {
             destructive: true,
           },
         ]}
-        headers={[
-          {
-            name: "createdAt",
-            title: t("shared.createdAt"),
-            value: (item) => DateUtils.dateYMDHMS(item.createdAt),
-            formattedValue: CreatedAtCell,
-          },
-          {
-            name: "tenant",
-            title: "Tenant",
-            value: TenantCell,
-            hidden: !!params.tenant,
-          },
-
-          {
-            name: "type",
-            title: t("shared.type"),
-            value: TypeCell,
-          },
-          {
-            name: "resource",
-            title: t("models.credit.resource"),
-            className: "w-full",
-            value: (item) => <ResourceCell item={item} t={t} />,
-          },
-          {
-            name: "user",
-            title: t("models.user.object"),
-            value: UserCell,
-          },
-        ]}
+        headers={headers}
       />
     </div>
   );

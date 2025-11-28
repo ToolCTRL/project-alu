@@ -1,5 +1,5 @@
 import { ActionFunctionArgs, LoaderFunctionArgs, MetaFunction, useActionData, useLoaderData, Form, useSubmit } from "react-router";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { RowHeaderDisplayDto } from "~/application/dtos/data/RowHeaderDisplayDto";
 import { MetaTagsDto } from "~/application/dtos/seo/MetaTagsDto";
@@ -158,7 +158,6 @@ export default function PricingFeaturesRoute() {
   const [showPreview, setShowPreview] = useState(false);
 
   const [items, setItems] = useState<SubscriptionFeatureInPlansDto[]>([]);
-  const [headers, setHeaders] = useState<RowHeaderDisplayDto<SubscriptionFeatureInPlansDto>[]>([]);
 
   const [selectedPlans, setSelectedPlans] = useState<SubscriptionProductDto[]>(data.items);
 
@@ -221,20 +220,8 @@ export default function PricingFeaturesRoute() {
     };
   };
 
-  useEffect(() => {
-    const headers: RowHeaderDisplayDto<SubscriptionFeatureInPlansDto>[] = [
-      // {
-      //   title: "Order",
-      //   name: "feature-order",
-      //   className: "w-32",
-      //   value: (item) => item.order,
-      //   type: InputType.NUMBER,
-      //   setValue: (order, idx) =>
-      //     updateItemByIdx(items, setItems, idx, {
-      //       order,
-      //     }),
-      //   inputBorderless: false,
-      // },
+  const headers = useMemo<RowHeaderDisplayDto<SubscriptionFeatureInPlansDto>[]>(() => {
+    const baseHeaders: RowHeaderDisplayDto<SubscriptionFeatureInPlansDto>[] = [
       {
         title: t("shared.order"),
         name: "order",
@@ -243,8 +230,8 @@ export default function PricingFeaturesRoute() {
           <OrderListButtons
             index={idx}
             items={items}
-            onChange={(items) => {
-              setItems(items as SubscriptionFeatureInPlansDto[]);
+            onChange={(updatedItems) => {
+              setItems(updatedItems as SubscriptionFeatureInPlansDto[]);
             }}
           />
         ),
@@ -256,7 +243,6 @@ export default function PricingFeaturesRoute() {
           <ClosedOpenedValue
             closed={
               <div className="flex flex-col space-y-2 px-1 py-2">
-                {/* <div className="font-medium">{t(item.title)}</div> */}
                 <div className="font-bold">
                   {item.name ? (
                     <span>
@@ -324,78 +310,14 @@ export default function PricingFeaturesRoute() {
           />
         ),
       },
-      // {
-      //   name: "accumulate",
-      //   title: "Accumulate",
-      //   value: (item) => {
-      //     return item.accumulate ? <CheckIcon className="h-4 w-4 text-teal-500" /> : <XIcon className="h-4 w-4 text-gray-300" />
-      //   }
-      // },
     ];
 
-    // Create handlers outside forEach to reduce nesting
     const handleTitleChange = createHandleTitleChange(setItems, items);
     const handleTypeChange = createHandleTypeChange(setItems, items);
     const handleValueChange = createHandleValueChange(setItems, items);
 
     for (const plan of selectedPlans) {
-      /*
-      {
-              title: "Type",
-              name: "feature-type",
-              type: InputType.SELECT,
-              value: (item) => item.type,
-              className: "w-32",
-              options: [
-                {
-                  name: "Not included",
-                  value: SubscriptionFeatureLimitType.NOT_INCLUDED,
-                },
-                {
-                  name: "Included",
-                  value: SubscriptionFeatureLimitType.INCLUDED,
-                },
-                {
-                  name: "Monthly",
-                  value: SubscriptionFeatureLimitType.MONTHLY,
-                },
-                {
-                  name: "Max",
-                  value: SubscriptionFeatureLimitType.MAX,
-                },
-                {
-                  name: "Unlimited",
-                  value: SubscriptionFeatureLimitType.UNLIMITED,
-                },
-              ],
-              setValue: (type, idx) => {
-                let value = items[idx].value;
-                if (Number(type) !== SubscriptionFeatureLimitType.MAX && Number(type) !== SubscriptionFeatureLimitType.MONTHLY) {
-                  value = 0;
-                }
-                updateItemByIdx(items, setItems, idx, {
-                  type,
-                  value,
-                });
-              },
-              inputBorderless: false,
-            },
-            {
-              title: "Value",
-              name: "feature-value",
-              type: InputType.NUMBER,
-              className: "w-32",
-              value: (item) => item.value,
-              editable: (item) => item.type === SubscriptionFeatureLimitType.MAX || item.type === SubscriptionFeatureLimitType.MONTHLY,
-              setValue: (value, idx) =>
-                updateItemByIdx(items, setItems, idx, {
-                  value,
-                }),
-              inputBorderless: false,
-            },
-      */
-
-      headers.push({
+      baseHeaders.push({
         title: t(plan.title),
         name: "feature-in-" + plan.id,
         value: (item) => {
@@ -485,9 +407,8 @@ export default function PricingFeaturesRoute() {
       });
     }
 
-
-    setHeaders(headers);
-  }, [selectedPlans, items, t]);
+    return baseHeaders;
+  }, [items, selectedPlans, t]);
 
   function sortedItems() {
     return items.sort((a, b) => a.order - b.order);

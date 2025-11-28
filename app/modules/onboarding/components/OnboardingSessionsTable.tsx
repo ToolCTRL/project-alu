@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { TFunction } from "i18next";
 import { RowHeaderDisplayDto } from "~/application/dtos/data/RowHeaderDisplayDto";
@@ -121,11 +121,10 @@ export default function OnboardingSessionsTable({
 }) {
   const { t } = useTranslation();
   const [selected, setSelected] = useState<OnboardingSessionWithDetails>();
-  const [headers, setHeaders] = useState<RowHeaderDisplayDto<OnboardingSessionWithDetails>[]>([]);
   const appOrAdminData = useAppOrAdminData();
 
-  useEffect(() => {
-    const headers: RowHeaderDisplayDto<OnboardingSessionWithDetails>[] = [
+  const headers = useMemo<RowHeaderDisplayDto<OnboardingSessionWithDetails>[]>(() => {
+    const baseHeaders: RowHeaderDisplayDto<OnboardingSessionWithDetails>[] = [
       {
         name: "status",
         title: t("onboarding.session.status"),
@@ -173,18 +172,18 @@ export default function OnboardingSessionsTable({
       },
     ];
     if (withOnboarding) {
-      headers.unshift({
+      baseHeaders.unshift({
         name: "onboarding",
         title: t("onboarding.title"),
         value: (i: OnboardingSessionWithDetails) => <OnboardingHeaderCell item={i} />,
       });
     }
-    headers.push({
+    baseHeaders.push({
       name: "actions",
       title: t("shared.actions"),
       value: (i: OnboardingSessionWithDetails) => <DeleteActionCell item={i} onDelete={onDelete} canDelete={getUserHasPermission(appOrAdminData, "admin.onboarding.delete")} deleteLabel={t("shared.delete")} />,
     });
-    setHeaders(headers);
+    return baseHeaders;
   }, [appOrAdminData, metadata, onDelete, t, withOnboarding]);
   return (
     <>

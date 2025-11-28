@@ -1,5 +1,5 @@
 import { ActionFunctionArgs, LoaderFunctionArgs, MetaFunction, redirect, useActionData, useLoaderData, useNavigate, useOutlet, useParams, useSubmit } from "react-router";
-import { useEffect, useRef } from "react";
+import { useEffect, useMemo, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import { MetaTagsDto } from "~/application/dtos/seo/MetaTagsDto";
@@ -119,37 +119,47 @@ type UsersTableProps = {
 };
 
 function UsersTable({ items, t, onChangePassword, onDelete }: UsersTableProps) {
+  const actions = useMemo(
+    () => [
+      {
+        title: t("settings.profile.changePassword"),
+        onClick: (_: number, item: PortalUserDto) => onChangePassword(item),
+      },
+      {
+        title: t("shared.delete"),
+        onClick: (_: number, item: PortalUserDto) => onDelete(item),
+        destructive: true,
+        hidden: () => true,
+      },
+      {
+        title: t("shared.edit"),
+        onClickRoute: (_: number, item: PortalUserDto) => item.id,
+      },
+    ],
+    [onChangePassword, onDelete, t]
+  );
+
+  const headers = useMemo(
+    () => [
+      {
+        name: "user",
+        title: t("models.user.object"),
+        value: (item: PortalUserDto) => <UserTableCellValue item={item} />,
+      },
+      {
+        name: "createdAt",
+        title: t("shared.createdAt"),
+        value: (item: PortalUserDto) => <UserCreatedAtCellValue item={item} />,
+      },
+    ],
+    [t]
+  );
+
   return (
     <TableSimple
       items={items}
-      actions={[
-        {
-          title: t("settings.profile.changePassword"),
-          onClick: (_, item) => onChangePassword(item),
-        },
-        {
-          title: t("shared.delete"),
-          onClick: (_, item) => onDelete(item),
-          destructive: true,
-          hidden: () => true,
-        },
-        {
-          title: t("shared.edit"),
-          onClickRoute: (_, item) => item.id,
-        },
-      ]}
-      headers={[
-        {
-          name: "user",
-          title: t("models.user.object"),
-          value: (item) => <UserTableCellValue item={item} />,
-        },
-        {
-          name: "createdAt",
-          title: t("shared.createdAt"),
-          value: (item) => <UserCreatedAtCellValue item={item} />,
-        },
-      ]}
+      actions={actions}
+      headers={headers}
     />
   );
 }
