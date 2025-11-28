@@ -28,6 +28,15 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
   return data;
 };
 
+interface SupabaseCreatedAtCellProps {
+  readonly item: { createdAt: Date };
+}
+
+function SupabaseCreatedAtCell({ item }: SupabaseCreatedAtCellProps) {
+  const { t } = useTranslation();
+  return <DateCell date={item.createdAt} />;
+}
+
 export default function SupabasePlaygroundRoute() {
   const { t } = useTranslation();
   const data = useLoaderData<LoaderData>();
@@ -93,7 +102,7 @@ export default function SupabasePlaygroundRoute() {
           {
             name: "createdAt",
             title: t("shared.createdAt"),
-            value: (i) => <DateCell date={i.createdAt} />,
+            value: SupabaseCreatedAtCell,
           },
           {
             name: "schema",

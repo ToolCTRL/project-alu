@@ -111,6 +111,33 @@ export const action = async ({ request, params }: ActionFunctionArgs) => {
 };
 
 type SupabaseBucketDto = { id: string; name: string; public: boolean };
+
+interface BucketCreatedAtCellProps {
+  readonly item: { created_at: string };
+}
+
+function BucketCreatedAtCell({ item }: BucketCreatedAtCellProps) {
+  const { t } = useTranslation();
+  return <DateCell date={new Date(item.created_at)} />;
+}
+
+interface BucketUpdatedAtCellProps {
+  readonly item: { updated_at?: string };
+}
+
+function BucketUpdatedAtCell({ item }: BucketUpdatedAtCellProps) {
+  const { t } = useTranslation();
+  return item.updated_at ? <DateCell date={new Date(item.updated_at)} /> : null;
+}
+
+interface VisibilityCellProps {
+  readonly item: { public: boolean };
+}
+
+function VisibilityCell({ item }: VisibilityCellProps) {
+  return item.public ? <SimpleBadge title="Public" color={Colors.GREEN} /> : <SimpleBadge title="Private" color={Colors.RED} />;
+}
+
 export default function BucketsList() {
   const { t } = useTranslation();
   const data = useLoaderData<LoaderData>();
@@ -146,17 +173,17 @@ export default function BucketsList() {
               {
                 name: "createdAt",
                 title: t("shared.createdAt"),
-                value: (i) => <DateCell date={new Date(i.created_at)} />,
+                value: BucketCreatedAtCell,
               },
               {
                 name: "updatedAt",
                 title: t("shared.updatedAt"),
-                value: (i) => (i.updated_at ? <DateCell date={new Date(i.updated_at)} /> : null),
+                value: BucketUpdatedAtCell,
               },
               {
                 name: "visibility",
                 title: "Visibility",
-                value: (i) => (i.public ? <SimpleBadge title="Public" color={Colors.GREEN} /> : <SimpleBadge title="Private" color={Colors.RED} />),
+                value: VisibilityCell,
               },
               {
                 name: "files",

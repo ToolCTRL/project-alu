@@ -244,10 +244,11 @@ export namespace Rows_Overview {
   export const action: ActionFunction = async ({ request, params }) => {
     const { time, getServerTimingHeader } = await createMetrics({ request, params }, `[Rows_Overview] ${params.entity}`);
     const { t, userId, tenantId, entity, form } = await RowsRequestUtils.getAction({ request, params });
-    const action = form.get("action")?.toString() ?? "";
-    if (typeof form.get("action") === "object" && form.get("action") !== null) {
+    const actionValue = form.get("action");
+    if (typeof actionValue === "object" && actionValue !== null) {
       return Response.json({ error: t("shared.invalidForm") }, { status: 400, headers: getServerTimingHeader() });
     }
+    const action = actionValue?.toString() ?? "";
     const user = await time(getUser(userId), "getUser");
     const rowData = await time(
       RowsApi.get(params.id, {

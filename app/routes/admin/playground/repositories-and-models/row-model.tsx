@@ -88,7 +88,7 @@ export default function PlaygroundRowModel() {
                     {
                       name: "logo",
                       title: "Logo",
-                      value: LogoCell,
+                      value: (i) => <LogoCell item={i} />,
                     },
                     { name: "createdAt", title: "Created at", value: (i) => <DateCell date={i.row.createdAt} /> },
                     { name: "toString", title: "toString()", value: (i) => i.toString() },

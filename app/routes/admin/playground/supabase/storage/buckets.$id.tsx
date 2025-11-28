@@ -123,6 +123,46 @@ export const action: ActionFunction = async ({ request, params }) => {
 };
 
 type SupabaseFileDto = { id: string; name: string };
+
+interface MetadataCellProps {
+  readonly item: { metadata: any };
+}
+
+function MetadataCell({ item }: MetadataCellProps) {
+  return (
+    <pre className="max-w-xs truncate">
+      <ShowPayloadModalButton title="Metadata" payload={JSON.stringify(item.metadata, null, 2)} />
+    </pre>
+  );
+}
+
+interface CreatedAtCellProps {
+  readonly item: { created_at: string };
+}
+
+function CreatedAtCell({ item }: CreatedAtCellProps) {
+  const { t } = useTranslation();
+  return <DateCell date={new Date(item.created_at)} />;
+}
+
+interface UpdatedAtCellProps {
+  readonly item: { updated_at?: string };
+}
+
+function UpdatedAtCell({ item }: UpdatedAtCellProps) {
+  const { t } = useTranslation();
+  return item.updated_at ? <DateCell date={new Date(item.updated_at)} /> : null;
+}
+
+interface LastAccessedAtCellProps {
+  readonly item: { last_accessed_at?: string };
+}
+
+function LastAccessedAtCell({ item }: LastAccessedAtCellProps) {
+  const { t } = useTranslation();
+  return item.last_accessed_at ? <DateCell date={new Date(item.last_accessed_at)} /> : null;
+}
+
 export default function BucketsDetail() {
   const { t } = useTranslation();
   const data = useLoaderData<LoaderData>();
@@ -183,26 +223,22 @@ export default function BucketsDetail() {
               {
                 name: "metadata",
                 title: "Metadata",
-                value: (i) => (
-                  <pre className="max-w-xs truncate">
-                    <ShowPayloadModalButton title="Metadata" payload={JSON.stringify(i.metadata, null, 2)} />
-                  </pre>
-                ),
+                value: MetadataCell,
               },
               {
                 name: "createdAt",
                 title: t("shared.createdAt"),
-                value: (i) => <DateCell date={new Date(i.created_at)} />,
+                value: CreatedAtCell,
               },
               {
                 name: "updatedAt",
                 title: t("shared.updatedAt"),
-                value: (i) => (i.updated_at ? <DateCell date={new Date(i.updated_at)} /> : null),
+                value: UpdatedAtCell,
               },
               {
                 name: "lastAccessedAt",
                 title: t("shared.lastAccessedAt"),
-                value: (i) => (i.last_accessed_at ? <DateCell date={new Date(i.last_accessed_at)} /> : null),
+                value: LastAccessedAtCell,
               },
             ]}
             actions={[

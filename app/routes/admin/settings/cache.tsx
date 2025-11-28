@@ -313,18 +313,7 @@ export default function AdminCacheRoute() {
               <label htmlFor="cached-values-table" className="text-muted-foreground mb-1 block text-xs font-medium">Cached values</label>
               <TableSimple
                 items={sortedItems()}
-                noRecords={
-                  <div className="flex flex-col space-y-1 py-4 text-sm">
-                    <div>{t("shared.noRecords")}</div>
-                    {searchInput && (
-                      <div>
-                        <button type="button" className="text-blue-500 underline" onClick={() => setSearchInput("")}>
-                          Clear search
-                        </button>
-                      </div>
-                    )}
-                  </div>
-                }
+                noRecords={<ClearSearchButton searchInput={searchInput} onClearSearch={() => setSearchInput("")} />}
                 headers={[
                   {
                     name: "key",
@@ -397,6 +386,27 @@ const SizeCell = ({ item }: { item: CachedValue }) => (
 const CreatedAtCell = ({ item }: { item: CachedValue }) => (
   <DateCell date={item.createdAt} displays={["ymdhmsms"]} />
 );
+
+interface ClearSearchButtonProps {
+  readonly searchInput: string;
+  readonly onClearSearch: () => void;
+}
+
+function ClearSearchButton({ searchInput, onClearSearch }: ClearSearchButtonProps) {
+  const { t } = useTranslation();
+  return (
+    <div className="flex flex-col space-y-1 py-4 text-sm">
+      <div>{t("shared.noRecords")}</div>
+      {searchInput && (
+        <div>
+          <button type="button" className="text-blue-500 underline" onClick={onClearSearch}>
+            Clear search
+          </button>
+        </div>
+      )}
+    </div>
+  );
+}
 
 interface DeleteButtonProps {
   readonly items: CachedValue[];

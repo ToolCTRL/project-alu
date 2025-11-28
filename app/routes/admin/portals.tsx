@@ -106,6 +106,14 @@ function UsersCell({ item }: Readonly<{ item: PortalWithCount & { portalUrl?: st
   return <div>{item._count.users}</div>;
 }
 
+interface PortalCreatedAtCellProps {
+  readonly item: PortalWithCount & { portalUrl?: string };
+}
+
+function PortalCreatedAtCell({ item }: PortalCreatedAtCellProps) {
+  return <DateCell date={item.createdAt ?? null} />;
+}
+
 export const action = async ({ request, params }: LoaderFunctionArgs) => {
   await requireAuth({ request, params });
   const { t } = await getTranslations(request);
@@ -198,7 +206,7 @@ export default function PortalsList() {
             {
               name: "createdAt",
               title: t("shared.createdAt"),
-              value: (i) => <DateCell date={i.createdAt ?? null} />,
+              value: PortalCreatedAtCell,
             },
             // {
             //   name: "createdBy",

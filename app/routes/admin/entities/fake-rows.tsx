@@ -358,6 +358,92 @@ async function updateFakeRow(
   return row;
 }
 
+interface ActionsCellProps {
+  item: TenantDataDto;
+  onCreateRows: (item: TenantDataDto, numberOfRows: number, type?: "apiKeyLog") => void;
+  onUpdateRows: (item: TenantDataDto, numberOfRows: number) => void;
+  onDeleteRows: (item: TenantDataDto, options: { shadow: boolean; numberOfRows: number }) => void;
+}
+
+function ActionsCell({ item, onCreateRows, onUpdateRows, onDeleteRows }: ActionsCellProps) {
+  return (
+    <div className="flex items-center space-x-2">
+      <MenuWithPopper
+        onClick={(e) => {
+          e.stopPropagation();
+        }}
+        className="hover:bg-secondary border-border bg-background rounded-md border px-2 py-1.5 font-medium"
+        options={[1, 10, 100, 1_000, 10_000, 100_000].map((numberOfRows) => {
+          const formattedCount = NumberUtils.intFormat(numberOfRows);
+          return {
+            title: numberOfRows === 1 ? "1 row" : `${formattedCount} rows`,
+            onClick: () => onCreateRows(item, numberOfRows),
+          };
+        })}
+        button={<>Create</>}
+      />
+      <MenuWithPopper
+        onClick={(e) => {
+          e.stopPropagation();
+        }}
+        className="hover:bg-secondary border-border bg-background rounded-md border px-2 py-1.5 font-medium"
+        options={[1, 10, 100, 1_000, 10_000, 100_000].map((numberOfRows) => {
+          const formattedCount = NumberUtils.intFormat(numberOfRows);
+          return {
+            title: numberOfRows === 1 ? "1 row" : `${formattedCount} rows`,
+            onClick: () => onUpdateRows(item, numberOfRows),
+          };
+        })}
+        button={<>Update</>}
+      />
+      <MenuWithPopper
+        onClick={(e) => {
+          e.stopPropagation();
+        }}
+        className="hover:bg-secondary border-border bg-background rounded-md border px-2 py-1.5 font-medium"
+        options={[1, 10, 100, 1_000, 10_000, 100_000].map((numberOfRows) => {
+          const formattedCount = NumberUtils.intFormat(numberOfRows);
+          return {
+            title: numberOfRows === 1 ? "1 row" : `${formattedCount} rows`,
+            onClick: () => onDeleteRows(item, { shadow: true, numberOfRows }),
+            className: "text-orange-600",
+          };
+        })}
+        button={<>Shadow Delete</>}
+      />
+      <MenuWithPopper
+        onClick={(e) => {
+          e.stopPropagation();
+        }}
+        className="hover:bg-secondary border-border bg-background rounded-md border px-2 py-1.5 font-medium"
+        options={[1, 10, 100, 1_000, 10_000, 100_000].map((numberOfRows) => {
+          const formattedCount = NumberUtils.intFormat(numberOfRows);
+          return {
+            title: numberOfRows === 1 ? "1 row" : `${formattedCount} rows`,
+            onClick: () => onDeleteRows(item, { shadow: false, numberOfRows }),
+            className: "text-red-600",
+          };
+        })}
+        button={<>Delete</>}
+      />
+      <MenuWithPopper
+        onClick={(e) => {
+          e.stopPropagation();
+        }}
+        className="hover:bg-secondary border-border bg-background rounded-md border px-2 py-1.5 font-medium"
+        options={[1, 10, 100, 1_000, 10_000, 100_000, 1_000_000, 10_000_000].map((numberOfRows) => {
+          const formattedCount = NumberUtils.intFormat(numberOfRows);
+          return {
+            title: numberOfRows === 1 ? "1 API log" : `${formattedCount} API logs`,
+            onClick: () => onCreateRows(item, numberOfRows, "apiKeyLog"),
+          };
+        })}
+        button={<>Create API Logs</>}
+      />
+    </div>
+  );
+}
+
 export default function FakeRowsRoute() {
   const { t } = useTranslation();
   const data = useLoaderData<LoaderData>();
@@ -515,82 +601,7 @@ export default function FakeRowsRoute() {
               {
                 name: "actions",
                 title: "",
-                value: (i) => (
-                  <div className="flex items-center space-x-2">
-                    <MenuWithPopper
-                      onClick={(e) => {
-                        e.stopPropagation();
-                      }}
-                      className="hover:bg-secondary border-border bg-background rounded-md border px-2 py-1.5 font-medium"
-                      options={[1, 10, 100, 1_000, 10_000, 100_000].map((numberOfRows) => {
-                        const formattedCount = NumberUtils.intFormat(numberOfRows);
-                        return {
-                          title: numberOfRows === 1 ? "1 row" : `${formattedCount} rows`,
-                          onClick: () => onCreateRows(i, numberOfRows),
-                        };
-                      })}
-                      button={<>Create</>}
-                    />
-                    <MenuWithPopper
-                      onClick={(e) => {
-                        e.stopPropagation();
-                      }}
-                      className="hover:bg-secondary border-border bg-background rounded-md border px-2 py-1.5 font-medium"
-                      options={[1, 10, 100, 1_000, 10_000, 100_000].map((numberOfRows) => {
-                        const formattedCount = NumberUtils.intFormat(numberOfRows);
-                        return {
-                          title: numberOfRows === 1 ? "1 row" : `${formattedCount} rows`,
-                          onClick: () => onUpdateRows(i, numberOfRows),
-                        };
-                      })}
-                      button={<>Update</>}
-                    />
-                    <MenuWithPopper
-                      onClick={(e) => {
-                        e.stopPropagation();
-                      }}
-                      className="hover:bg-secondary border-border bg-background rounded-md border px-2 py-1.5 font-medium"
-                      options={[1, 10, 100, 1_000, 10_000, 100_000].map((numberOfRows) => {
-                        const formattedCount = NumberUtils.intFormat(numberOfRows);
-                        return {
-                          title: numberOfRows === 1 ? "1 row" : `${formattedCount} rows`,
-                          onClick: () => onDeleteRows(i, { shadow: true, numberOfRows }),
-                          className: "text-orange-600",
-                        };
-                      })}
-                      button={<>Shadow Delete</>}
-                    />
-                    <MenuWithPopper
-                      onClick={(e) => {
-                        e.stopPropagation();
-                      }}
-                      className="hover:bg-secondary border-border bg-background rounded-md border px-2 py-1.5 font-medium"
-                      options={[1, 10, 100, 1_000, 10_000, 100_000].map((numberOfRows) => {
-                        const formattedCount = NumberUtils.intFormat(numberOfRows);
-                        return {
-                          title: numberOfRows === 1 ? "1 row" : `${formattedCount} rows`,
-                          onClick: () => onDeleteRows(i, { shadow: false, numberOfRows }),
-                          className: "text-red-600",
-                        };
-                      })}
-                      button={<>Delete</>}
-                    />
-                    <MenuWithPopper
-                      onClick={(e) => {
-                        e.stopPropagation();
-                      }}
-                      className="hover:bg-secondary border-border bg-background rounded-md border px-2 py-1.5 font-medium"
-                      options={[1, 10, 100, 1_000, 10_000, 100_000, 1_000_000, 10_000_000].map((numberOfRows) => {
-                        const formattedCount = NumberUtils.intFormat(numberOfRows);
-                        return {
-                          title: numberOfRows === 1 ? "1 API log" : `${formattedCount} API logs`,
-                          onClick: () => onCreateRows(i, numberOfRows, "apiKeyLog"),
-                        };
-                      })}
-                      button={<>Create API Logs</>}
-                    />
-                  </div>
-                ),
+                value: (i) => <ActionsCell item={i} onCreateRows={onCreateRows} onUpdateRows={onUpdateRows} onDeleteRows={onDeleteRows} />,
               },
             ]}
           />

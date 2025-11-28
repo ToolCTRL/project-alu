@@ -401,6 +401,10 @@ function MapFields({
     return rawData.columns.some((f) => f.name === name);
   }
 
+  function getColumnValue(item: RawRow, columnName: string): string {
+    return item?.find((f) => f.column === columnName)?.value ?? "?";
+  }
+
   function renderPreviewTable() {
     if (rawData.columns.filter((f) => f.name).length === 0) {
       return (
@@ -427,7 +431,7 @@ function MapFields({
             return {
               name: c.column,
               title: c.column,
-              value: (item: RawRow) => item?.find((f) => f.column === c.column)?.value ?? "?",
+              value: (item: RawRow) => getColumnValue(item, c.column),
             };
           })}
       />

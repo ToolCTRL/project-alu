@@ -34,7 +34,8 @@ async function handleEdit(params: any, form: FormData) {
   const name = form.get("name") as string;
   const description = form.get("description");
   const tasks: Partial<FakeTaskDto>[] = form.getAll("tasks[]").map((f: FormDataEntryValue) => {
-    return JSON.parse(f.toString());
+    const taskString = f.toString();
+    return JSON.parse(taskString);
   });
   const isActive = form.get("isActive");
   const active = isActive ? isActive === "on" || isActive === "true" : false;

@@ -30,7 +30,8 @@ export const action: ActionFunction = async ({ request }) => {
 
   if (action === "set-orders") {
     const items: { id: string; order: number }[] = form.getAll("orders[]").map((entry: FormDataEntryValue) => {
-      return JSON.parse(entry.toString());
+      const entryString = entry.toString();
+      return JSON.parse(entryString);
     });
 
     await Promise.all(

@@ -86,6 +86,36 @@ const examples: CrudExample[] = [
   },
 ];
 
+interface NameCellProps {
+  readonly item: CrudExample["files"][0];
+}
+
+function NameCell({ item }: NameCellProps) {
+  return (
+    <div>
+      {item.href ? (
+        <Link className="font-medium underline" to={item.href}>
+          {item.name}
+        </Link>
+      ) : (
+        item.name
+      )}
+    </div>
+  );
+}
+
+interface PathCellProps {
+  readonly item: CrudExample["files"][0];
+}
+
+function PathCell({ item }: PathCellProps) {
+  return (
+    <div className="prose">
+      <code className="select-all">{item.path}</code>
+    </div>
+  );
+}
+
 export default function PlaygroundCrud() {
   return (
     <IndexPageLayout title="CRUD examples">
@@ -105,17 +135,7 @@ export default function PlaygroundCrud() {
                 {
                   name: "name",
                   title: "Name",
-                  value: (item) => (
-                    <div>
-                      {item.href ? (
-                        <Link className="font-medium underline" to={item.href}>
-                          {item.name}
-                        </Link>
-                      ) : (
-                        item.name
-                      )}
-                    </div>
-                  ),
+                  value: NameCell,
                 },
                 {
                   name: "description",
@@ -125,11 +145,7 @@ export default function PlaygroundCrud() {
                 {
                   name: "path",
                   title: "Path",
-                  value: (item) => (
-                    <div className="prose">
-                      <code className="select-all">{item.path}</code>
-                    </div>
-                  ),
+                  value: PathCell,
                 },
               ]}
             />

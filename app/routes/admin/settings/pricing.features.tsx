@@ -148,6 +148,56 @@ function getInitialItems(plans: SubscriptionProductDto[]) {
   return items;
 }
 
+interface ClosedFeatureTitleProps {
+  readonly item: SubscriptionFeatureInPlansDto;
+}
+
+function ClosedFeatureTitle({ item }: ClosedFeatureTitleProps) {
+  return (
+    <div className="flex flex-col space-y-2 px-1 py-2">
+      <div className="font-bold">
+        {item.name ? (
+          <span>
+            {item.name} {item.accumulate ? <span className="text-muted-foreground text-xs font-light italic">(accumulates)</span> : null}
+          </span>
+        ) : (
+          <span className="text-red-600 underline">Click to set</span>
+        )}
+      </div>
+    </div>
+  );
+}
+
+interface ClosedPlanFeatureProps {
+  readonly item: SubscriptionFeatureInPlansDto;
+  readonly existing?: {
+    title: string;
+    type: SubscriptionFeatureLimitType;
+    value: number;
+  };
+}
+
+function ClosedPlanFeature({ item, existing }: ClosedPlanFeatureProps) {
+  const existingTitle = existing?.title?.trim();
+  return (
+    <div>
+      {!item.name || !existingTitle || existingTitle === "?" ? (
+        <div className="text-red-600 underline">Click to set</div>
+      ) : (
+        <PlanFeatureDescription
+          feature={{
+            ...item,
+            title: existingTitle ?? "",
+            value: existing?.value ?? 0,
+            type: existing?.type ?? SubscriptionFeatureLimitType.NOT_INCLUDED,
+          }}
+          editing={true}
+        />
+      )}
+    </div>
+  );
+}
+
 export default function PricingFeaturesRoute() {
   const { t } = useTranslation();
   const data = useLoaderData<LoaderData>();
@@ -241,19 +291,7 @@ export default function PricingFeaturesRoute() {
         name: "feature-title",
         value: (item) => (
           <ClosedOpenedValue
-            closed={
-              <div className="flex flex-col space-y-2 px-1 py-2">
-                <div className="font-bold">
-                  {item.name ? (
-                    <span>
-                      {item.name} {item.accumulate ? <span className="text-muted-foreground text-xs font-light italic">(accumulates)</span> : null}
-                    </span>
-                  ) : (
-                    <span className="text-red-600 underline">Click to set</span>
-                  )}
-                </div>
-              </div>
-            }
+            closed={<ClosedFeatureTitle item={item} />}
             opened={
               <div className="flex flex-col space-y-2 px-1 py-2">
                 <div>
@@ -325,23 +363,7 @@ export default function PricingFeaturesRoute() {
           const existingTitle = existing?.title?.trim();
           return (
             <ClosedOpenedValue
-              closed={
-                <div>
-                  {!item.name || !existingTitle || existingTitle === "?" ? (
-                    <div className="text-red-600 underline">Click to set</div>
-                  ) : (
-                    <PlanFeatureDescription
-                      feature={{
-                        ...item,
-                        title: existingTitle ?? "",
-                        value: existing?.value ?? 0,
-                        type: existing?.type ?? SubscriptionFeatureLimitType.NOT_INCLUDED,
-                      }}
-                      editing={true}
-                    />
-                  )}
-                </div>
-              }
+              closed={<ClosedPlanFeature item={item} existing={existing} />}
               opened={
                 existing ? (
                   <div className="flex flex-col space-y-2 px-1 py-2">
