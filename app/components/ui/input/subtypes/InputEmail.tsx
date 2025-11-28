@@ -4,6 +4,7 @@ import HintTooltip from "~/components/ui/tooltips/HintTooltip";
 import CheckIcon from "../../icons/CheckIcon";
 import ExclamationTriangleIcon from "../../icons/ExclamationTriangleIcon";
 import { Input } from "../../input";
+import UserUtils from "~/utils/app/UserUtils";
 
 export interface RefInputEmail {
   input: RefObject<HTMLInputElement | null> | RefObject<HTMLTextAreaElement | null>;
@@ -72,8 +73,7 @@ const InputEmail = (
   const [isValid, setIsValid] = useState<boolean>(false);
 
   useEffect(() => {
-    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    setIsValid(emailPattern.test(value ?? ""));
+    setIsValid(UserUtils.validateEmail(value));
   }, [value]);
 
   function onChange(value: string) {

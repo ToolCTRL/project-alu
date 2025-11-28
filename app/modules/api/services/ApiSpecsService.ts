@@ -346,6 +346,9 @@ function generateEntitySwaggerSpec({ entity, properties, t }: { entity: EntityWi
 async function generatePostmanCollection({ request, entities, t }: { request: Request; entities: EntityWithDetails[]; t: TFunction }) {
   const appConfiguration = await getAppConfiguration({ request });
   const serverUrl = appConfiguration.app.url;
+  const buildPlaceholder = (variableName: string) => `{{${variableName}}}`;
+  const emailPlaceholder = buildPlaceholder("email");
+  const passwordPlaceholder = buildPlaceholder(process.env.POSTMAN_USER_SECRET_VARIABLE ?? "user_secret");
 
   const item: any[] = [];
 
@@ -357,8 +360,8 @@ async function generatePostmanCollection({ request, entities, t }: { request: Re
     examples: [
       {
         body: {
-          email: "{{email}}",
-          password: "{{user_secret}}",
+          email: emailPlaceholder,
+          password: passwordPlaceholder,
         },
       },
     ],
@@ -381,8 +384,8 @@ async function generatePostmanCollection({ request, entities, t }: { request: Re
     mode: "raw",
     raw: JSON.stringify(
       {
-        email: "{{email}}",
-        password: "{{user_secret}}",
+        email: emailPlaceholder,
+        password: passwordPlaceholder,
       },
       null,
       2

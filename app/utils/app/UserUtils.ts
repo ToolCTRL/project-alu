@@ -45,13 +45,38 @@ const profileName = (user: { firstName: string | null; lastName: string | null; 
   return "--";
 };
 
-const validateEmail = (email: unknown) => {
-  // Simplified regex to reduce complexity and use \d instead of [0-9]
-  const regexp = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  if (typeof email !== "string" || email.length < 5 || !regexp.test(email) || email.length > 100) {
+const isEmailAddressValid = (value: string | undefined | null) => {
+  if (!value) {
     return false;
   }
-  return true;
+
+  const trimmedValue = value.trim();
+  if (trimmedValue.length < 5 || trimmedValue.length > 100) {
+    return false;
+  }
+
+  const atIndex = trimmedValue.indexOf("@");
+  if (atIndex <= 0 || atIndex !== trimmedValue.lastIndexOf("@") || atIndex === trimmedValue.length - 1) {
+    return false;
+  }
+
+  const localPart = trimmedValue.slice(0, atIndex);
+  const domainPart = trimmedValue.slice(atIndex + 1);
+
+  if (!domainPart.includes(".") || domainPart.startsWith(".") || domainPart.endsWith(".")) {
+    return false;
+  }
+
+  const domainLabels = domainPart.split(".");
+  if (domainLabels.some((segment) => segment.length === 0)) {
+    return false;
+  }
+
+  return localPart.length > 0 && domainPart.length > 0;
+};
+
+const validateEmail = (email: unknown) => {
+  return typeof email === "string" ? isEmailAddressValid(email) : false;
 };
 
 const validatePassword = (password: unknown) => {
@@ -119,6 +144,7 @@ const fullName = (user: { firstName: string | null; lastName: string | null; ema
 export default {
   avatarText,
   profileName,
+  isEmailAddressValid,
   validateEmail,
   validatePassword,
   validatePasswords,
