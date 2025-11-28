@@ -28,6 +28,9 @@ export function EmptyStateCard({ title, description, icon, background = "grid", 
   const { handleMouseMove, handleMouseLeave } = use3DTilt({ maxAngle: 8 });
   return (
     <div
+      role="group"
+      tabIndex={0}
+      aria-label={title}
       className={clsx(
         "relative overflow-hidden rounded-[var(--radius-lg,1.25rem)] border border-white/10 bg-card/80 p-8 text-center text-card-foreground shadow-[var(--shadow-soft,0px_20px_40px_rgba(7,12,20,0.35))] transition-transform duration-200 will-change-transform",
         background === "grid" && "before:absolute before:inset-0 before:bg-[radial-gradient(circle_at_top,_rgba(59,130,246,0.18),_transparent_55%)] before:opacity-80 before:content-['']",

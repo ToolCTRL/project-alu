@@ -1,7 +1,6 @@
 import { MetricLog, Tenant } from "@prisma/client";
 import { ActionFunction, LoaderFunctionArgs, useLoaderData, useSearchParams, useSubmit } from "react-router";
 import { useMemo, useState } from "react";
-import { useTranslation } from "react-i18next";
 import { FilterablePropertyDto } from "~/application/dtos/data/FilterablePropertyDto";
 import { PaginationDto } from "~/application/dtos/data/PaginationDto";
 import { RowHeaderDisplayDto } from "~/application/dtos/data/RowHeaderDisplayDto";
@@ -150,7 +149,6 @@ export const action: ActionFunction = async ({ request }) => {
 };
 
 export default function MetricsLogs() {
-  const { t } = useTranslation();
   const data = useLoaderData<LoaderData>();
   const appOrAdminData = useAppOrAdminData();
   const submit = useSubmit();
