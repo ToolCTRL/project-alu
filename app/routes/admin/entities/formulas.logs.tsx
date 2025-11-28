@@ -3,6 +3,7 @@ import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { FilterablePropertyDto } from "~/application/dtos/data/FilterablePropertyDto";
 import { PaginationDto } from "~/application/dtos/data/PaginationDto";
+import { RowHeaderDisplayDto } from "~/application/dtos/data/RowHeaderDisplayDto";
 import { Colors } from "~/application/enums/shared/Colors";
 import SimpleBadge from "~/components/ui/badges/SimpleBadge";
 import ButtonSecondary from "~/components/ui/buttons/ButtonSecondary";
@@ -25,6 +26,146 @@ import { getUserHasPermission } from "~/utils/helpers/PermissionsHelper";
 import { verifyUserHasPermission } from "~/utils/helpers/.server/PermissionsService";
 import { getFiltersFromCurrentUrl, getPaginationFromCurrentUrl } from "~/utils/helpers/RowPaginationHelper";
 import DateUtils from "~/utils/shared/DateUtils";
+
+function renderStatusCell(item: FormulaLogWithDetails) {
+  if (item.error) {
+    return (
+      <div>
+        <FilterableValueLink name="status" value="error">
+          <SimpleBadge title="Error" color={Colors.RED} />
+        </FilterableValueLink>
+      </div>
+    );
+  }
+  if (item.result.length === 0) {
+    return (
+      <div>
+        <FilterableValueLink name="status" value="empty">
+          <SimpleBadge title="No result" color={Colors.YELLOW} />
+        </FilterableValueLink>
+      </div>
+    );
+  }
+  if (item.result.length > 0) {
+    return (
+      <div>
+        <FilterableValueLink name="status" value="success">
+          <SimpleBadge title="Success" color={Colors.GREEN} />
+        </FilterableValueLink>
+      </div>
+    );
+  }
+  return null;
+}
+
+function renderComponentsPayload(components: FormulaLogWithDetails["components"]) {
+  return JSON.stringify(
+    {
+      components: components
+        .sort((a, b) => a.order - b.order)
+        .map((f) => ({ order: f.order ?? undefined, type: f.type, value: f.value, rowId: f.rowId ?? undefined })),
+    },
+    null,
+    2
+  );
+}
+
+function getUniqueRowIds(components: FormulaLogWithDetails["components"]) {
+  return components
+    .filter((f) => f.rowId)
+    .filter((f, index, self) => self.findIndex((t) => t.rowId === f.rowId) === index)
+    .map((f) => f.rowId ?? "");
+}
+
+function buildFormulaLogHeaders(t: (key: string) => string): RowHeaderDisplayDto<FormulaLogWithDetails>[] {
+  return [
+    {
+      name: "status",
+      title: "Status",
+      value: (item) => renderStatusCell(item),
+    },
+    {
+      name: "result",
+      title: "Result",
+      value: (item) => <div>{item.result}</div>,
+    },
+    {
+      name: "originalTrigger",
+      title: "Original Trigger",
+      value: (item) => <FilterableValueLink name="originalTrigger" value={item.originalTrigger ?? ""} />,
+    },
+    {
+      name: "triggeredBy",
+      title: "Triggered By",
+      value: (item) => <FilterableValueLink name="triggeredBy" value={item.triggeredBy} />,
+    },
+    {
+      name: "expression",
+      title: "Expression",
+      value: (item) => <div>{item.expression}</div>,
+    },
+    {
+      name: "components",
+      title: "Components",
+      value: (item) => (
+        <ShowPayloadModalButton
+          title="Components"
+          description={item.components.length + " components"}
+          payload={renderComponentsPayload(item.components)}
+        />
+      ),
+    },
+    {
+      name: "error",
+      title: "Error",
+      value: (item) => <div className="text-red-500">{item.error}</div>,
+    },
+    {
+      name: "speed",
+      title: "Speed",
+      value: (item) => <SpeedBadge duration={item.duration} />,
+    },
+    {
+      name: "duration",
+      title: "Duration",
+      value: (item) => <div>{item.duration.toFixed(3)} ms</div>,
+    },
+    {
+      name: "usedRows",
+      title: "Used Rows",
+      value: (item) => (
+        <div className="flex flex-col">
+          {getUniqueRowIds(item.components).map((rowId, idx) => (
+            <FilterableValueLink key={rowId + idx.toString()} name="hasRowId" value={rowId} />
+          ))}
+        </div>
+      ),
+    },
+    {
+      name: "rowValueId",
+      title: "Row value",
+      value: (item) => <FilterableValueLink name="rowValueId" value={item.rowValueId ?? ""} />,
+    },
+    {
+      name: "tenant",
+      title: "Tenant",
+      value: (item) => <div>{item.tenant?.name}</div>,
+    },
+    {
+      name: "user",
+      title: "User",
+      value: (item) => <div>{item.user?.email}</div>,
+    },
+    {
+      name: "createdAt",
+      title: t("shared.createdAt"),
+      value: (item) => DateUtils.dateYMDHMS(item.createdAt),
+      formattedValue: (item) => (
+        <div className="text-muted-foreground text-xs">{item.createdAt && <span>{DateUtils.dateYMDHMS(item.createdAt)}</span>}</div>
+      ),
+    },
+  ];
+}
 
 type LoaderData = {
   title: string;
@@ -198,131 +339,7 @@ export default function FormulasLogsRoute() {
               title: "Formula",
               value: (item) => item.formula.name,
             },
-            {
-              name: "status",
-              title: "Status",
-              value: (item) => {
-                if (item.error) {
-                  return (
-                    <div>
-                      <FilterableValueLink name="status" value="error">
-                        <SimpleBadge title="Error" color={Colors.RED} />
-                      </FilterableValueLink>
-                    </div>
-                  );
-                }
-                if (item.result.length === 0) {
-                  return (
-                    <div>
-                      <FilterableValueLink name="status" value="empty">
-                        <SimpleBadge title="No result" color={Colors.YELLOW} />
-                      </FilterableValueLink>
-                    </div>
-                  );
-                }
-                if (item.result.length > 0) {
-                  return (
-                    <div>
-                      <FilterableValueLink name="status" value="success">
-                        <SimpleBadge title="Success" color={Colors.GREEN} />
-                      </FilterableValueLink>
-                    </div>
-                  );
-                }
-                return null;
-              },
-            },
-            {
-              name: "result",
-              title: "Result",
-              value: (item) => <div>{item.result}</div>,
-            },
-            {
-              name: "originalTrigger",
-              title: "Original Trigger",
-              value: (item) => <FilterableValueLink name="originalTrigger" value={item.originalTrigger ?? ""} />,
-            },
-            {
-              name: "triggeredBy",
-              title: "Triggered By",
-              value: (item) => <FilterableValueLink name="triggeredBy" value={item.triggeredBy} />,
-            },
-            {
-              name: "expression",
-              title: "Expression",
-              value: (item) => <div>{item.expression}</div>,
-            },
-            {
-              name: "components",
-              title: "Components",
-              value: (item) => (
-                <ShowPayloadModalButton
-                  title="Components"
-                  description={item.components.length + " components"}
-                  payload={JSON.stringify(
-                    {
-                      components: item.components
-                        .sort((a, b) => a.order - b.order)
-                        .map((f) => ({ order: f.order ?? undefined, type: f.type, value: f.value, rowId: f.rowId ?? undefined })),
-                    },
-                    null,
-                    2
-                  )}
-                />
-              ),
-            },
-            {
-              name: "error",
-              title: "Error",
-              value: (item) => <div className="text-red-500">{item.error}</div>,
-            },
-            {
-              name: "speed",
-              title: "Speed",
-              value: (item) => <SpeedBadge duration={item.duration} />,
-            },
-            {
-              name: "duration",
-              title: "Duration",
-              value: (item) => <div>{item.duration.toFixed(3)} ms</div>,
-            },
-            {
-              name: "usedRows",
-              title: "Used Rows",
-              value: (item) => (
-                <div className="flex flex-col">
-                  {item.components
-                    .filter((f) => f.rowId)
-                    .filter((f, index, self) => self.findIndex((t) => t.rowId === f.rowId) === index)
-                    .map((f) => (
-                      <FilterableValueLink key={f.id} name="hasRowId" value={f.rowId ?? ""} />
-                    ))}
-                </div>
-              ),
-            },
-            {
-              name: "rowValueId",
-              title: "Row value",
-              value: (item) => <FilterableValueLink name="rowValueId" value={item.rowValueId ?? ""} />,
-            },
-            {
-              name: "tenant",
-              title: "Tenant",
-              value: (item) => <div>{item.tenant?.name}</div>,
-            },
-            {
-              name: "user",
-              title: "User",
-              value: (item) => <div>{item.user?.email}</div>,
-            },
-            {
-              name: "createdAt",
-              title: t("shared.createdAt"),
-              value: (item) => DateUtils.dateYMDHMS(item.createdAt),
-              formattedValue: (item) => (
-                <div className="text-muted-foreground text-xs">{item.createdAt && <span>{DateUtils.dateYMDHMS(item.createdAt)}</span>}</div>
-              ),
-            },
+            ...buildFormulaLogHeaders(t),
           ]}
         />
       </div>
