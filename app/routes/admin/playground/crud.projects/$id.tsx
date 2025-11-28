@@ -33,9 +33,11 @@ type ActionData = {
 async function handleEdit(params: any, form: FormData) {
   const name = form.get("name") as string;
   const description = form.get("description");
-  const tasks: Partial<FakeTaskDto>[] = form.getAll("tasks[]").map((f: FormDataEntryValue) => {
-    const taskString = String(f);
-    return JSON.parse(taskString);
+  const tasks: Partial<FakeTaskDto>[] = form.getAll("tasks[]").map((entry: FormDataEntryValue) => {
+    if (typeof entry !== "string") {
+      throw new Error("Invalid task payload");
+    }
+    return JSON.parse(entry);
   });
   const isActive = form.get("isActive");
   const active = isActive ? isActive === "on" || isActive === "true" : false;

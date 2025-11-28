@@ -502,7 +502,7 @@ function SidebarMenuSkeleton({
 }) {
   const skeletonId = React.useId();
   const width = React.useMemo(() => {
-    const hash = skeletonId.split("").reduce((acc, char) => acc + char.charCodeAt(0), 0);
+    const hash = skeletonId.split("").reduce((acc, char) => acc + (char.codePointAt(0) ?? 0), 0);
     return `${(hash % 41) + 50}%`;
   }, [skeletonId]);
 

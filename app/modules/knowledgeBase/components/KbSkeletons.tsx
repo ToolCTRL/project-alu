@@ -1,8 +1,18 @@
+import { useMemo } from "react";
+
 export default function KbSkeletons({ n = 5 }: readonly { readonly n?: number }) {
+  const skeletonKeys = useMemo(
+    () =>
+      Array.from({ length: n }, () =>
+        typeof crypto !== "undefined" && "randomUUID" in crypto ? crypto.randomUUID() : Math.random().toString(36).slice(2)
+      ),
+    [n]
+  );
+
   return (
     <div className="space-y-3">
-      {Array.from({ length: n }).map((_, i) => (
-        <div key={`skeleton-${i}`} className="border-border hover:border-theme-500 bg-background group rounded-md border">
+      {skeletonKeys.map((key) => (
+        <div key={key} className="border-border hover:border-theme-500 bg-background group rounded-md border">
           <div className="w-full">
             <div className="flex items-center space-x-8 p-6">
               <div className="shrink-0">

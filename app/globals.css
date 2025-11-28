@@ -1,5 +1,6 @@
 @import "tailwindcss";
 
+/* stylelint-disable at-rule-no-unknown */
 @custom-variant dark (&:is(.dark *));
 
 @config '../tailwind.config.ts';
@@ -92,6 +93,8 @@
 @utility uploadmyfile {
   display: none;
 }
+
+/* stylelint-enable at-rule-no-unknown */
 
 @layer utilities {
   .page-transition-enter {

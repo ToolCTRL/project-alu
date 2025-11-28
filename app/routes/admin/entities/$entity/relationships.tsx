@@ -30,8 +30,10 @@ export const action: ActionFunction = async ({ request }) => {
 
   if (action === "set-orders") {
     const items: { id: string; order: number }[] = form.getAll("orders[]").map((entry: FormDataEntryValue) => {
-      const entryString = String(entry);
-      return JSON.parse(entryString);
+      if (typeof entry !== "string") {
+        throw new Error("Invalid relationship order payload");
+      }
+      return JSON.parse(entry);
     });
 
     await Promise.all(

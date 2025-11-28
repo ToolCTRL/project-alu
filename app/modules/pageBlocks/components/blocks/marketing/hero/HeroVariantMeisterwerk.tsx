@@ -128,7 +128,21 @@ export default function HeroVariantMeisterwerk({ item }: Readonly<Props>) {
 function HeroSpatialStage({ scene }: { readonly scene: HeroScene }) {
   const { handleMouseMove, handleMouseLeave } = use3DTilt();
   return (
-    <div className="hero-stage hero-stage-fixed hero-card hero-card--stage mx-auto" onMouseMove={handleMouseMove} onMouseLeave={handleMouseLeave} style={{ transformStyle: "preserve-3d", height: "100%" }}>
+    <div
+      className="hero-stage hero-stage-fixed hero-card hero-card--stage mx-auto"
+      role="group"
+      aria-label={`3D hero stage for ${scene.label}`}
+      tabIndex={0}
+      onMouseMove={handleMouseMove}
+      onMouseLeave={handleMouseLeave}
+      onFocus={handleMouseLeave}
+      onKeyDown={(event) => {
+        if (event.key === "Escape") {
+          handleMouseLeave();
+        }
+      }}
+      style={{ transformStyle: "preserve-3d", height: "100%" }}
+    >
       <div className={`hero-stage__halo ${scene.haloClass}`} />
       <motion.div
         key={scene.id}
@@ -157,4 +171,3 @@ function HeroSpatialStage({ scene }: { readonly scene: HeroScene }) {
     </div>
   );
 }
-

@@ -39,9 +39,11 @@ async function handleEdit(request: Request, params: any, form: FormData, item: K
   const color = Number(form.get("color") ?? "");
   const enabled = Boolean(form.get("enabled"));
   const languages = form.getAll("languages[]").map(String);
-  const links: KbNavLinkDto[] = form.getAll("links[]").map((l) => {
-    const linkString = String(l);
-    return JSON.parse(linkString);
+  const links: KbNavLinkDto[] = form.getAll("links[]").map((entry) => {
+    if (typeof entry !== "string") {
+      throw new Error("Invalid link payload");
+    }
+    return JSON.parse(entry);
   });
   const logo = form.get("logo") as string;
   const seoImage = form.get("seoImage") as string;

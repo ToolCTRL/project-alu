@@ -35,6 +35,8 @@ import InputCheckboxWithDescription from "~/components/ui/input/InputCheckboxWit
 import { clearSubscriptionsCache } from "~/utils/services/.server/subscriptionService";
 import { getCurrenciesAndPeriods } from "~/utils/helpers/PricingHelper";
 
+type ChangeValue = string | number | undefined;
+
 export const meta: MetaFunction<typeof loader> = ({ data }) => data?.metatags || [];
 
 type LoaderData = {
@@ -286,14 +288,13 @@ interface PlanFeatureCellProps {
   readonly item: SubscriptionFeatureInPlansDto;
   readonly items: SubscriptionFeatureInPlansDto[];
   readonly planId: string;
-  readonly handleTitleChange: (existing: any, e: string | number | undefined) => void;
-  readonly handleTypeChange: (existing: any, item: any, planId: string, e: string | number | undefined) => void;
-  readonly handleValueChange: (existing: any, item: any, planId: string, e: string | number | undefined) => void;
+  readonly handleTitleChange: (existing: any, e: ChangeValue) => void;
+  readonly handleTypeChange: (existing: any, item: any, planId: string, e: ChangeValue) => void;
+  readonly handleValueChange: (existing: any, item: any, planId: string, e: ChangeValue) => void;
 }
 
-const PlanFeatureCell = ({ item, items, planId, handleTitleChange, handleTypeChange, handleValueChange }: PlanFeatureCellProps) => {
+function PlanFeatureCell({ item, items, planId, handleTitleChange, handleTypeChange, handleValueChange }: PlanFeatureCellProps) {
   const existing = item.plans.find((p) => p.id === planId);
-  const existingTitle = existing?.title?.trim();
 
   return (
     <ClosedOpenedValue
@@ -387,9 +388,6 @@ export default function PricingFeaturesRoute() {
     setItems(getInitialItems(selectedPlans));
   }, [selectedPlans]);
 
-  // Helper functions extracted to reduce nesting depth
-  type ChangeValue = string | number | undefined;
-
   const createHandleTitleChange = (setItems: (items: SubscriptionFeatureInPlansDto[]) => void, items: SubscriptionFeatureInPlansDto[]) => {
     return (existing: any, e: ChangeValue) => {
       existing.title = e?.toString() ?? "";
@@ -460,6 +458,9 @@ export default function PricingFeaturesRoute() {
     const handleValueChange = createHandleValueChange(setItems, items);
 
     for (const plan of selectedPlans) {
+      if (!plan.id) {
+        continue;
+      }
       baseHeaders.push({
         title: t(plan.title),
         name: "feature-in-" + plan.id,
@@ -467,7 +468,7 @@ export default function PricingFeaturesRoute() {
           <PlanFeatureCell
             item={item}
             items={items}
-            planId={plan.id!}
+            planId={plan.id}
             handleTitleChange={handleTitleChange}
             handleTypeChange={handleTypeChange}
             handleValueChange={handleValueChange}

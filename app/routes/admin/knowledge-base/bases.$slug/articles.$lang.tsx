@@ -128,9 +128,11 @@ async function handleNewArticle(kb: KnowledgeBaseDto, params: any, userId: strin
 }
 
 async function handleSetOrders(form: FormData) {
-  const items: { id: string; order: number }[] = form.getAll("orders[]").map((f: FormDataEntryValue) => {
-    const orderString = String(f);
-    return JSON.parse(orderString);
+  const items: { id: string; order: number }[] = form.getAll("orders[]").map((entry: FormDataEntryValue) => {
+    if (typeof entry !== "string") {
+      throw new Error("Invalid order payload");
+    }
+    return JSON.parse(entry);
   });
   await Promise.all(
     items.map(async ({ id, order }) => {
@@ -143,9 +145,11 @@ async function handleSetOrders(form: FormData) {
 }
 
 async function handleSetSectionOrders(form: FormData) {
-  const items: { id: string; order: number }[] = form.getAll("orders[]").map((f: FormDataEntryValue) => {
-    const sectionOrderString = String(f);
-    return JSON.parse(sectionOrderString);
+  const items: { id: string; order: number }[] = form.getAll("orders[]").map((entry: FormDataEntryValue) => {
+    if (typeof entry !== "string") {
+      throw new Error("Invalid section order payload");
+    }
+    return JSON.parse(entry);
   });
   await Promise.all(
     items.map(async ({ id, order }) => {

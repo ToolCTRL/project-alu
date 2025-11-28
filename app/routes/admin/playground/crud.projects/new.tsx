@@ -29,8 +29,10 @@ export const action: ActionFunction = async ({ request }) => {
       const name = form.get("name")?.toString() ?? "";
       const description = form.get("description")?.toString();
       const tasks: Partial<FakeTaskDto>[] = form.getAll("tasks[]").map((taskString: FormDataEntryValue) => {
-        const taskJsonString = String(taskString);
-        return JSON.parse(taskJsonString);
+        if (typeof taskString !== "string") {
+          throw new Error("Invalid task payload");
+        }
+        return JSON.parse(taskString);
       });
       const isActive = form.get("isActive");
       const active = isActive ? isActive.toString() === "on" || isActive.toString() === "true" : false;

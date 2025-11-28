@@ -49,10 +49,12 @@ export namespace PageMetaTags_Index {
       await deleteMetaTags(page);
       return Response.json({ success: "Meta tags reset successfully", metaTags: [] });
     } else if (action === "update") {
-      const metaTags: { name: string; content: string; order: number }[] = form.getAll("metaTags[]").map((f: FormDataEntryValue) => {
-        const metaTagString = String(f);
-        return JSON.parse(metaTagString);
-      });
+        const metaTags: { name: string; content: string; order: number }[] = form.getAll("metaTags[]").map((entry: FormDataEntryValue) => {
+          if (typeof entry !== "string") {
+            throw new Error("Invalid meta tag payload");
+          }
+          return JSON.parse(entry);
+        });
       try {
         await setPageMetaTags(page?.id ?? null, metaTags);
         return Response.json({ success: "Meta tags updated successfully", metaTags });
