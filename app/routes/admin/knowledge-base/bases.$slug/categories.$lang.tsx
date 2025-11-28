@@ -477,6 +477,9 @@ function CategorySections({
 }>) {
   const [toggledSections, setToggledSections] = useState<string[]>([]);
   const articles = category.articles.filter((f) => !f.sectionId).sort((a, b) => a.order - b.order);
+  const toggleSection = (sectionId: string) => {
+    setToggledSections((prev) => (prev.includes(sectionId) ? prev.filter((id) => id !== sectionId) : [...prev, sectionId]));
+  };
 
   return (
     <div className="space-y-2 pb-2">
@@ -538,14 +541,7 @@ function CategorySections({
                         />
                         <button
                           type="button"
-                          onClick={() => {
-                            setToggledSections((prev) => {
-                              if (prev.includes(item.id)) {
-                                return prev.filter((f) => f !== item.id);
-                              }
-                              return [...prev, item.id];
-                            });
-                          }}
+                          onClick={() => toggleSection(item.id)}
                           className="hover:bg-secondary/90 focus:bg-secondary/90 group flex items-center rounded-md border border-transparent p-2 focus:outline-hidden focus:ring-2 focus:ring-gray-400 focus:ring-offset-1"
                         >
                           <FolderIconFilled className="hover:text-muted-foreground h-4 w-4 text-gray-300" />

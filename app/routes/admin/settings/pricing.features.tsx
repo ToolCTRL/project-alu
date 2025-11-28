@@ -338,7 +338,7 @@ export default function PricingFeaturesRoute() {
     const handleTypeChange = createHandleTypeChange(setItems, items);
     const handleValueChange = createHandleValueChange(setItems, items);
 
-    selectedPlans.forEach((plan) => {
+    for (const plan of selectedPlans) {
       /*
       {
               title: "Type",
@@ -483,7 +483,7 @@ export default function PricingFeaturesRoute() {
           );
         },
       });
-    });
+    }
 
 
     setHeaders(headers);
@@ -525,13 +525,14 @@ export default function PricingFeaturesRoute() {
     if (duplicatedNames.length > 0) {
       errors = [...errors, ...duplicatedNames.map((item) => `Duplicated name "${item.name}"`)];
     }
-    items.forEach((item) => {
-      item.plans.forEach(({ id, title }) => {
+    for (const item of items) {
+      for (const { id, title } of item.plans) {
         const plan = selectedPlans.find((p) => p.id === id);
-        if (!plan) return;
-        validateFeatureTitle(title, plan.title, errors);
-      });
-    });
+        if (plan) {
+          validateFeatureTitle(title, plan.title, errors);
+        }
+      }
+    }
     return errors;
   }
 

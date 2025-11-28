@@ -245,50 +245,67 @@ async function getTemplate(): Promise<KnowledgeBasesTemplateDto> {
   return template;
 }
 
+type ImportCounters = { created: ImportStats; updated: ImportStats };
+
+const recordResult = (counters: ImportCounters, isNew: boolean, key: keyof ImportStats) => {
+  counters[isNew ? "created" : "updated"][key]++;
+};
+
+async function syncSections(
+  category: KnowledgeBasesTemplateDto["categories"][number],
+  existingCategory: Awaited<ReturnType<typeof upsertCategory>>["category"],
+  counters: ImportCounters
+) {
+  for (const section of category.sections) {
+    const isNew = await upsertSection(section, existingCategory);
+    recordResult(counters, isNew, "sections");
+  }
+}
+
+async function syncCategories(
+  template: KnowledgeBasesTemplateDto,
+  kbSlug: string,
+  existingKbId: string,
+  counters: ImportCounters
+) {
+  const kbCategories = template.categories.filter((c) => c.knowledgeBaseSlug === kbSlug);
+  for (const category of kbCategories) {
+    const { category: existingCategory, isNew: isNewCategory } = await upsertCategory(category, existingKbId);
+    recordResult(counters, isNewCategory, "categories");
+    await syncSections(category, existingCategory, counters);
+  }
+}
+
+async function syncArticles(
+  template: KnowledgeBasesTemplateDto,
+  kbSlug: string,
+  existingKbId: string,
+  currentUserId: string,
+  allUsers: Awaited<ReturnType<typeof adminGetAllUsersNames>>,
+  counters: ImportCounters
+) {
+  const kbArticles = template.articles.filter((a) => a.knowledgeBaseSlug === kbSlug);
+  for (const article of kbArticles) {
+    const isNew = await upsertArticle(article, existingKbId, currentUserId, allUsers);
+    recordResult(counters, isNew, "articles");
+  }
+}
+
 async function importKbs({ template, currentUserId }: { template: KnowledgeBasesTemplateDto; currentUserId: string }) {
-  const created: ImportStats = { kbs: 0, categories: 0, sections: 0, articles: 0 };
-  const updated: ImportStats = { kbs: 0, categories: 0, sections: 0, articles: 0 };
+  const counters: ImportCounters = {
+    created: { kbs: 0, categories: 0, sections: 0, articles: 0 },
+    updated: { kbs: 0, categories: 0, sections: 0, articles: 0 },
+  };
   const allUsers = await adminGetAllUsersNames();
 
   for (const kb of template.knowledgeBases) {
     const { kb: existingKb, isNew: isNewKb } = await upsertKnowledgeBase(kb);
-    if (isNewKb) {
-      created.kbs++;
-    } else {
-      updated.kbs++;
-    }
-
-    const kbCategories = template.categories.filter((c) => c.knowledgeBaseSlug === kb.slug);
-    for (const category of kbCategories) {
-      const { category: existingCategory, isNew: isNewCategory } = await upsertCategory(category, existingKb.id);
-      if (isNewCategory) {
-        created.categories++;
-      } else {
-        updated.categories++;
-      }
-
-      for (const section of category.sections) {
-        const isNew = await upsertSection(section, existingCategory);
-        if (isNew) {
-          created.sections++;
-        } else {
-          updated.sections++;
-        }
-      }
-    }
-
-    const kbArticles = template.articles.filter((a) => a.knowledgeBaseSlug === kb.slug);
-    for (const article of kbArticles) {
-      const isNew = await upsertArticle(article, existingKb.id, currentUserId, allUsers);
-      if (isNew) {
-        created.articles++;
-      } else {
-        updated.articles++;
-      }
-    }
+    recordResult(counters, isNewKb, "kbs");
+    await syncCategories(template, kb.slug, existingKb.id, counters);
+    await syncArticles(template, kb.slug, existingKb.id, currentUserId, allUsers, counters);
   }
 
-  return { created, updated };
+  return counters;
 }
 
 export default {

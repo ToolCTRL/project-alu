@@ -324,82 +324,77 @@ layout === "admin" ? "dark" : ""
                             </h3>
                           </div>
                           {group.items.map((menuItem) => {
+                            const hasSubItems = menuItem.items && menuItem.items.length > 0;
                             return (
                               <div key={menuItem.path}>
-                                {(() => {
-                                  if (!menuItem.items || menuItem.items.length === 0) {
-                                    return (
-                                      <Link
-                                        prefetch="intent"
-                                        id={UrlUtils.slugify(getPath(menuItem))}
-                                        to={menuItem.redirectTo ?? getPath(menuItem)}
-                                        className={clsx(
-                                          "group mt-1 flex items-center justify-between truncate rounded-sm px-4 py-2 text-sm leading-5 transition duration-150 ease-in-out  focus:outline-hidden",
-                                          menuItem.icon !== undefined && "px-4",
-                                          isCurrent(menuItem)
-                                            ? "bg-secondary text-primary dark:text-secondary-foreground"
-                                            : "hover:bg-secondary hover:text-secondary-foreground text-secondary-foreground/70",
-                                          "group flex gap-x-3 rounded-md p-2 text-sm leading-5"
+                                {!hasSubItems ? (
+                                  <Link
+                                    prefetch="intent"
+                                    id={UrlUtils.slugify(getPath(menuItem))}
+                                    to={menuItem.redirectTo ?? getPath(menuItem)}
+                                    className={clsx(
+                                      "group mt-1 flex items-center justify-between truncate rounded-sm px-4 py-2 text-sm leading-5 transition duration-150 ease-in-out  focus:outline-hidden",
+                                      menuItem.icon !== undefined && "px-4",
+                                      isCurrent(menuItem)
+                                        ? "bg-secondary text-primary dark:text-secondary-foreground"
+                                        : "hover:bg-secondary hover:text-secondary-foreground text-secondary-foreground/70",
+                                      "group flex gap-x-3 rounded-md p-2 text-sm leading-5"
+                                    )}
+                                    onClick={onSelected}
+                                  >
+                                    <div className="flex items-center space-x-5">
+                                      {(menuItem.icon !== undefined || menuItem.entityIcon !== undefined) && (
+                                        <SidebarIcon className="h-5 w-5 " item={menuItem} />
+                                      )}
+                                      <div>{t(menuItem.title)}</div>
+                                    </div>
+                                    {menuItem.side}
+                                  </Link>
+                                ) : (
+                                  <div>
+                                    <button
+                                      type="button"
+                                      className={clsx(
+                                        "group mt-1 flex w-full items-center justify-between truncate rounded-sm px-4 py-2 text-sm leading-5 transition duration-150 ease-in-out  focus:outline-hidden",
+                                        menuItem.icon !== undefined && "px-4",
+                                        isCurrent(menuItem)
+                                          ? "bg-secondary text-primary dark:text-secondary-foreground"
+                                          : "hover:bg-secondary hover:text-secondary-foreground text-secondary-foreground/70",
+                                        "group flex gap-x-3 rounded-md p-2 text-sm leading-5"
+                                      )}
+                                      onClick={toggleMenuItem.bind(null, menuItem.path)}
+                                    >
+                                      <div className="flex items-center space-x-5 truncate">
+                                        {(menuItem.icon !== undefined || menuItem.entityIcon !== undefined) && (
+                                          <SidebarIcon className="h-5 w-5 " item={menuItem} />
                                         )}
-                                        onClick={onSelected}
-                                      >
-                                        <div className="flex items-center space-x-5">
-                                          {(menuItem.icon !== undefined || menuItem.entityIcon !== undefined) && (
-                                            <SidebarIcon className="h-5 w-5 " item={menuItem} />
-                                          )}
-                                          <div>{t(menuItem.title)}</div>
-                                        </div>
-                                        {menuItem.side}
-                                      </Link>
-                                    );
-                                  } else {
-                                    return (
-                                      <div>
-                                        <button
-                                          type="button"
-                                          className={clsx(
-                                            "group mt-1 flex w-full items-center justify-between truncate rounded-sm px-4 py-2 text-sm leading-5 transition duration-150 ease-in-out  focus:outline-hidden",
-                                            menuItem.icon !== undefined && "px-4",
-                                            isCurrent(menuItem)
-                                              ? "bg-secondary text-primary dark:text-secondary-foreground"
-                                              : "hover:bg-secondary hover:text-secondary-foreground text-secondary-foreground/70",
-                                            "group flex gap-x-3 rounded-md p-2 text-sm leading-5"
-                                          )}
-                                          onClick={toggleMenuItem.bind(null, menuItem.path)}
-                                        >
-                                          <div className="flex items-center space-x-5 truncate">
-                                            {(menuItem.icon !== undefined || menuItem.entityIcon !== undefined) && (
-                                              <SidebarIcon className="h-5 w-5 " item={menuItem} />
-                                            )}
-                                            <div className="truncate">{t(menuItem.title)}</div>
-                                          </div>
-                                          {/*Expanded: "text-muted-foreground rotate-90", Collapsed: "text-slate-200" */}
-
-                                          {menuItem.side ?? (
-                                            <svg
-                                              className={clsx(
-                                                "ml-auto h-5 w-5 shrink-0 transform transition-colors duration-150 ease-in-out",
-                                                menuItemIsExpanded(menuItem.path)
-                                                  ? "ml-auto h-3 w-3 rotate-90 transform  transition-colors duration-150 ease-in-out"
-                                                  : "ml-auto h-3 w-3 transform  transition-colors duration-150 ease-in-out"
-                                              )}
-                                              viewBox="0 0 20 20"
-                                            >
-                                              <path d="M6 6L14 10L6 14V6Z" fill="currentColor" />
-                                            </svg>
-                                          )}
-                                        </button>
-
-                                        {/*Expandable link section, show/hide based on state. */}
-                                        {menuItemIsExpanded(menuItem.path) && (
-                                          <div className="mt-1">
-                                            {menuItem.items.map((subItem, index) => renderSubItem(subItem, index, menuItem))}
-                                          </div>
-                                        )}
+                                        <div className="truncate">{t(menuItem.title)}</div>
                                       </div>
-                                    );
-                                  }
-                                })()}
+                                      {/*Expanded: "text-muted-foreground rotate-90", Collapsed: "text-slate-200" */}
+
+                                      {menuItem.side ?? (
+                                        <svg
+                                          className={clsx(
+                                            "ml-auto h-5 w-5 shrink-0 transform transition-colors duration-150 ease-in-out",
+                                            menuItemIsExpanded(menuItem.path)
+                                              ? "ml-auto h-3 w-3 rotate-90 transform  transition-colors duration-150 ease-in-out"
+                                              : "ml-auto h-3 w-3 transform  transition-colors duration-150 ease-in-out"
+                                          )}
+                                          viewBox="0 0 20 20"
+                                        >
+                                          <path d="M6 6L14 10L6 14V6Z" fill="currentColor" />
+                                        </svg>
+                                      )}
+                                    </button>
+
+                                    {/*Expandable link section, show/hide based on state. */}
+                                    {menuItemIsExpanded(menuItem.path) && (
+                                      <div className="mt-1">
+                                        {menuItem.items.map((subItem, index) => renderSubItem(subItem, index, menuItem))}
+                                      </div>
+                                    )}
+                                  </div>
+                                )}
                               </div>
                             );
                           })}

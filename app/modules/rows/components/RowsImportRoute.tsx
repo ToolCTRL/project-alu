@@ -28,6 +28,84 @@ type RawDataDto = {
 type RawRow = { column: string; value: string }[];
 type RawColumn = { column: string; name?: string };
 
+function buildImportRows(rows: RawRow[], columns: RawColumn[]): Rows_Import.ImportRow[] {
+  return rows.map((row) => {
+    const properties = row.reduce<Rows_Import.ImportRow["properties"]>((props, cell) => {
+      const column = columns.find((f) => f.column === cell.column);
+      if (column?.name) {
+        props.push({ name: column.name, value: cell.value });
+      }
+      return props;
+    }, []);
+    return { properties };
+  });
+}
+
+function renderStatusCell(item: Rows_Import.ImportRow, navigationState: ReturnType<typeof useNavigation>["state"]) {
+  if (!item.row && navigationState === "submitting") {
+    return <div className="text-muted-foreground text-sm italic">Importing...</div>;
+  }
+  if (item.error) {
+    return <div className="text-sm text-red-500">Error: {item.error}</div>;
+  }
+  if (item.row) {
+    return <div className="text-sm text-emerald-500">Imported: {item.row?.id}</div>;
+  }
+  return null;
+}
+
+function buildHeaders({
+  columns,
+  entity,
+  t,
+  currentTenant,
+  selectedTenant,
+  navigationState,
+}: {
+  columns: RawColumn[];
+  entity: EntityWithDetails;
+  t: (key: string, opts?: any) => string;
+  currentTenant: ReturnType<typeof useAppOrAdminData>["currentTenant"];
+  selectedTenant: { id: string; name: string; slug: string } | null;
+  navigationState: ReturnType<typeof useNavigation>["state"];
+}): RowHeaderDisplayDto<Rows_Import.ImportRow>[] {
+  const headers: RowHeaderDisplayDto<Rows_Import.ImportRow>[] = [
+    {
+      name: "tenant",
+      title: t("models.tenant.object"),
+      hidden: !!currentTenant,
+      value: () => {
+        if (selectedTenant) {
+          return (
+            <div>
+              {selectedTenant.name} ({selectedTenant.slug})
+            </div>
+          );
+        }
+        return <div className="text-muted-foreground italic">- Admin -</div>;
+      },
+    },
+  ];
+
+  columns.forEach((column) => {
+    if (!column.name) return;
+    const property = entity.properties.find((f) => f.name === column.name);
+    headers.push({
+      name: property?.name ?? "",
+      title: t(property?.title ?? ""),
+      value: (i) => i.properties?.find((f) => f.name === column.name)?.value ?? "?",
+    });
+  });
+
+  headers.push({
+    name: "status",
+    title: t("shared.status"),
+    value: (i) => renderStatusCell(i, navigationState),
+  });
+
+  return headers;
+}
+
 const initialSteps: StepDto[] = [
   {
     name: "upload",
@@ -508,23 +586,7 @@ function Confirm({
   const actionData = useActionData<Rows_Import.ActionData>();
 
   useEffect(() => {
-    const newItems: Rows_Import.ImportRow[] = [];
-    data.rows.forEach((row) => {
-      const newRow: Rows_Import.ImportRow = {
-        properties: [],
-      };
-      row.forEach((r) => {
-        const column = data.columns.find((f) => f.column === r.column);
-        if (column?.name) {
-          newRow.properties.push({
-            name: column.name,
-            value: r.value,
-          });
-        }
-      });
-      newItems.push(newRow);
-    });
-    setItems(newItems);
+    setItems(buildImportRows(data.rows, data.columns));
   }, [data.columns, data.rows]);
 
   useEffect(() => {
@@ -534,53 +596,18 @@ function Confirm({
   }, [actionData]);
 
   useEffect(() => {
-    const newHeaders: RowHeaderDisplayDto<Rows_Import.ImportRow>[] = [
-      {
-        name: "tenant",
-        title: t("models.tenant.object"),
-        hidden: !!appOrAdminData.currentTenant,
-        value: (i) => {
-          if (selectedTenant) {
-            return (
-              <div>
-                {selectedTenant.name} ({selectedTenant.slug})
-              </div>
-            );
-          }
-          return <div className="text-muted-foreground italic">- Admin -</div>;
-        },
-      },
-    ];
-    data.columns.forEach((column) => {
-      if (column.name) {
-        const property = entity.properties.find((f) => f.name === column.name);
-        newHeaders.push({
-          name: property?.name ?? "",
-          title: t(property?.title ?? ""),
-          value: (i) => i.properties?.find((f) => f.name === column.name)?.value ?? "?",
-        });
-      }
-    });
-    const statusRenderer = (i: Rows_Import.ImportRow) => {
-      if (!i.row && navigation.state === "submitting") {
-        return <div className="text-muted-foreground text-sm italic">Importing...</div>;
-      }
-      if (i.error) {
-        return <div className="text-sm text-red-500">Error: {i.error}</div>;
-      }
-      if (i.row) {
-        return <div className="text-sm text-emerald-500">Imported: {i.row?.id}</div>;
-      }
-      return null;
-    };
-    newHeaders.push({
-      name: "status",
-      title: t("shared.status"),
-      value: statusRenderer,
-    });
-    setHeaders(newHeaders);
+    setHeaders(
+      buildHeaders({
+        columns: data.columns,
+        entity,
+        t,
+        currentTenant: appOrAdminData.currentTenant,
+        selectedTenant,
+        navigationState: navigation.state,
+      })
+    );
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [data.columns, entity.properties, t, navigation.state]);
+  }, [data.columns, entity, t, navigation.state, appOrAdminData.currentTenant, selectedTenant]);
 
   function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.stopPropagation();

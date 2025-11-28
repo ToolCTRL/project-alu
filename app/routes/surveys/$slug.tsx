@@ -339,6 +339,16 @@ function SurveyGroup({
     }
   }, [fetcher.data]);
 
+  const upsertResult = (newValue: SurveryItemResultDto) => {
+    setResults((prev) => {
+      const idx = prev.findIndex((r) => r.item === newValue.item);
+      if (idx === -1) {
+        return [...prev, newValue];
+      }
+      return [...prev.slice(0, idx), newValue, ...prev.slice(idx + 1)];
+    });
+  };
+
   function canSubmit() {
     const hasAllItemsWithAtLeastOneValue = survey.items.every((item) => {
       const value = results.find((r) => r.item === item.title);
@@ -364,15 +374,6 @@ function SurveyGroup({
             item: item.title,
             values: [],
           };
-          const handleChange = (newValue: SurveryItemResultDto) => {
-            setResults((prev) => {
-              const idx = prev.findIndex((r) => r.item === newValue.item);
-              if (idx === -1) {
-                return [...prev, newValue];
-              }
-              return [...prev.slice(0, idx), newValue, ...prev.slice(idx + 1)];
-            });
-          };
           return (
             <SurveyItemWrapper
               key={`survey-item-${item.title}-${idx}`}
@@ -380,7 +381,7 @@ function SurveyGroup({
               item={item}
               value={value}
               disabled={disabled}
-              onChange={handleChange}
+              onChange={upsertResult}
             />
           );
         })}

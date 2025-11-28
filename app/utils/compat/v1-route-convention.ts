@@ -75,6 +75,27 @@ export function createRoutesFromFolders(defineRoutes: DefineRoutesFunction, opti
   let parentRouteIds = getParentRouteIds(routeIds);
   let uniqueRoutes = new Map<string, string>();
 
+  const ensureUniqueRoute = (uniqueRouteId: string | undefined, isPathlessLayoutRoute: boolean, fullPath: string, routeId: string) => {
+    if (!uniqueRouteId || isPathlessLayoutRoute) {
+      return;
+    }
+    if (uniqueRoutes.has(uniqueRouteId)) {
+      throw new Error(
+        `Path ${JSON.stringify(fullPath || "/")} defined by route ` +
+          `${JSON.stringify(routeId)} conflicts with route ` +
+          `${JSON.stringify(uniqueRoutes.get(uniqueRouteId))}`
+      );
+    }
+    uniqueRoutes.set(uniqueRouteId, routeId);
+  };
+
+  const assertNoChildRoutesForIndex = (routeId: string) => {
+    let invalidChildRoutes = routeIds.filter((id) => parentRouteIds[id] === routeId);
+    if (invalidChildRoutes.length > 0) {
+      throw new Error(`Child routes are not allowed in index routes. Please remove child routes of ${routeId}`);
+    }
+  };
+
   // Then, recurse through all routes using the public defineRoutes() API
   function defineNestedRoutes(defineRoute: DefineRouteFunction, parentId?: string): void {
     let childRouteIds = routeIds.filter((id) => {
@@ -126,25 +147,10 @@ export function createRoutesFromFolders(defineRoutes: DefineRoutesFunction, opti
        *   routes/parent/__pathless/index.tsx
        *   routes/parent/__pathless2/index.tsx
        */
-      if (uniqueRouteId && !isPathlessLayoutRoute) {
-        if (uniqueRoutes.has(uniqueRouteId)) {
-          throw new Error(
-            `Path ${JSON.stringify(fullPath || "/")} defined by route ` +
-              `${JSON.stringify(routeId)} conflicts with route ` +
-              `${JSON.stringify(uniqueRoutes.get(uniqueRouteId))}`
-          );
-        } else {
-          uniqueRoutes.set(uniqueRouteId, routeId);
-        }
-      }
+      ensureUniqueRoute(uniqueRouteId, isPathlessLayoutRoute, fullPath || "/", routeId);
 
       if (isIndexRoute) {
-        let invalidChildRoutes = routeIds.filter((id) => parentRouteIds[id] === routeId);
-
-        if (invalidChildRoutes.length > 0) {
-          throw new Error(`Child routes are not allowed in index routes. Please remove child routes of ${routeId}`);
-        }
-
+        assertNoChildRoutesForIndex(routeId);
         defineRoute(routePath, files[routeId], { index: true, id: routeId });
       } else {
         defineRoute(routePath, files[routeId], { id: routeId }, () => {
@@ -291,14 +297,17 @@ export function createRoutePath(partialRouteId: string): string | undefined {
     const prevChar = i > 0 ? partialRouteId.charAt(i - 1) : undefined;
     const nextChar = i < partialRouteId.length - 1 ? partialRouteId.charAt(i + 1) : undefined;
 
-    if (handleSkipSegment(char)) continue;
-    if (handleEscapeStart(char, prevChar)) continue;
-    if (handleEscapeEnd(char, nextChar)) continue;
-    if (handleOptionalStart(char, prevChar)) continue;
-    if (handleOptionalClose(char, nextChar)) continue;
-    if (handleInEscape(char)) continue;
-    if (handleSegmentSeparator(char)) continue;
-    if (handleLayoutSegment(char, nextChar)) continue;
+    const handlers = [
+      () => handleSkipSegment(char),
+      () => handleEscapeStart(char, prevChar),
+      () => handleEscapeEnd(char, nextChar),
+      () => handleOptionalStart(char, prevChar),
+      () => handleOptionalClose(char, nextChar),
+      () => handleInEscape(char),
+      () => handleSegmentSeparator(char),
+      () => handleLayoutSegment(char, nextChar),
+    ];
+    if (handlers.some((handler) => handler())) continue;
 
     state.rawSegmentBuffer += char;
     if (handleParamPrefix(char, nextChar)) continue;
