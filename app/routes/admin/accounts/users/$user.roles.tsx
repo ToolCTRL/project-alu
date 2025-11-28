@@ -48,8 +48,11 @@ export const action = async ({ request, params }: ActionFunctionArgs) => {
   }
 
   if (action === "set-user-roles") {
-    const arrRoles: { id: string; tenantId: string | undefined }[] = form.getAll("roles[]").map((f: FormDataEntryValue) => {
-      return JSON.parse(f.toString());
+    const arrRoles: { id: string; tenantId: string | undefined }[] = form.getAll("roles[]").map((entry: FormDataEntryValue) => {
+      if (typeof entry !== "string") {
+        throw new Error("Invalid roles[] payload");
+      }
+      return JSON.parse(entry);
     });
     const allRoles = await getRoles(arrRoles.map((r) => r.id));
     let setRoles: { role: Role; tenantId: string | null }[] = [];

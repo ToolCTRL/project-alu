@@ -41,13 +41,16 @@ export const action: ActionFunction = async ({ request, params }) => {
   if (!existing) {
     return badRequest({ error: t("shared.notFound") });
   }
-  if (action === "edit") {
-    await verifyUserHasPermission(request, "admin.apiKeys.update");
-    const entities: { entityId: string; create: boolean; read: boolean; update: boolean; delete: boolean }[] = form
-      .getAll("entities[]")
-      .map((f: FormDataEntryValue) => {
-        return JSON.parse(String(f));
-      });
+    if (action === "edit") {
+      await verifyUserHasPermission(request, "admin.apiKeys.update");
+      const entities: { entityId: string; create: boolean; read: boolean; update: boolean; delete: boolean }[] = form
+        .getAll("entities[]")
+        .map((entry: FormDataEntryValue) => {
+          if (typeof entry !== "string") {
+            throw new Error("Invalid entities[] payload");
+          }
+          return JSON.parse(entry);
+        });
     let expirationDate: Date | null = null;
     let expires = form.get("expires")?.toString();
     if (expires) {

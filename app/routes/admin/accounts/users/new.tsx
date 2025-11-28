@@ -41,8 +41,11 @@ export const action = async ({ request, params }: ActionFunctionArgs) => {
     const lastName = form.get("lastName")?.toString();
     const password = form.get("password")?.toString();
 
-    const arrRoles: { id: string; tenantId: string | undefined }[] = form.getAll("roles[]").map((f: FormDataEntryValue) => {
-      return JSON.parse(String(f));
+    const arrRoles: { id: string; tenantId: string | undefined }[] = form.getAll("roles[]").map((entry: FormDataEntryValue) => {
+      if (typeof entry !== "string") {
+        throw new Error("Invalid roles[] payload");
+      }
+      return JSON.parse(entry);
     });
 
     if (!email || !password || !firstName) {

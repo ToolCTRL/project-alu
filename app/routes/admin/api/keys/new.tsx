@@ -40,8 +40,11 @@ export const action: ActionFunction = async ({ request, params }) => {
   if (action === "create") {
     const entities: { entityId: string; create: boolean; read: boolean; update: boolean; delete: boolean }[] = form
       .getAll("entities[]")
-      .map((f: FormDataEntryValue) => {
-        return JSON.parse(String(f));
+      .map((entry: FormDataEntryValue) => {
+        if (typeof entry !== "string") {
+          throw new Error("Invalid entities[] payload");
+        }
+        return JSON.parse(entry);
       });
     let expirationDate: Date | null = null;
     let expires = form.get("expires")?.toString();
