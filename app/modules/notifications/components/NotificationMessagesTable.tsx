@@ -38,6 +38,32 @@ const PayloadCell = ({ payload }: PayloadCellProps) => {
   );
 };
 
+const headers = [
+  {
+    name: "createdAt",
+    title: "Created at",
+    value: (i: IGetMessagesData["data"][number]) => <CreatedAtCell createdAt={i.createdAt} />,
+  },
+  { name: "templateIdentifier", title: "Template", value: (i: IGetMessagesData["data"][number]) => i.templateIdentifier },
+  { name: "channel", title: "Channel", value: (i: IGetMessagesData["data"][number]) => i.channel },
+  {
+    name: "seen",
+    title: "Seen",
+    value: (i: IGetMessagesData["data"][number]) => <StatusIconCell isActive={i.seen} />,
+  },
+  {
+    name: "read",
+    title: "Read",
+    value: (i: IGetMessagesData["data"][number]) => <StatusIconCell isActive={i.read} />,
+  },
+  {
+    name: "payload",
+    title: "Payload",
+    value: (i: IGetMessagesData["data"][number]) => <PayloadCell payload={i.payload} />,
+  },
+  { name: "_id", title: "_id", value: (i: IGetMessagesData["data"][number]) => i._id },
+] as const;
+
 export default function NotificationMessagesTable({ items, withPagination = true }: { readonly items: IGetMessagesData | null; readonly withPagination?: boolean }) {
   return (
     <TableSimple
@@ -52,31 +78,7 @@ export default function NotificationMessagesTable({ items, withPagination = true
             }
           : undefined
       }
-      headers={[
-        {
-          name: "createdAt",
-          title: "Created at",
-          value: (i) => <CreatedAtCell createdAt={i.createdAt} />,
-        },
-        { name: "templateIdentifier", title: "Template", value: (i) => i.templateIdentifier },
-        { name: "channel", title: "Channel", value: (i) => i.channel },
-        {
-          name: "seen",
-          title: "Seen",
-          value: (i) => <StatusIconCell isActive={i.seen} />,
-        },
-        {
-          name: "read",
-          title: "Read",
-          value: (i) => <StatusIconCell isActive={i.read} />,
-        },
-        {
-          name: "payload",
-          title: "Payload",
-          value: (i) => <PayloadCell payload={i.payload} />,
-        },
-        { name: "_id", title: "_id", value: (i) => i._id },
-      ]}
+      headers={headers}
     ></TableSimple>
   );
 }

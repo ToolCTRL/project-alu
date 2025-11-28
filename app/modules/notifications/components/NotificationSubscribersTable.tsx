@@ -46,6 +46,30 @@ const DeletedStatusCell = ({ deleted }: DeletedStatusCellProps) => {
   return <div>{deleted ? <CheckIcon className="text-theme-500 h-4 w-4" /> : <XIcon className="text-muted-foreground h-4 w-4" />}</div>;
 };
 
+const headers = [
+  {
+    name: "subscriber",
+    title: "Subscriber",
+    value: (i: IGetSubscribersData["data"][number]) => (
+      <SubscriberCell
+        subscriber={{
+          subscriberId: i.subscriberId,
+          email: i.email,
+          firstName: i.firstName,
+          lastName: i.lastName,
+        }}
+      />
+    ),
+  },
+  { name: "createdAt", title: "createdAt", value: (i: IGetSubscribersData["data"][number]) => DateUtils.dateAgo(new Date(i.createdAt)) },
+  { name: "updatedAt", title: "updatedAt", value: (i: IGetSubscribersData["data"][number]) => DateUtils.dateAgo(new Date(i.updatedAt)) },
+  {
+    name: "deleted",
+    title: "deleted",
+    value: (i: IGetSubscribersData["data"][number]) => <DeletedStatusCell deleted={i.deleted} />,
+  },
+] as const;
+
 export default function NotificationSubscribersTable({ items }: { readonly items: IGetSubscribersData | null }) {
   return (
     <TableSimple
@@ -56,29 +80,7 @@ export default function NotificationSubscribersTable({ items }: { readonly items
         totalItems: items?.totalCount ?? 0,
         totalPages: Math.ceil((items?.totalCount ?? 0) / (items?.pageSize ?? 0)),
       }}
-      headers={[
-        {
-          name: "subscriber",
-          title: "Subscriber",
-          value: (i) => (
-            <SubscriberCell
-              subscriber={{
-                subscriberId: i.subscriberId,
-                email: i.email,
-                firstName: i.firstName,
-                lastName: i.lastName,
-              }}
-            />
-          ),
-        },
-        { name: "createdAt", title: "createdAt", value: (i) => DateUtils.dateAgo(new Date(i.createdAt)) },
-        { name: "updatedAt", title: "updatedAt", value: (i) => DateUtils.dateAgo(new Date(i.updatedAt)) },
-        {
-          name: "deleted",
-          title: "deleted",
-          value: (i) => <DeletedStatusCell deleted={i.deleted} />,
-        },
-      ]}
+      headers={headers}
     ></TableSimple>
   );
 }

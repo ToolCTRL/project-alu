@@ -118,6 +118,52 @@ const IdLinkCell = ({ id, createLabel }: IdLinkCellProps) => {
   );
 };
 
+const buildHeaders = (
+  items: IGetTemplatesData | null,
+  t: ReturnType<typeof useTranslation>["t"],
+  onSendPreview: (item: NotificationChannelDto) => void
+) =>
+  [
+    {
+      name: "name",
+      title: "Name",
+      value: (i: NotificationChannelDto) => <NameCell name={i.name} valid={isValid(i, items)} />,
+    },
+    {
+      name: "description",
+      title: "Description",
+      className: "w-full",
+      value: (i: NotificationChannelDto) => <DescriptionCell description={i.description} valid={isValid(i, items)} />,
+    },
+    {
+      name: "roles",
+      title: "Sends to roles",
+      value: (i: NotificationChannelDto) => <RolesCell roles={i.roles} />,
+    },
+    {
+      name: "send",
+      title: t("shared.preview"),
+      value: (i: NotificationChannelDto) => (
+        <SendButtonCell isActive={(items?.data.find((f) => f.name === i.name)?.active ?? false)} onSendPreview={() => onSendPreview(i)} sendLabel={t("shared.send")} />
+      ),
+    },
+    {
+      name: "active",
+      title: "Active",
+      value: (i: NotificationChannelDto) => <ActiveStatusCell active={items?.data.find((f) => f.name === i.name)?.active ?? false} />,
+    },
+    {
+      name: "hasSteps",
+      title: "Has steps",
+      value: (i: NotificationChannelDto) => <HasStepsCell hasSteps={(items?.data.find((f) => f.name === i.name)?.steps ?? []).length > 0} />,
+    },
+    {
+      name: "_id",
+      title: "_id",
+      value: (i: NotificationChannelDto) => <IdLinkCell id={items?.data.find((f) => f.name === i.name)?._id} createLabel={t("shared.create")} />,
+    },
+  ] as const;
+
 export default function NotificationTemplatesTable({
   items,
   onDelete,
@@ -140,44 +186,7 @@ export default function NotificationTemplatesTable({
         totalItems: items?.totalCount ?? 0,
         totalPages: Math.ceil((items?.totalCount ?? 0) / (items?.pageSize ?? 0)),
       }}
-      headers={[
-        {
-          name: "name",
-          title: "Name",
-          value: (i) => <NameCell name={i.name} valid={isValid(i, items)} />,
-        },
-        {
-          name: "description",
-          title: "Description",
-          className: "w-full",
-          value: (i) => <DescriptionCell description={i.description} valid={isValid(i, items)} />,
-        },
-        {
-          name: "roles",
-          title: "Sends to roles",
-          value: (i) => <RolesCell roles={i.roles} />,
-        },
-        {
-          name: "send",
-          title: t("shared.preview"),
-          value: (i) => <SendButtonCell isActive={getCreated(i)?.active ?? false} onSendPreview={() => onSendPreview(i)} sendLabel={t("shared.send")} />,
-        },
-        {
-          name: "active",
-          title: "Active",
-          value: (i) => <ActiveStatusCell active={getCreated(i)?.active ?? false} />,
-        },
-        {
-          name: "hasSteps",
-          title: "Has steps",
-          value: (i) => <HasStepsCell hasSteps={(getCreated(i)?.steps ?? []).length > 0} />,
-        },
-        {
-          name: "_id",
-          title: "_id",
-          value: (i) => <IdLinkCell id={getCreated(i)?._id} createLabel={t("shared.create")} />,
-        },
-      ]}
+      headers={buildHeaders(items, t, onSendPreview)}
     ></TableSimple>
   );
 }
