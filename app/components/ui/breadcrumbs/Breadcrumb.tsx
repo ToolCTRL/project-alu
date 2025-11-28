@@ -38,9 +38,9 @@ export default function Breadcrumb({ className = "", home = "", menu = [] }: Pro
             </Link>
           </div>
         </li>
-        {menu.map((item) => {
+        {menu.map((item, index) => {
           return (
-            <li key={item.title || Math.random()} className="flex">
+            <li key={item.title || item.routePath || `crumb-${index}`} className="flex">
               <div className="flex items-center">
                 <svg
                   className="h-full w-5 shrink-0 text-gray-200 sm:w-6"

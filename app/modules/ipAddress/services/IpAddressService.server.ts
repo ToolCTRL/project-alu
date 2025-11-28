@@ -6,7 +6,7 @@ import { cachified, clearCacheKey } from "~/utils/cache.server";
 import { db } from "~/utils/db.server";
 import { addBlacklistAttempt, addToBlacklist, findInBlacklist } from "~/utils/db/blacklist.db.server";
 
-const LOCAL_DEV_IP = "189.203.100.82";
+const LOCAL_DEV_IP = process.env.LOCAL_DEV_IP;
 
 async function log(
   request: Request,
@@ -21,9 +21,9 @@ async function log(
     metadata?: { [key: string]: any };
     block?: string;
   }
-) {
+  ) {
   let ip = getClientIPAddress(request)?.toString() || "";
-  if (process.env.NODE_ENV === "development") {
+  if (process.env.NODE_ENV === "development" && LOCAL_DEV_IP) {
     ip = LOCAL_DEV_IP;
   }
   const ipAddress = await getOrCreateIpAddressLookup(ip);
@@ -81,7 +81,7 @@ function getIpProvider(): string | null {
 async function getCachedIpAddress(ip: string): Promise<IpAddressDto | null> {
   const item = await cachified({
     key: `ipAddress:${ip}`,
-    disabled: ip === LOCAL_DEV_IP,
+    disabled: Boolean(LOCAL_DEV_IP) && ip === LOCAL_DEV_IP,
     getFreshValue: () =>
       db.ipAddress.findUnique({
         where: { ip },

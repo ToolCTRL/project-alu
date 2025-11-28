@@ -17,6 +17,15 @@ import { useTranslation } from "react-i18next";
 import { useEffect, useState } from "react";
 import { MetaTagsDto } from "~/application/dtos/seo/MetaTagsDto";
 
+const isDemoSuccess = () => {
+  if (typeof crypto !== "undefined" && typeof crypto.getRandomValues === "function") {
+    const buffer = new Uint32Array(1);
+    crypto.getRandomValues(buffer);
+    return buffer[0] % 2 === 0;
+  }
+  return Date.now() % 2 === 0;
+};
+
 export const meta: MetaFunction<typeof loader> = ({ data }) => data?.metatags || [];
 
 type LoaderData = {
@@ -55,13 +64,13 @@ type ActionData = {
 };
 export const action: ActionFunction = async ({ request }) => {
   const form = await request.formData();
-  const action = form.get("action")?.toString() ?? "";
-  if (action === "complete-task") {
-    try {
-      const projectId = form.get("project-id")?.toString() ?? "";
-      const taskId = form.get("task-id")?.toString() ?? "";
-      // randomize success or error - Testing/demo purposes only, not for security
-      if (Math.random() > 0.5) {
+    const action = form.get("action")?.toString() ?? "";
+    if (action === "complete-task") {
+      try {
+        const projectId = form.get("project-id")?.toString() ?? "";
+        const taskId = form.get("task-id")?.toString() ?? "";
+        // randomize success or error - Testing/demo purposes only, not for security
+        if (!isDemoSuccess()) {
         throw new Error("Could not complete task: Example error (try again)");
       }
       await FakeProjectService.completeTask(projectId, taskId);

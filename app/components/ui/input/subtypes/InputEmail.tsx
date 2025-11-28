@@ -72,7 +72,7 @@ const InputEmail = (
   const [isValid, setIsValid] = useState<boolean>(false);
 
   useEffect(() => {
-    const emailPattern = /^[\w.%+-]+@[\w.-]+\w{2,}$/i;
+    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     setIsValid(emailPattern.test(value ?? ""));
   }, [value]);
 

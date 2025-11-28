@@ -29,7 +29,7 @@ export const action: ActionFunction = async ({ request }) => {
       const name = form.get("name")?.toString() ?? "";
       const description = form.get("description")?.toString();
       const tasks: Partial<FakeTaskDto>[] = form.getAll("tasks[]").map((taskString: FormDataEntryValue) => {
-        const taskJsonString = taskString.toString();
+        const taskJsonString = String(taskString);
         return JSON.parse(taskJsonString);
       });
       const isActive = form.get("isActive");

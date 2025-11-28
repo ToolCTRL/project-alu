@@ -88,7 +88,6 @@ export const action = async ({ request, params }: ActionFunctionArgs) => {
 };
 
 export default function AdminCacheRoute() {
-  const { t } = useTranslation();
   const data = useLoaderData<LoaderData>();
   const actionData = useActionData<{ success?: string; error?: string }>();
   const submit = useSubmit();
@@ -318,7 +317,7 @@ export default function AdminCacheRoute() {
                   {
                     name: "key",
                     title: "Key",
-                    value: (item) => <div className="max-w-xs truncate">{item.key}</div>,
+                    value: KeyCell,
                     sortBy: "key",
                     sortable: true,
                   },
@@ -385,6 +384,10 @@ const SizeCell = ({ item }: { item: CachedValue }) => (
 
 const CreatedAtCell = ({ item }: { item: CachedValue }) => (
   <DateCell date={item.createdAt} displays={["ymdhmsms"]} />
+);
+
+const KeyCell = ({ item }: { item: CachedValue }) => (
+  <div className="max-w-xs truncate">{item.key}</div>
 );
 
 interface ClearSearchButtonProps {

@@ -178,16 +178,15 @@ interface ClosedPlanFeatureProps {
 }
 
 function ClosedPlanFeature({ item, existing }: ClosedPlanFeatureProps) {
-  const existingTitle = existing?.title?.trim();
   return (
     <div>
-      {!item.name || !existingTitle || existingTitle === "?" ? (
+      {!item.name || !existing?.title?.trim() || existing?.title?.trim() === "?" ? (
         <div className="text-red-600 underline">Click to set</div>
       ) : (
         <PlanFeatureDescription
           feature={{
             ...item,
-            title: existingTitle ?? "",
+            title: existing?.title?.trim() ?? "",
             value: existing?.value ?? 0,
             type: existing?.type ?? SubscriptionFeatureLimitType.NOT_INCLUDED,
           }}
@@ -197,6 +196,171 @@ function ClosedPlanFeature({ item, existing }: ClosedPlanFeatureProps) {
     </div>
   );
 }
+
+interface OrderButtonsCellProps {
+  readonly index: number;
+  readonly items: SubscriptionFeatureInPlansDto[];
+  readonly onChange: (items: SubscriptionFeatureInPlansDto[]) => void;
+}
+
+const OrderButtonsCell = ({ index, items, onChange }: OrderButtonsCellProps) => {
+  return (
+    <OrderListButtons
+      index={index}
+      items={items}
+      onChange={(updatedItems) => {
+        onChange(updatedItems as SubscriptionFeatureInPlansDto[]);
+      }}
+    />
+  );
+};
+
+interface FeatureTitleCellProps {
+  readonly item: SubscriptionFeatureInPlansDto;
+  readonly items: SubscriptionFeatureInPlansDto[];
+  readonly setItems: (items: SubscriptionFeatureInPlansDto[]) => void;
+}
+
+const FeatureTitleCell = ({ item, items, setItems }: FeatureTitleCellProps) => {
+  return (
+    <ClosedOpenedValue
+      closed={<ClosedFeatureTitle item={item} />}
+      opened={
+        <div className="flex flex-col space-y-2 px-1 py-2">
+          <div>
+            <InputText
+              name="name"
+              title="Name"
+              placeholder="Name..."
+              value={item.name}
+              required
+              setValue={(e) => {
+                item.name = e?.toString() ?? "";
+                setItems([...items]);
+              }}
+            />
+          </div>
+          <div>
+            <InputText
+              name="href"
+              title="URL"
+              placeholder="URL..."
+              value={item.href ?? undefined}
+              setValue={(e) => {
+                item.href = e?.toString() ?? "";
+                setItems([...items]);
+              }}
+            />
+          </div>
+          <div>
+            <InputText
+              name="badge"
+              title="Badge"
+              placeholder=".e.g. New!"
+              value={item.badge ?? undefined}
+              setValue={(e) => {
+                item.badge = e?.toString() ?? "";
+                setItems([...items]);
+              }}
+            />
+          </div>
+          <div>
+            <InputCheckboxWithDescription
+              name="accumulate"
+              title="Accumulate"
+              value={item.accumulate}
+              setValue={(e) => {
+                item.accumulate = Boolean(e);
+                setItems([...items]);
+              }}
+              description="Accumulates when user buys multiple times"
+            />
+          </div>
+        </div>
+      }
+    />
+  );
+};
+
+interface PlanFeatureCellProps {
+  readonly item: SubscriptionFeatureInPlansDto;
+  readonly items: SubscriptionFeatureInPlansDto[];
+  readonly planId: string;
+  readonly handleTitleChange: (existing: any, e: string | number | undefined) => void;
+  readonly handleTypeChange: (existing: any, item: any, planId: string, e: string | number | undefined) => void;
+  readonly handleValueChange: (existing: any, item: any, planId: string, e: string | number | undefined) => void;
+}
+
+const PlanFeatureCell = ({ item, items, planId, handleTitleChange, handleTypeChange, handleValueChange }: PlanFeatureCellProps) => {
+  const existing = item.plans.find((p) => p.id === planId);
+  const existingTitle = existing?.title?.trim();
+
+  return (
+    <ClosedOpenedValue
+      closed={<ClosedPlanFeature item={item} existing={existing} />}
+      opened={
+        existing ? (
+          <div className="flex flex-col space-y-2 px-1 py-2">
+            <div>
+              <InputText
+                withTranslation={true}
+                name="title"
+                title="Title"
+                placeholder="Title..."
+                value={existing?.title}
+                required
+                setValue={handleTitleChange.bind(null, existing)}
+              />
+            </div>
+            <div>
+              <InputSelect
+                name="type"
+                title="Type"
+                value={existing?.type}
+                setValue={handleTypeChange.bind(null, existing, item, planId)}
+                options={[
+                  {
+                    name: "Not included",
+                    value: SubscriptionFeatureLimitType.NOT_INCLUDED,
+                  },
+                  {
+                    name: "Included",
+                    value: SubscriptionFeatureLimitType.INCLUDED,
+                  },
+                  {
+                    name: "Monthly",
+                    value: SubscriptionFeatureLimitType.MONTHLY,
+                  },
+                  {
+                    name: "Max",
+                    value: SubscriptionFeatureLimitType.MAX,
+                  },
+                  {
+                    name: "Unlimited",
+                    value: SubscriptionFeatureLimitType.UNLIMITED,
+                  },
+                ]}
+              />
+            </div>
+            <div>
+              <InputNumber
+                name="value"
+                title="Limit"
+                value={existing?.value}
+                setValue={handleValueChange.bind(null, existing, item, planId)}
+                disabled={![SubscriptionFeatureLimitType.MONTHLY, SubscriptionFeatureLimitType.MAX].includes(existing?.type ?? 0)}
+              />
+            </div>
+          </div>
+        ) : (
+          <div className="flex flex-col space-y-2 px-1 py-2">
+            <div>-</div>
+          </div>
+        )
+      }
+    />
+  );
+};
 
 export default function PricingFeaturesRoute() {
   const { t } = useTranslation();
@@ -277,76 +441,17 @@ export default function PricingFeaturesRoute() {
         name: "order",
         value: (item) => item.order,
         formattedValue: (_, idx) => (
-          <OrderListButtons
+          <OrderButtonsCell
             index={idx}
             items={items}
-            onChange={(updatedItems) => {
-              setItems(updatedItems as SubscriptionFeatureInPlansDto[]);
-            }}
+            onChange={setItems}
           />
         ),
       },
       {
         title: "Title",
         name: "feature-title",
-        value: (item) => (
-          <ClosedOpenedValue
-            closed={<ClosedFeatureTitle item={item} />}
-            opened={
-              <div className="flex flex-col space-y-2 px-1 py-2">
-                <div>
-                  <InputText
-                    name="name"
-                    title="Name"
-                    placeholder="Name..."
-                    value={item.name}
-                    required
-                    setValue={(e) => {
-                      item.name = e?.toString() ?? "";
-                      setItems([...items]);
-                    }}
-                  />
-                </div>
-                <div>
-                  <InputText
-                    name="href"
-                    title="URL"
-                    placeholder="URL..."
-                    value={item.href ?? undefined}
-                    setValue={(e) => {
-                      item.href = e?.toString() ?? "";
-                      setItems([...items]);
-                    }}
-                  />
-                </div>
-                <div>
-                  <InputText
-                    name="badge"
-                    title="Badge"
-                    placeholder=".e.g. New!"
-                    value={item.badge ?? undefined}
-                    setValue={(e) => {
-                      item.badge = e?.toString() ?? "";
-                      setItems([...items]);
-                    }}
-                  />
-                </div>
-                <div>
-                  <InputCheckboxWithDescription
-                    name="accumulate"
-                    title="Accumulate"
-                    value={item.accumulate}
-                    setValue={(e) => {
-                      item.accumulate = Boolean(e);
-                      setItems([...items]);
-                    }}
-                    description="Accumulates when user buys multiple times"
-                  />
-                </div>
-              </div>
-            }
-          />
-        ),
+        value: (item) => <FeatureTitleCell item={item} items={items} setItems={setItems} />,
       },
     ];
 
@@ -358,75 +463,16 @@ export default function PricingFeaturesRoute() {
       baseHeaders.push({
         title: t(plan.title),
         name: "feature-in-" + plan.id,
-        value: (item) => {
-          const existing = item.plans.find((p) => p.id === plan.id);
-          const existingTitle = existing?.title?.trim();
-          return (
-            <ClosedOpenedValue
-              closed={<ClosedPlanFeature item={item} existing={existing} />}
-              opened={
-                existing ? (
-                  <div className="flex flex-col space-y-2 px-1 py-2">
-                    <div>
-                      <InputText
-                        withTranslation={true}
-                        name="title"
-                        title="Title"
-                        placeholder="Title..."
-                        value={existing?.title}
-                        required
-                        setValue={handleTitleChange.bind(null, existing)}
-                      />
-                    </div>
-                    <div>
-                      <InputSelect
-                        name="type"
-                        title="Type"
-                        value={existing?.type}
-                        setValue={handleTypeChange.bind(null, existing, item, plan.id)}
-                        options={[
-                          {
-                            name: "Not included",
-                            value: SubscriptionFeatureLimitType.NOT_INCLUDED,
-                          },
-                          {
-                            name: "Included",
-                            value: SubscriptionFeatureLimitType.INCLUDED,
-                          },
-                          {
-                            name: "Monthly",
-                            value: SubscriptionFeatureLimitType.MONTHLY,
-                          },
-                          {
-                            name: "Max",
-                            value: SubscriptionFeatureLimitType.MAX,
-                          },
-                          {
-                            name: "Unlimited",
-                            value: SubscriptionFeatureLimitType.UNLIMITED,
-                          },
-                        ]}
-                      />
-                    </div>
-                    <div>
-                      <InputNumber
-                        name="value"
-                        title="Limit"
-                        value={existing?.value}
-                        setValue={handleValueChange.bind(null, existing, item, plan.id)}
-                        disabled={![SubscriptionFeatureLimitType.MONTHLY, SubscriptionFeatureLimitType.MAX].includes(existing?.type ?? 0)}
-                      />
-                    </div>
-                  </div>
-                ) : (
-                  <div className="flex flex-col space-y-2 px-1 py-2">
-                    <div>-</div>
-                  </div>
-                )
-              }
-            />
-          );
-        },
+        value: (item) => (
+          <PlanFeatureCell
+            item={item}
+            items={items}
+            planId={plan.id!}
+            handleTitleChange={handleTitleChange}
+            handleTypeChange={handleTypeChange}
+            handleValueChange={handleValueChange}
+          />
+        ),
       });
     }
 

@@ -141,7 +141,6 @@ interface CreatedAtCellProps {
 }
 
 function CreatedAtCell({ item }: CreatedAtCellProps) {
-  const { t } = useTranslation();
   return <DateCell date={new Date(item.created_at)} />;
 }
 
@@ -150,7 +149,6 @@ interface UpdatedAtCellProps {
 }
 
 function UpdatedAtCell({ item }: UpdatedAtCellProps) {
-  const { t } = useTranslation();
   return item.updated_at ? <DateCell date={new Date(item.updated_at)} /> : null;
 }
 
@@ -159,7 +157,6 @@ interface LastAccessedAtCellProps {
 }
 
 function LastAccessedAtCell({ item }: LastAccessedAtCellProps) {
-  const { t } = useTranslation();
   return item.last_accessed_at ? <DateCell date={new Date(item.last_accessed_at)} /> : null;
 }
 

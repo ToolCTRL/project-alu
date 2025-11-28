@@ -33,7 +33,6 @@ interface SupabaseCreatedAtCellProps {
 }
 
 function SupabaseCreatedAtCell({ item }: SupabaseCreatedAtCellProps) {
-  const { t } = useTranslation();
   return <DateCell date={item.createdAt} />;
 }
 

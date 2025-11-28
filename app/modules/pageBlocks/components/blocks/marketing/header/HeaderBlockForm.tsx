@@ -10,6 +10,15 @@ import InputText from "~/components/ui/input/InputText";
 import CollapsibleRow from "~/components/ui/tables/CollapsibleRow";
 import PageBlockUtils from "~/modules/pageBlocks/components/blocks/PageBlockUtils";
 
+let headerIdCounter = 0;
+const generateHeaderId = () => {
+  if (typeof crypto !== "undefined" && typeof crypto.randomUUID === "function") {
+    return crypto.randomUUID();
+  }
+  headerIdCounter += 1;
+  return `header-link-${Date.now()}-${headerIdCounter}`;
+};
+
 export default function HeaderBlockForm({ item, onUpdate }: { readonly item?: HeaderBlockDto; readonly onUpdate: (item: HeaderBlockDto) => void }) {
   const { t } = useTranslation();
   const [state, setState] = useState<HeaderBlockDto>(PageBlockUtils.defaultBlocks.header!);
@@ -17,14 +26,10 @@ export default function HeaderBlockForm({ item, onUpdate }: { readonly item?: He
     const header = item || PageBlockUtils.defaultBlocks.header!;
     header.links.forEach((link) => {
       if (!link.id) {
-        // Using Math.random() for non-cryptographic UI form ID generation is safe here
-        // This is only used to generate unique identifiers for form elements in the UI, not for security purposes
-        link.id = Math.floor(Math.random() * 10000).toString();
+        link.id = generateHeaderId();
       }
       link.items?.forEach((subLink) => {
-        // Using Math.random() for non-cryptographic UI form ID generation is safe here
-        // This is only used to generate unique identifiers for form elements in the UI, not for security purposes
-        subLink.id = Math.floor(Math.random() * 10000).toString();
+        subLink.id = generateHeaderId();
       });
     });
     setState(header);
@@ -61,9 +66,7 @@ export default function HeaderBlockForm({ item, onUpdate }: { readonly item?: He
                 links: [
                   ...state.links,
                   {
-                    // Using Math.random() for non-cryptographic UI form ID generation is safe here
-                    // This is only used to generate unique identifiers for form elements in the UI, not for security purposes
-                    id: Math.floor(Math.random() * 10000).toString(),
+                    id: generateHeaderId(),
                     title: "Link " + (state.links.length + 1),
                     path: "",
                   },
@@ -162,8 +165,7 @@ function LinkForm({
                   items: [
                     ...(state.items || []),
                     {
-                      // Not cryptographic use case - temporary ID for form state only
-                      id: Math.floor(Math.random() * 10000).toString(),
+                      id: generateHeaderId(),
                       title: "Sublink " + ((item.items?.length ?? 0) + 1),
                       path: "",
                     },

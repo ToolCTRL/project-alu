@@ -50,7 +50,7 @@ export namespace PageMetaTags_Index {
       return Response.json({ success: "Meta tags reset successfully", metaTags: [] });
     } else if (action === "update") {
       const metaTags: { name: string; content: string; order: number }[] = form.getAll("metaTags[]").map((f: FormDataEntryValue) => {
-        const metaTagString = f.toString();
+        const metaTagString = String(f);
         return JSON.parse(metaTagString);
       });
       try {

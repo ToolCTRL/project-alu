@@ -36,7 +36,15 @@ COPY --from=deps /myapp/node_modules /myapp/node_modules
 COPY prisma prisma
 RUN npx prisma generate
 
-COPY . .
+# Copy only the files needed for the build to avoid unintentionally adding sensitive data
+COPY package.json package-lock.json tsconfig.json tsconfig.tsbuildinfo components.json react-router.config.ts vite.config.ts postcss.config.js tailwind.config.ts start.sh ./
+COPY app app
+COPY public public
+COPY data data
+COPY docs docs
+COPY scripts scripts
+COPY tools tools
+
 RUN npm run build
 
 # Clean cache

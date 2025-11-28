@@ -117,7 +117,6 @@ interface BucketCreatedAtCellProps {
 }
 
 function BucketCreatedAtCell({ item }: BucketCreatedAtCellProps) {
-  const { t } = useTranslation();
   return <DateCell date={new Date(item.created_at)} />;
 }
 
@@ -126,7 +125,6 @@ interface BucketUpdatedAtCellProps {
 }
 
 function BucketUpdatedAtCell({ item }: BucketUpdatedAtCellProps) {
-  const { t } = useTranslation();
   return item.updated_at ? <DateCell date={new Date(item.updated_at)} /> : null;
 }
 

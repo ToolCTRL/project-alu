@@ -26,6 +26,9 @@ export type PortalPageConfigDto = {
   errors?: (params: { portal: Portal; page: { attributes: JsonPropertiesValuesDto } | null }) => string[];
 };
 
+const portalARecord = process.env.PORTAL_A_RECORD ?? "";
+const portalAAAARecord = process.env.PORTAL_AAAA_RECORD ?? "";
+
 export function getAppPortalConfiguration({ t }: { t: TFunction }): PortalConfiguration {
   const titleProperty: JsonPropertyDto = {
     name: "title",
@@ -80,8 +83,8 @@ export function getAppPortalConfiguration({ t }: { t: TFunction }): PortalConfig
       provider: "fly",
       portalAppId: "saasrock-portal",
       records: {
-        A: "66.241.125.25",
-        AAAA: "2a09:8280:1::31:5dc2:0",
+        A: portalARecord,
+        AAAA: portalAAAARecord,
       },
     },
     metadata: [],

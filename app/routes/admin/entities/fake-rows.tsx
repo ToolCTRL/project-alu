@@ -359,10 +359,10 @@ async function updateFakeRow(
 }
 
 interface ActionsCellProps {
-  item: TenantDataDto;
-  onCreateRows: (item: TenantDataDto, numberOfRows: number, type?: "apiKeyLog") => void;
-  onUpdateRows: (item: TenantDataDto, numberOfRows: number) => void;
-  onDeleteRows: (item: TenantDataDto, options: { shadow: boolean; numberOfRows: number }) => void;
+  readonly item: TenantDataDto;
+  readonly onCreateRows: (item: TenantDataDto, numberOfRows: number, type?: "apiKeyLog") => void;
+  readonly onUpdateRows: (item: TenantDataDto, numberOfRows: number) => void;
+  readonly onDeleteRows: (item: TenantDataDto, options: { shadow: boolean; numberOfRows: number }) => void;
 }
 
 function ActionsCell({ item, onCreateRows, onUpdateRows, onDeleteRows }: ActionsCellProps) {
@@ -443,6 +443,17 @@ function ActionsCell({ item, onCreateRows, onUpdateRows, onDeleteRows }: Actions
     </div>
   );
 }
+
+interface ActionsCellWrapperProps {
+  item: TenantDataDto;
+  onCreateRows: (item: TenantDataDto, numberOfRows: number, type?: "apiKeyLog") => void;
+  onUpdateRows: (item: TenantDataDto, numberOfRows: number) => void;
+  onDeleteRows: (item: TenantDataDto, options: { shadow: boolean; numberOfRows: number }) => void;
+}
+
+const ActionsCellWrapper = ({ item, onCreateRows, onUpdateRows, onDeleteRows }: ActionsCellWrapperProps) => {
+  return <ActionsCell item={item} onCreateRows={onCreateRows} onUpdateRows={onUpdateRows} onDeleteRows={onDeleteRows} />;
+};
 
 export default function FakeRowsRoute() {
   const { t } = useTranslation();
@@ -601,7 +612,7 @@ export default function FakeRowsRoute() {
               {
                 name: "actions",
                 title: "",
-                value: (i) => <ActionsCell item={i} onCreateRows={onCreateRows} onUpdateRows={onUpdateRows} onDeleteRows={onDeleteRows} />,
+                value: (i) => <ActionsCellWrapper item={i} onCreateRows={onCreateRows} onUpdateRows={onUpdateRows} onDeleteRows={onDeleteRows} />,
               },
             ]}
           />

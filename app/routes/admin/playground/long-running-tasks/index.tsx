@@ -8,6 +8,18 @@ import WarningBanner from "~/components/ui/banners/WarningBanner";
 import ButtonPrimary from "~/components/ui/buttons/ButtonPrimary";
 import TableSimple from "~/components/ui/tables/TableSimple";
 
+const generateImportId = () => {
+  if (typeof crypto !== "undefined" && typeof crypto.randomUUID === "function") {
+    return crypto.randomUUID();
+  }
+  if (typeof crypto !== "undefined" && typeof crypto.getRandomValues === "function") {
+    const buffer = new Uint32Array(2);
+    crypto.getRandomValues(buffer);
+    return buffer.map((value) => value.toString(16)).join("-");
+  }
+  return `import-${Date.now()}`;
+};
+
 const TOTAL_ITEMS = 100;
 const MILLISECONDS_PER_ITEM = 300;
 const BLOCK_SIZE = 10;
@@ -43,7 +55,7 @@ export const action: ActionFunction = async ({ request }) => {
     await Promise.all(
       itemsToImport.map(async (item) => {
         // Testing/demo purposes only - temporary ID generation, not for security
-        item.id = Math.random().toString(36).substring(7);
+        item.id = generateImportId();
         return await new Promise((resolve) => setTimeout(resolve, MILLISECONDS_PER_ITEM));
       })
     );

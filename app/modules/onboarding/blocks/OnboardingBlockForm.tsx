@@ -23,6 +23,15 @@ import {
   OnboardingStepBlockDto,
 } from "./OnboardingBlockUtils";
 
+let onboardingIdCounter = 0;
+const generateOnboardingId = () => {
+  if (typeof crypto !== "undefined" && typeof crypto.randomUUID === "function") {
+    return crypto.randomUUID();
+  }
+  onboardingIdCounter += 1;
+  return `onboarding-step-${Date.now()}-${onboardingIdCounter}`;
+};
+
 export default function OnboardingBlockForm({ item, onUpdate }: Readonly<{ item?: OnboardingBlockDto; onUpdate: (item: OnboardingBlockDto) => void }>) {
   const { t } = useTranslation();
   const [state, setState] = useState<OnboardingBlockDto>(item || defaultOnboardingBlock);
@@ -105,9 +114,7 @@ export default function OnboardingBlockForm({ item, onUpdate }: Readonly<{ item?
                   steps: [
                     ...(state.steps ?? []),
                     {
-                      // Using Math.random() for non-cryptographic UI form ID generation is safe here
-                      // This is only used to generate unique identifiers for form elements in the UI, not for security purposes
-                      id: Math.floor(Math.random() * 10000).toString(),
+                      id: generateOnboardingId(),
                       // ...defaultOnboardingStepBlock,
                       title: "",
                       description: "",

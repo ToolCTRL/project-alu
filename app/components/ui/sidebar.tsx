@@ -500,11 +500,11 @@ function SidebarMenuSkeleton({
 }: React.ComponentProps<"div"> & {
   showIcon?: boolean;
 }) {
-  // Random width between 50 to 90%.
-  // Math.random() is safe here for UI skeleton loader purposes - used only for visual variation without security implications
+  const skeletonId = React.useId();
   const width = React.useMemo(() => {
-    return `${Math.floor(Math.random() * 40) + 50}%`;
-  }, []);
+    const hash = skeletonId.split("").reduce((acc, char) => acc + char.charCodeAt(0), 0);
+    return `${(hash % 41) + 50}%`;
+  }, [skeletonId]);
 
   return (
     <div data-slot="sidebar-menu-skeleton" data-sidebar="menu-skeleton" className={cn("flex h-8 items-center gap-2 rounded-md px-2", className)} {...props}>
