@@ -1,7 +1,7 @@
 import { Prisma } from "@prisma/client";
 import { LoaderFunctionArgs, useLoaderData, Link, useSearchParams } from "react-router";
 import clsx from "clsx";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { FilterablePropertyDto } from "~/application/dtos/data/FilterablePropertyDto";
 import { RowHeaderDisplayDto } from "~/application/dtos/data/RowHeaderDisplayDto";
 import WarningBanner from "~/components/ui/banners/WarningBanner";
@@ -126,27 +126,10 @@ export default function MetricsSummary() {
   const data = useLoaderData<LoaderData>();
   const [searchParams, setSearchParams] = useSearchParams();
   const [groupBy, setGroupBy] = useState<string[]>(getGroupByValues(searchParams));
-
-  const [headers, setHeaders] = useState<RowHeaderDisplayDto<ItemDto>[]>([]);
-
-  useEffect(() => {
-    if (getGroupByValues(searchParams).sort((a, b) => a.localeCompare(b)).join(",") !== groupBy.sort((a, b) => a.localeCompare(b)).join(",")) {
-      searchParams.delete("groupBy");
-      groupBy.forEach((by) => {
-        searchParams.append("groupBy", by);
-      });
-      setSearchParams(searchParams);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [groupBy]);
-
-  useEffect(() => {
-    const headers: RowHeaderDisplayDto<ItemDto>[] = [];
-    let currentGroupBy = groupBy;
-    if (currentGroupBy.length === 0) {
-      currentGroupBy = defaultGroupBy;
-    }
-    const getCountLink = (item: ItemDto) => {
+  const getUser = useCallback((item: ItemDto) => data.users.find((x) => x.id === item.userId), [data.users]);
+  const getTenant = useCallback((item: ItemDto) => data.tenants.find((x) => x.id === item.tenantId), [data.tenants]);
+  const getCountLink = useCallback(
+    (item: ItemDto, currentGroupBy: string[]) => {
       const searchParams = new URLSearchParams();
       searchParams.set("pageSize", "100");
       currentGroupBy.forEach((groupBy) => {
@@ -167,43 +150,57 @@ export default function MetricsSummary() {
         }
       });
       return `/admin/metrics/logs?${searchParams.toString()}`;
-    };
-    const getUser = (item: ItemDto) => {
-      return data.users.find((x) => x.id === item.userId);
-    };
-    const getTenant = (item: ItemDto) => {
-      return data.tenants.find((x) => x.id === item.tenantId);
-    };
+    },
+    []
+  );
+
+  useEffect(() => {
+    if (getGroupByValues(searchParams).sort((a, b) => a.localeCompare(b)).join(",") !== groupBy.sort((a, b) => a.localeCompare(b)).join(",")) {
+      searchParams.delete("groupBy");
+      groupBy.forEach((by) => {
+        searchParams.append("groupBy", by);
+      });
+      setSearchParams(searchParams);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [groupBy]);
+
+  const headers = useMemo(() => {
+    const headerList: RowHeaderDisplayDto<ItemDto>[] = [];
+    let currentGroupBy = groupBy;
+    if (currentGroupBy.length === 0) {
+      currentGroupBy = defaultGroupBy;
+    }
     if (groupBy.includes("env")) {
-      headers.push({
+      headerList.push({
         name: "env",
         title: "Env",
         value: (item) => <FilterableValueLink name="env" value={item.env} />,
       });
     }
     if (groupBy.includes("type")) {
-      headers.push({
+      headerList.push({
         name: "type",
         title: "Type",
         value: (item) => <FilterableValueLink name="type" value={item.type} />,
       });
     }
     if (groupBy.includes("route")) {
-      headers.push({
+      headerList.push({
         name: "route",
         title: "Route name",
         value: (item) => <FilterableValueLink name="route" value={item.route} />,
       });
     }
     if (groupBy.includes("url")) {
-      headers.push({
+      headerList.push({
         name: "url",
         title: "URL",
         value: (item) => <FilterableValueLink name="url" value={item.url} />,
       });
     }
     if (groupBy.includes("function")) {
-      headers.push({
+      headerList.push({
         name: "function",
         title: "Function",
         value: (item) => <FunctionCell functionName={item.function} />,
@@ -211,24 +208,24 @@ export default function MetricsSummary() {
       });
     }
     if (groupBy.includes("userId")) {
-      headers.push({
+      headerList.push({
         name: "userId",
         title: "User",
         value: (item) => <FilterableValueLink name="userId" value={getUser(item)?.email ?? ""} />,
       });
     }
     if (groupBy.includes("tenantId")) {
-      headers.push({
+      headerList.push({
         name: "tenantId",
         title: "Tenant",
         value: (item) => <FilterableValueLink name="tenantId" value={getTenant(item)?.name ?? ""} />,
       });
     }
-    headers.push(
+    headerList.push(
       {
         name: "count",
         title: "Count",
-        value: (item) => <CountCell link={getCountLink(item)} count={Number(item._count._all)} />,
+        value: (item) => <CountCell link={getCountLink(item, currentGroupBy)} count={Number(item._count._all)} />,
       },
       {
         name: "speed",
@@ -241,9 +238,8 @@ export default function MetricsSummary() {
         value: (item) => <DurationCell duration={Number(item._avg.duration)} />,
       }
     );
-
-    setHeaders(headers);
-  }, [data, groupBy]);
+    return headerList;
+  }, [getCountLink, getTenant, getUser, groupBy]);
 
   return (
     <EditPageLayout
