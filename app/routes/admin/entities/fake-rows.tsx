@@ -208,7 +208,7 @@ function createFakePropertyValue(property: any, idx: number): Prisma.RowValueUnc
 
   const handler = typeHandlers[property.type as PropertyType];
   if (!handler) {
-    throw new Error(`[Unknown] Unknown property type ${PropertyType[property.type]}`);
+    throw new TypeError(`[Unknown] Unknown property type ${PropertyType[property.type]}`);
   }
   return handler();
 }
@@ -227,7 +227,7 @@ async function ensureFakeRowTag(entity: EntityWithDetails) {
   }
   tag = entity.tags.find((f) => f.value === "fake-row");
   if (!tag) {
-    throw new Error("Could not create tag: fake-row");
+    throw new TypeError("Could not create tag: fake-row");
   }
   return tag;
 }
@@ -288,7 +288,7 @@ async function createFakeApiKeyLog({
   apiKeys: ApiKey[];
 }) {
   if (apiKeys.length === 0) {
-    throw new Error("No API keys found");
+    throw new TypeError("No API keys found");
   }
   const firstApiKey = apiKeys[0];
   const apiKeyLog = await db.apiKeyLog.create({
@@ -325,7 +325,7 @@ function createUpdatePropertyValue(property: any, value: RowValue, idx: number):
 
   const handler = typeHandlers[property.type as PropertyType];
   if (!handler) {
-    throw new Error(`[Unknown] Unknown property type ${PropertyType[property.type]}`);
+    throw new TypeError(`[Unknown] Unknown property type ${PropertyType[property.type]}`);
   }
   return handler();
 }

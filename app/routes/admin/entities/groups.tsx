@@ -93,7 +93,7 @@ export const action = async ({ request }: ActionFunctionArgs) => {
     await verifyUserHasPermission(request, "admin.entities.update");
     const items: { id: string; order: number }[] = form.getAll("orders[]").map((entry: FormDataEntryValue) => {
       if (typeof entry !== "string") {
-        throw new Error("Invalid orders[] payload");
+        throw new TypeError("Invalid orders[] payload");
       }
       return JSON.parse(entry);
     });

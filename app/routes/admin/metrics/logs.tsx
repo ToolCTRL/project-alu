@@ -1,9 +1,10 @@
 import { MetricLog, Tenant } from "@prisma/client";
 import { ActionFunction, LoaderFunctionArgs, useLoaderData, useSearchParams, useSubmit } from "react-router";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { FilterablePropertyDto } from "~/application/dtos/data/FilterablePropertyDto";
 import { PaginationDto } from "~/application/dtos/data/PaginationDto";
+import { RowHeaderDisplayDto } from "~/application/dtos/data/RowHeaderDisplayDto";
 import ButtonSecondary from "~/components/ui/buttons/ButtonSecondary";
 import RefreshIcon from "~/components/ui/icons/RefreshIcon";
 import InputFilters from "~/components/ui/input/InputFilters";
@@ -33,6 +34,68 @@ type LoaderData = {
   filterableProperties: FilterablePropertyDto[];
   pagination: PaginationDto;
 };
+
+function buildMetricLogHeaders(): RowHeaderDisplayDto<ItemDto>[] {
+  return [
+    {
+      name: "route",
+      title: "Route name",
+      value: (item) => <FilterableValueLink name="route" value={item.route} />,
+    },
+    {
+      name: "url",
+      title: "URL",
+      value: (item) => <FilterableValueLink name="url" value={item.url} />,
+    },
+    {
+      name: "function",
+      title: "Function",
+      value: (item) => <FilterableValueLink name="function" value={item.function} />,
+      className: "w-full",
+    },
+    {
+      name: "speed",
+      title: "Speed",
+      value: (item) => <SpeedBadge duration={item.duration} />,
+    },
+    {
+      sortBy: "duration",
+      name: "duration",
+      title: "Duration",
+      value: (item) => <div>{item.duration.toFixed(3)} ms</div>,
+    },
+    {
+      name: "type",
+      title: "Type",
+      value: (item) => <FilterableValueLink name="type" value={item.type} />,
+    },
+    {
+      name: "tenant",
+      title: "Tenant",
+      value: (item) => <FilterableValueLink name="tenantId" value={item.tenant?.name} param={item.tenant?.id} />,
+    },
+    {
+      name: "user",
+      title: "User",
+      value: (item) => <FilterableValueLink name="userId" value={item.user?.email} param={item.user?.id} />,
+    },
+    {
+      name: "env",
+      title: "Env",
+      value: (item) => <FilterableValueLink name="env" value={item.env} />,
+    },
+    {
+      name: "createdAt",
+      title: "Date",
+      value: (item) => (
+        <div>
+          <div>{DateUtils.dateAgo(item.createdAt)}</div>
+          <div className="text-muted-foreground text-xs">{DateUtils.dateYMDHMS(item.createdAt)}</div>
+        </div>
+      ),
+    },
+  ];
+}
 export const loader = async ({ request }: LoaderFunctionArgs) => {
   await verifyUserHasPermission(request, "admin.metrics.view");
   const { filterableProperties, whereFilters } = await MetricService.getFilters({ request });
@@ -95,6 +158,7 @@ export default function MetricsLogs() {
   const [searchParams, setSearchParams] = useSearchParams();
 
   const [selectedRows, setSelectedRows] = useState<ItemDto[]>([]);
+  const headers = useMemo(() => buildMetricLogHeaders(), []);
   function onDelete(ids: string[]) {
     const form = new FormData();
     form.set("action", "delete");
@@ -151,74 +215,8 @@ export default function MetricsLogs() {
           onSelected={setSelectedRows}
           items={data.items}
           pagination={data.pagination}
-          headers={[
-            {
-              name: "route",
-              title: "Route name",
-              value: (item) => <FilterableValueLink name="route" value={item.route} />,
-            },
-            {
-              name: "url",
-              title: "URL",
-              value: (item) => <FilterableValueLink name="url" value={item.url} />,
-            },
-            {
-              name: "function",
-              title: "Function",
-              value: (item) => <FilterableValueLink name="function" value={item.function} />,
-              className: "w-full",
-            },
-            {
-              name: "speed",
-              title: "Speed",
-              value: (item) => <SpeedBadge duration={item.duration} />,
-            },
-            {
-              sortBy: "duration",
-              name: "duration",
-              title: "Duration",
-              value: (item) => <div>{item.duration.toFixed(3)} ms</div>,
-            },
-            {
-              name: "type",
-              title: "Type",
-              value: (item) => <FilterableValueLink name="type" value={item.type} />,
-            },
-            {
-              name: "tenant",
-              title: "Tenant",
-              value: (item) => <FilterableValueLink name="tenantId" value={item.tenant?.name} param={item.tenant?.id} />,
-            },
-            {
-              name: "user",
-              title: "User",
-              value: (item) => <FilterableValueLink name="userId" value={item.user?.email} param={item.user?.id} />,
-            },
-            {
-              name: "env",
-              title: "Env",
-              value: (item) => <FilterableValueLink name="env" value={item.env} />,
-            },
-            {
-              sortBy: "createdAt",
-              name: "createdAt",
-              title: t("shared.createdAt"),
-              value: (item) => DateUtils.dateYMDHMS(item.createdAt),
-              formattedValue: (item) => (
-                <div className="text-muted-foreground text-xs">{item.createdAt && <span>{DateUtils.dateYMDHMS(item.createdAt)}</span>}</div>
-              ),
-            },
-            {
-              name: "actions",
-              title: "",
-              value: (item) => (
-                <button type="button" onClick={() => onDelete([item.id])} className="text-red-600 hover:text-red-900 hover:underline">
-                  Delete
-                </button>
-              ),
-            },
-          ]}
+          headers={headers}
         />
       </EditPageLayout>
-  );
+    );
 }

@@ -138,19 +138,7 @@ export default function PdfViewer({ className, file, onRemoveFile, fileName = ""
         <>
           <div className="flex items-center justify-between p-2">
             <div className="flex items-center space-x-2">
-              <div
-                onClick={(e) => {
-                  e.preventDefault();
-                }}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter' || e.key === ' ') {
-                    e.preventDefault();
-                  }
-                }}
-                role="button"
-                tabIndex={0}
-                className="left-0 top-0 ml-1 mt-1 flex origin-top-left cursor-default items-center space-x-2"
-              >
+              <div className="left-0 top-0 ml-1 mt-1 flex origin-top-left cursor-default items-center space-x-2">
                 <span className="relative z-0 inline-flex rounded-md shadow-2xs">
                   <button
                     type="button"

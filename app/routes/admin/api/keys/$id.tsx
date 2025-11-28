@@ -47,7 +47,7 @@ export const action: ActionFunction = async ({ request, params }) => {
         .getAll("entities[]")
         .map((entry: FormDataEntryValue) => {
           if (typeof entry !== "string") {
-            throw new Error("Invalid entities[] payload");
+            throw new TypeError("Invalid entities[] payload");
           }
           return JSON.parse(entry);
         });

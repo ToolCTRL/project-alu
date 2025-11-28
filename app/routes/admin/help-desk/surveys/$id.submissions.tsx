@@ -1,5 +1,6 @@
+import type React from "react";
 import { LoaderFunctionArgs, redirect, useActionData, useLoaderData, useParams, useSubmit } from "react-router";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo } from "react";
 import toast from "react-hot-toast";
 import { useTranslation } from "react-i18next";
 import { RowHeaderDisplayDto } from "~/application/dtos/data/RowHeaderDisplayDto";
@@ -55,6 +56,48 @@ const SubmissionDateCell = ({ item }: { item: SurveySubmissionWithDetails }) => 
   </time>
 );
 
+function buildSubmissionHeaders(
+  surveyItems: SurveyDto["items"],
+  renderResult: (submission: SurveySubmissionWithDetails, surveyItemTitle: string) => React.ReactNode
+): RowHeaderDisplayDto<SurveySubmissionWithDetails>[] {
+  const headers: RowHeaderDisplayDto<SurveySubmissionWithDetails>[] = [
+    {
+      name: "results",
+      title: "",
+      value: (item, idx) => <SubmissionResultsCell item={item} idx={idx ?? 0} />,
+    },
+    {
+      name: "date",
+      title: "Date",
+      value: (i) => <SubmissionDateCell item={i} />,
+    },
+  ];
+
+  surveyItems.forEach((surveyItem) => {
+    headers.push({
+      name: surveyItem.title,
+      title: surveyItem.title,
+      value: (submission) => renderResult(submission, surveyItem.title),
+    });
+  });
+
+  headers.push(
+    {
+      name: "ipAddress",
+      title: "IP Address",
+      value: (item) => item.ipAddress,
+    },
+    {
+      name: "cookie",
+      title: "Cookie",
+      className: "w-full",
+      value: (i) => <div className="text-foreground w-20 truncate text-xs">{i.userAnalyticsId}</div>,
+    }
+  );
+
+  return headers;
+}
+
 export const loader = async ({ request, params }: LoaderFunctionArgs) => {
   await requireAuth({ request, params });
   await verifyUserHasPermission(request, "admin.surveys");
@@ -103,43 +146,10 @@ export default function SurveySubmissionsRoute() {
     }
   }, [actionData]);
 
-  const [headers, setHeaders] = useState<RowHeaderDisplayDto<SurveySubmissionWithDetails>[]>([]);
-
-  useEffect(() => {
-    const headers: RowHeaderDisplayDto<SurveySubmissionWithDetails>[] = [
-      {
-        name: "results",
-        title: "",
-        value: (item, idx) => <SubmissionResultsCell item={item} idx={idx ?? 0} />,
-      },
-      {
-        name: "date",
-        title: "Date",
-        value: (i) => <SubmissionDateCell item={i} />,
-      },
-    ];
-    data.item.items.forEach((surveyItem) => {
-      headers.push({
-        name: surveyItem.title,
-        title: surveyItem.title,
-        value: (submission) => renderSubmissionResult(submission, surveyItem.title),
-      });
-    });
-    headers.push(
-      {
-        name: "ipAddress",
-        title: "IP Address",
-        value: (item) => item.ipAddress,
-      },
-      {
-        name: "cookie",
-        title: "Cookie",
-        className: "w-full",
-        value: (i) => <div className="text-foreground w-20 truncate text-xs">{i.userAnalyticsId}</div>,
-      }
-    );
-    setHeaders(headers);
-  }, [data]);
+  const headers = useMemo(
+    () => buildSubmissionHeaders(data.item.items, renderSubmissionResult),
+    [data.item.items]
+  );
 
   return (
     <EditPageLayout

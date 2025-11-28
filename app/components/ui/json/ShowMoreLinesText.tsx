@@ -14,22 +14,13 @@ export default function ShowMoreLinesText({
 
   const handleToggle = () => setExpanded(!expanded);
 
-  const handleKeyDown = (event: React.KeyboardEvent) => {
-    if (event.key === "Enter" || event.key === " ") {
-      event.preventDefault();
-      handleToggle();
-    }
-  };
-
   return (
-    <div
-      role="button"
-      tabIndex={0}
+    <button
+      type="button"
       onClick={handleToggle}
-      onKeyDown={handleKeyDown}
       className={clsx(
+        "cursor-pointer bg-transparent p-0 text-left",
         className,
-        "cursor-pointer",
         expanded
           ? "line-clamp-none"
           : clsx(
@@ -45,6 +36,6 @@ export default function ShowMoreLinesText({
       )}
     >
       {children}
-    </div>
+    </button>
   );
 }

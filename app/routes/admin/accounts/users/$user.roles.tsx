@@ -50,7 +50,7 @@ export const action = async ({ request, params }: ActionFunctionArgs) => {
   if (action === "set-user-roles") {
     const arrRoles: { id: string; tenantId: string | undefined }[] = form.getAll("roles[]").map((entry: FormDataEntryValue) => {
       if (typeof entry !== "string") {
-        throw new Error("Invalid roles[] payload");
+        throw new TypeError("Invalid roles[] payload");
       }
       return JSON.parse(entry);
     });
@@ -59,7 +59,7 @@ export const action = async ({ request, params }: ActionFunctionArgs) => {
     arrRoles.forEach(({ id, tenantId }) => {
       const role = allRoles.find((r) => r.id === id);
       if (!role) {
-        throw new Error("Role not found with ID: " + id);
+        throw new TypeError("Role not found with ID: " + id);
       }
       setRoles.push({ role, tenantId: tenantId ?? null });
     });

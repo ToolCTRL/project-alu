@@ -122,6 +122,98 @@ const DurationCell = ({ duration }: { duration: number }) => (
   <div>{NumberUtils.custom(duration, "0,0.001")} ms</div>
 );
 
+function makeFilterableValueRenderer(
+  name: string,
+  valueSelector: (item: ItemDto) => string | null | undefined
+): (item: ItemDto) => JSX.Element {
+  return (item: ItemDto) => <FilterableValueLink name={name} value={valueSelector(item) ?? ""} />;
+}
+
+function buildHeaders({
+  groupBy,
+  getUser,
+  getTenant,
+  getCountLink,
+}: {
+  groupBy: string[];
+  getUser: (item: ItemDto) => { id: string; email: string } | undefined;
+  getTenant: (item: ItemDto) => { id: string; name: string } | undefined;
+  getCountLink: (item: ItemDto, currentGroupBy: string[]) => string;
+}): RowHeaderDisplayDto<ItemDto>[] {
+  const headerList: RowHeaderDisplayDto<ItemDto>[] = [];
+  const currentGroupBy = groupBy.length === 0 ? defaultGroupBy : groupBy;
+
+  if (currentGroupBy.includes("env")) {
+    headerList.push({
+      name: "env",
+      title: "Env",
+      value: makeFilterableValueRenderer("env", (item) => item.env),
+    });
+  }
+  if (currentGroupBy.includes("type")) {
+    headerList.push({
+      name: "type",
+      title: "Type",
+      value: makeFilterableValueRenderer("type", (item) => item.type),
+    });
+  }
+  if (currentGroupBy.includes("route")) {
+    headerList.push({
+      name: "route",
+      title: "Route name",
+      value: makeFilterableValueRenderer("route", (item) => item.route),
+    });
+  }
+  if (currentGroupBy.includes("url")) {
+    headerList.push({
+      name: "url",
+      title: "URL",
+      value: makeFilterableValueRenderer("url", (item) => item.url),
+    });
+  }
+  if (currentGroupBy.includes("function")) {
+    headerList.push({
+      name: "function",
+      title: "Function",
+      value: (item) => <FunctionCell functionName={item.function} />,
+      className: "w-full",
+    });
+  }
+  if (currentGroupBy.includes("userId")) {
+    headerList.push({
+      name: "userId",
+      title: "User",
+      value: (item) => <FilterableValueLink name="userId" value={getUser(item)?.email ?? ""} />,
+    });
+  }
+  if (currentGroupBy.includes("tenantId")) {
+    headerList.push({
+      name: "tenantId",
+      title: "Tenant",
+      value: (item) => <FilterableValueLink name="tenantId" value={getTenant(item)?.name ?? ""} />,
+    });
+  }
+  headerList.push(
+    {
+      name: "count",
+      title: "Count",
+      value: (item) => <CountCell link={getCountLink(item, currentGroupBy)} count={Number(item._count._all)} />,
+    },
+    {
+      name: "speed",
+      title: "Speed",
+      value: (item) => <SpeedCell duration={Number(item._avg.duration)} />,
+    },
+    {
+      name: "duration",
+      title: "Avg. duration",
+      value: (item) => <DurationCell duration={Number(item._avg.duration)} />,
+    }
+  );
+
+  return headerList;
+}
+
 export default function MetricsSummary() {
   const data = useLoaderData<LoaderData>();
   const [searchParams, setSearchParams] = useSearchParams();
@@ -165,81 +257,16 @@ export default function MetricsSummary() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [groupBy]);
 
-  const headers = useMemo(() => {
-    const headerList: RowHeaderDisplayDto<ItemDto>[] = [];
-    let currentGroupBy = groupBy;
-    if (currentGroupBy.length === 0) {
-      currentGroupBy = defaultGroupBy;
-    }
-    if (groupBy.includes("env")) {
-      headerList.push({
-        name: "env",
-        title: "Env",
-        value: (item) => <FilterableValueLink name="env" value={item.env} />,
-      });
-    }
-    if (groupBy.includes("type")) {
-      headerList.push({
-        name: "type",
-        title: "Type",
-        value: (item) => <FilterableValueLink name="type" value={item.type} />,
-      });
-    }
-    if (groupBy.includes("route")) {
-      headerList.push({
-        name: "route",
-        title: "Route name",
-        value: (item) => <FilterableValueLink name="route" value={item.route} />,
-      });
-    }
-    if (groupBy.includes("url")) {
-      headerList.push({
-        name: "url",
-        title: "URL",
-        value: (item) => <FilterableValueLink name="url" value={item.url} />,
-      });
-    }
-    if (groupBy.includes("function")) {
-      headerList.push({
-        name: "function",
-        title: "Function",
-        value: (item) => <FunctionCell functionName={item.function} />,
-        className: "w-full",
-      });
-    }
-    if (groupBy.includes("userId")) {
-      headerList.push({
-        name: "userId",
-        title: "User",
-        value: (item) => <FilterableValueLink name="userId" value={getUser(item)?.email ?? ""} />,
-      });
-    }
-    if (groupBy.includes("tenantId")) {
-      headerList.push({
-        name: "tenantId",
-        title: "Tenant",
-        value: (item) => <FilterableValueLink name="tenantId" value={getTenant(item)?.name ?? ""} />,
-      });
-    }
-    headerList.push(
-      {
-        name: "count",
-        title: "Count",
-        value: (item) => <CountCell link={getCountLink(item, currentGroupBy)} count={Number(item._count._all)} />,
-      },
-      {
-        name: "speed",
-        title: "Speed",
-        value: (item) => <SpeedCell duration={Number(item._avg.duration)} />,
-      },
-      {
-        name: "duration",
-        title: "Avg. duration",
-        value: (item) => <DurationCell duration={Number(item._avg.duration)} />,
-      }
-    );
-    return headerList;
-  }, [getCountLink, getTenant, getUser, groupBy]);
+  const headers = useMemo(
+    () =>
+      buildHeaders({
+        groupBy,
+        getUser,
+        getTenant,
+        getCountLink,
+      }),
+    [getCountLink, getTenant, getUser, groupBy]
+  );
 
   return (
     <EditPageLayout

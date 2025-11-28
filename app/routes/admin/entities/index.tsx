@@ -54,7 +54,7 @@ export const action: ActionFunction = async ({ request, params }) => {
   if (action === "set-orders") {
     const items: { id: string; order: number }[] = form.getAll("orders[]").map((entry: FormDataEntryValue) => {
       if (typeof entry !== "string") {
-        throw new Error("Invalid orders[] payload");
+        throw new TypeError("Invalid orders[] payload");
       }
       return JSON.parse(entry);
     });
