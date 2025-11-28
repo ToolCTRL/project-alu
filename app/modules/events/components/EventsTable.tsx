@@ -17,6 +17,45 @@ interface Props {
   readonly pagination: PaginationDto;
 }
 
+const buildHeaders = ({
+  t,
+  paramsTenant,
+  onSelectData,
+}: {
+  t: ReturnType<typeof useTranslation>["t"];
+  paramsTenant?: string;
+  onSelectData: (item: EventWithAttempts) => void;
+}) =>
+  [
+    {
+      name: "event",
+      title: t("models.event.object"),
+      value: (i: EventWithAttempts) => i.name,
+      formattedValue: (i: EventWithAttempts) => <EventBadge name={i.name} />,
+    },
+    {
+      name: "data",
+      title: t("models.event.data"),
+      value: (i: EventWithAttempts) => <DataButton item={i} onClick={onSelectData} />,
+      className: "w-full",
+    },
+    {
+      name: "tenant",
+      title: t("models.tenant.object"),
+      value: (i: EventWithAttempts) => (
+        <div className="text-xs">
+          <TenantInfo item={i} tenant={paramsTenant} />
+        </div>
+      ),
+      hidden: !!paramsTenant,
+    },
+    {
+      name: "createdAt",
+      title: t("shared.createdAt"),
+      value: (i: EventWithAttempts) => <CreatedAtInfo item={i} />,
+    },
+  ] as const;
+
 function EventBadge({ name }: { readonly name: string }) {
   return <Badge variant="secondary">{name}</Badge>;
 }
@@ -77,35 +116,7 @@ export default function EventsTable({ items, pagination }: Props) {
           },
         ]}
         pagination={pagination}
-        headers={[
-          {
-            name: "event",
-            title: t("models.event.object"),
-            value: (i) => i.name,
-            formattedValue: (i) => <EventBadge name={i.name} />,
-          },
-          {
-            name: "data",
-            title: t("models.event.data"),
-            value: (i) => <DataButton item={i} onClick={setSelectedData} />,
-            className: "w-full",
-          },
-          {
-            name: "tenant",
-            title: t("models.tenant.object"),
-            value: (i) => (
-              <div className="text-xs">
-                <TenantInfo item={i} tenant={params.tenant} />
-              </div>
-            ),
-            hidden: !!params.tenant,
-          },
-          {
-            name: "createdAt",
-            title: t("shared.createdAt"),
-            value: (i) => <CreatedAtInfo item={i} />,
-          },
-        ]}
+        headers={buildHeaders({ t, paramsTenant: params.tenant, onSelectData: setSelectedData })}
       />
 
       {selectedData && (
