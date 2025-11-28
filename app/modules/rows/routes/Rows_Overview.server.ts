@@ -57,6 +57,190 @@ export namespace Rows_Overview {
     success?: string;
     error?: string;
   };
+
+  type Handler = () => Promise<Response>;
+
+  const isInvalidField = (value: FormDataEntryValue | null) => typeof value === "object" && value !== null;
+
+  const getStringField = (form: FormData, field: string, t: any) => {
+    const value = form.get(field);
+    if (isInvalidField(value)) {
+      throw Response.json({ error: t("shared.invalidForm") }, { status: 400 });
+    }
+    return value?.toString() ?? "";
+  };
+
+  const requireString = (value: string, t: any) => {
+    if (!value) {
+      throw Response.json({ error: t("shared.invalidForm") }, { status: 400 });
+    }
+    return value;
+  };
+
+  async function handleEdit({ form, t, entity, item, params, tenantId, userId, time, getServerTimingHeader }: any) {
+    try {
+      const rowValues = RowHelper.getRowPropertiesFromForm({ t, entity, form, existing: item });
+      await time(
+        RowsApi.update(params.id, {
+          entity,
+          tenantId,
+          userId,
+          rowValues,
+        }),
+        "RowsApi.update"
+      );
+    } catch (error: any) {
+      return Response.json({ error: error.message }, { status: 400, headers: getServerTimingHeader() });
+    }
+    const updatedRow = await time(RowsApi.get(params.id, { entity }), "RowsApi.get");
+    return Response.json({ updatedRow, success: t("shared.saved") }, { headers: getServerTimingHeader() });
+  }
+
+  async function handleDelete({ request, params, t, entity, item, tenantId, userId, user, form, time, getServerTimingHeader }: any) {
+    try {
+      await time(verifyUserHasPermission(request, getEntityPermission(entity, "create"), tenantId), "verifyUserHasPermission");
+      await time(
+        RowsApi.del(params.id, {
+          entity,
+          tenantId,
+          userId,
+        }),
+        "RowsApi.del"
+      );
+      if (item.createdByUser) {
+        await time(
+          NotificationService.send({
+            channel: "my-rows",
+            to: item.createdByUser,
+            notification: {
+              from: { user },
+              message: `${user?.email} deleted ${RowHelper.getTextDescription({ entity, item })}`,
+              action: {
+                title: t("shared.view"),
+                url: EntityHelper.getRoutes({ routes: EntitiesApi.getNoCodeRoutes({ request, params }), entity, item })?.overview ?? "",
+              },
+            },
+          }),
+          "NotificationService.send"
+        );
+      }
+    } catch (error: any) {
+      return Response.json({ error: error.message }, { status: 400, headers: getServerTimingHeader() });
+    }
+    const redirectValue = form.get("redirect");
+    if (isInvalidField(redirectValue)) {
+      return Response.json({ error: t("shared.invalidForm") }, { status: 400, headers: getServerTimingHeader() });
+    }
+    const redirectTo = redirectValue?.toString() || new URL(request.url).searchParams.get("redirect")?.toString();
+    if (redirectTo) {
+      return redirect(redirectTo, { headers: getServerTimingHeader() });
+    }
+    const routes = EntitiesApi.getNoCodeRoutes({ request, params });
+    const listRoute = EntityHelper.getRoutes({ routes, entity })?.list;
+    if (listRoute) {
+      return redirect(listRoute, { headers: getServerTimingHeader() });
+    }
+    return Response.json({ deleted: true }, { headers: getServerTimingHeader() });
+  }
+
+  async function handleComment({ form, t, item, userId, user, entity, request, params, time, getServerTimingHeader }: any) {
+    const comment = requireString(getStringField(form, "comment", t), t);
+    await time(
+      RowCommentsApi.create(item.id, {
+        comment,
+        userId,
+      }),
+      "RowCommentsApi.create"
+    );
+    if (item.createdByUser) {
+      await time(
+        NotificationService.send({
+          channel: "my-rows",
+          to: item.createdByUser,
+          notification: {
+            from: { user },
+            message: `${user?.email} commented on ${RowHelper.getTextDescription({ entity, item })}`,
+            action: {
+              title: t("shared.view"),
+              url: EntityHelper.getRoutes({ routes: EntitiesApi.getNoCodeRoutes({ request, params }), entity, item })?.overview ?? "",
+            },
+          },
+        }),
+        "NotificationService.send"
+      );
+    }
+    return Response.json({ newComment: comment }, { headers: getServerTimingHeader() });
+  }
+
+  async function handleCommentReaction({ form, t, userId, time, getServerTimingHeader }: any) {
+    const rowCommentId = requireString(getStringField(form, "comment-id", t), t);
+    const reaction = requireString(getStringField(form, "reaction", t), t);
+    await time(getRowComment(rowCommentId), "getRowComment");
+    await time(
+      setRowCommentReaction({
+        createdByUserId: userId,
+        rowCommentId,
+        reaction,
+      }),
+      "setRowCommentReaction"
+    );
+    return Response.json({ newCommentReaction: reaction }, { headers: getServerTimingHeader() });
+  }
+
+  async function handleCommentDelete({ form, t, time, getServerTimingHeader }: any) {
+    const rowCommentId = requireString(getStringField(form, "comment-id", t), t);
+    await time(updateRowComment(rowCommentId, { isDeleted: true }), "updateRowComment");
+    return Response.json({ deletedComment: rowCommentId }, { headers: getServerTimingHeader() });
+  }
+
+  async function handleTaskNew({ form, t, userId, item, time, getServerTimingHeader }: any) {
+    const taskTitle = requireString(getStringField(form, "task-title", t), t);
+    const task = await time(
+      createRowTask({
+        createdByUserId: userId,
+        rowId: item.id,
+        title: taskTitle,
+      }),
+      "createRowTask"
+    );
+    return Response.json({ newTask: task }, { headers: getServerTimingHeader() });
+  }
+
+  async function handleTaskCompleteToggle({ form, t, userId, time, getServerTimingHeader }: any) {
+    const taskId = requireString(getStringField(form, "task-id", t), t);
+    const task = await time(getRowTask(taskId), "getRowTask");
+    if (task) {
+      if (task.completed) {
+        await time(
+          updateRowTask(taskId, {
+            completed: false,
+            completedAt: null,
+            completedByUserId: null,
+          }),
+          "updateRowTask"
+        );
+      } else {
+        await time(
+          updateRowTask(taskId, {
+            completed: true,
+            completedAt: new Date(),
+            completedByUserId: userId,
+          }),
+          "updateRowTask"
+        );
+      }
+    }
+    return Response.json({ completedTask: taskId }, { headers: getServerTimingHeader() });
+  }
+
+  async function handleTaskDelete({ form, t, time, getServerTimingHeader }: any) {
+    const taskId = requireString(getStringField(form, "task-id", t), t);
+    const task = await time(getRowTask(taskId), "getRowTask");
+    if (task) {
+      await time(deleteRowTask(taskId), "deleteRowTask");
+    }
+    return Response.json({ deletedTask: taskId }, { headers: getServerTimingHeader() });
+  }
   export const action: ActionFunction = async ({ request, params }) => {
     const { time, getServerTimingHeader } = await createMetrics({ request, params }, `[Rows_Overview] ${params.entity}`);
     const { t, userId, tenantId, entity, form } = await RowsRequestUtils.getAction({ request, params });
@@ -75,197 +259,22 @@ export namespace Rows_Overview {
     );
     const { item } = rowData;
 
-    if (action === "edit") {
-      try {
-        const rowValues = RowHelper.getRowPropertiesFromForm({ t, entity, form, existing: item });
-        await time(
-          RowsApi.update(params.id, {
-            entity,
-            tenantId,
-            userId,
-            rowValues,
-          }),
-          "RowsApi.update"
-        );
-      } catch (error: any) {
-        return Response.json({ error: error.message }, { status: 400, headers: getServerTimingHeader() });
-      }
-      const updatedRow = await time(RowsApi.get(params.id, { entity }), "RowsApi.get");
-      return Response.json({ updatedRow, success: t("shared.saved") }, { headers: getServerTimingHeader() });
-    } else if (action === "delete") {
-      try {
-        await time(verifyUserHasPermission(request, getEntityPermission(entity, "create"), tenantId), "verifyUserHasPermission");
-        await time(
-          RowsApi.del(params.id, {
-            entity,
-            tenantId,
-            userId,
-          }),
-          "RowsApi.del"
-        );
-        if (item.createdByUser) {
-          await time(
-            NotificationService.send({
-              channel: "my-rows",
-              to: item.createdByUser,
-              notification: {
-                from: { user },
-                message: `${user?.email} deleted ${RowHelper.getTextDescription({ entity, item })}`,
-                action: {
-                  title: t("shared.view"),
-                  url: EntityHelper.getRoutes({ routes: EntitiesApi.getNoCodeRoutes({ request, params }), entity, item })?.overview ?? "",
-                },
-              },
-            }),
-            "NotificationService.send"
-          );
-        }
-      } catch (error: any) {
-        return Response.json({ error: error.message }, { status: 400, headers: getServerTimingHeader() });
-      }
-      const redirectValue = form.get("redirect");
-      if (typeof redirectValue === "object" && redirectValue !== null) {
-        return Response.json({ error: t("shared.invalidForm") }, { status: 400, headers: getServerTimingHeader() });
-      }
-      const redirectTo = redirectValue?.toString() || new URL(request.url).searchParams.get("redirect")?.toString();
-      if (redirectTo) {
-        return redirect(redirectTo, { headers: getServerTimingHeader() });
-      }
-      const routes = EntitiesApi.getNoCodeRoutes({ request, params });
-      const listRoute = EntityHelper.getRoutes({ routes, entity })?.list;
-      if (listRoute) {
-        return redirect(listRoute, { headers: getServerTimingHeader() });
-      }
-      return Response.json({ deleted: true }, { headers: getServerTimingHeader() });
-    } else if (action === "comment") {
-      const commentValue = form.get("comment");
-      if (typeof commentValue === "object" && commentValue !== null) {
-        return Response.json({ error: t("shared.invalidForm") }, { status: 400, headers: getServerTimingHeader() });
-      }
-      let comment = commentValue?.toString();
-      if (!comment) {
-        return Response.json({ error: t("shared.invalidForm") }, { status: 400, headers: getServerTimingHeader() });
-      }
-      await time(
-        RowCommentsApi.create(item.id, {
-          comment,
-          userId,
-        }),
-        "RowCommentsApi.create"
-      );
-      if (item.createdByUser) {
-        await time(
-          NotificationService.send({
-            channel: "my-rows",
-            to: item.createdByUser,
-            notification: {
-              from: { user },
-              message: `${user?.email} commented on ${RowHelper.getTextDescription({ entity, item })}`,
-              action: {
-                title: t("shared.view"),
-                url: EntityHelper.getRoutes({ routes: EntitiesApi.getNoCodeRoutes({ request, params }), entity, item })?.overview ?? "",
-              },
-            },
-          }),
-          "NotificationService.send"
-        );
-      }
-      return Response.json({ newComment: comment }, { headers: getServerTimingHeader() });
-    } else if (action === "comment-reaction") {
-      const rowCommentIdValue = form.get("comment-id");
-      if (typeof rowCommentIdValue === "object" && rowCommentIdValue !== null) {
-        return Response.json({ error: t("shared.invalidForm") }, { status: 400, headers: getServerTimingHeader() });
-      }
-      const rowCommentId = rowCommentIdValue?.toString();
-      const reactionValue = form.get("reaction");
-      if (typeof reactionValue === "object" && reactionValue !== null) {
-        return Response.json({ error: t("shared.invalidForm") }, { status: 400, headers: getServerTimingHeader() });
-      }
-      const reaction = reactionValue?.toString();
-      if (!rowCommentId || !reaction) {
-        return Response.json({ error: t("shared.invalidForm") }, { status: 400, headers: getServerTimingHeader() });
-      }
-      await time(getRowComment(rowCommentId), "getRowComment");
-      await time(
-        setRowCommentReaction({
-          createdByUserId: userId,
-          rowCommentId,
-          reaction,
-        }),
-        "setRowCommentReaction"
-      );
-      return Response.json({ newCommentReaction: reaction }, { headers: getServerTimingHeader() });
-    } else if (action === "comment-delete") {
-      const rowCommentIdValue = form.get("comment-id");
-      if (typeof rowCommentIdValue === "object" && rowCommentIdValue !== null) {
-        return Response.json({ error: t("shared.invalidForm") }, { status: 400, headers: getServerTimingHeader() });
-      }
-      const rowCommentId = rowCommentIdValue?.toString();
-      if (!rowCommentId) {
-        return Response.json({ error: t("shared.invalidForm") }, { status: 400, headers: getServerTimingHeader() });
-      }
-      await time(updateRowComment(rowCommentId, { isDeleted: true }), "updateRowComment");
-      return Response.json({ deletedComment: rowCommentId }, { headers: getServerTimingHeader() });
-    } else if (action === "task-new") {
-      const taskTitleValue = form.get("task-title");
-      if (typeof taskTitleValue === "object" && taskTitleValue !== null) {
-        return Response.json({ error: t("shared.invalidForm") }, { status: 400, headers: getServerTimingHeader() });
-      }
-      const taskTitle = taskTitleValue?.toString();
-      if (!taskTitle) {
-        return Response.json({ error: t("shared.invalidForm") }, { status: 400, headers: getServerTimingHeader() });
-      }
-      const task = await time(
-        createRowTask({
-          createdByUserId: userId,
-          rowId: item.id,
-          title: taskTitle,
-        }),
-        "createRowTask"
-      );
-      return Response.json({ newTask: task }, { headers: getServerTimingHeader() });
-    } else if (action === "task-complete-toggle") {
-      const taskIdValue = form.get("task-id");
-      if (typeof taskIdValue === "object" && taskIdValue !== null) {
-        return Response.json({ error: t("shared.invalidForm") }, { status: 400, headers: getServerTimingHeader() });
-      }
-      const taskId = taskIdValue?.toString() ?? "";
-      const task = await time(getRowTask(taskId), "getRowTask");
-      if (task) {
-        if (task.completed) {
-          await time(
-            updateRowTask(taskId, {
-              completed: false,
-              completedAt: null,
-              completedByUserId: null,
-            }),
-            "updateRowTask"
-          );
-        } else {
-          await time(
-            updateRowTask(taskId, {
-              completed: true,
-              completedAt: new Date(),
-              completedByUserId: userId,
-            }),
-            "updateRowTask"
-          );
-        }
-      }
-      return Response.json({ completedTask: taskId }, { headers: getServerTimingHeader() });
-    } else if (action === "task-delete") {
-      const taskIdValue = form.get("task-id");
-      if (typeof taskIdValue === "object" && taskIdValue !== null) {
-        return Response.json({ error: t("shared.invalidForm") }, { status: 400, headers: getServerTimingHeader() });
-      }
-      const taskId = taskIdValue?.toString() ?? "";
-      const task = await time(getRowTask(taskId), "getRowTask");
-      if (task) {
-        await time(deleteRowTask(taskId), "deleteRowTask");
-      }
-      return Response.json({ deletedTask: taskId }, { headers: getServerTimingHeader() });
-    } else {
+    const handlers: Record<string, Handler> = {
+      edit: () => handleEdit({ form, t, entity, item, params, tenantId, userId, time, getServerTimingHeader }),
+      delete: () => handleDelete({ request, params, t, entity, item, tenantId, userId, user, form, time, getServerTimingHeader }),
+      comment: () => handleComment({ form, t, item, userId, user, entity, request, params, time, getServerTimingHeader }),
+      "comment-reaction": () => handleCommentReaction({ form, t, userId, time, getServerTimingHeader }),
+      "comment-delete": () => handleCommentDelete({ form, t, time, getServerTimingHeader }),
+      "task-new": () => handleTaskNew({ form, t, userId, item, time, getServerTimingHeader }),
+      "task-complete-toggle": () => handleTaskCompleteToggle({ form, t, userId, time, getServerTimingHeader }),
+      "task-delete": () => handleTaskDelete({ form, t, time, getServerTimingHeader }),
+    };
+
+    const handler = handlers[action];
+    if (!handler) {
       return Response.json({ error: t("shared.invalidForm") }, { status: 400, headers: getServerTimingHeader() });
     }
+
+    return handler();
   };
 }

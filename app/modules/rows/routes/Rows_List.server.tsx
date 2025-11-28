@@ -55,54 +55,70 @@ export namespace Rows_List {
     updatedView?: EntityView;
     rowsDeleted?: string[];
   };
+
+  type Handler = () => Promise<Response>;
+
+  const isInvalidField = (value: FormDataEntryValue | null) => typeof value === "object" && value !== null;
+  const getStringField = (form: FormData, field: string, t: any) => {
+    const value = form.get(field);
+    if (isInvalidField(value)) {
+      throw Response.json({ error: t("shared.invalidForm") }, { status: 400 });
+    }
+    return value?.toString() ?? "";
+  };
+
   export const action: ActionFunction = async ({ request, params }) => {
     const { time, getServerTimingHeader } = await createMetrics({ request, params }, `[Rows_List] ${params.entity}`);
     const { t, userId, tenantId, entity, form } = await RowsRequestUtils.getAction({ request, params });
     const actionValue = form.get("action");
     const action = typeof actionValue === "string" ? actionValue : "";
-    if (action === "view-create") {
-      try {
+    const handlers: Record<string, Handler> = {
+      "view-create": async () => {
         const view = await time(EntityViewsApi.createFromForm({ entity, form, createdByUserId: userId }), "EntityViewsApi.createFromForm");
         return redirect(new URL(request.url, request.url).pathname + "?v=" + view.name, { headers: getServerTimingHeader() });
-      } catch (e: any) {
-        return Response.json({ error: e.message }, { status: 400, headers: getServerTimingHeader() });
-      }
-    } else if (action === "view-edit" || action === "view-delete") {
-      const idValue = form.get("id");
-      const id = typeof idValue === "string" ? idValue : "";
-      const item = await time(getEntityView(id), "getEntityView");
-      if (!item) {
-        return Response.json({ error: t("shared.notFound") }, { status: 400, headers: getServerTimingHeader() });
-      }
-      try {
-        if (action === "view-edit") {
-          const updatedView = await time(EntityViewsApi.updateFromForm({ entity, item, form }), "EntityViewsApi.updateFromForm");
-          return Response.json({ updatedView }, { headers: getServerTimingHeader() });
-        } else {
-          await time(deleteEntityView(item.id), "deleteEntityView");
-          return redirect(new URL(request.url, request.url).pathname + "?v=", { headers: getServerTimingHeader() });
+      },
+      "view-edit": async () => {
+        const id = getStringField(form, "id", t);
+        const item = await time(getEntityView(id), "getEntityView");
+        if (!item) {
+          return Response.json({ error: t("shared.notFound") }, { status: 400, headers: getServerTimingHeader() });
         }
-      } catch (e: any) {
-        return Response.json({ error: e.message }, { status: 400, headers: getServerTimingHeader() });
-      }
-    } else if (["move-up", "move-down"].includes(action)) {
-      const moveIdValue = form.get("id");
-      const id = typeof moveIdValue === "string" ? moveIdValue : "";
-      await time(
-        RowsApi.changeOrder(id, {
-          target: action === "move-up" ? "up" : "down",
-        }),
-        "RowsApi.changeOrder"
-      );
-      return Response.json({ success: true, headers: getServerTimingHeader() });
-    } else if (action === "board-move") {
-      try {
-        const boardIdValue = form.get("id");
-        const id = typeof boardIdValue === "string" ? boardIdValue : "";
-        const propertyValue = form.get("property");
-        const property = typeof propertyValue === "string" ? propertyValue : "";
-        const valueValue = form.get("value");
-        const value = typeof valueValue === "string" ? valueValue : "";
+        const updatedView = await time(EntityViewsApi.updateFromForm({ entity, item, form }), "EntityViewsApi.updateFromForm");
+        return Response.json({ updatedView }, { headers: getServerTimingHeader() });
+      },
+      "view-delete": async () => {
+        const id = getStringField(form, "id", t);
+        const item = await time(getEntityView(id), "getEntityView");
+        if (!item) {
+          return Response.json({ error: t("shared.notFound") }, { status: 400, headers: getServerTimingHeader() });
+        }
+        await time(deleteEntityView(item.id), "deleteEntityView");
+        return redirect(new URL(request.url, request.url).pathname + "?v=", { headers: getServerTimingHeader() });
+      },
+      "move-up": async () => {
+        const id = getStringField(form, "id", t);
+        await time(
+          RowsApi.changeOrder(id, {
+            target: "up",
+          }),
+          "RowsApi.changeOrder"
+        );
+        return Response.json({ success: true, headers: getServerTimingHeader() });
+      },
+      "move-down": async () => {
+        const id = getStringField(form, "id", t);
+        await time(
+          RowsApi.changeOrder(id, {
+            target: "down",
+          }),
+          "RowsApi.changeOrder"
+        );
+        return Response.json({ success: true, headers: getServerTimingHeader() });
+      },
+      "board-move": async () => {
+        const id = getStringField(form, "id", t);
+        const property = getStringField(form, "property", t);
+        const value = getStringField(form, "value", t);
         if (!id || !property) {
           return Response.json({ error: t("shared.invalidForm") }, { status: 400, headers: getServerTimingHeader() });
         }
@@ -127,15 +143,12 @@ export namespace Rows_List {
           "RowsApi.update.board-move"
         );
         return Response.json({ success: true, updated }, { headers: getServerTimingHeader() });
-      } catch (e: any) {
-        return Response.json({ error: e.message }, { status: 200, headers: getServerTimingHeader() });
-      }
-    } else if (action === "bulk-delete") {
-      if (!entity.hasBulkDelete) {
-        return Response.json({ error: t("shared.invalidForm") }, { status: 400, headers: getServerTimingHeader() });
-      }
-      const rowIds = form.getAll("rowIds[]") as string[];
-      try {
+      },
+      "bulk-delete": async () => {
+        if (!entity.hasBulkDelete) {
+          return Response.json({ error: t("shared.invalidForm") }, { status: 400, headers: getServerTimingHeader() });
+        }
+        const rowIds = form.getAll("rowIds[]") as string[];
         const rows = await getRowsInIds(rowIds);
         const inexistentRows = rowIds.filter((id) => !rows.some((f) => f.id === id));
         if (inexistentRows.length > 0) {
@@ -149,11 +162,18 @@ export namespace Rows_List {
           })
         );
         return Response.json({ success: t("shared.deleted"), rowsDeleted }, { headers: getServerTimingHeader() });
-      } catch (e: any) {
-        return Response.json({ error: e.message }, { status: 400, headers: getServerTimingHeader() });
-      }
-    } else {
+      },
+    };
+
+    const handler = handlers[action];
+    if (!handler) {
       return Response.json({ error: t("shared.invalidForm") }, { status: 400, headers: getServerTimingHeader() });
+    }
+
+    try {
+      return await handler();
+    } catch (e: any) {
+      return Response.json({ error: e.message }, { status: 400, headers: getServerTimingHeader() });
     }
   };
 }

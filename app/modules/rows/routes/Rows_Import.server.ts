@@ -40,73 +40,69 @@ export namespace Rows_Import {
   export const action: ActionFunction = async ({ request, params }) => {
     const { t, userId, tenantId, entity, form } = await RowsRequestUtils.getAction({ request, params });
     const action = form.get("action");
-    if (action === "import") {
-      const tagValue = form.get("tag");
-      const tag = typeof tagValue === "string" && tagValue.length > 0 ? tagValue : "import";
-      let rawRows: ImportRow[];
-      try {
-        rawRows = form.getAll("rows[]").map((f: FormDataEntryValue) => {
-          if (typeof f !== "string") {
-            throw new TypeError("rows[] entries must be JSON strings");
-          }
-          return JSON.parse(f);
-        });
-      } catch {
-        return Response.json({ error: "Invalid rows data" }, { status: 400 });
-      }
-      let tenantToImport = tenantId;
-      if (tenantId === null) {
-        const selectedTenantIdValue = form.get("selectedTenantId");
-        const selectedTenantId = typeof selectedTenantIdValue === "string" && selectedTenantIdValue !== "" ? selectedTenantIdValue : "{null}";
-        if (selectedTenantId === "{null}") {
-          tenantToImport = null;
-        } else {
-          const existingTenant = await getTenant(selectedTenantId);
-          if (!existingTenant) {
-            return Response.json({ error: "Invalid tenant with ID: " + selectedTenantId }, { status: 400 });
-          }
-          tenantToImport = selectedTenantId;
-        }
-      }
-
-      if (rawRows.length === 0) {
-        return Response.json({ error: "No rows to import" }, { status: 400 });
-      }
-      const rows: ImportRow[] = [];
-      let folio = 1;
-      const maxFolio = await getMaxRowFolio({ tenantId: tenantToImport, entityId: entity.id });
-      if (maxFolio && maxFolio._max.folio !== null) {
-        folio = maxFolio._max.folio + 1;
-      }
-      await Promise.all(
-        rawRows.map(async (importRow: ImportRow, idx) => {
-          try {
-            // Wait for keeping folios unique, I can't think of another way to do this
-            await new Promise((r) => setTimeout(r, 1500));
-            const rowValues = RowHelper.getRowPropertiesFromForm({ t, entity, values: importRow.properties });
-            const newRow = await RowsApi.create({
-              entity,
-              tenantId: tenantToImport,
-              userId,
-              rowValues,
-              nextFolio: folio + idx,
-            });
-            if (tag) {
-              await RowsApi.addTag({ row: newRow, tag: { value: tag, color: Colors.INDIGO } });
-            }
-            importRow.row = await getRowById(newRow.id);
-          } catch (e: any) {
-            importRow.error = e.message?.toString();
-          }
-          rows.push(importRow);
-        })
-      );
-      const data: ActionData = {
-        rows,
-      };
-      return data;
-    } else {
+    if (action !== "import") {
       return Response.json({ error: "Invalid form" }, { status: 400 });
     }
+
+    const tagValue = form.get("tag");
+    const tag = typeof tagValue === "string" && tagValue.length > 0 ? tagValue : "import";
+
+    const rawRows = form.getAll("rows[]").map((f: FormDataEntryValue) => {
+      if (typeof f !== "string") {
+        throw new TypeError("rows[] entries must be JSON strings");
+      }
+      return JSON.parse(f);
+    }) as ImportRow[];
+
+    let tenantToImport = tenantId;
+    if (tenantId === null) {
+      const selectedTenantIdValue = form.get("selectedTenantId");
+      const selectedTenantId = typeof selectedTenantIdValue === "string" && selectedTenantIdValue !== "" ? selectedTenantIdValue : "{null}";
+      if (selectedTenantId === "{null}") {
+        tenantToImport = null;
+      } else {
+        const existingTenant = await getTenant(selectedTenantId);
+        if (!existingTenant) {
+          return Response.json({ error: "Invalid tenant with ID: " + selectedTenantId }, { status: 400 });
+        }
+        tenantToImport = selectedTenantId;
+      }
+    }
+
+    if (rawRows.length === 0) {
+      return Response.json({ error: "No rows to import" }, { status: 400 });
+    }
+
+    const rows: ImportRow[] = [];
+    let folio = 1;
+    const maxFolio = await getMaxRowFolio({ tenantId: tenantToImport, entityId: entity.id });
+    if (maxFolio && maxFolio._max.folio !== null) {
+      folio = maxFolio._max.folio + 1;
+    }
+
+    await Promise.all(
+      rawRows.map(async (importRow: ImportRow, idx) => {
+        try {
+          // Wait for keeping folios unique, I can't think of another way to do this
+          await new Promise((r) => setTimeout(r, 1500));
+          const rowValues = RowHelper.getRowPropertiesFromForm({ t, entity, values: importRow.properties });
+          const newRow = await RowsApi.create({
+            entity,
+            tenantId: tenantToImport,
+            userId,
+            rowValues,
+            nextFolio: folio + idx,
+          });
+          if (tag) {
+            await RowsApi.addTag({ row: newRow, tag: { value: tag, color: Colors.INDIGO } });
+          }
+          importRow.row = await getRowById(newRow.id);
+        } catch (e: any) {
+          importRow.error = e.message?.toString();
+        }
+        rows.push(importRow);
+      })
+    );
+    return { rows } satisfies ActionData;
   };
 }
