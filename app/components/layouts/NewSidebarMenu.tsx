@@ -327,30 +327,7 @@ layout === "admin" ? "dark" : ""
                             const hasSubItems = menuItem.items && menuItem.items.length > 0;
                             return (
                               <div key={menuItem.path}>
-                                {!hasSubItems ? (
-                                  <Link
-                                    prefetch="intent"
-                                    id={UrlUtils.slugify(getPath(menuItem))}
-                                    to={menuItem.redirectTo ?? getPath(menuItem)}
-                                    className={clsx(
-                                      "group mt-1 flex items-center justify-between truncate rounded-sm px-4 py-2 text-sm leading-5 transition duration-150 ease-in-out  focus:outline-hidden",
-                                      menuItem.icon !== undefined && "px-4",
-                                      isCurrent(menuItem)
-                                        ? "bg-secondary text-primary dark:text-secondary-foreground"
-                                        : "hover:bg-secondary hover:text-secondary-foreground text-secondary-foreground/70",
-                                      "group flex gap-x-3 rounded-md p-2 text-sm leading-5"
-                                    )}
-                                    onClick={onSelected}
-                                  >
-                                    <div className="flex items-center space-x-5">
-                                      {(menuItem.icon !== undefined || menuItem.entityIcon !== undefined) && (
-                                        <SidebarIcon className="h-5 w-5 " item={menuItem} />
-                                      )}
-                                      <div>{t(menuItem.title)}</div>
-                                    </div>
-                                    {menuItem.side}
-                                  </Link>
-                                ) : (
+                                {hasSubItems ? (
                                   <div>
                                     <button
                                       type="button"
@@ -394,6 +371,29 @@ layout === "admin" ? "dark" : ""
                                       </div>
                                     )}
                                   </div>
+                                ) : (
+                                  <Link
+                                    prefetch="intent"
+                                    id={UrlUtils.slugify(getPath(menuItem))}
+                                    to={menuItem.redirectTo ?? getPath(menuItem)}
+                                    className={clsx(
+                                      "group mt-1 flex items-center justify-between truncate rounded-sm px-4 py-2 text-sm leading-5 transition duration-150 ease-in-out  focus:outline-hidden",
+                                      menuItem.icon !== undefined && "px-4",
+                                      isCurrent(menuItem)
+                                        ? "bg-secondary text-primary dark:text-secondary-foreground"
+                                        : "hover:bg-secondary hover:text-secondary-foreground text-secondary-foreground/70",
+                                      "group flex gap-x-3 rounded-md p-2 text-sm leading-5"
+                                      )}
+                                      onClick={onSelected}
+                                    >
+                                      <div className="flex items-center space-x-5">
+                                        {(menuItem.icon !== undefined || menuItem.entityIcon !== undefined) && (
+                                          <SidebarIcon className="h-5 w-5 " item={menuItem} />
+                                        )}
+                                        <div>{t(menuItem.title)}</div>
+                                      </div>
+                                      {menuItem.side}
+                                    </Link>
                                 )}
                               </div>
                             );

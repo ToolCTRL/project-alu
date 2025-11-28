@@ -16,24 +16,24 @@ export namespace Rows_Import {
     allTenants: { id: string; name: string; slug: string }[];
   };
   type TenantResolution =
-    | { tenantToImport: string | null; error?: undefined }
-    | { tenantToImport?: undefined; error: Response };
+    | { tenantToImport: string | null; error: null }
+    | { tenantToImport: null; error: Response };
 
   const resolveTenant = async (form: FormData, tenantId: string | null): Promise<TenantResolution> => {
     if (tenantId !== null) {
-      return { tenantToImport: tenantId };
+      return { tenantToImport: tenantId, error: null };
     }
     const selectedTenantIdValue = form.get("selectedTenantId");
     const selectedTenantId =
       typeof selectedTenantIdValue === "string" && selectedTenantIdValue !== "" ? selectedTenantIdValue : "{null}";
     if (selectedTenantId === "{null}") {
-      return { tenantToImport: null };
+      return { tenantToImport: null, error: null };
     }
     const existingTenant = await getTenant(selectedTenantId);
     if (!existingTenant) {
-      return { error: Response.json({ error: "Invalid tenant with ID: " + selectedTenantId }, { status: 400 }) };
+      return { tenantToImport: null, error: Response.json({ error: "Invalid tenant with ID: " + selectedTenantId }, { status: 400 }) };
     }
-    return { tenantToImport: selectedTenantId };
+    return { tenantToImport: selectedTenantId, error: null };
   };
   export const loader = async ({ request, params }: LoaderFunctionArgs) => {
     const { t, tenantId, entity } = await RowsRequestUtils.getLoader({ request, params });

@@ -25,7 +25,7 @@ export const action: ActionFunction = async ({ request, params }) => {
   }
   const actions: OnboardingSessionActionDto[] = form.getAll("actions[]").map((entry: FormDataEntryValue) => {
     if (typeof entry !== "string") {
-      throw new Error("Invalid action payload");
+      throw new TypeError("Invalid action payload");
     }
     return JSON.parse(entry);
   });

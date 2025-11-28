@@ -460,8 +460,8 @@ function parseRangeFromForm(
   if (PropertyType.RANGE_DATE === property.type) {
     const toNullableString = (value: FormDataEntryValue | null | undefined) =>
       typeof value === "string" && value.length > 0 ? value : null;
-    const minValue = toNullableString(min as FormDataEntryValue | null);
-    const maxValue = toNullableString(max as FormDataEntryValue | null);
+    const minValue = toNullableString(min);
+    const maxValue = toNullableString(max);
     return {
       numberMin: null,
       numberMax: null,

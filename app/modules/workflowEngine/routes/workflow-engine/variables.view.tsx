@@ -17,41 +17,43 @@ function ValueCell({ value }: { readonly value: string }) {
   return <>{value}</>;
 }
 
+const headers = [
+  {
+    title: "Name",
+    name: "name",
+    value: (item: { name: string }) => <NameCell name={item.name} />,
+  },
+  {
+    title: "Value",
+    name: "value",
+    className: "w-full",
+    value: (item: { value: string }) => <ValueCell value={item.value} />,
+  },
+  {
+    title: "Created At",
+    name: "createdAt",
+    value: (item: { createdAt: Date | null }) => <DateCellRenderer item={item} />,
+  },
+] as const;
+
 export default function WorkflowsVariablesView() {
   const data = useLoaderData<WorkflowsVariablesApi.LoaderData>();
 
   return (
     <EditPageLayout
       title="Variables"
-      buttons={
-        <ButtonPrimary to="new">New</ButtonPrimary>
-      }
-    >
-      <div className="space-y-3">
-        <TableSimple
-          headers={[
-            {
-              title: "Name",
-              name: "name",
-              value: (item) => <NameCell name={item.name} />,
-            },
-            {
-              title: "Value",
-              name: "value",
-              className: "w-full",
-              value: (item) => <ValueCell value={item.value} />,
-            },
-            {
-              title: "Created At",
-              name: "createdAt",
-              value: (item) => <DateCellRenderer item={item} />,
-            },
-          ]}
-          items={data.items}
-          actions={[
-            {
-              title: "Edit",
-              onClickRoute: (idx, item) => item.id,
+        buttons={
+          <ButtonPrimary to="new">New</ButtonPrimary>
+        }
+      >
+        <div className="space-y-3">
+          <TableSimple
+            headers={headers}
+            items={data.items}
+            actions={[
+              {
+                title: "Edit",
+                onClickRoute: (idx, item) => item.id,
             },
           ]}
         />
