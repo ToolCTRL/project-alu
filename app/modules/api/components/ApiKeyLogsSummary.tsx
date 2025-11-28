@@ -18,6 +18,132 @@ import { Colors } from "~/application/enums/shared/Colors";
 import ApiCallSpeedBadge from "./ApiCallSpeedBadge";
 import { useTranslation } from "react-i18next";
 
+const buildSummaryHeaders = ({
+  groupBy,
+  params,
+  data,
+  t,
+}: {
+  groupBy: string[];
+  params: ReturnType<typeof useParams>;
+  data: Props["data"];
+  t: (key: string) => string;
+}): RowHeaderDisplayDto<ApiCallSummaryDto>[] => {
+  const activeGroupBy = groupBy.length === 0 ? ApiKeyLogsConstants.DEFAULT_GROUP_BY : groupBy;
+  const getCountLink = (item: ApiCallSummaryDto) => {
+    const searchParams = new URLSearchParams();
+    activeGroupBy.forEach((by) => {
+      if (by === "method") {
+        searchParams.append("method", item.method);
+      } else if (by === "endpoint") {
+        searchParams.append("endpoint", item.endpoint);
+      } else if (by === "params") {
+        searchParams.append("params", item.params);
+      } else if (by === "status") {
+        searchParams.append("status", item.status?.toString() ?? "{null}");
+      } else if (by === "tenantId") {
+        searchParams.append("tenantId", item.tenantId ?? "{null}");
+      }
+    });
+    return UrlUtils.getModulePath(params, `api/logs?${searchParams.toString()}`);
+  };
+
+  const headers: RowHeaderDisplayDto<ApiCallSummaryDto>[] = [];
+
+  if (activeGroupBy.includes("method")) {
+    headers.push({
+      name: "method",
+      title: "Method",
+      value: (item) => (
+        <FilterableValueLink name="method" value={item.method}>
+          <SimpleBadge title={item.method} color={ApiUtils.getMethodColor(item.method)} underline />
+        </FilterableValueLink>
+      ),
+    });
+  }
+  if (activeGroupBy.includes("endpoint")) {
+    headers.push({
+      name: "endpoint",
+      title: "Endpoint",
+      value: (item) => <FilterableValueLink name="endpoint" value={item.endpoint} />,
+    });
+  }
+  if (activeGroupBy.includes("params")) {
+    headers.push({
+      name: "params",
+      title: "Params",
+      value: (item) => <FilterableValueLink name="params" value={item.params} />,
+    });
+  }
+  if (activeGroupBy.includes("status")) {
+    headers.push({
+      name: "status",
+      title: "Status",
+      value: (item) => (
+        <FilterableValueLink name="status" value={item.status?.toString() ?? "{null}"}>
+          <SimpleBadge title={item.status?.toString() ?? "?"} color={item.status?.toString().startsWith("4") ? Colors.RED : Colors.GREEN} />
+        </FilterableValueLink>
+      ),
+    });
+  }
+  if (activeGroupBy.includes("tenantId")) {
+    headers.push({
+      name: "tenantId",
+      title: "Tenant",
+      value: (item) => {
+        const tenant = data.allTenants.find((x) => x.id === item.tenantId);
+        return <FilterableValueLink name="tenantId" value={tenant?.name ?? ""} />;
+      },
+    });
+  }
+
+  headers.push(
+    {
+      name: "apiCalls",
+      title: "API calls",
+      align: "right",
+      value: (item) => (
+        <div className="flex justify-end text-right">
+          <Link to={getCountLink(item)} className="hover:underline">
+            {NumberUtils.intFormat(Number(item._count._all))} {item._count._all === 1 ? "call" : "calls"}
+          </Link>
+        </div>
+      ),
+    },
+    {
+      name: "duration",
+      title: "Avg. duration",
+      value: (item) =>
+        item._avg.duration === null ? (
+          <span className="text-muted-foreground text-xs italic">-</span>
+        ) : (
+          <div>{NumberUtils.custom(Number(item._avg.duration), "0,0.001")} ms</div>
+        ),
+    },
+    {
+      name: "speed",
+      title: "Speed",
+      value: (item) =>
+        item._avg.duration === null ? (
+          <span className="text-muted-foreground text-xs italic">-</span>
+        ) : (
+          <ApiCallSpeedBadge duration={Number(item._avg.duration)} />
+        ),
+    },
+    {
+      name: "actions",
+      title: "",
+      value: (item) => (
+        <Link to={getCountLink(item)} className="hover:underline">
+          {t("shared.details")} <span className="ml-1">&rarr;</span>
+        </Link>
+      ),
+    }
+  );
+
+  return headers;
+};
+
 interface Props {
   readonly data: {
     items: ApiCallSummaryDto[];
@@ -48,115 +174,7 @@ export default function ApiKeyLogsSummary({ data }: Props) {
   }, [groupBy]);
 
   useEffect(() => {
-    const headers: RowHeaderDisplayDto<ApiCallSummaryDto>[] = [];
-    let currentGroupBy = groupBy;
-    if (currentGroupBy.length === 0) {
-      currentGroupBy = ApiKeyLogsConstants.DEFAULT_GROUP_BY;
-    }
-    const getCountLink = (item: ApiCallSummaryDto) => {
-      const searchParams = new URLSearchParams();
-      currentGroupBy.forEach((groupBy) => {
-        if (groupBy === "method") {
-          searchParams.append("method", item.method);
-        } else if (groupBy === "endpoint") {
-          searchParams.append("endpoint", item.endpoint);
-        } else if (groupBy === "params") {
-          searchParams.append("params", item.params);
-        } else if (groupBy === "status") {
-          searchParams.append("status", item.status?.toString() ?? "{null}");
-        }
-      });
-      return UrlUtils.getModulePath(params, `api/logs?${searchParams.toString()}`);
-    };
-    if (groupBy.includes("method")) {
-      headers.push({
-        name: "method",
-        title: "Method",
-        value: (item) => (
-          <FilterableValueLink name="method" value={item.method}>
-            <SimpleBadge title={item.method} color={ApiUtils.getMethodColor(item.method)} underline />
-          </FilterableValueLink>
-        ),
-      });
-    }
-    if (groupBy.includes("endpoint")) {
-      headers.push({
-        name: "endpoint",
-        title: "Endpoint",
-        value: (item) => <FilterableValueLink name="endpoint" value={item.endpoint} />,
-      });
-    }
-    if (groupBy.includes("params")) {
-      headers.push({
-        name: "params",
-        title: "Params",
-        value: (item) => <FilterableValueLink name="params" value={item.params} />,
-      });
-    }
-    if (groupBy.includes("status")) {
-      headers.push({
-        name: "status",
-        title: "Status",
-        value: (item) => (
-          <FilterableValueLink name="status" value={item.status?.toString() ?? "{null}"}>
-            <SimpleBadge title={item.status?.toString() ?? "?"} color={item.status?.toString().startsWith("4") ? Colors.RED : Colors.GREEN} />
-          </FilterableValueLink>
-        ),
-      });
-    }
-    if (groupBy.includes("tenantId")) {
-      headers.push({
-        name: "tenantId",
-        title: "Tenant",
-        value: (item) => {
-          const tenant = data.allTenants.find((x) => x.id === item.tenantId);
-          return <FilterableValueLink name="tenantId" value={tenant?.name ?? ""} />;
-        },
-      });
-    }
-    headers.push(
-      {
-        name: "apiCalls",
-        title: "API calls",
-        align: "right",
-        value: (item) => (
-          <div className="flex justify-end text-right">
-            <Link to={getCountLink(item)} className="hover:underline">
-              {NumberUtils.intFormat(Number(item._count._all))} {item._count._all === 1 ? "call" : "calls"}
-            </Link>
-          </div>
-        ),
-      },
-      {
-        name: "duration",
-        title: "Avg. duration",
-        value: (item) => (item._avg.duration === null ? (
-          <span className="text-muted-foreground text-xs italic">-</span>
-        ) : (
-          <div>{NumberUtils.custom(Number(item._avg.duration), "0,0.001")} ms</div>
-        )),
-      },
-      {
-        name: "speed",
-        title: "Speed",
-        value: (item) => (item._avg.duration === null ? (
-          <span className="text-muted-foreground text-xs italic">-</span>
-        ) : (
-          <ApiCallSpeedBadge duration={Number(item._avg.duration)} />
-        )),
-      },
-      {
-        name: "actions",
-        title: "",
-        value: (item) => (
-          <Link to={getCountLink(item)} className="hover:underline">
-            {t("shared.details")} <span className="ml-1">&rarr;</span>
-          </Link>
-        ),
-      }
-    );
-
-    setHeaders(headers);
+    setHeaders(buildSummaryHeaders({ groupBy, params, data, t }));
   }, [data, groupBy, params, t]);
 
   return (
