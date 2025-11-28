@@ -197,99 +197,126 @@ function isCloseOptionalSegment(
 
 // TODO: Cleanup and write some tests for this function
 export function createRoutePath(partialRouteId: string): string | undefined {
-  let result = "";
-  let rawSegmentBuffer = "";
+  type PathState = {
+    result: string;
+    rawSegmentBuffer: string;
+    inEscapeSequence: number;
+    inOptionalSegment: number;
+    optionalSegmentIndex: number | null;
+    skipSegment: boolean;
+  };
 
-  let inEscapeSequence = 0;
-  let inOptionalSegment = 0;
-  let optionalSegmentIndex = null;
-  let skipSegment = false;
+  const state: PathState = {
+    result: "",
+    rawSegmentBuffer: "",
+    inEscapeSequence: 0,
+    inOptionalSegment: 0,
+    optionalSegmentIndex: null,
+    skipSegment: false,
+  };
+
+  const handleSkipSegment = (char: string) => {
+    if (!state.skipSegment) return false;
+    if (isSegmentSeparator(char)) state.skipSegment = false;
+    return true;
+  };
+
+  const handleEscapeStart = (char: string, prevChar: string | undefined) => {
+    if (!isNewEscapeSequence(state.inEscapeSequence, char, prevChar)) return false;
+    state.inEscapeSequence++;
+    return true;
+  };
+
+  const handleEscapeEnd = (char: string, nextChar: string | undefined) => {
+    if (!isCloseEscapeSequence(state.inEscapeSequence, char, nextChar)) return false;
+    state.inEscapeSequence--;
+    return true;
+  };
+
+  const handleOptionalStart = (char: string, prevChar: string | undefined) => {
+    if (!isNewOptionalSegment(char, prevChar, state.inOptionalSegment, state.inEscapeSequence)) return false;
+    state.inOptionalSegment++;
+    state.optionalSegmentIndex = state.result.length;
+    state.result += optionalStart;
+    return true;
+  };
+
+  const handleOptionalClose = (char: string, nextChar: string | undefined) => {
+    if (!isCloseOptionalSegment(char, nextChar, state.inOptionalSegment, state.inEscapeSequence)) return false;
+    if (state.optionalSegmentIndex !== null) {
+      state.result = state.result.slice(0, state.optionalSegmentIndex) + state.result.slice(state.optionalSegmentIndex + 1);
+    }
+    state.optionalSegmentIndex = null;
+    state.inOptionalSegment--;
+    state.result += "?";
+    return true;
+  };
+
+  const handleInEscape = (char: string) => {
+    if (!state.inEscapeSequence) return false;
+    state.result += char;
+    return true;
+  };
+
+  const handleSegmentSeparator = (char: string) => {
+    if (!isSegmentSeparator(char)) return false;
+    if (state.rawSegmentBuffer === "index" && state.result.endsWith("index")) {
+      state.result = state.result.replace(/\/?index$/, "");
+    } else {
+      state.result += "/";
+    }
+    state.rawSegmentBuffer = "";
+    state.inOptionalSegment = 0;
+    state.optionalSegmentIndex = null;
+    return true;
+  };
+
+  const handleLayoutSegment = (char: string, nextChar: string | undefined) => {
+    if (!isStartOfLayoutSegment(char, nextChar, state.rawSegmentBuffer)) return false;
+    state.skipSegment = true;
+    return true;
+  };
+
+  const handleParamPrefix = (char: string, nextChar: string | undefined) => {
+    if (char !== paramPrefixChar) return false;
+    if (nextChar === optionalEnd) {
+      throw new Error(`Invalid route path: ${partialRouteId}. Splat route $ is already optional`);
+    }
+    state.result += nextChar === undefined ? "*" : ":";
+    return true;
+  };
+
   for (let i = 0; i < partialRouteId.length; i++) {
-    let char = partialRouteId.charAt(i);
-    let prevChar = i > 0 ? partialRouteId.charAt(i - 1) : undefined;
-    let nextChar = i < partialRouteId.length - 1 ? partialRouteId.charAt(i + 1) : undefined;
+    const char = partialRouteId.charAt(i);
+    const prevChar = i > 0 ? partialRouteId.charAt(i - 1) : undefined;
+    const nextChar = i < partialRouteId.length - 1 ? partialRouteId.charAt(i + 1) : undefined;
 
-    if (skipSegment) {
-      if (isSegmentSeparator(char)) {
-        skipSegment = false;
-      }
-      continue;
-    }
+    if (handleSkipSegment(char)) continue;
+    if (handleEscapeStart(char, prevChar)) continue;
+    if (handleEscapeEnd(char, nextChar)) continue;
+    if (handleOptionalStart(char, prevChar)) continue;
+    if (handleOptionalClose(char, nextChar)) continue;
+    if (handleInEscape(char)) continue;
+    if (handleSegmentSeparator(char)) continue;
+    if (handleLayoutSegment(char, nextChar)) continue;
 
-    if (isNewEscapeSequence(inEscapeSequence, char, prevChar)) {
-      inEscapeSequence++;
-      continue;
-    }
+    state.rawSegmentBuffer += char;
+    if (handleParamPrefix(char, nextChar)) continue;
 
-    if (isCloseEscapeSequence(inEscapeSequence, char, nextChar)) {
-      inEscapeSequence--;
-      continue;
-    }
-
-    if (isNewOptionalSegment(char, prevChar, inOptionalSegment, inEscapeSequence)) {
-      inOptionalSegment++;
-      optionalSegmentIndex = result.length;
-      result += optionalStart;
-      continue;
-    }
-
-    if (isCloseOptionalSegment(char, nextChar, inOptionalSegment, inEscapeSequence)) {
-      if (optionalSegmentIndex !== null) {
-        result = result.slice(0, optionalSegmentIndex) + result.slice(optionalSegmentIndex + 1);
-      }
-      optionalSegmentIndex = null;
-      inOptionalSegment--;
-      result += "?";
-      continue;
-    }
-
-    if (inEscapeSequence) {
-      result += char;
-      continue;
-    }
-
-    if (isSegmentSeparator(char)) {
-      if (rawSegmentBuffer === "index" && result.endsWith("index")) {
-        result = result.replace(/\/?index$/, "");
-      } else {
-        result += "/";
-      }
-
-      rawSegmentBuffer = "";
-      inOptionalSegment = 0;
-      optionalSegmentIndex = null;
-      continue;
-    }
-
-    if (isStartOfLayoutSegment(char, nextChar, rawSegmentBuffer)) {
-      skipSegment = true;
-      continue;
-    }
-
-    rawSegmentBuffer += char;
-
-    if (char === paramPrefixChar) {
-      if (nextChar === optionalEnd) {
-        throw new Error(`Invalid route path: ${partialRouteId}. Splat route $ is already optional`);
-      }
-      result += nextChar === undefined ? "*" : ":";
-      continue;
-    }
-
-    result += char;
+    state.result += char;
   }
 
-  if (rawSegmentBuffer === "index" && result.endsWith("index")) {
-    result = result.replace(/\/?index$/, "");
+  if (state.rawSegmentBuffer === "index" && state.result.endsWith("index")) {
+    state.result = state.result.replace(/\/?index$/, "");
   } else {
-    result = result.replace(/\/$/, "");
+    state.result = state.result.replace(/\/$/, "");
   }
 
-  if (rawSegmentBuffer === "index" && result.endsWith("index?")) {
+  if (state.rawSegmentBuffer === "index" && state.result.endsWith("index?")) {
     throw new Error(`Invalid route path: ${partialRouteId}. Make index route optional by using (index)`);
   }
 
-  return result || undefined;
+  return state.result || undefined;
 }
 
 function isSegmentSeparator(checkChar: string | undefined) {
