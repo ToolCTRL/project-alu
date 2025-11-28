@@ -60,16 +60,20 @@ export const action: ActionFunction = async ({ request }) => {
   const canBuyAgain = Boolean(form.get("can-buy-again"));
 
   const featuresArr = form.getAll("features[]");
-  const features: SubscriptionFeatureDto[] = featuresArr.map((f: FormDataEntryValue) => {
-    const featureString = typeof f === 'string' ? f : f.toString();
-    return JSON.parse(featureString);
+  const features: SubscriptionFeatureDto[] = featuresArr.map((entry: FormDataEntryValue) => {
+    if (typeof entry !== "string") {
+      throw new TypeError("Invalid features[] payload");
+    }
+    return JSON.parse(entry);
   });
 
   const prices: { billingPeriod: SubscriptionBillingPeriod; price: number; currency: string; trialDays?: number }[] = form
     .getAll("prices[]")
-    .map((f: FormDataEntryValue) => {
-      const priceString = typeof f === 'string' ? f : f.toString();
-      return JSON.parse(priceString);
+    .map((entry: FormDataEntryValue) => {
+      if (typeof entry !== "string") {
+        throw new TypeError("Invalid prices[] payload");
+      }
+      return JSON.parse(entry);
     });
 
   const oneTimePricesWithZero = prices.filter((p) => p.billingPeriod === SubscriptionBillingPeriod.ONCE && p.price === 0);
@@ -77,9 +81,11 @@ export const action: ActionFunction = async ({ request }) => {
     return badRequest({ error: "One-time prices can't be zero" });
   }
 
-  const usageBasedPrices: SubscriptionUsageBasedPriceDto[] = form.getAll("usage-based-prices[]").map((f: FormDataEntryValue) => {
-    const usageString = typeof f === 'string' ? f : f.toString();
-    return JSON.parse(usageString);
+  const usageBasedPrices: SubscriptionUsageBasedPriceDto[] = form.getAll("usage-based-prices[]").map((entry: FormDataEntryValue) => {
+    if (typeof entry !== "string") {
+      throw new TypeError("Invalid usage-based-prices[] payload");
+    }
+    return JSON.parse(entry);
   });
 
   if (!title) {

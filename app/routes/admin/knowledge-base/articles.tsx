@@ -122,7 +122,10 @@ async function handleNewArticle(request: Request, form: FormData, userInfo: any)
 
 async function handleSetOrders(form: FormData, updateFunction: (id: string, data: any) => Promise<any>) {
   const items: { id: string; order: number }[] = form.getAll("orders[]").map((orderData: FormDataEntryValue) => {
-    return JSON.parse(String(orderData));
+    if (typeof orderData !== "string") {
+      throw new TypeError("Invalid orders[] payload");
+    }
+    return JSON.parse(orderData);
   });
 
   await Promise.all(

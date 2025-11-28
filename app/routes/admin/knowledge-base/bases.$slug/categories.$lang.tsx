@@ -62,10 +62,14 @@ type ActionData = {
 };
 
 const stringOrEmpty = (value: FormDataEntryValue | null) => (typeof value === "string" ? value : "");
+const parseOrderPayload = (entry: FormDataEntryValue) => {
+  if (typeof entry !== "string") {
+    throw new TypeError("Invalid orders[] payload");
+  }
+  return JSON.parse(entry);
+};
 async function handleSetOrders(form: FormData) {
-  const items: { id: string; order: number }[] = form.getAll("orders[]").map((f) => {
-    return JSON.parse(String(f));
-  });
+  const items: { id: string; order: number }[] = form.getAll("orders[]").map(parseOrderPayload);
 
   await Promise.all(
     items.map(async ({ id, order }) => {
@@ -78,9 +82,7 @@ async function handleSetOrders(form: FormData) {
 }
 
 async function handleSetSectionOrders(form: FormData) {
-  const items: { id: string; order: number }[] = form.getAll("orders[]").map((f) => {
-    return JSON.parse(String(f));
-  });
+  const items: { id: string; order: number }[] = form.getAll("orders[]").map(parseOrderPayload);
 
   await Promise.all(
     items.map(async ({ id, order }) => {
@@ -93,9 +95,7 @@ async function handleSetSectionOrders(form: FormData) {
 }
 
 async function handleSetArticleOrders(form: FormData) {
-  const items: { id: string; order: number }[] = form.getAll("orders[]").map((f) => {
-    return JSON.parse(String(f));
-  });
+  const items: { id: string; order: number }[] = form.getAll("orders[]").map(parseOrderPayload);
 
   await Promise.all(
     items.map(async ({ id, order }) => {

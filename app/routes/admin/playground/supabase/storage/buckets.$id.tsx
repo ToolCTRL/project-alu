@@ -59,8 +59,11 @@ async function handleFileSave(supabaseBucketId: string, form: FormData) {
   if (name === "") {
     return Response.json({ error: "Missing name" }, { status: 400 });
   }
-  const files: MediaDto[] = form.getAll("files[]").map((f) => {
-    return JSON.parse(f.toString());
+  const files: MediaDto[] = form.getAll("files[]").map((entry: FormDataEntryValue) => {
+    if (typeof entry !== "string") {
+      throw new TypeError("Invalid files[] payload");
+    }
+    return JSON.parse(entry);
   });
   if (files.length !== 1) {
     return Response.json({ error: "Missing file" }, { status: 400 });

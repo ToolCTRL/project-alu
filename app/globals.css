@@ -466,11 +466,11 @@
     border-radius: 0.95rem;
     padding: 0.85rem 1.15rem;
     gap: 0.75rem;
-    background: rgba(255, 255, 255, 0.02);
-    border: 1px solid transparent;
+    background: rgba(9, 12, 20, 0.92);
+    border: 1px solid rgba(248, 250, 252, 0.08);
     font-size: 0.98rem;
     font-weight: 600;
-    color: #ffffff;
+    color: #f8fafc;
     transition: transform 180ms ease, box-shadow 180ms ease, border-color 180ms ease, background 180ms ease;
   }
 
@@ -541,10 +541,10 @@
   .nav-modern [data-slot="sidebar-menu-sub-button"][data-state="active"],
   .nav-modern [data-slot="sidebar-menu-sub-button"][data-active="true"],
   .nav-modern [data-slot="sidebar-menu-sub-button"][aria-current="page"] {
-    background: linear-gradient(120deg, rgba(79, 209, 255, 0.14), rgba(255, 183, 94, 0.08));
-    border-color: rgba(255, 255, 255, 0.12);
+    background: linear-gradient(120deg, rgba(79, 209, 255, 0.22), rgba(255, 183, 94, 0.15)), rgba(9, 12, 20, 0.96);
+    border-color: rgba(248, 250, 252, 0.18);
     box-shadow: 0 18px 36px rgba(5, 9, 20, 0.45), 0 10px 26px rgba(255, 183, 94, 0.16);
-    color: #ffffff;
+    color: #f8fafc;
   }
 
   .nav-modern [data-slot="sidebar-menu-button"][data-state="active"]::before,

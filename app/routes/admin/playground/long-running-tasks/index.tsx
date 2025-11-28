@@ -33,8 +33,11 @@ export const action: ActionFunction = async ({ request }) => {
     const total = Number(form.get("total"));
 
     // Simulate long-running task
-    let items: ItemToImportDto[] = form.getAll("items[]").map((f: FormDataEntryValue) => {
-      return JSON.parse(f.toString());
+    let items: ItemToImportDto[] = form.getAll("items[]").map((entry: FormDataEntryValue) => {
+      if (typeof entry !== "string") {
+        throw new TypeError("Invalid items[] payload");
+      }
+      return JSON.parse(entry);
     });
     const itemsToImport = items.slice(from, to);
     await Promise.all(
@@ -64,8 +67,11 @@ export const action: ActionFunction = async ({ request }) => {
     }
     return Response.json({ next, items });
   } else if (action === "process") {
-    const items: ItemToImportDto[] = form.getAll("items[]").map((f: FormDataEntryValue) => {
-      return JSON.parse(f.toString());
+    const items: ItemToImportDto[] = form.getAll("items[]").map((entry: FormDataEntryValue) => {
+      if (typeof entry !== "string") {
+        throw new TypeError("Invalid items[] payload");
+      }
+      return JSON.parse(entry);
     });
     await Promise.all(
       items.map(async (item) => {

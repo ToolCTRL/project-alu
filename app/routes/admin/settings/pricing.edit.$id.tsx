@@ -70,9 +70,11 @@ export const action: ActionFunction = async ({ request, params }) => {
     const canBuyAgain = Boolean(form.get("can-buy-again"));
 
     const featuresArr = form.getAll("features[]");
-    const features: SubscriptionFeatureDto[] = featuresArr.map((f: FormDataEntryValue) => {
-      const featureString = typeof f === 'string' ? f : f.toString();
-      return JSON.parse(featureString);
+    const features: SubscriptionFeatureDto[] = featuresArr.map((entry: FormDataEntryValue) => {
+      if (typeof entry !== "string") {
+        throw new TypeError("Invalid features[] payload");
+      }
+      return JSON.parse(entry);
     });
 
     if (!title) {
