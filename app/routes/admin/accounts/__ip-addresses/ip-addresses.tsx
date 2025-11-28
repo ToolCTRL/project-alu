@@ -111,6 +111,42 @@ const IpMetadataCell = ({ item }: { item: IpAddress }) => (
   <div className="max-w-xs truncate">{item.metadata && <ShowPayloadModalButton description={item.metadata} payload={item.metadata} />}</div>
 );
 
+const buildHeaders = (t: ReturnType<typeof useTranslation>["t"], blacklistedIps: string[]) =>
+  [
+    {
+      name: "ip",
+      title: t("models.tenantIpAddress.object"),
+      value: (i: IpAddress) => <IpAddressCell item={i} blacklistedIps={blacklistedIps} t={t} />,
+    },
+    {
+      name: "country",
+      title: "Country",
+      value: (i: IpAddress) => <CountryCell item={i} />,
+    },
+    {
+      name: "region",
+      title: "Region",
+      value: (i: IpAddress) => <RegionCell item={i} />,
+    },
+    {
+      name: "city",
+      title: "City",
+      value: (i: IpAddress) => <CityCell item={i} />,
+    },
+    {
+      name: "metadata",
+      title: "Metadata",
+      value: (i: IpAddress) => <IpMetadataCell item={i} />,
+    },
+    {
+      name: "createdAt",
+      title: t("shared.createdAt"),
+      value: (item: IpAddress) => DateUtils.dateAgo(item.createdAt),
+      className: "text-muted-foreground text-xs",
+      breakpoint: "sm",
+    },
+  ] as const;
+
 export default function IpAddresses() {
   const data = useLoaderData<LoaderData>();
   const actionData = useActionData<{ success?: string; error?: string }>();
@@ -165,40 +201,7 @@ export default function IpAddresses() {
             },
           },
         ]}
-        headers={[
-          {
-            name: "ip",
-            title: t("models.tenantIpAddress.object"),
-            value: (i) => <IpAddressCell item={i} blacklistedIps={data.blacklistedIps} t={t} />,
-          },
-          {
-            name: "country",
-            title: "Country",
-            value: (i) => <CountryCell item={i} />,
-          },
-          {
-            name: "region",
-            title: "Region",
-            value: (i) => <RegionCell item={i} />,
-          },
-          {
-            name: "city",
-            title: "City",
-            value: (i) => <CityCell item={i} />,
-          },
-          {
-            name: "metadata",
-            title: "Metadata",
-            value: (i) => <IpMetadataCell item={i} />,
-          },
-          {
-            name: "createdAt",
-            title: t("shared.createdAt"),
-            value: (item) => DateUtils.dateAgo(item.createdAt),
-            className: "text-muted-foreground text-xs",
-            breakpoint: "sm",
-          },
-        ]}
+        headers={buildHeaders(t, data.blacklistedIps)}
         pagination={data.pagination}
       />
     </EditPageLayout>
