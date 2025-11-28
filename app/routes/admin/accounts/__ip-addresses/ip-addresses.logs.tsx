@@ -13,7 +13,7 @@ import EditPageLayout from "~/components/ui/layouts/EditPageLayout";
 import SimpleBadge from "~/components/ui/badges/SimpleBadge";
 import { Colors } from "~/application/enums/shared/Colors";
 import { addToBlacklist, findInBlacklist } from "~/utils/db/blacklist.db.server";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import toast from "react-hot-toast";
 import { db } from "~/utils/db.server";
 import DropdownSimple from "~/components/ui/dropdowns/DropdownSimple";
@@ -138,6 +138,56 @@ export default function IpAddressLogsRoute() {
       toast.error(actionData.error);
     }
   }, [actionData]);
+
+  const renderCreatedAt = useCallback((item: IpAddressLog) => DateUtils.dateAgo(item.createdAt), []);
+  const renderStatus = useCallback((i: IpAddressLog) => <StatusCell item={i} />, []);
+  const renderIp = useCallback((i: IpAddressLog) => <IpCell item={i} blacklistedIps={data.blacklistedIps} />, [data.blacklistedIps]);
+  const renderAction = useCallback((i: IpAddressLog) => <ActionCell item={i} />, []);
+  const renderUrl = useCallback((i: IpAddressLog) => <UrlCell item={i} />, []);
+  const renderMetadata = useCallback((i: IpAddressLog) => <MetadataCell item={i} />, []);
+  const renderError = useCallback((i: IpAddressLog) => <ErrorCell item={i} />, []);
+  const headers = useMemo(
+    () => [
+      {
+        name: "createdAt",
+        title: t("shared.createdAt"),
+        value: renderCreatedAt,
+        className: "text-muted-foreground text-xs",
+        breakpoint: "sm",
+      },
+      {
+        name: "status",
+        title: t("shared.status"),
+        value: renderStatus,
+      },
+      {
+        name: "ip",
+        title: t("models.tenantIpAddress.object"),
+        value: renderIp,
+      },
+      {
+        name: "action",
+        title: "Action",
+        value: renderAction,
+      },
+      {
+        name: "url",
+        title: "URL",
+        value: renderUrl,
+      },
+      {
+        name: "metadata",
+        title: "Metadata",
+        value: renderMetadata,
+      },
+      {
+        name: "error",
+        title: "Error",
+        value: renderError,
+      },
+    ],
+    [renderAction, renderCreatedAt, renderError, renderIp, renderMetadata, renderStatus, renderUrl, t]
+  );
   return (
     <EditPageLayout
       tabs={[
@@ -210,45 +260,7 @@ export default function IpAddressLogsRoute() {
             },
           },
         ]}
-        headers={[
-          {
-            name: "createdAt",
-            title: t("shared.createdAt"),
-            value: (item) => DateUtils.dateAgo(item.createdAt),
-            className: "text-muted-foreground text-xs",
-            breakpoint: "sm",
-          },
-          {
-            name: "status",
-            title: t("shared.status"),
-            value: (i) => <StatusCell item={i} />,
-          },
-          {
-            name: "ip",
-            title: t("models.tenantIpAddress.object"),
-            value: (i) => <IpCell item={i} blacklistedIps={data.blacklistedIps} />,
-          },
-          {
-            name: "action",
-            title: "Action",
-            value: (i) => <ActionCell item={i} />,
-          },
-          {
-            name: "url",
-            title: "URL",
-            value: (i) => <UrlCell item={i} />,
-          },
-          {
-            name: "metadata",
-            title: "Metadata",
-            value: (i) => <MetadataCell item={i} />,
-          },
-          {
-            name: "error",
-            title: "Error",
-            value: (i) => <ErrorCell item={i} />,
-          },
-        ]}
+        headers={headers}
         pagination={data.pagination}
       />
     </EditPageLayout>

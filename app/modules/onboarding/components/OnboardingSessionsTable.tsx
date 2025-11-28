@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { TFunction } from "i18next";
 import { RowHeaderDisplayDto } from "~/application/dtos/data/RowHeaderDisplayDto";
@@ -123,68 +123,112 @@ export default function OnboardingSessionsTable({
   const [selected, setSelected] = useState<OnboardingSessionWithDetails>();
   const appOrAdminData = useAppOrAdminData();
 
+  const renderStatus = useCallback((i: OnboardingSessionWithDetails) => <OnboardingSessionBadge item={i} />, []);
+  const renderUser = useCallback((i: OnboardingSessionWithDetails) => <UserCell user={i.user} tenant={i.tenant} />, []);
+  const renderActivity = useCallback(
+    (i: OnboardingSessionWithDetails) => <ActivityCell item={i} metadata={metadata} t={t} onSelect={setSelected} />,
+    [metadata, t]
+  );
+  const renderSteps = useCallback(
+    (i: OnboardingSessionWithDetails) => <StepsCell item={i} completedLabel={t("shared.completed").toLowerCase()} onSelect={setSelected} />,
+    [t]
+  );
+  const renderActionsPayload = useCallback(
+    (i: OnboardingSessionWithDetails) => <ShowPayloadModalButton title="Actions" description={`${i.actions.length} actions`} payload={JSON.stringify(i.actions)} />,
+    []
+  );
+  const renderCreatedAt = useCallback((i: OnboardingSessionWithDetails) => <DateOrIconCell date={i.createdAt} />, []);
+  const renderStartedAt = useCallback((i: OnboardingSessionWithDetails) => <DateOrIconCell date={i.startedAt} />, []);
+  const renderDismissedAt = useCallback((i: OnboardingSessionWithDetails) => <DateOrIconCell date={i.dismissedAt} />, []);
+  const renderCompletedAt = useCallback((i: OnboardingSessionWithDetails) => <DateOrIconCell date={i.completedAt} />, []);
+  const renderOnboarding = useCallback((i: OnboardingSessionWithDetails) => <OnboardingHeaderCell item={i} />, []);
+  const renderDelete = useCallback(
+    (i: OnboardingSessionWithDetails) => (
+      <DeleteActionCell
+        item={i}
+        onDelete={onDelete}
+        canDelete={getUserHasPermission(appOrAdminData, "admin.onboarding.delete")}
+        deleteLabel={t("shared.delete")}
+      />
+    ),
+    [appOrAdminData, onDelete, t]
+  );
   const headers = useMemo<RowHeaderDisplayDto<OnboardingSessionWithDetails>[]>(() => {
     const baseHeaders: RowHeaderDisplayDto<OnboardingSessionWithDetails>[] = [
       {
         name: "status",
         title: t("onboarding.session.status"),
-        value: (i: OnboardingSessionWithDetails) => <OnboardingSessionBadge item={i} />,
+        value: renderStatus,
       },
       {
         name: "user",
         title: t("models.user.object"),
-        value: (i: OnboardingSessionWithDetails) => <UserCell user={i.user} tenant={i.tenant} />,
+        value: renderUser,
       },
       {
         name: "activity",
         title: t("onboarding.session.activity"),
-        value: (i: OnboardingSessionWithDetails) => <ActivityCell item={i} metadata={metadata} t={t} onSelect={setSelected} />,
+        value: renderActivity,
       },
       {
         name: "steps",
         title: t("onboarding.session.steps"),
-        value: (i: OnboardingSessionWithDetails) => <StepsCell item={i} completedLabel={t("shared.completed").toLowerCase()} onSelect={setSelected} />,
+        value: renderSteps,
       },
       {
         name: "actions",
         title: t("onboarding.session.actions"),
-        value: (i: OnboardingSessionWithDetails) => <ShowPayloadModalButton title="Actions" description={`${i.actions.length} actions`} payload={JSON.stringify(i.actions)} />,
+        value: renderActionsPayload,
       },
       {
         name: "createdAt",
         title: t("shared.createdAt"),
-        value: (i: OnboardingSessionWithDetails) => <DateOrIconCell date={i.createdAt} />,
+        value: renderCreatedAt,
       },
       {
         name: "startedAt",
         title: t("onboarding.session.startedAt"),
-        value: (i: OnboardingSessionWithDetails) => <DateOrIconCell date={i.startedAt} />,
+        value: renderStartedAt,
       },
       {
         name: "dismissedAt",
         title: t("onboarding.session.dismissedAt"),
-        value: (i: OnboardingSessionWithDetails) => <DateOrIconCell date={i.dismissedAt} />,
+        value: renderDismissedAt,
       },
       {
         name: "completedAt",
         title: t("onboarding.session.completedAt"),
-        value: (i: OnboardingSessionWithDetails) => <DateOrIconCell date={i.completedAt} />,
+        value: renderCompletedAt,
       },
     ];
     if (withOnboarding) {
       baseHeaders.unshift({
         name: "onboarding",
         title: t("onboarding.title"),
-        value: (i: OnboardingSessionWithDetails) => <OnboardingHeaderCell item={i} />,
+        value: renderOnboarding,
       });
     }
     baseHeaders.push({
       name: "actions",
       title: t("shared.actions"),
-      value: (i: OnboardingSessionWithDetails) => <DeleteActionCell item={i} onDelete={onDelete} canDelete={getUserHasPermission(appOrAdminData, "admin.onboarding.delete")} deleteLabel={t("shared.delete")} />,
+      value: renderDelete,
     });
     return baseHeaders;
-  }, [appOrAdminData, metadata, onDelete, t, withOnboarding]);
+  }, [
+    renderActivity,
+    renderActionsPayload,
+    renderCompletedAt,
+    renderCreatedAt,
+    renderDelete,
+    renderDismissedAt,
+    renderOnboarding,
+    renderStartedAt,
+    renderStatus,
+    renderSteps,
+    renderUser,
+    t,
+    withOnboarding,
+  ]);
   return (
     <>
       <SessionModal item={selected} open={selected !== undefined} onClose={() => setSelected(undefined)} metadata={metadata} />

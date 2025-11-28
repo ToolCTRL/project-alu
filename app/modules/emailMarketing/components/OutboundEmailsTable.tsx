@@ -1,6 +1,6 @@
 import { Link, useParams } from "react-router";
 import clsx from "clsx";
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { PaginationDto } from "~/application/dtos/data/PaginationDto";
 import { RowHeaderDisplayDto } from "~/application/dtos/data/RowHeaderDisplayDto";
@@ -149,47 +149,65 @@ export default function OutboundEmailsTable({
     setContactEntity(allEntities.find((e) => e.name === "contact"));
   }, [allEntities]);
 
+  const renderEmail = useCallback(
+    (i: OutboundEmailWithDetails) => <EmailCell item={i} contactEntity={contactEntity} t={t} />,
+    [contactEntity, t]
+  );
+  const renderSentAt = useCallback((i: OutboundEmailWithDetails) => <SentAtCell item={i} />, []);
+  const renderDelivered = useCallback((i: OutboundEmailWithDetails) => <DeliveredCell item={i} />, []);
+  const renderActivity = useCallback(
+    (i: OutboundEmailWithDetails) => <ActivityCell item={i} onSelectEmail={setSelectedEmail} t={t} />,
+    [t]
+  );
+  const renderError = useCallback((i: OutboundEmailWithDetails) => <ErrorCell item={i} />, []);
+  const renderUnsubscribed = useCallback((i: OutboundEmailWithDetails) => <OutboundEmailDateFormat date={i.unsubscribedAt} />, []);
+  const renderBounced = useCallback((i: OutboundEmailWithDetails) => <OutboundEmailDateFormat date={i.bouncedAt} />, []);
+  const renderSpamComplained = useCallback((i: OutboundEmailWithDetails) => <OutboundEmailDateFormat date={i.spamComplainedAt} />, []);
+  const renderCampaign = useCallback(
+    (item: OutboundEmailWithDetails) => <CampaignCell item={item} tenant={params.tenant} t={t} />,
+    [params.tenant, t]
+  );
   const headers = useMemo<RowHeaderDisplayDto<OutboundEmailWithDetails>[]>(() => {
     const baseHeaders: RowHeaderDisplayDto<OutboundEmailWithDetails>[] = [
       {
         name: "email",
         title: t("emails.to"),
-        value: (i) => <EmailCell item={i} contactEntity={contactEntity} t={t} />,
+        value: renderEmail,
       },
       {
         name: "sentAt",
         title: t("emails.sentAt"),
-        value: (i) => <SentAtCell item={i} />,
+        value: renderSentAt,
       },
       {
         name: "delivered",
         title: t("emails.delivered"),
-        value: (i) => <DeliveredCell item={i} />,
+        value: renderDelivered,
       },
       {
         name: "activity",
         title: t("emailMarketing.activity"),
-        value: (i) => <ActivityCell item={i} onSelectEmail={setSelectedEmail} t={t} />,
+        value: renderActivity,
       },
       {
         name: "error",
         title: t("shared.error"),
-        value: (i) => <ErrorCell item={i} />,
+        value: renderError,
       },
       {
         name: "unsubscribedAt",
         title: t("emails.unsubscribedAt"),
-        value: (i) => <OutboundEmailDateFormat date={i.unsubscribedAt} />,
+        value: renderUnsubscribed,
       },
       {
         name: "bouncedAt",
         title: t("emails.bouncedAt"),
-        value: (i) => <OutboundEmailDateFormat date={i.bouncedAt} />,
+        value: renderBounced,
       },
       {
         name: "spamComplainedAt",
         title: t("emails.spamComplainedAt"),
-        value: (i) => <OutboundEmailDateFormat date={i.spamComplainedAt} />,
+        value: renderSpamComplained,
       },
     ];
 
@@ -197,12 +215,12 @@ export default function OutboundEmailsTable({
       baseHeaders.unshift({
         name: "campaignId",
         title: t("emailMarketing.campaign"),
-        value: (item) => <CampaignCell item={item} tenant={params.tenant} t={t} />,
+        value: renderCampaign,
       });
     }
 
     return baseHeaders;
-  }, [contactEntity, params.tenant, t, withCampaign]);
+  }, [renderActivity, renderBounced, renderCampaign, renderDelivered, renderEmail, renderError, renderSentAt, renderSpamComplained, renderUnsubscribed, t, withCampaign]);
   return (
     <div>
       <TableSimple headers={headers} items={items} pagination={pagination} />
