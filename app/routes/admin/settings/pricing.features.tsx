@@ -322,19 +322,20 @@ export default function PricingFeaturesRoute() {
         name: "feature-in-" + plan.id,
         value: (item) => {
           const existing = item.plans.find((p) => p.id === plan.id);
+          const existingTitle = existing?.title?.trim();
           return (
             <ClosedOpenedValue
               closed={
                 <div>
-                  {!item.name || !existing || !existing.title?.trim() || existing.title === "?" ? (
+                  {!item.name || !existingTitle || existingTitle === "?" ? (
                     <div className="text-red-600 underline">Click to set</div>
                   ) : (
                     <PlanFeatureDescription
                       feature={{
                         ...item,
-                        title: existing.title ?? "",
-                        value: existing.value ?? 0,
-                        type: existing.type ?? SubscriptionFeatureLimitType.NOT_INCLUDED,
+                        title: existingTitle ?? "",
+                        value: existing?.value ?? 0,
+                        type: existing?.type ?? SubscriptionFeatureLimitType.NOT_INCLUDED,
                       }}
                       editing={true}
                     />

@@ -1,5 +1,6 @@
 import { ActionFunctionArgs, LoaderFunctionArgs, redirect, useActionData, useLoaderData, Link, useNavigate, useOutlet, useSubmit } from "react-router";
 import { useTranslation } from "react-i18next";
+import { useCallback, useMemo } from "react";
 import { FilterablePropertyDto } from "~/application/dtos/data/FilterablePropertyDto";
 import { PaginationDto } from "~/application/dtos/data/PaginationDto";
 import { Colors } from "~/application/enums/shared/Colors";
@@ -226,6 +227,72 @@ export default function ArticlesListRoute() {
   const outlet = useOutlet();
   const navigate = useNavigate();
   const submit = useSubmit();
+  const renderKbTitle = useCallback((i: KnowledgeBaseArticleWithDetails) => i.knowledgeBase.title, []);
+  const renderArticleTitle = useCallback((i: KnowledgeBaseArticleWithDetails) => <ArticleTitleCell item={i} />, []);
+  const renderCategory = useCallback((i: KnowledgeBaseArticleWithDetails) => <ArticleCategoryCell item={i} />, []);
+  const renderCharacters = useCallback((i: KnowledgeBaseArticleWithDetails) => NumberUtils.intFormat(i.contentPublishedAsText.length), []);
+  const renderViews = useCallback((i: KnowledgeBaseArticleWithDetails) => i._count.views, []);
+  const renderUpvotes = useCallback((i: KnowledgeBaseArticleWithDetails) => i._count.upvotes, []);
+  const renderDownvotes = useCallback((i: KnowledgeBaseArticleWithDetails) => i._count.downvotes, []);
+  const renderFeatured = useCallback(
+    (i: KnowledgeBaseArticleWithDetails) => <InputCheckbox asToggle value={Boolean(i.featuredOrder)} setValue={(checked) => onToggle(i, Boolean(checked))} />,
+    [onToggle]
+  );
+  const renderCreatedBy = useCallback((i: KnowledgeBaseArticleWithDetails) => <ArticleCreatedByCell item={i} />, []);
+  const headers = useMemo(
+    () => [
+      {
+        title: t("knowledgeBase.title"),
+        value: renderKbTitle,
+      },
+      {
+        name: "title",
+        title: "Title",
+        className: "w-full",
+        value: renderArticleTitle,
+      },
+      {
+        name: "category",
+        title: "Category",
+        value: renderCategory,
+      },
+      {
+        title: t("shared.language"),
+        value: (i: KnowledgeBaseArticleWithDetails) => i.language,
+      },
+      {
+        name: "characters",
+        title: "Characters",
+        value: renderCharacters,
+      },
+      {
+        name: "views",
+        title: "Views",
+        value: renderViews,
+      },
+      {
+        name: "upvotes",
+        title: "Upvotes",
+        value: renderUpvotes,
+      },
+      {
+        name: "downvotes",
+        title: "Downvotes",
+        value: renderDownvotes,
+      },
+      {
+        name: "featured",
+        title: "Featured",
+        value: renderFeatured,
+      },
+      {
+        name: "createdBy",
+        title: t("shared.createdBy"),
+        value: renderCreatedBy,
+      },
+    ],
+    [renderArticleTitle, renderCategory, renderCharacters, renderCreatedBy, renderDownvotes, renderFeatured, renderKbTitle, renderUpvotes, renderViews, t]
+  );
 
   function onToggle(item: KnowledgeBaseArticleWithDetails, isFeatured: boolean) {
     const form = new FormData();
@@ -303,63 +370,7 @@ export default function ArticlesListRoute() {
               onClickRoute: (_, item) => `/admin/knowledge-base/bases/${item.language}/articles/${KnowledgeBaseUtils.defaultLanguage}/${item.id}/edit`,
             },
           ]}
-          headers={[
-            {
-              title: t("knowledgeBase.title"),
-              value: (i) => i.knowledgeBase.title,
-            },
-
-            // {
-            //   name: "language",
-            //   title: "Language",
-            //   value: (i) => KnowledgeBaseUtils.getLanguageName(i.language),
-            // },
-            {
-              name: "title",
-              title: "Title",
-              className: "w-full",
-              value: (i) => <ArticleTitleCell item={i} />,
-            },
-            {
-              name: "category",
-              title: "Category",
-              value: (i) => <ArticleCategoryCell item={i} />,
-            },
-            {
-              title: t("shared.language"),
-              value: (i) => i.language,
-            },
-            {
-              name: "characters",
-              title: "Characters",
-              value: (i) => NumberUtils.intFormat(i.contentPublishedAsText.length),
-            },
-            {
-              name: "views",
-              title: "Views",
-              value: (i) => i._count.views,
-            },
-            {
-              name: "upvotes",
-              title: "Upvotes",
-              value: (i) => i._count.upvotes,
-            },
-            {
-              name: "downvotes",
-              title: "Downvotes",
-              value: (i) => i._count.downvotes,
-            },
-            {
-              name: "featured",
-              title: "Featured",
-              value: (i) => <InputCheckbox asToggle value={Boolean(i.featuredOrder)} setValue={(checked) => onToggle(i, Boolean(checked))} />,
-            },
-            {
-              name: "createdBy",
-              title: t("shared.createdBy"),
-              value: (i) => <ArticleCreatedByCell item={i} />,
-            },
-          ]}
+          headers={headers}
         />
       </div>
 

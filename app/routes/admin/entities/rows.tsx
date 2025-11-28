@@ -15,6 +15,7 @@ import ActivityHistoryIcon from "~/components/ui/icons/entities/ActivityHistoryI
 import { adminGetAllTenantsIdsAndNames } from "~/utils/db/tenants.db.server";
 import ShowPayloadModalButton from "~/components/ui/json/ShowPayloadModalButton";
 import { verifyUserHasPermission } from "~/utils/helpers/.server/PermissionsService";
+import { useCallback, useMemo } from "react";
 
 type LoaderData = {
   items: RowWithDetails[];
@@ -105,9 +106,70 @@ const DetailsCell = ({ item }: { item: RowWithDetails }) => <ShowPayloadModalBut
 export default function AdminEntityRowsRoute() {
   const { t } = useTranslation();
   const data = useLoaderData<LoaderData>();
-  function findEntity(item: RowWithDetails) {
-    return data.entities.find((e) => e.id === item.entityId);
-  }
+  const findEntity = useCallback((item: RowWithDetails) => data.entities.find((e) => e.id === item.entityId), [data.entities]);
+  const renderObject = useCallback((item: RowWithDetails) => <DetailsCell item={item} />, []);
+  const renderTenant = useCallback((item: RowWithDetails) => <TenantCell item={item} />, []);
+  const renderEntity = useCallback((i: RowWithDetails) => t(findEntity(i)?.title ?? ""), [findEntity, t]);
+  const renderFolio = useCallback((i: RowWithDetails) => RowHelper.getRowFolio(findEntity(i), i), [findEntity]);
+  const renderDescription = useCallback(
+    (i: RowWithDetails) => RowHelper.getTextDescription({ entity: findEntity(i)!, item: i, t }),
+    [findEntity, t]
+  );
+  const renderLogs = useCallback((item: RowWithDetails) => <LogsCell item={item} />, []);
+  const renderCreatedBy = useCallback((item: RowWithDetails) => item.createdByUser?.email ?? (item.createdByApiKey ? "API" : "?"), []);
+  const renderCreatedAt = useCallback((item: RowWithDetails) => DateUtils.dateAgo(item.createdAt), []);
+  const headers = useMemo(
+    () => [
+      {
+        name: "object",
+        title: "Object",
+        value: renderObject,
+      },
+      {
+        name: "tenant",
+        title: t("models.tenant.object"),
+        value: renderTenant,
+        breakpoint: "sm",
+      },
+      {
+        name: "entity",
+        title: t("models.entity.object"),
+        value: renderEntity,
+      },
+      {
+        name: "folio",
+        title: t("models.row.folio"),
+        value: renderFolio,
+      },
+      {
+        name: "description",
+        title: t("shared.description"),
+        value: renderDescription,
+      },
+      {
+        name: "logs",
+        title: t("models.log.plural"),
+        value: renderLogs,
+      },
+      {
+        name: "createdByUser",
+        title: t("shared.createdBy"),
+        value: renderCreatedBy,
+        className: "text-muted-foreground text-xs",
+        breakpoint: "sm",
+      },
+      {
+        name: "createdAt",
+        title: t("shared.createdAt"),
+        value: renderCreatedAt,
+        formattedValue: formatCreatedAt,
+        className: "text-muted-foreground text-xs",
+        breakpoint: "sm",
+        sortable: true,
+      },
+    ],
+    [renderCreatedAt, renderCreatedBy, renderDescription, renderEntity, renderFolio, renderLogs, renderObject, renderTenant, t]
+  );
   return (
     <div className="mx-auto w-full max-w-5xl space-y-3 px-4 py-2 pb-6 sm:px-6 sm:pt-3 lg:px-8 xl:max-w-full">
       <div className="md:border-border md:border-b md:py-2">
@@ -119,59 +181,7 @@ export default function AdminEntityRowsRoute() {
         </div>
       </div>
 
-      <TableSimple
-        headers={[
-          {
-            name: "object",
-            title: "Object",
-            value: (item) => <DetailsCell item={item} />,
-          },
-          {
-            name: "tenant",
-            title: t("models.tenant.object"),
-            value: (item) => <TenantCell item={item} />,
-            breakpoint: "sm",
-          },
-          {
-            name: "entity",
-            title: t("models.entity.object"),
-            value: (i) => t(findEntity(i)?.title ?? ""),
-          },
-          {
-            name: "folio",
-            title: t("models.row.folio"),
-            value: (i) => RowHelper.getRowFolio(findEntity(i), i),
-          },
-          {
-            name: "description",
-            title: t("shared.description"),
-            value: (i) => RowHelper.getTextDescription({ entity: findEntity(i)!, item: i, t }),
-          },
-          {
-            name: "logs",
-            title: t("models.log.plural"),
-            value: (item) => <LogsCell item={item} />,
-          },
-          {
-            name: "createdByUser",
-            title: t("shared.createdBy"),
-            value: (item) => item.createdByUser?.email ?? (item.createdByApiKey ? "API" : "?"),
-            className: "text-muted-foreground text-xs",
-            breakpoint: "sm",
-          },
-          {
-            name: "createdAt",
-            title: t("shared.createdAt"),
-            value: (item) => DateUtils.dateAgo(item.createdAt),
-            formattedValue: formatCreatedAt,
-            className: "text-muted-foreground text-xs",
-            breakpoint: "sm",
-            sortable: true,
-          },
-        ]}
-        items={data.items}
-        pagination={data.pagination}
-      />
+      <TableSimple headers={headers} items={data.items} pagination={data.pagination} />
     </div>
   );
 }
