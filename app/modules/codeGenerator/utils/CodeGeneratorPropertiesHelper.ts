@@ -387,122 +387,164 @@ function uiForm({ code, imports, property, index }: { code: string[]; imports: s
   }
 }
 
-function uiCell({ code, imports, property }: { code: string[]; imports: string[]; property: PropertyWithDetails }) {
-  const props: string[] = [];
-
-  if (property.type === PropertyType.TEXT) {
-    code.push(`{
+function addTextCell(code: string[], property: PropertyWithDetails) {
+  code.push(`{
             name: "${property.name}",
             title: t("${property.title}"),
             value: (item) => <div className="max-w-sm truncate">{item.${property.name}}</div>,
           },`);
-  } else if (property.type === PropertyType.NUMBER) {
-    imports.push(`import RowNumberCell from "~/components/entities/rows/cells/RowNumberCell";`);
-    const format = PropertyAttributeHelper.getPropertyAttributeValue_String(property, PropertyAttributeName.FormatNumber);
-    if (format) {
-      props.push(`format="${format}"`);
-    }
-    code.push(`{
+}
+
+function addNumberCell(code: string[], imports: string[], property: PropertyWithDetails) {
+  imports.push(`import RowNumberCell from "~/components/entities/rows/cells/RowNumberCell";`);
+  const props: string[] = [];
+  const format = PropertyAttributeHelper.getPropertyAttributeValue_String(property, PropertyAttributeName.FormatNumber);
+  if (format) {
+    props.push(`format="${format}"`);
+  }
+  code.push(`{
             name: "${property.name}",
             title: t("${property.title}"),
             value: (item) => <RowNumberCell value={item.${property.name}} ${props.join(" ")} />,
           },`);
-  } else if (property.type === PropertyType.DATE) {
-    imports.push(`import RowDateCell from "~/components/entities/rows/cells/RowDateCell";`);
-    const format = PropertyAttributeHelper.getPropertyAttributeValue_String(property, PropertyAttributeName.FormatDate);
-    if (format) {
-      props.push(`format="${format}"`);
-    }
-    code.push(`{
+}
+
+function addDateCell(code: string[], imports: string[], property: PropertyWithDetails) {
+  imports.push(`import RowDateCell from "~/components/entities/rows/cells/RowDateCell";`);
+  const props: string[] = [];
+  const format = PropertyAttributeHelper.getPropertyAttributeValue_String(property, PropertyAttributeName.FormatDate);
+  if (format) {
+    props.push(`format="${format}"`);
+  }
+  code.push(`{
             name: "${property.name}",
             title: t("${property.title}"),
             value: (item) => <RowDateCell value={item.${property.name}} ${props.join(" ")} />,
           },`);
-  } else if (property.type === PropertyType.SELECT) {
-    imports.push(
-      `import RowSelectedOptionCell from "~/components/entities/rows/cells/RowSelectedOptionCell";`,
-      `import { Colors } from "~/application/enums/shared/Colors";`
-    );
-    const optionName = (option: { name: string | null; value: string }) => option.name === null ? "null" : `"${option.name}"`;
-    const optionValue = (option: { value: string }) => option.value;
-    const optionsStr = property.options.map((option) => `{ name: ${optionName(option)}, value: "${optionValue(option)}", color: ${getColor(option.color)} }`).join(", ");
-    props.push(`options={[${optionsStr}]}`);
-    let display: SelectOptionsDisplay = "Value";
-    const formatAttr = PropertyAttributeHelper.getPropertyAttributeValue_String(property, PropertyAttributeName.SelectOptions);
-    if (formatAttr) {
-      display = formatAttr as SelectOptionsDisplay;
-    }
-    code.push(`{
+}
+
+function addSelectCell(code: string[], imports: string[], property: PropertyWithDetails) {
+  imports.push(
+    `import RowSelectedOptionCell from "~/components/entities/rows/cells/RowSelectedOptionCell";`,
+    `import { Colors } from "~/application/enums/shared/Colors";`
+  );
+  const props: string[] = [];
+  const optionName = (option: { name: string | null; value: string }) => (option.name === null ? "null" : `"${option.name}"`);
+  const optionValue = (option: { value: string }) => option.value;
+  const optionsStr = property.options
+    .map((option) => `{ name: ${optionName(option)}, value: "${optionValue(option)}", color: ${getColor(option.color)} }`)
+    .join(", ");
+  props.push(`options={[${optionsStr}]}`);
+  let display: SelectOptionsDisplay = "Value";
+  const formatAttr = PropertyAttributeHelper.getPropertyAttributeValue_String(property, PropertyAttributeName.SelectOptions);
+  if (formatAttr) {
+    display = formatAttr as SelectOptionsDisplay;
+  }
+  code.push(`{
             name: "${property.name}",
             title: t("${property.title}"),
             value: (item) => <RowSelectedOptionCell value={item?.${property.name}} display="${display}" ${props.join(" ")} />,
           },`);
-  } else if (property.type === PropertyType.BOOLEAN) {
-    imports.push(`import RowBooleanCell from "~/components/entities/rows/cells/RowBooleanCell";`);
-    const format = PropertyAttributeHelper.getPropertyAttributeValue_String(property, PropertyAttributeName.FormatBoolean);
-    if (format) {
-      props.push(`format="${format}"`);
-    }
-    code.push(`{
+}
+
+function addBooleanCell(code: string[], imports: string[], property: PropertyWithDetails) {
+  imports.push(`import RowBooleanCell from "~/components/entities/rows/cells/RowBooleanCell";`);
+  const props: string[] = [];
+  const format = PropertyAttributeHelper.getPropertyAttributeValue_String(property, PropertyAttributeName.FormatBoolean);
+  if (format) {
+    props.push(`format="${format}"`);
+  }
+  code.push(`{
             name: "${property.name}",
             title: t("${property.title}"),
             value: (item) => <RowBooleanCell value={item.${property.name}} ${props.join(" ")} />,
           },`);
-  } else if (property.type === PropertyType.MEDIA) {
-    imports.push(`import RowMediaCell from "~/components/entities/rows/cells/RowMediaCell";`);
-    if (PropertyAttributeHelper.getPropertyAttributeValue_Number(property, PropertyAttributeName.Max) === 1) {
-      code.push(`{
+}
+
+function addMediaCell(code: string[], imports: string[], property: PropertyWithDetails) {
+  imports.push(`import RowMediaCell from "~/components/entities/rows/cells/RowMediaCell";`);
+  const singleMedia = PropertyAttributeHelper.getPropertyAttributeValue_Number(property, PropertyAttributeName.Max) === 1;
+  const valueExpression = singleMedia
+    ? `<RowMediaCell media={item.${property.name} ? [item.${property.name}] : []} />`
+    : `<RowMediaCell media={item.${property.name}} />`;
+  code.push(`{
             name: "${property.name}",
             title: t("${property.title}"),
-            value: (item) => <RowMediaCell media={item.${property.name} ? [item.${property.name}] : []} ${props.join(" ")} />,
+            value: (item) => ${valueExpression},
           },`);
-    } else {
-      code.push(`{
-            name: "${property.name}",
-            title: t("${property.title}"),
-            value: (item) => <RowMediaCell media={item.${property.name}} ${props.join(" ")} />,
-          },`);
-    }
-  } else if (property.type === PropertyType.MULTI_SELECT || property.type === PropertyType.MULTI_TEXT) {
-    imports.push(`import PropertyMultipleValueBadge from "~/components/entities/properties/PropertyMultipleValueBadge";`);
-    const optionName = (option: { name: string | null; value: string }) => option.name === null ? "null" : `"${option.name}"`;
-    const optionValue = (option: { value: string }) => option.value;
-    const optionsStr = property.options.map((option) => `{ name: ${optionName(option)}, value: "${optionValue(option)}" }`).join(", ");
-    props.push(`options={[${optionsStr}]}`);
-    code.push(`{
+}
+
+function addMultiValueCell(code: string[], imports: string[], property: PropertyWithDetails) {
+  imports.push(`import PropertyMultipleValueBadge from "~/components/entities/properties/PropertyMultipleValueBadge";`);
+  const props: string[] = [];
+  const optionName = (option: { name: string | null; value: string }) => (option.name === null ? "null" : `"${option.name}"`);
+  const optionValue = (option: { value: string }) => option.value;
+  const optionsStr = property.options.map((option) => `{ name: ${optionName(option)}, value: "${optionValue(option)}" }`).join(", ");
+  props.push(`options={[${optionsStr}]}`);
+  code.push(`{
             name: "${property.name}",
             title: t("${property.title}"),
             value: (item) => <PropertyMultipleValueBadge values={item.${property.name}} ${props.join(" ")} />,
           },`);
-  } else if (property.type === PropertyType.RANGE_NUMBER) {
-    imports.push(`import RowRangeNumberCell from "~/components/entities/rows/cells/RowRangeNumberCell";`);
-    const format = PropertyAttributeHelper.getPropertyAttributeValue_String(property, PropertyAttributeName.FormatNumber);
-    if (format) {
-      props.push(`format="${format}"`);
-    }
-    code.push(`{
+}
+
+function addRangeNumberCell(code: string[], imports: string[], property: PropertyWithDetails) {
+  imports.push(`import RowRangeNumberCell from "~/components/entities/rows/cells/RowRangeNumberCell";`);
+  const props: string[] = [];
+  const format = PropertyAttributeHelper.getPropertyAttributeValue_String(property, PropertyAttributeName.FormatNumber);
+  if (format) {
+    props.push(`format="${format}"`);
+  }
+  code.push(`{
             name: "${property.name}",
             title: t("${property.title}"),
             value: (item) => <RowRangeNumberCell value={item.${property.name}} ${props.join(" ")} />,
           },`);
-  } else if (property.type === PropertyType.RANGE_DATE) {
-    imports.push(`import RowRangeDateCell from "~/components/entities/rows/cells/RowRangeDateCell";`);
-    const format = PropertyAttributeHelper.getPropertyAttributeValue_String(property, PropertyAttributeName.FormatDate);
-    if (format) {
-      props.push(`format="${format}"`);
-    }
-    code.push(`{
+}
+
+function addRangeDateCell(code: string[], imports: string[], property: PropertyWithDetails) {
+  imports.push(`import RowRangeDateCell from "~/components/entities/rows/cells/RowRangeDateCell";`);
+  const props: string[] = [];
+  const format = PropertyAttributeHelper.getPropertyAttributeValue_String(property, PropertyAttributeName.FormatDate);
+  if (format) {
+    props.push(`format="${format}"`);
+  }
+  code.push(`{
             name: "${property.name}",
             title: t("${property.title}"),
             value: (item) => <RowRangeDateCell value={item.${property.name}} ${props.join(" ")} />,
           },`);
-  } else {
-    code.push(`{
+}
+
+function addFallbackCell(code: string[], property: PropertyWithDetails) {
+  code.push(`{
             name: "${property.name}",
             title: t("${property.title}"),
             value: (item) => <div> /* TODO: ${property.name} (${PropertyType[property.type]}) */</div>,
           },`);
+}
+
+function uiCell({ code, imports, property }: { code: string[]; imports: string[]; property: PropertyWithDetails }) {
+  const handlers: Record<PropertyType, () => void> = {
+    [PropertyType.TEXT]: () => addTextCell(code, property),
+    [PropertyType.NUMBER]: () => addNumberCell(code, imports, property),
+    [PropertyType.DATE]: () => addDateCell(code, imports, property),
+    [PropertyType.SELECT]: () => addSelectCell(code, imports, property),
+    [PropertyType.BOOLEAN]: () => addBooleanCell(code, imports, property),
+    [PropertyType.MEDIA]: () => addMediaCell(code, imports, property),
+    [PropertyType.MULTI_SELECT]: () => addMultiValueCell(code, imports, property),
+    [PropertyType.MULTI_TEXT]: () => addMultiValueCell(code, imports, property),
+    [PropertyType.RANGE_NUMBER]: () => addRangeNumberCell(code, imports, property),
+    [PropertyType.RANGE_DATE]: () => addRangeDateCell(code, imports, property),
+  };
+
+  const handler = handlers[property.type];
+  if (handler) {
+    handler();
+    return;
   }
+
+  addFallbackCell(code, property);
 }
 
 function getSchemaType(propertyType: PropertyType): string {
