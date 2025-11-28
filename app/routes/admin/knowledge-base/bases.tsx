@@ -16,8 +16,9 @@ import { KnowledgeBasesTemplateDto } from "~/modules/knowledgeBase/dtos/Knowledg
 import { verifyUserHasPermission } from "~/utils/helpers/.server/PermissionsService";
 import SlideOverWideEmpty from "~/components/ui/slideOvers/SlideOverWideEmpty";
 import KnowledgeBaseUtils from "~/modules/knowledgeBase/utils/KnowledgeBaseUtils";
-import { useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { RowHeaderDisplayDto } from "~/application/dtos/data/RowHeaderDisplayDto";
 
 type LoaderData = {
   metatags: MetaTagsDto;
@@ -93,6 +94,35 @@ function KnowledgeBaseUpdatedAt({ date }: Readonly<{ date: Date | null }>) {
   return <DateCell date={date} />;
 }
 
+function buildKnowledgeBaseHeaders(
+  params: ReturnType<typeof useParams>,
+  onToggle: (item: KnowledgeBaseDto, enabled: boolean) => void
+): RowHeaderDisplayDto<KnowledgeBaseDto>[] {
+  return [
+    {
+      name: "status",
+      title: "Status",
+      value: (i) => <KnowledgeBaseStatus item={i} onToggle={onToggle} />,
+    },
+    {
+      name: "title",
+      title: "Title",
+      className: "w-full",
+      value: (i) => <KnowledgeBaseTitle item={i} params={params} />,
+    },
+    {
+      name: "views",
+      title: "Views",
+      value: (i) => i.count.views,
+    },
+    {
+      name: "updatedAt",
+      title: "Updated at",
+      value: (i) => <KnowledgeBaseUpdatedAt date={i.updatedAt} />,
+    },
+  ];
+}
+
 export default function KnowledgeBasesRoute() {
   const { t } = useTranslation();
   const data = useLoaderData<LoaderData>();
@@ -111,7 +141,7 @@ export default function KnowledgeBasesRoute() {
     }
     return data.items.filter((item) => item.enabled === enabled).length;
   }
-  function onToggle(item: KnowledgeBaseDto, enabled: boolean) {
+  const onToggle = useCallback((item: KnowledgeBaseDto, enabled: boolean) => {
     const form = new FormData();
     form.set("action", "toggle");
     form.set("enabled", enabled ? "true" : "false");
@@ -119,7 +149,9 @@ export default function KnowledgeBasesRoute() {
     submit(form, {
       method: "post",
     });
-  }
+  }, [submit]);
+
+  const headers = useMemo(() => buildKnowledgeBaseHeaders(params, onToggle), [params, onToggle]);
   function filteredItems() {
     if (searchParams.get("status") === "active") {
       return data.items.filter((item) => item.enabled);
@@ -197,29 +229,7 @@ export default function KnowledgeBasesRoute() {
             onClickRoute: (_, i) => `${i.id}`,
           },
         ]}
-        headers={[
-          {
-            name: "status",
-            title: "Status",
-            value: (i) => <KnowledgeBaseStatus item={i} onToggle={onToggle} />,
-          },
-          {
-            name: "title",
-            title: "Title",
-            className: "w-full",
-            value: (i) => <KnowledgeBaseTitle item={i} params={params} />,
-          },
-          {
-            name: "views",
-            title: "Views",
-            value: (i) => i.count.views,
-          },
-          {
-            name: "updatedAt",
-            title: "Updated at",
-            value: (i) => <KnowledgeBaseUpdatedAt date={i.updatedAt} />,
-          },
-        ]}
+        headers={headers}
         noRecords={
           <div className="p-12 text-center">
             <h3 className="text-foreground mt-1 text-sm font-medium">{"No knowledge bases"}</h3>
