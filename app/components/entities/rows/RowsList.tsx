@@ -349,6 +349,55 @@ function RowsListWrapped({
 }
 
 type BoardColumnState = { [key: string]: RowWithDetails[] };
+
+function MinimalCardContent({ entity, row }: Readonly<{ entity: EntityWithDetails; row: RowWithDetails }>) {
+  const displayProp = entity.properties.find((p) => p.isDisplay);
+  const title = displayProp
+    ? RowHelper.getPropertyValue({ entity, item: row, property: displayProp }) ??
+      RowHelper.getPropertyValue({ entity, item: row, propertyName: displayProp.name })
+    : row.id;
+
+  const pick = (propNames: string[]) => {
+    for (const name of propNames) {
+      const prop = entity.properties.find((p) => p.name === name);
+      if (prop) return prop;
+    }
+    return null;
+  };
+
+  const amountProp = pick(["amount", "value"]);
+  const lastActivityProp = pick(["lastActivity", "lastActivityAt", "lastActivityDate"]);
+  const contactProp = pick(["contact", "primaryContact", "contactName", "owner", "assignedTo"]);
+
+  const renderLine = (prop: PropertyWithDetails | null, label?: string) => {
+    if (!prop) return null;
+    const val = RowHelper.getPropertyValue({ entity, item: row, property: prop, propertyName: prop.name });
+    if (val === null || val === undefined) return null;
+    let text: string | number = "";
+    if (prop.type === PropertyType.NUMBER) {
+      text = NumberUtils.numberFormat(Number(val));
+    } else if (prop.type === PropertyType.DATE) {
+      text = new Date(val as any).toLocaleDateString();
+    } else {
+      text = val as any;
+    }
+    return (
+      <div key={prop.id} className="text-[11px] text-white/80">
+        {label ?? prop.title}: <span className="text-white">{text}</span>
+      </div>
+    );
+  };
+
+  return (
+    <div className="flex flex-col gap-1 rounded-md bg-white p-3 text-xs text-slate-900 shadow ring-1 ring-slate-200">
+      <div className="truncate text-sm font-semibold text-slate-900">{title as any}</div>
+      {renderLine(amountProp, "Amount")}
+      {renderLine(lastActivityProp, "Letzte Aktivität")}
+      {renderLine(contactProp, "Kontakt")}
+    </div>
+  );
+}
+
 function AdvancedBoard({
   entity,
   columnsDef,
@@ -378,52 +427,9 @@ function AdvancedBoard({
     return list.map((row) => map[row.id] ?? row);
   }
 
-  function MinimalCard({ row }: { readonly row: RowWithDetails }) {
-    const displayProp = entity.properties.find((p) => p.isDisplay);
-    const title = displayProp
-      ? RowHelper.getPropertyValue({ entity, item: row, property: displayProp }) ?? RowHelper.getPropertyValue({ entity, item: row, propertyName: displayProp.name })
-      : row.id;
-
-    function pick(propNames: string[]) {
-      for (const name of propNames) {
-        const prop = entity.properties.find((p) => p.name === name);
-        if (prop) return prop;
-      }
-      return null;
-    }
-
-    const amountProp = pick(["amount", "value"]);
-    const lastActivityProp = pick(["lastActivity", "lastActivityAt", "lastActivityDate"]);
-    const contactProp = pick(["contact", "primaryContact", "contactName", "owner", "assignedTo"]);
-
-    function renderLine(prop: PropertyWithDetails | null, label?: string) {
-      if (!prop) return null;
-      const val = RowHelper.getPropertyValue({ entity, item: row, property: prop, propertyName: prop.name });
-      if (val === null || val === undefined) return null;
-      let text: string | number = "";
-      if (prop.type === PropertyType.NUMBER) {
-        text = NumberUtils.numberFormat(Number(val));
-      } else if (prop.type === PropertyType.DATE) {
-        text = new Date(val as any).toLocaleDateString();
-      } else {
-        text = val as any;
-      }
-      return (
-        <div key={prop.id} className="text-[11px] text-white/80">
-          {label ?? prop.title}: <span className="text-white">{text}</span>
-        </div>
-      );
-    }
-
-    return (
-      <div className="flex flex-col gap-1 rounded-md bg-white p-3 text-xs text-slate-900 shadow ring-1 ring-slate-200">
-        <div className="truncate text-sm font-semibold text-slate-900">{title as any}</div>
-        {renderLine(amountProp, "Amount")}
-        {renderLine(lastActivityProp, "Letzte Aktivität")}
-        {renderLine(contactProp, "Kontakt")}
-      </div>
-    );
-  }
+  const MinimalCard = ({ row }: { readonly row: RowWithDetails }) => (
+    <MinimalCardContent entity={entity} row={row} />
+  );
 
   function patchRowStage(row: RowWithDetails, property?: PropertyWithDetails, value?: string) {
     if (!property) return row;
