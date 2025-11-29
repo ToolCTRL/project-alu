@@ -8,13 +8,13 @@
     "seed": "tsx prisma/seed.ts"
   },
   "scripts": {
-    "dev": "cross-env APP_FEATURE_FLAGS=ui-refresh,ui-refresh-navigation,ui-refresh-dashboard react-router dev",
+    "dev": "react-router dev",
     "build": "prisma generate && react-router build",
     "lint": "eslint --ext .tsx,.ts .",
     "test": "vitest app/",
     "typecheck": "react-router typegen && tsc -b",
     "prettier": "prettier --write '**/*.{ts,tsx}'",
-    "start": "cross-env APP_FEATURE_FLAGS=ui-refresh,ui-refresh-navigation,ui-refresh-dashboard react-router-serve ./build/server/index.js",
+    "start": "react-router-serve ./build/server/index.js",
     "seed": "tsx prisma/seed.ts",
     "seed:prod": "NODE_ENV=production tsx prisma/seed.ts"
   },

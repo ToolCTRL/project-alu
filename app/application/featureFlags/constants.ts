@@ -35,5 +35,13 @@ export function parseFeatureFlagString(value?: string | null): string[] {
 
 export function getFeatureFlagsFromEnv(): string[] {
   const fromEnvKeys = FEATURE_FLAG_ENV_KEYS.flatMap((key) => parseFeatureFlagString(process.env[key]));
-  return Array.from(new Set(fromEnvKeys));
+
+  // Default flags - always enabled
+  const defaultFlags = [
+    UI_REFRESH_FLAGS.global,
+    UI_REFRESH_FLAGS.navigation,
+    UI_REFRESH_FLAGS.dashboard,
+  ];
+
+  return Array.from(new Set([...defaultFlags, ...fromEnvKeys]));
 }
