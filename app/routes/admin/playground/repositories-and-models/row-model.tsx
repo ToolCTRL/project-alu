@@ -34,6 +34,18 @@ function LogoCell({ item }: Readonly<{ item: RowController }>) {
   return <img alt={item.toString()} className="h-8 w-auto" src={item.getMediaPublicUrlOrFile("logo")} title={item.getText("title")} />;
 }
 
+const renderNameCell = (item: RowController) => item.getText("name");
+const renderLogoCell = (item: RowController) => <LogoCell item={item} />;
+const renderCreatedAtCell = (item: RowController) => <DateCell date={item.row.createdAt} />;
+const renderToStringCell = (item: RowController) => item.toString();
+
+const demoHeaders = [
+  { name: "name", title: "Name", value: renderNameCell },
+  { name: "logo", title: "Logo", value: renderLogoCell },
+  { name: "createdAt", title: "Created at", value: renderCreatedAtCell },
+  { name: "toString", title: "toString()", value: renderToStringCell },
+];
+
 export default function PlaygroundRowModel() {
   const data = useLoaderData<LoaderData>();
   const companies = data.companies.items.map((item) => {
@@ -83,16 +95,7 @@ export default function PlaygroundRowModel() {
               <div className="border-border bg-background rounded-md border p-3">
                 <TableSimple
                   items={companies}
-                  headers={[
-                    { name: "name", title: "Name", value: (i) => i.getText("name") },
-                    {
-                      name: "logo",
-                      title: "Logo",
-                      value: (i) => <LogoCell item={i} />,
-                    },
-                    { name: "createdAt", title: "Created at", value: (i) => <DateCell date={i.row.createdAt} /> },
-                    { name: "toString", title: "toString()", value: (i) => i.toString() },
-                  ]}
+                  headers={demoHeaders}
                 />
               </div>
             ),

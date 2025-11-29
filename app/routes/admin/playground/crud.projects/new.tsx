@@ -30,7 +30,7 @@ export const action: ActionFunction = async ({ request }) => {
       const description = form.get("description")?.toString();
       const tasks: Partial<FakeTaskDto>[] = form.getAll("tasks[]").map((taskString: FormDataEntryValue) => {
         if (typeof taskString !== "string") {
-          throw new Error("Invalid task payload");
+          throw new TypeError("Invalid task payload");
         }
         return JSON.parse(taskString);
       });

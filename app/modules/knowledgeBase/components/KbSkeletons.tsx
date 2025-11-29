@@ -1,11 +1,22 @@
 import { useMemo } from "react";
 
 export default function KbSkeletons({ n = 5 }: readonly { readonly n?: number }) {
+  const generateKey = (index: number) => {
+    if (typeof crypto !== "undefined") {
+      if ("randomUUID" in crypto && typeof crypto.randomUUID === "function") {
+        return crypto.randomUUID();
+      }
+      if ("getRandomValues" in crypto && typeof crypto.getRandomValues === "function") {
+        const buffer = new Uint32Array(1);
+        crypto.getRandomValues(buffer);
+        return buffer[0].toString(36);
+      }
+    }
+    return `kb-skeleton-${index}`;
+  };
+
   const skeletonKeys = useMemo(
-    () =>
-      Array.from({ length: n }, () =>
-        typeof crypto !== "undefined" && "randomUUID" in crypto ? crypto.randomUUID() : Math.random().toString(36).slice(2)
-      ),
+    () => Array.from({ length: n }, (_, index) => generateKey(index)),
     [n]
   );
 

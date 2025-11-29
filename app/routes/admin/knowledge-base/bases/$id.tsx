@@ -41,7 +41,7 @@ async function handleEdit(request: Request, params: any, form: FormData, item: K
   const languages = form.getAll("languages[]").map(String);
   const links: KbNavLinkDto[] = form.getAll("links[]").map((entry) => {
     if (typeof entry !== "string") {
-      throw new Error("Invalid link payload");
+      throw new TypeError("Invalid link payload");
     }
     return JSON.parse(entry);
   });

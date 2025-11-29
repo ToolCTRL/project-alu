@@ -35,7 +35,7 @@ async function handleEdit(params: any, form: FormData) {
   const description = form.get("description");
   const tasks: Partial<FakeTaskDto>[] = form.getAll("tasks[]").map((entry: FormDataEntryValue) => {
     if (typeof entry !== "string") {
-      throw new Error("Invalid task payload");
+      throw new TypeError("Invalid task payload");
     }
     return JSON.parse(entry);
   });

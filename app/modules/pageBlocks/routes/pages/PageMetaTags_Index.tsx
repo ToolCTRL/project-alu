@@ -51,7 +51,7 @@ export namespace PageMetaTags_Index {
     } else if (action === "update") {
         const metaTags: { name: string; content: string; order: number }[] = form.getAll("metaTags[]").map((entry: FormDataEntryValue) => {
           if (typeof entry !== "string") {
-            throw new Error("Invalid meta tag payload");
+            throw new TypeError("Invalid meta tag payload");
           }
           return JSON.parse(entry);
         });

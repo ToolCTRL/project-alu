@@ -130,7 +130,7 @@ async function handleNewArticle(kb: KnowledgeBaseDto, params: any, userId: strin
 async function handleSetOrders(form: FormData) {
   const items: { id: string; order: number }[] = form.getAll("orders[]").map((entry: FormDataEntryValue) => {
     if (typeof entry !== "string") {
-      throw new Error("Invalid order payload");
+      throw new TypeError("Invalid order payload");
     }
     return JSON.parse(entry);
   });
@@ -147,7 +147,7 @@ async function handleSetOrders(form: FormData) {
 async function handleSetSectionOrders(form: FormData) {
   const items: { id: string; order: number }[] = form.getAll("orders[]").map((entry: FormDataEntryValue) => {
     if (typeof entry !== "string") {
-      throw new Error("Invalid section order payload");
+      throw new TypeError("Invalid section order payload");
     }
     return JSON.parse(entry);
   });

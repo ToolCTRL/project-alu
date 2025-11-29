@@ -128,11 +128,10 @@ export default function HeroVariantMeisterwerk({ item }: Readonly<Props>) {
 function HeroSpatialStage({ scene }: { readonly scene: HeroScene }) {
   const { handleMouseMove, handleMouseLeave } = use3DTilt();
   return (
-    <div
-      className="hero-stage hero-stage-fixed hero-card hero-card--stage mx-auto"
-      role="group"
+    <button
+      type="button"
+      className="hero-stage hero-stage-fixed hero-card hero-card--stage mx-auto text-left"
       aria-label={`3D hero stage for ${scene.label}`}
-      tabIndex={0}
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
       onFocus={handleMouseLeave}
@@ -168,6 +167,6 @@ function HeroSpatialStage({ scene }: { readonly scene: HeroScene }) {
           <p className="text-base text-white/80">Live KI-Cockpit · {scene.label} in Echtzeit</p>
         </div>
       </motion.div>
-    </div>
+    </button>
   );
 }

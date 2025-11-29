@@ -4,7 +4,7 @@ import EditPageLayout from "~/components/ui/layouts/EditPageLayout";
 import { EntityWithDetails, getAllEntities } from "~/utils/db/entities/entities.db.server";
 import { TenantWithDetails, adminGetAllTenants, getTenant } from "~/utils/db/tenants.db.server";
 import TableSimple from "~/components/ui/tables/TableSimple";
-import { useEffect } from "react";
+import { useCallback, useEffect, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import NumberUtils from "~/utils/shared/NumberUtils";
 import { PropertyType } from "~/application/enums/entities/PropertyType";
@@ -484,7 +484,7 @@ export default function FakeRowsRoute() {
     });
   }
 
-  function onCreateRows(item: TenantDataDto, numberOfRows: number, type?: "apiKeyLog") {
+  const onCreateRows = useCallback((item: TenantDataDto, numberOfRows: number, type?: "apiKeyLog") => {
     const form = new FormData();
     form.set("action", "create-rows");
     form.set("entityId", item.entity.id);
@@ -496,8 +496,9 @@ export default function FakeRowsRoute() {
     submit(form, {
       method: "post",
     });
-  }
-  function onUpdateRows(item: TenantDataDto, numberOfRows: number) {
+  }, [submit]);
+
+  const onUpdateRows = useCallback((item: TenantDataDto, numberOfRows: number) => {
     const form = new FormData();
     form.set("action", "update-rows");
     form.set("entityId", item.entity.id);
@@ -506,8 +507,9 @@ export default function FakeRowsRoute() {
     submit(form, {
       method: "post",
     });
-  }
-  function onDeleteRows(item: TenantDataDto, { shadow, numberOfRows }: { shadow: boolean; numberOfRows: number }) {
+  }, [submit]);
+
+  const onDeleteRows = useCallback((item: TenantDataDto, { shadow, numberOfRows }: { shadow: boolean; numberOfRows: number }) => {
     const form = new FormData();
     if (shadow) {
       form.set("action", "shadow-delete-rows");
@@ -521,7 +523,46 @@ export default function FakeRowsRoute() {
     submit(form, {
       method: "post",
     });
-  }
+  }, [submit]);
+
+  const tableHeaders = useMemo(
+    () => [
+      {
+        name: "entity",
+        title: "Entity",
+        value: (i: TenantDataDto) => t(i.entity.title),
+      },
+      {
+        name: "tenant",
+        title: "Tenant",
+        className: "w-full",
+        value: (i: TenantDataDto) => i.tenant.name,
+      },
+      {
+        name: "activeRows",
+        title: "Active Rows",
+        value: (i: TenantDataDto) => NumberUtils.intFormat(i.activeRows),
+      },
+      {
+        name: "shadowRows",
+        title: "Shadow Rows",
+        value: (i: TenantDataDto) => NumberUtils.intFormat(i.shadowRows),
+      },
+      {
+        name: "totalRows",
+        title: "Total Rows",
+        value: (i: TenantDataDto) => NumberUtils.intFormat(i.activeRows + i.shadowRows),
+      },
+      {
+        name: "actions",
+        title: "",
+        value: (i: TenantDataDto) => (
+          <ActionsCell item={i} onCreateRows={onCreateRows} onUpdateRows={onUpdateRows} onDeleteRows={onDeleteRows} />
+        ),
+      },
+    ],
+    [onCreateRows, onDeleteRows, onUpdateRows, t]
+  );
   return (
     <EditPageLayout title="Testing">
       <div className="space-y-2">
@@ -571,39 +612,7 @@ export default function FakeRowsRoute() {
         ) : (
           <TableSimple
             items={filteredItems()}
-            headers={[
-              {
-                name: "entity",
-                title: "Entity",
-                value: (i) => t(i.entity.title),
-              },
-              {
-                name: "tenant",
-                title: "Tenant",
-                className: "w-full",
-                value: (i) => i.tenant.name,
-              },
-              {
-                name: "activeRows",
-                title: "Active Rows",
-                value: (i) => NumberUtils.intFormat(i.activeRows),
-              },
-              {
-                name: "shadowRows",
-                title: "Shadow Rows",
-                value: (i) => NumberUtils.intFormat(i.shadowRows),
-              },
-              {
-                name: "totalRows",
-                title: "Total Rows",
-                value: (i) => NumberUtils.intFormat(i.activeRows + i.shadowRows),
-              },
-              {
-                name: "actions",
-                title: "",
-                value: (i) => <ActionsCell item={i} onCreateRows={onCreateRows} onUpdateRows={onUpdateRows} onDeleteRows={onDeleteRows} />,
-              },
-            ]}
+            headers={tableHeaders}
           />
         )}
       </div>

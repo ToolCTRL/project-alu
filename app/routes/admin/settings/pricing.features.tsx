@@ -1,5 +1,5 @@
 import { ActionFunctionArgs, LoaderFunctionArgs, MetaFunction, useActionData, useLoaderData, Form, useSubmit } from "react-router";
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { RowHeaderDisplayDto } from "~/application/dtos/data/RowHeaderDisplayDto";
 import { MetaTagsDto } from "~/application/dtos/seo/MetaTagsDto";
@@ -388,15 +388,16 @@ export default function PricingFeaturesRoute() {
     setItems(getInitialItems(selectedPlans));
   }, [selectedPlans]);
 
-  const createHandleTitleChange = (setItems: (items: SubscriptionFeatureInPlansDto[]) => void, items: SubscriptionFeatureInPlansDto[]) => {
-    return (existing: any, e: ChangeValue) => {
+  const handleTitleChange = useCallback(
+    (existing: any, e: ChangeValue) => {
       existing.title = e?.toString() ?? "";
       setItems([...items]);
-    };
-  };
+    },
+    [items]
+  );
 
-  const createHandleTypeChange = (setItems: (items: SubscriptionFeatureInPlansDto[]) => void, items: SubscriptionFeatureInPlansDto[]) => {
-    return (existing: any, item: any, planId: string, e: ChangeValue) => {
+  const handleTypeChange = useCallback(
+    (existing: any, item: any, planId: string, e: ChangeValue) => {
       const type = Number(e) as SubscriptionFeatureLimitType;
       if (existing) {
         existing.type = type;
@@ -412,11 +413,12 @@ export default function PricingFeaturesRoute() {
         });
       }
       setItems([...items]);
-    };
-  };
+    },
+    [items]
+  );
 
-  const createHandleValueChange = (setItems: (items: SubscriptionFeatureInPlansDto[]) => void, items: SubscriptionFeatureInPlansDto[]) => {
-    return (existing: any, item: any, planId: string, e: ChangeValue) => {
+  const handleValueChange = useCallback(
+    (existing: any, item: any, planId: string, e: ChangeValue) => {
       const value = e as number;
       if (existing) {
         existing.value = value;
@@ -429,8 +431,39 @@ export default function PricingFeaturesRoute() {
         });
       }
       setItems([...items]);
-    };
-  };
+    },
+    [items]
+  );
+
+  const renderOrderCell = useCallback(
+    (_: SubscriptionFeatureInPlansDto, idx: number) => (
+      <OrderButtonsCell
+        index={idx}
+        items={items}
+        onChange={setItems}
+      />
+    ),
+    [items, setItems]
+  );
+
+  const renderFeatureTitleCell = useCallback(
+    (item: SubscriptionFeatureInPlansDto) => <FeatureTitleCell item={item} items={items} setItems={setItems} />,
+    [items, setItems]
+  );
+
+  const renderPlanFeatureCell = useCallback(
+    (item: SubscriptionFeatureInPlansDto, planId: string) => (
+      <PlanFeatureCell
+        item={item}
+        items={items}
+        planId={planId}
+        handleTitleChange={handleTitleChange}
+        handleTypeChange={handleTypeChange}
+        handleValueChange={handleValueChange}
+      />
+    ),
+    [handleTitleChange, handleTypeChange, handleValueChange, items]
+  );
 
   const headers = useMemo<RowHeaderDisplayDto<SubscriptionFeatureInPlansDto>[]>(() => {
     const baseHeaders: RowHeaderDisplayDto<SubscriptionFeatureInPlansDto>[] = [
@@ -438,24 +471,14 @@ export default function PricingFeaturesRoute() {
         title: t("shared.order"),
         name: "order",
         value: (item) => item.order,
-        formattedValue: (_, idx) => (
-          <OrderButtonsCell
-            index={idx}
-            items={items}
-            onChange={setItems}
-          />
-        ),
+        formattedValue: renderOrderCell,
       },
       {
         title: "Title",
         name: "feature-title",
-        value: (item) => <FeatureTitleCell item={item} items={items} setItems={setItems} />,
+        value: renderFeatureTitleCell,
       },
     ];
-
-    const handleTitleChange = createHandleTitleChange(setItems, items);
-    const handleTypeChange = createHandleTypeChange(setItems, items);
-    const handleValueChange = createHandleValueChange(setItems, items);
 
     for (const plan of selectedPlans) {
       if (!plan.id) {
@@ -464,21 +487,12 @@ export default function PricingFeaturesRoute() {
       baseHeaders.push({
         title: t(plan.title),
         name: "feature-in-" + plan.id,
-        value: (item) => (
-          <PlanFeatureCell
-            item={item}
-            items={items}
-            planId={plan.id}
-            handleTitleChange={handleTitleChange}
-            handleTypeChange={handleTypeChange}
-            handleValueChange={handleValueChange}
-          />
-        ),
+        value: (item) => renderPlanFeatureCell(item, plan.id),
       });
     }
 
     return baseHeaders;
-  }, [items, selectedPlans, t]);
+  }, [renderFeatureTitleCell, renderOrderCell, renderPlanFeatureCell, selectedPlans, t]);
 
   function sortedItems() {
     return items.sort((a, b) => a.order - b.order);
