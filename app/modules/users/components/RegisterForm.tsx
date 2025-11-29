@@ -198,7 +198,7 @@ export const RegisterForm = ({ requireRecaptcha = false, isVerifyingEmail = fals
           <a target="_blank" rel="noreferrer" href="/privacy-policy" className="text-primary underline">
             {t("account.register.privacyPolicy")}
           </a>
-          .
+          {"."}
         </p>
       </RecaptchaWrapper>
     </div>

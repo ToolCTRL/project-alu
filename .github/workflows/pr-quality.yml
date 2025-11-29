@@ -42,7 +42,8 @@ jobs:
 
       - name: SonarCloud Scan
         if: env.SONAR_TOKEN != ''
-        uses: sonarsource/sonarcloud-github-action@v2
+        # Pin action to full commit SHA for supply-chain safety (avoid mutable tags).
+        uses: sonarsource/sonarcloud-github-action@ba3875ecf642b2129de2b589510c81a8b53dbf4e
         env:
           SONAR_TOKEN: ${{ env.SONAR_TOKEN }}
         with:
