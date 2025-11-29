@@ -12,6 +12,7 @@ import { UI_REFRESH_FLAG_GROUPS } from "~/application/featureFlags/constants";
 import clsx from "clsx";
 import { AnimatePresence, motion } from "framer-motion";
 import { RouteBackground } from "~/components/ui/backgrounds/RouteBackground";
+import OnboardingSession from "~/modules/onboarding/components/OnboardingSession";
 
 export default function ShadcnSidebarLayout({
   children,
@@ -32,13 +33,14 @@ export default function ShadcnSidebarLayout({
   const refreshNavigation = useFeatureFlag(UI_REFRESH_FLAG_GROUPS.navigation) ?? true;
   const navModern = true;
 
-  const [_onboardingModalOpen, setOnboardingModalOpen] = useState(false);
+  const [onboardingModalOpen, setOnboardingModalOpen] = useState(false);
 
   function onOpenCommandPalette() {
     query.toggle();
   }
   return (
     <SidebarProvider className={clsx(navModern && "nav-modern")}>
+      <OnboardingSession open={onboardingModalOpen} setOpen={setOnboardingModalOpen} />
       <ShadcnAppSidebar layout={layout} items={menuItems} />
       <SidebarInset className={clsx("relative overflow-hidden min-h-screen px-3 pb-6 sm:px-5 lg:px-7", refreshNavigation && "text-white")}>
         <RouteBackground />

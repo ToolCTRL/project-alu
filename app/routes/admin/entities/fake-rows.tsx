@@ -525,11 +525,15 @@ export default function FakeRowsRoute() {
     });
   }, [submit]);
 
-  const tableHeaders = useMemo(
-    () => [
-      {
-        name: "entity",
-        title: "Entity",
+  const renderActionsCell = useCallback((item: TenantDataDto) => (
+    <ActionsCell item={item} onCreateRows={onCreateRows} onUpdateRows={onUpdateRows} onDeleteRows={onDeleteRows} />
+  ), [onCreateRows, onDeleteRows, onUpdateRows]);
+
+    const tableHeaders = useMemo(
+      () => [
+        {
+          name: "entity",
+          title: "Entity",
         value: (i: TenantDataDto) => t(i.entity.title),
       },
       {
@@ -553,16 +557,14 @@ export default function FakeRowsRoute() {
         title: "Total Rows",
         value: (i: TenantDataDto) => NumberUtils.intFormat(i.activeRows + i.shadowRows),
       },
-      {
-        name: "actions",
-        title: "",
-        value: (i: TenantDataDto) => (
-          <ActionsCell item={i} onCreateRows={onCreateRows} onUpdateRows={onUpdateRows} onDeleteRows={onDeleteRows} />
-        ),
-      },
-    ],
-    [onCreateRows, onDeleteRows, onUpdateRows, t]
-  );
+        {
+          name: "actions",
+          title: "",
+          value: renderActionsCell,
+        },
+      ],
+    [renderActionsCell, t]
+    );
   return (
     <EditPageLayout title="Testing">
       <div className="space-y-2">
