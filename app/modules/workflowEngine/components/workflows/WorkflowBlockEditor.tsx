@@ -1,4 +1,4 @@
-import { useState, useEffect, Fragment, useRef } from "react";
+import { useState, useEffect, Fragment, useRef, lazy, Suspense } from "react";
 import { WorkflowBlockDto } from "../../dtos/WorkflowBlockDto";
 import { WorkflowBlockTypes, WorkflowBlockInput, WorkflowBlockOutput } from "../../dtos/WorkflowBlockTypes";
 import { WorkflowConditionsGroupDto } from "../../dtos/WorkflowConditionDtos";
@@ -9,10 +9,11 @@ import ConditionsGroupsInfo from "../nodes/flow/ConditionsGroupsInfo";
 import WorkflowKeyValueInputs from "~/modules/workflowEngine/components/variables/WorkflowKeyValueInputs";
 import WorkflowVariableTextInput from "../variables/WorkflowVariableTextInput";
 import WorkflowVariableButton from "../variables/WorkflowVariableButton";
-import { Editor } from "@monaco-editor/react";
 import WorkflowBlockErrors from "./misc/WorkflowBlockErrors";
 import InputCheckbox from "~/components/ui/input/InputCheckbox";
 import { Link, useParams } from "react-router";
+
+const Editor = lazy(() => import("@monaco-editor/react").then((module) => ({ default: module.Editor })));
 
 export default function WorkflowBlockEditor({
   workflow,
@@ -478,23 +479,31 @@ function BlockInput({
       {input.type === "monaco" && (
         <div className=" overflow-hidden">
           {globalThis.window !== undefined && (
-            <Editor
-              onMount={(editor: any, monaco: any) => {
-                refMonaco.current = editor;
-              }}
-              value={inputValue as string}
-              language="json"
-              options={{
-                fontSize: 12,
-                renderValidationDecorations: "off",
-                wordWrap: "on",
-                unusualLineTerminators: "off",
-                tabSize: 2,
-              }}
-              onChange={(e) => setInputValue(e?.toString() ?? "")}
-              className="focus:border-border focus:ring-ring border-border -ml-10 block h-32 w-full min-w-0 flex-1 rounded-md sm:text-sm"
-              theme="vs-dark"
-            />
+            <Suspense
+              fallback={
+                <div className="border-border bg-secondary flex h-32 items-center justify-center rounded-md border">
+                  <div className="text-muted-foreground text-sm">Loading editor...</div>
+                </div>
+              }
+            >
+              <Editor
+                onMount={(editor: any, monaco: any) => {
+                  refMonaco.current = editor;
+                }}
+                value={inputValue as string}
+                language="json"
+                options={{
+                  fontSize: 12,
+                  renderValidationDecorations: "off",
+                  wordWrap: "on",
+                  unusualLineTerminators: "off",
+                  tabSize: 2,
+                }}
+                onChange={(e) => setInputValue(e?.toString() ?? "")}
+                className="focus:border-border focus:ring-ring border-border -ml-10 block h-32 w-full min-w-0 flex-1 rounded-md sm:text-sm"
+                theme="vs-dark"
+              />
+            </Suspense>
           )}
         </div>
       )}

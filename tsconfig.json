@@ -26,6 +26,8 @@
     "forceConsistentCasingInFileNames": true,
     "allowJs": true,
     "allowImportingTsExtensions": true,
-    "rootDirs": [".", "./.react-router/types"]
+    "rootDirs": [".", "./.react-router/types"],
+    "incremental": true,
+    "tsBuildInfoFile": ".tsbuildinfo"
   }
 }

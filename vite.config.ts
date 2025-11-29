@@ -20,5 +20,32 @@ export default defineConfig({
   },
   build: {
     target: "esnext",
+    minify: "esbuild",
+    rollupOptions: {
+      output: {
+        manualChunks: (id) => {
+          // React ecosystem in separate chunk
+          if (id.includes("node_modules/react") || id.includes("node_modules/react-dom") || id.includes("node_modules/react-router")) {
+            return "react-vendor";
+          }
+          // Radix UI components in separate chunk
+          if (id.includes("node_modules/@radix-ui")) {
+            return "radix-ui";
+          }
+          // Monaco Editor in separate chunk (lazy loaded)
+          if (id.includes("node_modules/@monaco-editor") || id.includes("node_modules/monaco-editor")) {
+            return "monaco";
+          }
+          // Tiptap Editor in separate chunk (lazy loaded)
+          if (id.includes("node_modules/@tiptap")) {
+            return "tiptap";
+          }
+          // Other large vendor libraries
+          if (id.includes("node_modules")) {
+            return "vendor";
+          }
+        },
+      },
+    },
   },
 });
