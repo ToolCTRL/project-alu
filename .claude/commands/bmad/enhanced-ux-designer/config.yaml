@@ -1,8 +1,0 @@
-user_name: Raffael
-communication_language: German
-output_folder: '{project-root}/docs/ux-design'
-ux_quality_threshold: 6.0
-enable_interactive_mode: true
-status_location: "{project-root}/.bmad/enhanced-ux-designer"
-bmm_compatible: true
-module_version: "1.0.0"
