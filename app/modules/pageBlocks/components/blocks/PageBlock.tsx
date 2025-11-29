@@ -11,10 +11,6 @@ import RowsOverviewBlock from "./app/rows/overview/RowsOverviewBlock";
 import RowsOverviewBlockForm from "./app/rows/overview/RowsOverviewBlockForm";
 import BannerBlock from "./marketing/banner/BannerBlock";
 import BannerBlockForm from "./marketing/banner/BannerBlockForm";
-import BlogPostBlock from "./marketing/blog/post/BlogPostBlock";
-import BlogPostBlockForm from "./marketing/blog/post/BlogPostBlockForm";
-import BlogPostsBlock from "./marketing/blog/posts/BlogPostsBlock";
-import BlogPostsBlockForm from "./marketing/blog/posts/BlogPostsBlockForm";
 import CommunityBlock from "./marketing/community/CommunityBlock";
 import CommunityBlockForm from "./marketing/community/CommunityBlockForm";
 import FaqBlock from "./marketing/faq/FaqBlock";
@@ -71,8 +67,6 @@ export function PageBlock({ item, userSession }: { readonly item: PageBlockDto; 
       {item.newsletter && <NewsletterBlock item={item.newsletter} />}
       {item.faq && <FaqBlock item={item.faq} />}
       {item.pricing && <PricingBlock item={item.pricing} />}
-      {item.blogPosts && <BlogPostsBlock item={item.blogPosts} />}
-      {item.blogPost && <BlogPostBlock item={item.blogPost} />}
       {item.rowsList && <RowsListBlock item={item.rowsList} />}
       {item.rowsNew && <RowsNewBlock item={item.rowsNew} />}
       {item.rowsOverview && <RowsOverviewBlock item={item.rowsOverview} />}
@@ -100,8 +94,6 @@ function getBlockForm(type: string, item: PageBlockDto | undefined, onUpdate: (i
     features: <FeaturesBlockForm item={item?.features} onUpdate={(features) => onUpdate({ features })} />,
     newsletter: <NewsletterBlockForm item={item?.newsletter} onUpdate={(newsletter) => onUpdate({ newsletter })} />,
     pricing: <PricingBlockForm item={item?.pricing} onUpdate={(pricing) => onUpdate({ pricing })} />,
-    blogPosts: <BlogPostsBlockForm item={item?.blogPosts} onUpdate={(blogPosts) => onUpdate({ blogPosts })} />,
-    blogPost: <BlogPostBlockForm item={item?.blogPost} onUpdate={(blogPost) => onUpdate({ blogPost })} />,
     rowsList: <RowsListBlockForm item={item?.rowsList} onUpdate={(rowsList) => onUpdate({ rowsList })} />,
     rowsNew: <RowsNewBlockForm item={item?.rowsNew} onUpdate={(rowsNew) => onUpdate({ rowsNew })} />,
     rowsOverview: <RowsOverviewBlockForm item={item?.rowsOverview} onUpdate={(rowsOverview) => onUpdate({ rowsOverview })} />,

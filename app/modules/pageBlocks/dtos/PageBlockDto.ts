@@ -2,8 +2,6 @@ import { RowsListBlockDto } from "../components/blocks/app/rows/list/RowsListBlo
 import { RowsNewBlockDto } from "../components/blocks/app/rows/new/RowsNewBlockUtils";
 import { RowsOverviewBlockDto } from "../components/blocks/app/rows/overview/RowsOverviewBlockUtils";
 import { BannerBlockDto } from "../components/blocks/marketing/banner/BannerBlockUtils";
-import { BlogPostBlockDto } from "../components/blocks/marketing/blog/post/BlogPostBlockUtils";
-import { BlogPostsBlockDto } from "../components/blocks/marketing/blog/posts/BlogPostsBlockUtils";
 import { CommunityBlockDto } from "../components/blocks/marketing/community/CommunityBlockUtils";
 import { FaqBlockDto } from "../components/blocks/marketing/faq/FaqBlockUtils";
 import { FeaturesBlockDto } from "../components/blocks/marketing/features/FeaturesBlockUtils";
@@ -35,8 +33,6 @@ export const PageBlockTypes = [
   { title: "Newsletter", type: "newsletter" },
   { title: "Logo Clouds", type: "logoClouds" },
   { title: "FAQ", type: "faq" },
-  { title: "Blog Posts", type: "blogPosts" },
-  { title: "Blog Post", type: "blogPost" },
   { title: "Community", type: "community" },
   { title: "Heading", type: "heading" },
   { title: "Gallery", type: "gallery" },
@@ -68,8 +64,6 @@ export type PageBlockDto = {
   newsletter?: NewsletterBlockDto;
   faq?: FaqBlockDto;
   pricing?: PricingBlockDto;
-  blogPosts?: BlogPostsBlockDto;
-  blogPost?: BlogPostBlockDto;
   rowsList?: RowsListBlockDto;
   rowsNew?: RowsNewBlockDto;
   rowsOverview?: RowsOverviewBlockDto;

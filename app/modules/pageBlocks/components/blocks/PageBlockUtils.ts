@@ -3,8 +3,6 @@ import { defaultRowsListBlock } from "./app/rows/list/RowsListBlockUtils";
 import { defaultRowsNewBlock } from "./app/rows/new/RowsNewBlockUtils";
 import { defaultRowsOverviewBlock } from "./app/rows/overview/RowsOverviewBlockUtils";
 import { defaultBannerBlock } from "./marketing/banner/BannerBlockUtils";
-import { defaultBlogPostBlock } from "./marketing/blog/post/BlogPostBlockUtils";
-import { defaultBlogPostsBlock } from "./marketing/blog/posts/BlogPostsBlockUtils";
 import { defaultCommunityBlock } from "./marketing/community/CommunityBlockUtils";
 import { defaultFaqBlock } from "./marketing/faq/FaqBlockUtils";
 import { defaultFeaturesBlock } from "./marketing/features/FeaturesBlockUtils";
@@ -35,8 +33,6 @@ const defaultBlocks: PageBlockDto = {
   faq: defaultFaqBlock,
   newsletter: defaultNewsletterBlock,
   pricing: defaultPricingBlock,
-  blogPosts: defaultBlogPostsBlock,
-  blogPost: defaultBlogPostBlock,
   rowsList: defaultRowsListBlock,
   rowsNew: defaultRowsNewBlock,
   rowsOverview: defaultRowsOverviewBlock,

@@ -5,7 +5,6 @@ import InputText from "~/components/ui/input/InputText";
 import { defaultLandingPage } from "../../utils/defaultPages/defaultLandingPage";
 import { PageBlockDto } from "~/modules/pageBlocks/dtos/PageBlockDto";
 import { defaultPricingPage } from "../../utils/defaultPages/defaultPricingPage";
-import { defaultBlogPage } from "../../utils/defaultPages/defaultBlogPage";
 
 type TemplateDto = {
   title: string;
@@ -20,7 +19,6 @@ export default function PageBlocksTemplateEditor({ items, onSelected }: readonly
       { title: "Current", blocks: items },
       { title: "Landing Page", blocks: defaultLandingPage({ t }) },
       { title: "Pricing Page", blocks: defaultPricingPage({ t }) },
-      { title: "Blog Page", blocks: defaultBlogPage({ t }) },
       { title: "Empty", blocks: [] },
     ];
     setCurrentJson(JSON.stringify(templates[0].blocks, null, "\t"));

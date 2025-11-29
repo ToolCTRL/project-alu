@@ -26,12 +26,6 @@ export default function AppCommandPalette({ onClosed, isOpen }: Readonly<Props>)
       description: t("app.commands.profile.description"),
     },
     {
-      command: "B",
-      title: t("app.commands.blog.title"),
-      description: t("app.commands.blog.description"),
-      toPath: "/admin/blog/new",
-    },
-    {
       command: "Z",
       title: "Switch to App",
       description: "Go to /app",

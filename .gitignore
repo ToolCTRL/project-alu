@@ -47,5 +47,8 @@ tsconfig.tsbuildinfo
 .react-router/
 .cursor
 
+# app data (local db / assets not in git)
+data/
+
 #Ignore vscode AI rules
 .github/instructions/codacy.instructions.md
