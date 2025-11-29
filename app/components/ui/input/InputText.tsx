@@ -1,14 +1,15 @@
 import clsx from "clsx";
-import { forwardRef, ReactNode, Ref, RefObject, useEffect, useImperativeHandle, useRef, useState } from "react";
+import { forwardRef, lazy, ReactNode, Ref, RefObject, Suspense, useEffect, useImperativeHandle, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import EntityIcon from "~/components/layouts/icons/EntityIcon";
 import HintTooltip from "~/components/ui/tooltips/HintTooltip";
-import Editor from "@monaco-editor/react";
-import NovelEditor from "~/modules/novel/ui/editor";
 import { PromptFlowWithDetails } from "~/modules/promptBuilder/db/promptFlows.db.server";
 import { Input } from "../input";
 import { Textarea } from "../textarea";
 import { i18n as I18nInstance, TFunction } from "i18next";
+
+const Editor = lazy(() => import("@monaco-editor/react").then((module) => ({ default: module.Editor })));
+const NovelEditor = lazy(() => import("~/modules/novel/ui/editor"));
 
 function getTranslation(i18n: I18nInstance, t: TFunction, value: string): string | null {
   if (!i18n.exists(value)) {
@@ -175,29 +176,40 @@ const InputText = (props: InputTextProps, ref: Ref<RefInputText>) => {
       <>
         <textarea hidden readOnly name={name} value={actualValue} />
         {globalThis.window !== undefined && (
-          <Editor
-            theme={editorTheme}
-            className={clsx(
-              "focus:border-border focus:ring-ring border-border block w-full min-w-0 flex-1 rounded-md sm:text-sm",
-              getEditorSizeClasses(),
-              className,
-              classNameBg,
-              editorHideLineNumbers && "-ml-10",
-              borderless && "border-transparent"
-            )}
-            defaultLanguage={editorLanguage}
-            language={editorLanguage}
-            options={{
-              fontSize: editorFontSize,
-              renderValidationDecorations: "off",
-              wordWrap: "on",
-              readOnly: disabled || readOnly,
-              ...editorOptions,
-            }}
-            value={value}
-            defaultValue={defaultValue}
-            onChange={(e) => handleValueChange(e ?? "", setActualValue, setValue)}
-          />
+          <Suspense
+            fallback={
+              <div className={clsx(
+                "border-border bg-secondary flex items-center justify-center rounded-md border",
+                getEditorSizeClasses()
+              )}>
+                <div className="text-muted-foreground text-sm">Loading editor...</div>
+              </div>
+            }
+          >
+            <Editor
+              theme={editorTheme}
+              className={clsx(
+                "focus:border-border focus:ring-ring border-border block w-full min-w-0 flex-1 rounded-md sm:text-sm",
+                getEditorSizeClasses(),
+                className,
+                classNameBg,
+                editorHideLineNumbers && "-ml-10",
+                borderless && "border-transparent"
+              )}
+              defaultLanguage={editorLanguage}
+              language={editorLanguage}
+              options={{
+                fontSize: editorFontSize,
+                renderValidationDecorations: "off",
+                wordWrap: "on",
+                readOnly: disabled || readOnly,
+                ...editorOptions,
+              }}
+              value={value}
+              defaultValue={defaultValue}
+              onChange={(e) => handleValueChange(e ?? "", setActualValue, setValue)}
+            />
+          </Suspense>
         )}
       </>
     );
@@ -207,17 +219,28 @@ const InputText = (props: InputTextProps, ref: Ref<RefInputText>) => {
     return (
       <>
         <textarea hidden readOnly name={name} value={actualValue} />
-        <NovelEditor
-          autoFocus={autoFocus}
-          key={promptFlows?.rowId ?? name ?? "novel-editor"}
-          readOnly={readOnly || disabled}
-          disabled={disabled}
-          darkMode={darkMode}
-          className={getWysiwygSizeClasses()}
-          content={value || defaultValue}
-          onChange={(e) => handleValueChange(e?.html ?? "", setActualValue, setValue)}
-          promptFlows={promptFlows}
-        />
+        <Suspense
+          fallback={
+            <div className={clsx(
+              "border-border bg-secondary flex items-center justify-center rounded-md border",
+              getWysiwygSizeClasses()
+            )}>
+              <div className="text-muted-foreground text-sm">Loading editor...</div>
+            </div>
+          }
+        >
+          <NovelEditor
+            autoFocus={autoFocus}
+            key={promptFlows?.rowId ?? name ?? "novel-editor"}
+            readOnly={readOnly || disabled}
+            disabled={disabled}
+            darkMode={darkMode}
+            className={getWysiwygSizeClasses()}
+            content={value || defaultValue}
+            onChange={(e) => handleValueChange(e?.html ?? "", setActualValue, setValue)}
+            promptFlows={promptFlows}
+          />
+        </Suspense>
       </>
     );
   }
