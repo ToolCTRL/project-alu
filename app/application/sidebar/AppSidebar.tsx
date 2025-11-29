@@ -86,13 +86,6 @@ export const AppSidebar = ({ t, tenantId, entities, entityGroups, appConfigurati
       ...crmEntitiesSidebarItems,
     ],
   };
-  if (appConfiguration?.app.features.tenantBlogs) {
-    appItem?.items?.push({
-      title: t("blog.title"),
-      path: `${currentTenantUrl}/blog`,
-      icon: SvgIcon.BLOG,
-    });
-  }
   if (appConfiguration?.app.features.tenantWorkflows) {
     appItem?.items?.push({
       title: t("workflows.title"),

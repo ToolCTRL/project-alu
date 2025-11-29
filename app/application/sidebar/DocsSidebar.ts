@@ -95,10 +95,6 @@ export const DocsSidebar = (): SideBarItem[] => {
               path: "/docs/features/subscriptions",
             },
             {
-              title: "Blogging",
-              path: "/docs/features/blogging",
-            },
-            {
               title: "Entity Builder",
               path: "/docs/features/entity-builder",
             },
@@ -315,10 +311,6 @@ export const DocsSidebar = (): SideBarItem[] => {
             {
               title: "Support a Language (i18n)",
               path: "/docs/learning-center/guides/localization/support-a-language",
-            },
-            {
-              title: "Create a Blog Post",
-              path: "/docs/learning-center/guides/blogging/publish-a-blog-post",
             },
             {
               title: "Create a Custom Entity",

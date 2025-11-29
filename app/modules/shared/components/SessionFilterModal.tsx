@@ -193,7 +193,6 @@ export default function SessionFilterModal({
             { name: "Landing", value: "/" },
             { name: "Pricing", value: "/pricing" },
             { name: "Contact", value: "/contact" },
-            { name: "Blog", value: "/blog" },
             { name: "Newsletter", value: "/newsletter" },
             { name: "Login", value: "/login" },
             { name: "Register", value: "/register" },

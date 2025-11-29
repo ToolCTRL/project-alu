@@ -35,8 +35,6 @@ function getModulePath(params: Params, path: string) {
       return `/app/${params.tenant}/settings/${path}`;
     } else if (path.startsWith("api")) {
       return `/app/${params.tenant}/settings/${path}`;
-    } else if (path.startsWith("blog")) {
-      return `/app/${params.tenant}/${path}`;
     } else if (path.startsWith("workflow-engine")) {
       return `/app/${params.tenant}/${path}`;
     } else if (path.startsWith("logs")) {
@@ -46,13 +44,6 @@ function getModulePath(params: Params, path: string) {
     }
   }
   return `/admin/${path}`;
-}
-
-function getBlogPath(params: Params, path?: string) {
-  if (params.tenant) {
-    return path ? `/b/${params.tenant}/${path}` : `/b/${params.tenant}`;
-  }
-  return path ? `/blog/${path}` : `/blog`;
 }
 
 function join(...paths: string[]) {
@@ -90,6 +81,5 @@ export default {
   getParentRoute,
   getModulePath,
   join,
-  getBlogPath,
   searchParamsToString,
 };
