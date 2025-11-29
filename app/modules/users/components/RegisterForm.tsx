@@ -190,14 +190,11 @@ export const RegisterForm = ({ requireRecaptcha = false, isVerifyingEmail = fals
         )}
 
         <p className="border-border mt-3 border-t py-2 text-center text-sm">
-          {t("account.register.bySigningUp")}
-          {" "}
+          {t("account.register.bySigningUp")}{" "}
           <a target="_blank" rel="noreferrer" href="/terms-and-conditions" className="text-primary underline">
             {t("account.register.termsAndConditions")}
-          </a>
-          {" "}
-          {t("account.register.andOur")}
-          {" "}
+          </a>{" "}
+          {t("account.register.andOur")}{" "}
           <a target="_blank" rel="noreferrer" href="/privacy-policy" className="text-primary underline">
             {t("account.register.privacyPolicy")}
           </a>
