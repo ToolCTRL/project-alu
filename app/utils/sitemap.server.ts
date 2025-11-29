@@ -4,7 +4,6 @@ import KnowledgeBaseUtils from "~/modules/knowledgeBase/utils/KnowledgeBaseUtils
 import { getAppConfiguration } from "./db/appConfiguration.db.server";
 import { i18nConfig } from "~/locale/i18n";
 import { defaultPages } from "~/modules/pageBlocks/utils/defaultPages";
-import { getAllBlogPosts } from "~/modules/blog/db/blog.db.server";
 import { getPages } from "~/modules/pageBlocks/db/pages.db.server";
 
 
@@ -83,7 +82,6 @@ function shouldExcludeEntry(entry: SitemapEntry, excludeRoutes: string[], sitema
 function shouldSkipLanguageEntry(entry: SitemapEntry): boolean {
   return (
     entry.route === "/docs" ||
-    entry.route.startsWith("/blog/") ||
     entry.route.startsWith("/api/") ||
     entry.route.startsWith("/components/")
   );
@@ -204,14 +202,6 @@ async function getSitemapXml(request: Request, remixContext: EntryContext) {
     .forEach((page) => {
       addSitemapEntry(sitemapEntries, { route: page });
     });
-
-  const blogPosts = await getAllBlogPosts({ tenantId: null, published: true });
-  blogPosts.forEach((post) => {
-    addSitemapEntry(sitemapEntries, {
-      route: `/blog/${post.slug}`,
-      lastmod: post.updatedAt ? post.updatedAt.toISOString() : post.date?.toISOString(),
-    });
-  });
 
   const pages = (await getPages()).filter((f) => !f.slug.includes(":") && f.isPublished && f.isPublic && !defaultPages.includes(f.slug));
   if (pages.length > 0) {

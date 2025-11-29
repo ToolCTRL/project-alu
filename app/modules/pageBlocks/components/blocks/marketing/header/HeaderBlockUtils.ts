@@ -32,7 +32,6 @@ export const defaultHeaderBlock: HeaderBlockDto = {
   links: [
     { path: "/", title: "Product" },
     { path: "/pricing", title: "Pricing" },
-    { path: "/blog", title: "Blog" },
     {
       title: "About",
       items: [

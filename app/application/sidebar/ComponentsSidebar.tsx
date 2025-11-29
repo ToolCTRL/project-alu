@@ -87,10 +87,6 @@ export const ComponentsSidebar = (): SideBarItem[] => {
           path: "/components/pages/pricing",
         },
         {
-          title: "Blog",
-          path: "/components/pages/blog",
-        },
-        {
           title: "Contact",
           path: "/components/pages/contact",
         },

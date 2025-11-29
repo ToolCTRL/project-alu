@@ -44,7 +44,6 @@ ${"```json"}
         { "name": "Pricing", href: "/pricing" },
         { "name": "Sign in", href: "/login" },
         { "name": "Sign up", href: "/register" },
-        { "name": "Blog", href: "/blog" },
       ],
     },
     {

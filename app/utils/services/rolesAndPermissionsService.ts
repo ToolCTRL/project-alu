@@ -22,7 +22,7 @@ export const defaultAdminRoles: CreateRoleDto[] = [
   { name: DefaultAdminRoles.ProductDesigner, description: "Manages entities", type: "admin", assignToNewUsers: false },
   { name: DefaultAdminRoles.Developer, description: "Manages API Keys", type: "admin", assignToNewUsers: false },
   { name: DefaultAdminRoles.Auditor, description: "Views application audit trails", type: "admin", assignToNewUsers: false },
-  { name: DefaultAdminRoles.Marketing, description: "Manages blog", type: "admin", assignToNewUsers: false },
+  { name: DefaultAdminRoles.Marketing, description: "Manages marketing assets", type: "admin", assignToNewUsers: false },
   { name: DefaultAdminRoles.Guest, description: "Views admin pages, but cannot update or delete", type: "admin", assignToNewUsers: true },
 ];
 
@@ -98,15 +98,6 @@ export const defaultPermissions: CreatePermissionDto[] = [
     type: "admin",
   },
   { inRoles: [DefaultAdminRoles.SuperAdmin], name: "admin.analytics.delete", description: "Delete analytics data", type: "admin" },
-  {
-    inRoles: [DefaultAdminRoles.SuperAdmin, DefaultAdminRoles.Marketing, DefaultAdminRoles.Guest],
-    name: "admin.blog.view",
-    description: "View blog posts page",
-    type: "admin",
-  },
-  { inRoles: [DefaultAdminRoles.SuperAdmin, DefaultAdminRoles.Marketing], name: "admin.blog.create", description: "Create blog posts", type: "admin" },
-  { inRoles: [DefaultAdminRoles.SuperAdmin, DefaultAdminRoles.Marketing], name: "admin.blog.update", description: "Update blog post", type: "admin" },
-  { inRoles: [DefaultAdminRoles.SuperAdmin, DefaultAdminRoles.Marketing], name: "admin.blog.delete", description: "Delete blog post", type: "admin" },
   {
     inRoles: [DefaultAdminRoles.SuperAdmin, DefaultAdminRoles.ProductDesigner, DefaultAdminRoles.Guest],
     name: "admin.entities.view",
