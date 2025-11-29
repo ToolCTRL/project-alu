@@ -12,8 +12,9 @@ permissions:
 
 env:
   SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-  SONAR_ORG: ${{ secrets.SONAR_ORG }}
-  SONAR_PROJECT_KEY: ${{ secrets.SONAR_PROJECT_KEY }}
+  SONAR_ORG: toolctrl
+  SONAR_PROJECT_KEY: ToolCTRL_project-alu
+  SONAR_HOST_URL: https://sonarcloud.io
 
 jobs:
   quality:
@@ -40,7 +41,7 @@ jobs:
         run: npm run test -- --runInBand
 
       - name: SonarCloud Scan
-        if: env.SONAR_TOKEN != '' && env.SONAR_ORG != '' && env.SONAR_PROJECT_KEY != ''
+        if: env.SONAR_TOKEN != ''
         uses: sonarsource/sonarcloud-github-action@v2
         env:
           SONAR_TOKEN: ${{ env.SONAR_TOKEN }}
@@ -48,3 +49,4 @@ jobs:
           args: >
             -Dsonar.organization=${{ env.SONAR_ORG }}
             -Dsonar.projectKey=${{ env.SONAR_PROJECT_KEY }}
+            -Dsonar.host.url=${{ env.SONAR_HOST_URL }}
